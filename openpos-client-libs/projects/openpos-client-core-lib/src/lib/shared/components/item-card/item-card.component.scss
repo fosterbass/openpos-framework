@@ -38,6 +38,11 @@
             height: 50px;
         }
 
+        .item-card-icon {
+            align-self: center;
+            margin-right: 16px;
+        }
+
         .left-side {
             grid-area: 1/2/1/2;
             display: grid;
