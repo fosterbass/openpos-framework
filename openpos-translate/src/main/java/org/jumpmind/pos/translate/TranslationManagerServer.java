@@ -9,6 +9,7 @@ import org.jumpmind.pos.core.device.IDeviceMessageDispatcher;
 import org.jumpmind.pos.core.device.IDeviceRequest;
 import org.jumpmind.pos.core.device.IDeviceResponse;
 import org.jumpmind.pos.core.flow.IStateManager;
+import org.jumpmind.pos.core.flow.StateManagerContainer;
 import org.jumpmind.pos.core.model.Form;
 import org.jumpmind.pos.core.model.POSSessionInfo;
 import org.jumpmind.pos.core.screen.NoOpScreen;
@@ -23,7 +24,10 @@ import org.jumpmind.pos.translate.InteractionMacro.SendLetter;
 import org.jumpmind.pos.translate.InteractionMacro.WaitForScreen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component("translationManager")
 public class TranslationManagerServer implements ITranslationManager, IDeviceMessageDispatcher {
 
     final Logger logger = LoggerFactory.getLogger(getClass());
@@ -32,10 +36,15 @@ public class TranslationManagerServer implements ITranslationManager, IDeviceMes
 
     private ILegacySubsystem legacySubsystem;
 
+    @Autowired
     private ITranslatorFactory translatorFactory;
-
+    
+    @Autowired
     private ILegacyScreenInterceptor screenInterceptor;
 
+    @Autowired
+    private StateManagerContainer stateManagerContainer;
+    
     private InteractionMacro activeMacro;
 
     private Map<String, ITranslator> lastTranslatorByAppId = new HashMap<>();
@@ -50,14 +59,11 @@ public class TranslationManagerServer implements ITranslationManager, IDeviceMes
     
     private IStateManager stateManager;
 
-    public TranslationManagerServer(ILegacyScreenInterceptor interceptor, ITranslatorFactory translatorFactory,
-            Class<?> subsystemClass) {
+    @Override
+    public void init(Class<?> subsystemClass) {
         this.subsystemClass = subsystemClass;
-        this.posSessionInfo = new POSSessionInfo();
-        this.screenInterceptor = interceptor;
-        this.translatorFactory = translatorFactory;
     }
-
+    
     @Override
     public void ping() {
     }
@@ -222,6 +228,7 @@ public class TranslationManagerServer implements ITranslationManager, IDeviceMes
 
     protected boolean translateAndShow(ILegacyScreen legacyScreen) {
         boolean screenShown = false;
+        this.stateManagerContainer.setCurrentStateManager(stateManager);
         for (ITranslationManagerSubscriber subscriber : this.subscriberByAppId.values()) {
             if (legacyScreen != null && subscriber.isInTranslateState()) {
                 ITranslator lastTranslator = this.lastTranslatorByAppId.get(subscriber.getAppId());
@@ -233,6 +240,10 @@ public class TranslationManagerServer implements ITranslationManager, IDeviceMes
                 }
 
                 if (!screenInterceptor.intercept(legacyScreen, previousScreen, subscriber, this, posSessionInfo)) {
+                    if (lastTranslator != null) {
+                        stateManager.performOutjections(lastTranslator);
+                    }
+                    
                     ITranslator newTranslator = translatorFactory.createScreenTranslator(legacyScreen, subscriber.getAppId(),
                             subscriber.getProperties());
 
