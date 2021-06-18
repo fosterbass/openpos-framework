@@ -41,10 +41,6 @@ public class TranslationManagerBridge implements ITranslationManager {
     String nodeId;
 
     @Override
-    public void init(Class<?> subsystemClass) {
-    }
-
-    @Override
     public void setTranslationManagerSubscriber(ITranslationManagerSubscriber subscriber) {
         this.subscriber = subscriber;
         this.nodeId = subscriber.getNodeId();

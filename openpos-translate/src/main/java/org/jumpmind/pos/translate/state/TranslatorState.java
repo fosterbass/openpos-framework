@@ -67,12 +67,13 @@ public class TranslatorState implements IState {
 
     protected boolean subscribe(Action action) {
         if (subscriber == null || (action != null && "restart".equalsIgnoreCase(action.getName()))) {
-            this.translationManager = applicationContext.getBean("translationManager", ITranslationManager.class);  
+            
+            this.translationManager = applicationContext.getBean(ITranslationManager.class);  
             if (this.translationManager == null) {
                 throw new IllegalStateException("When using a translation state, we expect an implementation of "
                         + ITranslationManager.class.getSimpleName() + " to be bound at the prototype scope");
             }
-            this.translationManager.setStateManager(stateManager);
+            
             logger.info("Creating new translation manager subscriber");
             
             this.subscriber = new ITranslationManagerSubscriber() {
