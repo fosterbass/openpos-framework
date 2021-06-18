@@ -253,29 +253,37 @@ public class TranslationManagerServer implements ITranslationManager, IDeviceMes
                         newTranslator.setPosSessionInfo(posSessionInfo);
                         stateManager.performInjections(newTranslator);
                     }
-                    if (newTranslator instanceof AbstractScreenTranslator<?>) {
-                        AbstractScreenTranslator<?> screenTranslator = (AbstractScreenTranslator<?>) newTranslator;
-                        Screen screen = screenTranslator.build();
-                        if(screen.getId() == null){
-                            screen.setId(legacyScreen.getSpecName());
+                    boolean intercepted = newTranslator != null && newTranslator.intercept(this);
+                    if (! intercepted) {
+                        if (newTranslator instanceof AbstractScreenTranslator<?>) {
+                            AbstractScreenTranslator<?> screenTranslator = (AbstractScreenTranslator<?>) newTranslator;
+                            Screen screen = screenTranslator.build();
+                            if(screen.getId() == null){
+                                screen.setId(legacyScreen.getSpecName());
+                            }
+                            subscriber.showScreen(screen);
+                            screenShown = true;
                         }
-                        subscriber.showScreen(screen);
-                        screenShown = true;
-                    }
-                    if (newTranslator instanceof AbstractUIMessageTranslator<?>) {
-                        AbstractUIMessageTranslator<?> messageTranslator = (AbstractUIMessageTranslator) newTranslator;
-                        UIMessage message = messageTranslator.build();
-                        if(message.getId() == null){
-                            message.setId(legacyScreen.getSpecName());
+                        if (newTranslator instanceof AbstractUIMessageTranslator<?>) {
+                            AbstractUIMessageTranslator<?> messageTranslator = (AbstractUIMessageTranslator) newTranslator;
+                            UIMessage message = messageTranslator.build();
+                            if(message.getId() == null){
+                                message.setId(legacyScreen.getSpecName());
+                            }
+                            subscriber.showScreen(message);
+                            screenShown = true;
                         }
-                        subscriber.showScreen(message);
-                        screenShown = true;
-                    }
-
-                    this.lastTranslatorByAppId.put(subscriber.getAppId(), newTranslator);
-
-                    if (newTranslator instanceof IActionTranslator) {
-                        ((IActionTranslator) newTranslator).translate(this, subscriber, legacyScreen);
+    
+                        this.lastTranslatorByAppId.put(subscriber.getAppId(), newTranslator);
+    
+                        if (newTranslator instanceof IActionTranslator) {
+                            ((IActionTranslator) newTranslator).translate(this, subscriber, legacyScreen);
+                        }
+                    } else {
+                        if (newTranslator != null) {
+                            logger.info("{} for screen {} intercepted/bypassed the screen translation", newTranslator.getClass().getSimpleName(), legacyScreen.getSpecName());
+                        }
+                        this.lastTranslatorByAppId.put(subscriber.getAppId(), newTranslator);
                     }
                 }
 
