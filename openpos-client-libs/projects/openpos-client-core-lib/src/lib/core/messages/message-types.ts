@@ -13,4 +13,11 @@ export class MessageTypes {
     static LOCK_SCREEN = 'LockScreen';
     static UNLOCK_SCREEN = 'UnlockScreen';
     static STARTUP = 'Startup';
+    static PRINT = 'Print';
+    static FETCH = 'Fetch';
+    static SIMULATED_PERIPHERAL = 'SimulatedPeripheral';
+    static AUDIO = 'Audio';
+    static AUDIO_CONFIG = 'AudioConfig';
+    static AUDIO_PRELOAD = 'AudioPreload';
+    static LOADING = 'Loading';
 }

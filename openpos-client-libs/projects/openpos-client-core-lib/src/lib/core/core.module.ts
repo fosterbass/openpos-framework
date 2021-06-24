@@ -61,6 +61,12 @@ import { CLIENTCONTEXT } from './client-context/client-context-provider.interfac
 import { TimeZoneContext } from './client-context/time-zone-context';
 import {UIDataMessageService} from './ui-data-message/ui-data-message.service';
 import { HelpTextService } from './help-text/help-text.service';
+import {ErrorStateMatcher, ShowOnDirtyErrorStateMatcher} from "@angular/material/core";
+import { AudioStartupTask } from './audio/audio-startup-task';
+import { AudioService } from './audio/audio.service';
+import { AudioRepositoryService } from './audio/audio-repository.service';
+import { AudioInteractionService } from './audio/audio-interaction.service';
+import { AudioConsolePlugin } from './audio/audio-console.plugin';
 
 registerLocaleData(locale_enCA, 'en-CA');
 registerLocaleData(locale_frCA, 'fr-CA');
@@ -109,6 +115,7 @@ registerLocaleData(locale_frCA, 'fr-CA');
         { provide: STARTUP_TASKS, useClass: PersonalizationStartupTask, multi: true, deps: [PersonalizationService, MatDialog]},
         { provide: STARTUP_TASKS, useClass: SubscribeToSessionTask, multi: true, deps: [SessionService, Router]},
         { provide: STARTUP_TASKS, useClass: DialogServiceStartupTask, multi: true, deps: [DialogService]},
+        { provide: STARTUP_TASKS, useClass: AudioStartupTask, multi: true, deps: [AudioRepositoryService, AudioService, AudioInteractionService]},
         { provide: STARTUP_TASKS, useClass: FinalStartupTask, multi: true, deps: [SessionService]},
         { provide: STARTUP_TASKS, useClass: PlatformReadyStartupTask, multi: true },
         { provide: STARTUP_TASKS, useClass: PluginStartupTask, multi: true },
@@ -133,7 +140,11 @@ registerLocaleData(locale_frCA, 'fr-CA');
         KeyPressProvider,
         { provide: LOGGERS, useExisting: ServerLogger, multi: true, deps: [HttpClient, PersonalizationService, ConsoleIntercepter] },
         HelpTextService,
-        { provide: CLIENTCONTEXT, useClass: TimeZoneContext, multi: true }
+        { provide: CLIENTCONTEXT, useClass: TimeZoneContext, multi: true },
+        AudioService,
+        AudioInteractionService,
+        AudioRepositoryService,
+        { provide: PLUGINS, useExisting: AudioConsolePlugin, multi: true, deps: [AudioService]}
     ]
 })
 export class CoreModule {
