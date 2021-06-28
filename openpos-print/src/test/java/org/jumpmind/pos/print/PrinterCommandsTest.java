@@ -4,7 +4,6 @@ import jpos.POSPrinterConst;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import java.io.ByteArrayOutputStream;
 import java.net.URL;
 
 public class PrinterCommandsTest {

@@ -1,12 +1,8 @@
 package org.jumpmind.pos.print;
 
 import jpos.JposException;
-import jpos.POSPrinter;
 import jpos.POSPrinterConst;
-import jpos.POSPrinterControl114;
-import jpos.config.JposEntry;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 

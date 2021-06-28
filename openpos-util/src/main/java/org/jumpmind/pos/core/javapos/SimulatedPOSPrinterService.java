@@ -55,6 +55,9 @@ public class SimulatedPOSPrinterService extends AbstractSimulatedService impleme
 
     public void appendText(final int type, final String newText) {
         receipt.append(newText);
+        if (newText != null && newText.endsWith("90fP\n")) {
+            flush();
+        }
     }
 
     public void printBarCode(int i, String s, int j, int k, int l, int i1, int j1) throws JposException {
