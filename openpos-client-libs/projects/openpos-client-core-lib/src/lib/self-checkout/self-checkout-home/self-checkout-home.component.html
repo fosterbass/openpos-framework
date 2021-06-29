@@ -7,5 +7,11 @@
             {{screen.prompt}}
         </div>
     </div>
+    <div fxLayout="row" class="language-icons">
+        <div class="language-icon-entry" fxFlex="50" *ngFor="let language of this.languages">
+            <app-secondary-button (click)="onLocaleSelected(language.locale)">{{getDisplayName(language.locale)}}</app-secondary-button>
+        </div>
+      </div>
+    <div></div>
     <app-scan-part></app-scan-part>
 </div>

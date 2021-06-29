@@ -5,6 +5,7 @@ export const LocaleConstants = {
         'en-ca': '$',
         'fr-us': '$',
         'fr-ca': '$',
+        'es-us': '$',
         'default': '$'
     },
     'currencyCode' : {
@@ -12,13 +13,15 @@ export const LocaleConstants = {
         'fr-us': 'USD',
         'en-ca': 'CAD',
         'fr-ca': 'CAD',
+        'es-us': 'USD',
         'default': 'USD'
     },
     'displayName' : {
         'en-us': 'English',
-        'fr-us': 'French',
+        'fr-us': 'Français',
         'en-ca': 'English',
-        'fr-ca': 'French',
+        'fr-ca': 'Français',
+        'es-us': 'Español',
         'default': 'English'
     },
     'localeIcon' : {
@@ -26,6 +29,7 @@ export const LocaleConstants = {
         'fr-us': 'France',
         'en-ca': 'Canada',
         'fr-ca': 'France',
+        'es-us': 'Mexico',
         'default': 'UnitedStates'
     }
 };
