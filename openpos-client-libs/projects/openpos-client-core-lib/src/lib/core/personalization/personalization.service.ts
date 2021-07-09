@@ -1,15 +1,15 @@
 import { Injectable, Inject, Optional } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { PersonalizationConfigResponse } from './personalization-config-response.interface';
-import { BehaviorSubject, Observable,throwError, Subject, zip } from 'rxjs';
-import { catchError, map, tap , timeout} from 'rxjs/operators';
-import {PersonalizationRequest} from './personalization-request';
-import {PersonalizationResponse} from './personalization-response.interface';
-import {AutoPersonalizationParametersResponse} from "./device-personalization.interface";
-import {ZeroconfService} from "@ionic-native/zeroconf";
-import {Configuration} from "../../configuration/configuration";
+import { BehaviorSubject, Observable,throwError, Subject, zip, merge } from 'rxjs';
+import { catchError, filter, last, map, take, tap , timeout } from 'rxjs/operators';
+import { PersonalizationRequest } from './personalization-request';
+import { PersonalizationResponse } from './personalization-response.interface';
+import { AutoPersonalizationParametersResponse } from "./device-personalization.interface";
+import { Configuration } from "../../configuration/configuration";
 
 import { Storage } from '../storage/storage.service';
+import { Zeroconf, ZEROCONF_TOKEN } from '../startup/zeroconf/zeroconf';
 
 @Injectable({
     providedIn: 'root'
@@ -27,18 +27,21 @@ export class PersonalizationService {
     private readonly serverPort$ = new BehaviorSubject<string | null>(null);
     private readonly sslEnabled$ = new BehaviorSubject<boolean | null>(null);
     private readonly isManagedServer$ = new BehaviorSubject<boolean | null>(null);
+    private readonly skipAutoPersonalization$ = new BehaviorSubject<boolean | null>(null);
     private readonly personalizationSuccessFul$ = new BehaviorSubject<boolean>(false);
 
     constructor(
         private storage: Storage,
-        private http: HttpClient
+        private http: HttpClient,
+        @Inject(ZEROCONF_TOKEN) @Optional() protected mdns: Array<Zeroconf>
     ) {
         zip(
             storage.getValue('deviceToken'),
             storage.getValue('serverName'),
             storage.getValue('serverPort'),
             storage.getValue('sslEnabled'),
-            storage.getValue(PersonalizationService.OPENPOS_MANAGED_SERVER_PROPERTY)
+            storage.getValue(PersonalizationService.OPENPOS_MANAGED_SERVER_PROPERTY),
+            storage.getValue('skipAutoPersonalization')
         ).subscribe(results => {
             if (results[0]) {
                 this.setDeviceToken(results[0]);
@@ -60,13 +63,29 @@ export class PersonalizationService {
                 this.isManagedServer$.next(results[4] === 'true');
             }
 
+            if (results[5]) {
+                this.skipAutoPersonalization$.next(results[5] === 'true');
+            } else {
+                this.skipAutoPersonalization$.next(false);
+            }
+
             this.personalizationInitialized$.next(true);
         });
     }
 
-    public getAutoPersonalizationParameters(deviceName: string, url): Observable<AutoPersonalizationParametersResponse> {
+    public getAutoPersonalizationProvider$(): Observable<Zeroconf> {
+        return merge(...this.mdns.map(m => m.isAvailable().pipe(
+            take(1),
+            map(avail => ({ provider: m, avail })),
+            filter(m => m.avail),
+            map(m => m.provider)
+        )));
+    }
+
+    public getAutoPersonalizationParameters(deviceName: string, url: string): Observable<AutoPersonalizationParametersResponse> {
         const protocol = this.sslEnabled$.getValue() ? 'https://' : 'http://';
         url += protocol + url;
+
         return this.http.get<AutoPersonalizationParametersResponse>(url, { params: { deviceName: deviceName }})
             .pipe(
                 timeout(Configuration.autoPersonalizationRequestTimeoutMillis),
@@ -165,6 +184,7 @@ export class PersonalizationService {
             this.storage.remove('deviceToken'),
             this.storage.remove('theme'),
             this.storage.remove('sslEnabled'),
+            this.storage.remove('skipAutoPersonalization')
         ).subscribe();
     }
 
@@ -215,6 +235,10 @@ export class PersonalizationService {
         return this.personalizationSuccessFul$;
     }
 
+    public getSkipAutoPersonalization$(): Observable<boolean> {
+        return this.skipAutoPersonalization$;
+    }
+
     private setPersonalizationProperties(personalizationProperties?: Map<string, string>) {
         this.personalizationProperties$.next(personalizationProperties);
     }
@@ -245,6 +269,16 @@ export class PersonalizationService {
     private setDeviceToken(token: string) {
         this.storage.setValue('deviceToken', token).subscribe();
         this.deviceToken$.next(token);
+    }
+
+    public setSkipAutoPersonalization(skip: boolean) {
+        if (skip) {
+            this.storage.setValue('skipAutoPersonalization', 'true').subscribe();
+        } else {
+            this.storage.remove('skipAutoPersonalization').subscribe();
+        }
+
+        this.skipAutoPersonalization$.next(skip);
     }
 
     public refreshApp() {

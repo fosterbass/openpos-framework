@@ -1,4 +1,5 @@
-import {catchError,
+import {
+    catchError,
     filter,
     map,
     retryWhen,
@@ -18,7 +19,6 @@ import { Injectable } from '@angular/core';
 import { StartupTaskData } from './startup-task-data';
 import { Params } from '@angular/router';
 import { PersonalizationComponent } from '../personalization/personalization.component';
-import { merge } from 'rxjs';
 import { Zeroconf, ZeroconfService, ZEROCONF_TOKEN } from './zeroconf/zeroconf';
 import { Inject } from '@angular/core';
 import { Optional } from '@angular/core';
@@ -52,27 +52,12 @@ export class PersonalizationStartupTask implements IStartupTask {
                 timeout(5000),
                 catchError(() => of('timed out waiting for personalization to initialize'))
             ),
-
-            iif(
-                () => this.mdns && this.mdns.length > 0,
-                
-                defer(
-                    () => merge(...this.mdns.map(m => m.isAvailable().pipe(
-                        take(1),
-                        map(avail => ({ provider: m, avail })),
-                        filter(m => m.avail),
-                        map(m => m.provider)
-                    ))).pipe(
-                        lastOrElse(
-                            provider => this.doAutoPersonalization(data, provider),
-                            this.doStandardPersonalization(data),
-                        ),
-                    )
+            this.personalization.getAutoPersonalizationProvider$().pipe(
+                lastOrElse(
+                    provider => this.doAutoPersonalization(data, provider),
+                    defer(() => this.doStandardPersonalization(data))
                 ),
-
-                // else
-                defer(() => this.doStandardPersonalization(data))
-            ),
+            )
         );
     }
 
@@ -121,25 +106,37 @@ export class PersonalizationStartupTask implements IStartupTask {
     }
 
     private doAutoPersonalization(data: StartupTaskData, provider: Zeroconf): Observable<string> {
-        return concat(
-            of('attempting auto personalization'),
-            provider.watch(this.TYPE, this.DOMAIN).pipe(
-                first(r => r.action === 'resolved'),
-                switchMap(r => provider.deviceName().pipe(
-                    map(dn => ({ deviceName: dn, service: r.service }))
-                )),
-                take(1),
-                timeout(10000),
-                switchMap(p => this.attemptAutoPersonalize(data, this.getAutoPersonalizationUrl(p.service), p.deviceName)),
-                catchError(e => {
-                    console.error('failed to auto personalize', e);
-
+        return this.personalization.getSkipAutoPersonalization$().pipe(
+            take(1),
+            switchMap(skip => {
+                if (skip) {
                     return concat(
-                        of('failed to auto personalize; attempting with auto-personalization hostname'),
-                        this.personalizeWithHostname(data, provider)
+                        of('skipping auto personalization'),
+                        this.doStandardPersonalization(data)
+                    );
+                }
+
+                return concat(
+                    of('attempting auto personalization'),
+                    provider.watch(this.TYPE, this.DOMAIN).pipe(
+                        first(r => r.action === 'resolved'),
+                        switchMap(r => provider.deviceName().pipe(
+                            map(dn => ({ deviceName: dn, service: r.service }))
+                        )),
+                        take(1),
+                        timeout(10000),
+                        switchMap(p => this.attemptAutoPersonalize(data, this.getAutoPersonalizationUrl(p.service), p.deviceName)),
+                        catchError(e => {
+                            console.error('failed to auto personalize', e);
+        
+                            return concat(
+                                of('failed to auto personalize; attempting with auto-personalization hostname'),
+                                this.personalizeWithHostname(data, provider)
+                            )
+                        })
                     )
-                })
-            )
+                );  
+            })
         );
     }
 
@@ -176,28 +173,31 @@ export class PersonalizationStartupTask implements IStartupTask {
                             }
                         }
 
-                        return this.personalization.personalize(
-                            info.serverAddress,
-                            info.serverPort,
-                            info.deviceId,
-                            info.appId,
-                            paramsMap,
-                            info.sslEnabled
-                        ).pipe(
-                            catchError(e => { 
-                                console.error('failed to personalize from auto personalization data', e);
+                        return concat(
+                            of(`personalizing with server '${info.serverAddress}:${info.serverPort}' as '${info.deviceName}'`),
+                            this.personalization.personalize(
+                                info.serverAddress,
+                                info.serverPort,
+                                info.deviceId,
+                                info.appId,
+                                paramsMap,
+                                info.sslEnabled
+                            ).pipe(
+                                catchError(e => { 
+                                    console.error('failed to personalize from auto personalization data', e);
 
-                                return concat(
-                                    of('failed to auto personalize; falling back to standard pesronalization'),
-                                    this.doStandardPersonalization(
-                                        startupData, 
-                                        { 
-                                            serverAddress: info.serverAddress, 
-                                            serverPort: info.serverPort, 
-                                            appId: info.appId 
-                                        })
-                                    )
-                            }),
+                                    return concat(
+                                        of('failed to auto personalize; falling back to standard pesronalization'),
+                                        this.doStandardPersonalization(
+                                            startupData, 
+                                            { 
+                                                serverAddress: info.serverAddress, 
+                                                serverPort: info.serverPort, 
+                                                appId: info.appId 
+                                            })
+                                        )
+                                }),
+                            )
                         );
                     }
 

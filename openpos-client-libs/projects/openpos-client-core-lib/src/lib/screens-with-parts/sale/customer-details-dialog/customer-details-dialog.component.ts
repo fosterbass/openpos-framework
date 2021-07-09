@@ -1,5 +1,6 @@
 import {Component, Injector, OnDestroy} from '@angular/core';
-import {CustomerDetailsDialogInterface} from './customer-details-dialog.interface';
+import {FormControl} from '@angular/forms';
+import {CustomerDetailsDialogInterface, CustomerItemHistoryFilter} from './customer-details-dialog.interface';
 import {DialogComponent} from '../../../shared/decorators/dialog-component.decorator';
 import {PosScreen} from '../../pos-screen/pos-screen.component';
 import {Observable} from 'rxjs';
@@ -29,6 +30,8 @@ export class CustomerDetailsDialogComponent extends PosScreen<CustomerDetailsDia
 
   isMobile: Observable<boolean>;
   spacebarSubscription: Subscription;
+  readonly itemsHistoryFilterController = new ItemsHistoryFilterController(this);
+
   constructor(injector: Injector,
               public actionService: ActionService,
               private media: OpenposMediaService,
@@ -77,7 +80,10 @@ export class CustomerDetailsDialogComponent extends PosScreen<CustomerDetailsDia
 
   allRewards: Map<number, Reward> = new Map<number, Reward>();
   allDisabledRewards: Map<number, Reward> = new Map<number, Reward>();
+
   buildScreen() {
+    this.itemsHistoryFilterController.build();
+
     for (let i = 0; i < this.screen.customer.rewards.length; i++) {
       const reward = this.screen.customer.rewards[i];
       reward.enabled = (reward.actionButton && reward.actionButton.enabled == true);
@@ -118,5 +124,44 @@ export class CustomerDetailsDialogComponent extends PosScreen<CustomerDetailsDia
     if (this.spacebarSubscription) {
       this.spacebarSubscription.unsubscribe();
     }
+  }
+}
+
+class ItemsHistoryFilterController {
+  fromDate = new FormControl();
+  toDate = new FormControl();
+  textFilter = new FormControl();
+
+  private get serverState() {
+    return this._parent.screen.itemHistoryFilter;
+  }
+
+  constructor(private readonly _parent: CustomerDetailsDialogComponent) {}
+
+  fromDateFilterChanged(value: Date) {
+    this.doItemHistoryFilterAction({ ...this.serverState, fromDate: value.toISOString() });
+  }
+
+  toDateFilterChanged(value: Date) {
+    this.doItemHistoryFilterAction({ ...this.serverState, toDate: value.toISOString() });
+  }
+  
+  onFilterKeyPress(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      if (event.target instanceof HTMLInputElement) {
+        event.target.blur();
+        this.doItemHistoryFilterAction({...this.serverState, text: event.target.value});
+      }
+    }
+  }
+
+  build() {
+    this.fromDate.setValue(this.serverState.fromDate);
+    this.toDate.setValue(this.serverState.toDate);
+    this.textFilter.setValue(this.serverState.text);
+  }
+
+  private doItemHistoryFilterAction(filter: CustomerItemHistoryFilter) {
+    this._parent.doAction('ItemHistoryFilterChanged', filter);
   }
 }
