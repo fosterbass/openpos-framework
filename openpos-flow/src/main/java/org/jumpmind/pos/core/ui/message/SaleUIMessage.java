@@ -57,6 +57,11 @@ public class SaleUIMessage extends UIMessage {
     private boolean enableCollapsibleItems = true;
     private String iconName;
 
+    private String loyaltySignupInProgressTitle;
+    private String loyaltySignupInProgressIcon;
+    private String loyaltySignupInProgressDetailsIcon;
+    private ActionItem loyaltyCancelButton;
+
     public SaleUIMessage() {
         this.setScreenType(UIMessageType.SALE);
         this.setId("sale");
