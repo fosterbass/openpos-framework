@@ -62,22 +62,25 @@ export class TenderingComponent extends PosScreen<any> implements OnDestroy {
         const group: any = {};
         const validators: ValidatorFn[] = [];
 
-        if (this.tenderAmount.validators) {
-            this.tenderAmount.validators.forEach(v => {
-                const fn = this.validatorsService.getValidator(v);
-                if (fn) {
-                    validators.push(fn);
-                }
-            });
-        }
+        if (!!this.tenderAmount) {
+            if (this.tenderAmount.validators) {
+                this.tenderAmount.validators.forEach(v => {
+                    const fn = this.validatorsService.getValidator(v);
+                    if (fn) {
+                        validators.push(fn);
+                    }
+                });
+            }
 
-        let disabled = false;
-        if (this.tenderAmount.disabled) {
-            disabled = this.tenderAmount.disabled;
+            let disabled = false;
+            if (this.tenderAmount.disabled) {
+                disabled = this.tenderAmount.disabled;
+            }
+            group['tenderAmtFld'] = new FormControl({value: this.tenderAmount.value, disabled: disabled}, validators);
+            this.tenderFormGroup = new FormGroup(group);
+        } else {
+            this.tenderFormGroup = new FormGroup({});
         }
-        group['tenderAmtFld'] = new FormControl({value: this.tenderAmount.value, disabled: disabled}, validators);
-        this.tenderFormGroup = new FormGroup(group);
-
 
         this.balanceDue = this.screen.balanceDue;
         this.balanceDueAmount = this.screen.balanceDueAmount;
