@@ -13,7 +13,8 @@ public class SellTemplate extends AbstractTemplate {
     protected static final long serialVersionUID = 1L;
 
     protected StatusBar statusBar = new StatusBar();
-    
+
+    protected String localMenuItemsHeaderText;
     protected List<ActionItem> localMenuItems = new ArrayList<>();
     
     private String transactionMenuPrompt;
@@ -107,5 +108,13 @@ public class SellTemplate extends AbstractTemplate {
 
     public void setWorkstation(Workstation workstation) {
         this.workstation = workstation;
+    }
+
+    public String getLocalMenuItemsHeaderText() {
+        return localMenuItemsHeaderText;
+    }
+
+    public void setLocalMenuItemsHeaderText(String localMenuItemsHeaderText) {
+        this.localMenuItemsHeaderText = localMenuItemsHeaderText;
     }
 }

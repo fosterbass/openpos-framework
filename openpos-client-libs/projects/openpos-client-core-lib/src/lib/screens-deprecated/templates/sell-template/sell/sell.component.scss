@@ -1,7 +1,14 @@
+@import '../../../../styles/mixins/typography';
+@include openpos-typography();
+
 .sell-template-menu-button {
     text-align: left;
 }
 
+.sell-template-menu-header-text {
+    @extend .text-sm;
+    margin-bottom: 5px;
+}
 .scan-or-search {
     margin: 16px 24px;
 }

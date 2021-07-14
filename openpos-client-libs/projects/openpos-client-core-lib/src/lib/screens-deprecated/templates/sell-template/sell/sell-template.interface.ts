@@ -10,6 +10,7 @@ import { IActionItem } from '../../../../core/interfaces/action-item.interface';
 export interface ISellTemplate extends IAbstractScreenTemplate {
     scan: IScan;
     statusBar: IStatusBar;
+    localMenuItemsHeaderText: string;
     localMenuItems: IActionItem[];
     transactionMenuItems: IActionItem[];
     workstation: IWorkStation;
