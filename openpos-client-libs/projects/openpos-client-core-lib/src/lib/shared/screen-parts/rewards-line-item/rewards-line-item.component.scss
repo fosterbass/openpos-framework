@@ -2,7 +2,7 @@
 
 .reward-line-item-wrapper {
   display: grid;
-  grid-template-columns: 1fr 8fr 2fr 1fr 4fr;
+  grid-template-columns: 1fr 8fr 2fr 2fr 4fr;
   grid-template-rows: 1fr;
   gap: 0px 0px;
   grid-template-areas:
@@ -41,6 +41,9 @@
     @extend %text-md;
     grid-area: reward;
     align-self: center;
+    .pctReward {
+      font-weight: bold;
+    }
   }
   .apply {
     grid-area: apply;
