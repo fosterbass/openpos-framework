@@ -64,7 +64,6 @@
 }
 
 @mixin app-theme($theme) {
-
     @include component-theme-mixins($theme);
     @include layout-component-themes($theme);
     @include openpos-component-theme-mixins($theme);

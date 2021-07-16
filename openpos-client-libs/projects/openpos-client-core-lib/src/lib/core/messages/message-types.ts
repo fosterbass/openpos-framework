@@ -30,4 +30,5 @@ export class MessageTypes {
     static CLIENT_EXECUTABLE = 'ClientExecutable';
     static CLOSE_STATUS_DETAILS = 'CloseStatusDetails';
     static DATA_CLEAR = 'DataClear';
+    static LOYALTY_SIGNUP = 'LoyaltySignup';
 }
