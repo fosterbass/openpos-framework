@@ -73,7 +73,7 @@
                             {{screenData.customer.name}}
                         </div>
                     </div>
-                    <div class="icon"><app-icon [iconName]="screenData.profileIcon" [iconClass]="(isMobile | async) ? null: 'material-icons mat-36'"></app-icon></div>
+                    <div class="icon"><app-icon [iconName]="screenData.profileIcon" [iconClass]="(isMobile$ | async) ? null: 'material-icons mat-36'"></app-icon></div>
                     <div class="loyalty-icon">
                         <img *ngIf="screenData.loyaltyButton.icon" [src]="screenData.loyaltyButton.icon | imageUrl" class="sale-total-loyalty-button-icon">
                     </div>
