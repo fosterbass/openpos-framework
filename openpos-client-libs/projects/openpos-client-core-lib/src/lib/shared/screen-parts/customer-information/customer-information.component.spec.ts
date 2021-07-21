@@ -59,7 +59,8 @@ describe('CustomerInformationComponent', () => {
                 state: 'OH',
                 postalCode: '11111'
             },
-            birthDate: '06/09/1991'
+            birthDate: '06/09/1991',
+            memberTier:""
         } as CustomerDetails;
         component.customer = customer;
         component.screenData = {

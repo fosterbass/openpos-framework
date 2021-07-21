@@ -19,7 +19,8 @@ export interface CustomerDetails {
     rewards: Reward[],
     rewardHistory: RewardHistory[],
     itemHistory: PurchasedItem[],
-    birthDate: string
+    birthDate: string,
+    memberTier: string
 };
 
 export interface CustomerInformationComponentInterface {
