@@ -60,6 +60,12 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="extraFormFields">
+                                <div *ngFor="let formElement of screen.form.formElements">
+                                    <app-dynamic-form-field *ngIf="handledFormFields.indexOf(formElement.id) == -1"
+                                                            [formGroup]="screen.formGroup" [formField]="formElement" (onFieldChanged)="onFieldChanged($event)"></app-dynamic-form-field>
+                                </div>
+                            </div>
                         </div>
                         <div class="right">
                             <!--This different ordering of Location and Loyalty sections here is so the tab order is consistent with form field display order.-->
@@ -117,13 +123,6 @@
                                 </div>
                             </div>
                         </ng-template>
-
-                        <div class="extraFormFields">
-                            <div *ngFor="let formElement of screen.form.formElements">
-                                <app-dynamic-form-field *ngIf="handledFormFields.indexOf(formElement.id) == -1"
-                                        [formGroup]="screen.formGroup" [formField]="formElement" (onFieldChanged)="onFieldChanged($event)"></app-dynamic-form-field>
-                            </div>
-                        </div>
                     </div>
                     <mat-error>
                         <div id="formErrorsWrapper"><app-show-errors #formErrors [control]="screen.formGroup"></app-show-errors></div>
