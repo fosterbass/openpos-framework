@@ -58,9 +58,50 @@ export class TenderingComponent extends PosScreen<any> implements OnDestroy {
         this.text = this.screen.text;
         this.tenderItems = this.screen.tenderItems;
         this.tenderAmount = this.screen.tenderAmount;
+        this.balanceDue = this.screen.balanceDue;
+        this.balanceDueAmount = this.screen.balanceDueAmount;
+        this.totalAmount = this.screen.totalAmount;
+        this.itemActions = this.screen.itemActions;
+        this.actionButton = this.screen.actionButton;
 
+        this.tenderFormGroup = this.buildTenderFormGroup();
+        this.registerLocalMenuActions(this.getSubmitFormGroupFieldName());
+    }
+
+    protected getSubmitFormGroupFieldName(): string {
+        return 'tenderAmtFld';
+    }
+
+    protected registerLocalMenuActions(formGroupFieldName: string): void {
+        if (this.screen.template.localMenuItems) {
+            this.screen.template.localMenuItems.forEach(element => {
+                let actionValueFn = () => {};
+                let interceptorPayloadFn = (payload) => {};
+                if (this.tenderFormGroup.get(formGroupFieldName)) {
+                    actionValueFn = () => this.tenderFormGroup.get(formGroupFieldName).value;
+                    interceptorPayloadFn = (payload) => {
+                        const value = this.tenderFormGroup.get(formGroupFieldName).value;
+                        this.log.info(`Returning value of ${value}.  Payload: ${JSON.stringify(payload)}`);
+                        return value;
+                    }
+                }
+                this.session.registerActionPayload(element.action, actionValueFn);
+                this.session.registerActionIntercepter(element.action,
+                    new ActionIntercepter(this.log, interceptorPayloadFn,
+                        // Will only block if the formGroup is inValid
+                        new ActionIntercepterBehavior(ActionIntercepterBehaviorType.block,
+                            tenderAmtValue => this.isTenderValid()
+                        )
+                    )
+                );
+            });
+        }
+    }
+
+    protected buildTenderFormGroup(): FormGroup {
         const group: any = {};
         const validators: ValidatorFn[] = [];
+        let formGroup: FormGroup = null;
 
         if (!!this.tenderAmount) {
             if (this.tenderAmount.validators) {
@@ -77,37 +118,12 @@ export class TenderingComponent extends PosScreen<any> implements OnDestroy {
                 disabled = this.tenderAmount.disabled;
             }
             group['tenderAmtFld'] = new FormControl({value: this.tenderAmount.value, disabled: disabled}, validators);
-            this.tenderFormGroup = new FormGroup(group);
+            formGroup = new FormGroup(group);
         } else {
-            this.tenderFormGroup = new FormGroup({});
+            formGroup = new FormGroup({});
         }
 
-        this.balanceDue = this.screen.balanceDue;
-        this.balanceDueAmount = this.screen.balanceDueAmount;
-        this.totalAmount = this.screen.totalAmount;
-        this.itemActions = this.screen.itemActions;
-        this.actionButton = this.screen.actionButton;
-
-        if (this.screen.template.localMenuItems) {
-            this.screen.template.localMenuItems.forEach(element => {
-                this.session.registerActionPayload(element.action, () => this.tenderFormGroup.get('tenderAmtFld').value);
-                this.session.registerActionIntercepter(element.action,
-                    new ActionIntercepter(this.log, (payload) => {
-                        const value = this.tenderFormGroup.get('tenderAmtFld').value;
-                        this.log.info(`Returning value of ${value}.  Payload: ${JSON.stringify(payload)}`);
-                        return value;
-                    },
-                        // Will only block if the formGroup is inValid
-                        new ActionIntercepterBehavior(ActionIntercepterBehaviorType.block,
-                            tenderAmtValue => this.isTenderValid()
-                        )
-                    )
-                );
-            });
-            //                this.session.registerActionPayload( element.action, () => this.tenderFormGroup.get('tenderAmtFld').value );
-            //            });
-        }
-
+        return formGroup;
     }
 
     onFormSubmit(): void {
@@ -115,13 +131,20 @@ export class TenderingComponent extends PosScreen<any> implements OnDestroy {
     }
 
     isTenderValid(): boolean {
-        return this.tenderFormGroup.valid || this.tenderFormGroup.get('tenderAmtFld').disabled === true;
+        const formControl = this.tenderFormGroup.get(this.getSubmitFormGroupFieldName());
+        return this.tenderFormGroup.valid || formControl.disabled === true;
     }
 
     onAction(): void {
-        if (this.isTenderValid()) {
-            this.tenderAmount.value = this.tenderFormGroup.get('tenderAmtFld').value;
-            this.session.onAction(this.actionButton.action, this.tenderAmount.value);
+        const formControl = this.tenderFormGroup.get(this.getSubmitFormGroupFieldName());
+
+        if (formControl) {
+            if (this.isTenderValid()) {
+                this.tenderAmount.value = formControl.value;
+                this.session.onAction(this.actionButton.action, this.tenderAmount.value);
+            }
+        } else {
+            this.session.onAction(this.actionButton.action);
         }
     }
 
