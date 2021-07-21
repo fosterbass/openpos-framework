@@ -36,6 +36,7 @@ public class TransactionSummary extends TransactionIdentifier {
     private String transactionTypeIcon;
     private List<String> tenderTypeIcons;
     private List<ActionItem> actions;
+    private String loyaltyNumber;
 
     private Map<String, String> labels;
 
