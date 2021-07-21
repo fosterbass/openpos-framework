@@ -12,6 +12,8 @@ import { Configuration } from './../../configuration/configuration';
 import { MobileSaleOrdersSheetComponent } from './mobile-sale-orders-sheet/mobile-sale-orders-sheet.component';
 import {KeyPressProvider} from '../../shared/providers/keypress.provider';
 import {takeUntil} from 'rxjs/operators';
+import {ISellItem} from "../../core/interfaces/sell-item.interface";
+import {UIDataMessageService} from "../../core/ui-data-message/ui-data-message.service";
 
 
 @ScreenComponent({
@@ -30,12 +32,14 @@ export class SaleComponent extends PosScreen<SaleInterface> {
     removeOrderAction: IActionItem;
     buildScreen$ = new Subject();
     stop$: Observable<any>;
+    items: Observable<ISellItem[]>;
 
     constructor(protected dialog: MatDialog,
                 injector: Injector,
                 media: OpenposMediaService,
                 private bottomSheet: MatBottomSheet,
-                private keyPressProvider: KeyPressProvider) {
+                private keyPressProvider: KeyPressProvider,
+                private dataMessageService: UIDataMessageService) {
         super(injector);
         this.isMobile = media.observe(new Map([
             [MediaBreakpoints.MOBILE_PORTRAIT, true],
@@ -49,6 +53,7 @@ export class SaleComponent extends PosScreen<SaleInterface> {
     }
 
     buildScreen() {
+        this.items = this.dataMessageService.getData$(this.screen.providerKey);
         this.buildScreen$.next();
         // Reallocate totals array to force change detection in child app-overflow-list
         this.totals = this.screen.totals ? this.screen.totals.slice() : [];
