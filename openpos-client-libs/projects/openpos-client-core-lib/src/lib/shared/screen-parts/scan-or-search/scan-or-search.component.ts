@@ -106,11 +106,11 @@ export class ScanOrSearchComponent extends ScreenPartComponent<ScanOrSearchInter
 
     public onEnter($event: any): void {
         if (this.barcode && this.barcode.trim().length >= this.screenData.scanMinLength) {
-            $event.stopImmediatePropagation();
+            if($event) $event.stopImmediatePropagation();
             this.doAction(this.screenData.keyedAction, this.barcode);
             this.barcode = '';
         } else if (this.defaultAction && this.defaultAction.enabled) {
-            $event.stopImmediatePropagation();
+            if($event) $event.stopImmediatePropagation();
             this.doAction(this.defaultAction);
         }
     }

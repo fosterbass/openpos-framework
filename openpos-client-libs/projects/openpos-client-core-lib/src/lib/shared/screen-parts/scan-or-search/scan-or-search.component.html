@@ -3,9 +3,11 @@
     class="scan-button"
     ngClass.xs="scan-button-xs"
     [iconClass]="(isMobile$ | async) ? null: 'material-icons mat-36'"
-    [iconName]="screenData.scanIcon" 
+    [iconName]="screenData.scanIcon"
     [color]="'primary-inverse'"
     (buttonClick)="scannerService.triggerScan()"
+    [actionItem]="screenData.keyedAction"
+    (actionClick)="onEnter($event)"
     ></app-icon-square-button>
 <input #input matInput
        responsive-class
