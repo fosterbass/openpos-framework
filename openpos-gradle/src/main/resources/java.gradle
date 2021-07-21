@@ -144,23 +144,35 @@ task sourcesJar(type: Jar, dependsOn:classes) {
 }
 
 // example usage:
-// commerce-assemble$ ./gradlew commerce-context:patchJar -PpatchClasses=SqlPurgeJob,CustomerGroupModel
+// commerce-assemble$ ./gradlew commerce-context:patchJar -patchFiles=SqlPurgeJob,CustomerGroupModel -PpatchName=patch-23423.jar
 task patchJar(type: Jar, dependsOn:classes) {
     includeEmptyDirs = false
     outputs.upToDateWhen { false }
 
-    if (!project.hasProperty('patchClasses')) {
-        project.ext.patchClasses = ''
+    if (!project.hasProperty('patchFiles')) {
+        project.ext.patchFiles = ''
     }
 
-    def classNames = project.patchClasses.split(",");
+    def classNames = project.patchFiles.split(",");
     ext.patchClassFiles = classNames.collect{className -> ["**/${className}.class", "**/${className}\$*.class"]}.flatten()
-    ext.patchSourceFiles = classNames.collect{className -> "**/${className}.java"}
+    ext.patchSourceFiles = classNames.collect{className -> "**/${className}.*"}
     ext.fileFoundForPatch = false
 
+    manifest {
+        attributes("Implementation-Title": project.name,
+                "Implementation-Version": project.hasProperty('version') && project.getProperty('version') ? project.getProperty('version') : '0.0',
+                "Project-Artifact": project.hasProperty('patchName') ? project.getProperty('patchName') : 'patch.jar',
+                "Build-Version": project.hasProperty('version') && project.getProperty('version') ? project.getProperty('version') : '0.0',
+                "Build-Time": new SimpleDateFormat("yyyy-MM-dd HHmmss").format(new Date()),
+                "Build-Name": buildName,
+                "Build-Number": buildNumber,
+                "Git-Hash": gitHash,
+                "Git-Branch": gitBranch)
+    }
+
     doFirst {
-        if (project.patchClasses.length() == 0) {
-            throw new InvalidUserDataException("patchClasses property not found. Please specify one or more patch classes with a -P properties, such as -PpatchClasses=SqlPurgeJob,SomeOtherClass");
+        if (project.patchFiles.length() == 0) {
+            throw new InvalidUserDataException("patchFiles property not found. Please specify one or more patch classes with a -P properties, such as -patchFiles=SqlPurgeJob,SomeOtherClass");
         }
 
         if (!project.hasProperty("patchName")) {
@@ -182,14 +194,14 @@ task patchJar(type: Jar, dependsOn:classes) {
 
     eachFile { file ->
         ext.fileFoundForPatch = true
-        println "** Including file in patch: " + file;
+        println "* Including file in patch: " + file;
     }
 
     doLast {
         if (!ext.fileFoundForPatch) {
-            throw new InvalidUserDataException("No files were found for patchClasses argument: ${project.patchClasses}");
+            throw new InvalidUserDataException("No files were found for patchFiles argument: ${project.patchClasses}");
         }
-        println "Patch jar written to ${patchJar.archiveName}";
+        println "Patch jar written to ${patchJar.archivePath}";
     }
 }
 
