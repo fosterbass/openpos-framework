@@ -87,4 +87,28 @@ export class SaleTotalPanelComponent extends ScreenPartComponent<SaleTotalPanelI
     public repeatGradientInnerGlow(): void {
         this.gradientInnerGlowRepeatTrigger = !this.gradientInnerGlowRepeatTrigger;
     }
+
+    public shouldShowLinkCustomer(): boolean {
+        return !this.screenData.readOnly
+            && !this.screenData.linkedCustomerButton
+            && !!this.screenData.loyaltyButton;
+    }
+
+    public shouldShowLoyaltySignupInProgress(): boolean {
+        return !this.screenData.readOnly
+            && !this.screenData.linkedCustomerButton
+            && !!this.screenData.loyaltyCancelButton;
+    }
+
+    public shouldShowLinkedCustomer(): boolean {
+        return !this.screenData.readOnly
+            && !!this.screenData.linkedCustomerButton
+            && !!this.screenData.customer;
+    }
+
+    public shouldShowHeader(): boolean {
+        return this.shouldShowLinkCustomer()
+            || this.shouldShowLoyaltySignupInProgress()
+            || this.shouldShowLinkedCustomer();
+    }
 }

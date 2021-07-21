@@ -1,149 +1,164 @@
 @mixin customer-details-dialog-theme($theme) {
     $app-primary: mat-color(map-get($theme, primary));
-    $foreground: map-get($theme, foreground );
+    $foreground: map-get($theme, foreground);
     $background: map-get($theme, background);
 
-    .inline-markdown {
-        > p {
-            margin: 0px;
-            padding: 0px;
+    app-customer-details-dialog {
+        .inline-markdown {
+            > p {
+                margin: 0px;
+                padding: 0px;
+            }
         }
-    }
 
-    app-infinite-scroll {
-        background: white;
-    }
-
-    .item {
-        border-bottom: 1px solid map-get($foreground, border-bottom);
-    }
-
-    .filter-bar {
-        background: white;
-    }
-
-    .mat-tab-body-wrapper{
-        border: 2px solid map-get($foreground, border);
-    }
-
-    app-customer-details-dialog{
-        .icon, .line .loyalty-icon, .line .expiration, .no-items {
-            color: map_get($foreground, icon);
+        app-infinite-scroll {
+            background: white;
         }
-    }
 
-    .title app-icon {
-        color: mat-color($foreground, secondary-text);
-    }
+        .item {
+            border-bottom: 1px solid map-get($foreground, border-bottom);
 
-    .mat-dialog-container {
-        overflow: inherit;
-    }
+            &:last-child {
+                border-bottom: none;
+            }
+        }
 
-    .mobile-grid-container {
-        .list {
-            .item {
-                vertical-align: middle;
-                margin-right: 5px;
-                .mat-chip-list-wrapper {
-                    display: inline-block;
+        .filter-bar {
+            background: white;
+        }
+
+        .mat-tab-body-wrapper {
+            border: 2px solid map-get($foreground, border);
+        }
+
+        app-customer-details-dialog {
+            .icon, .line .loyalty-icon, .line .expiration, .no-items {
+                color: map_get($foreground, icon);
+            }
+        }
+
+        .title app-icon {
+            color: mat-color($foreground, secondary-text);
+        }
+
+        .mat-dialog-container {
+            overflow: inherit;
+        }
+
+        .mobile-grid-container {
+            .list {
+                .item {
+                    vertical-align: middle;
+                    margin-right: 5px;
+
+                    .mat-chip-list-wrapper {
+                        display: inline-block;
+                    }
                 }
             }
-        }
-    }
-
-    app-membership-points-display {
-        .grid-container {
-            border: 1px solid mat-color($foreground, secondary-text);
-            padding: 2em;
-            border-radius: 3px;
-            .details {
-                align-self: center;
-            }
-        }
-    }
-
-
-    .mat-ink-bar {
-        display: none !important;
-    }
-
-    .mat-tab-label {
-        width: 50%;
-        text-transform: uppercase;
-        opacity: inherit;
-        &:not(.mat-tab-label-active) {
-            background-color: map-get($background, app-bar);
-            color: map_get($foreground, icon);
-        }
-        &.mat-tab-label-active {
-            background-color: $app-primary;
-            color: white;
-            opacity: inherit;
-        }
-    }
-
-    .details-wrapper {
-        display: inherit;
-        min-height: inherit;
-        .content {
-            overflow-y: inherit;
         }
 
         app-membership-points-display {
             .grid-container {
-                margin-top: 5px;
                 border: 1px solid mat-color($foreground, secondary-text);
-                padding: 1em;
+                padding: 2em;
                 border-radius: 3px;
-            }
-        }
-    }
 
-    .line {
-        padding: 10px;
-        &:not(:last-child) {
-            border-bottom: 1px solid map-get($background, app-bar);
-        }
-    }
-    .tabs {
-        &.tablet-portrait {
-            .mat-tab-label {
-                font-size: $text-xs-mobile*1.5;
+                .details {
+                    align-self: center;
+                }
             }
         }
 
-        &.mobile {
-            .mat-tab-label {
-                font-size: $text-xs-mobile;
-                padding-right: 3px;
-                padding-left: 3px;
-            }
-        }
-    }
-    .tabs.mobile {
-        mat-card {
-            margin: 0px;
-            padding: 0px;
+
+        .mat-ink-bar {
+            display: none !important;
         }
 
-        .no-items {
-            padding-top: 5px;
-            padding-bottom: 5px;
+        .mat-tab-label {
+            width: 50%;
+            text-transform: uppercase;
+            opacity: inherit;
+
+            &:not(.mat-tab-label-active) {
+                background-color: map-get($background, app-bar);
+                color: map_get($foreground, icon);
+            }
+
+            &.mat-tab-label-active {
+                background-color: $app-primary;
+                color: white;
+                opacity: inherit;
+            }
+        }
+
+        .details-wrapper {
+            display: inherit;
+            min-height: inherit;
+
+            .content {
+                overflow-y: inherit;
+            }
+
+            app-membership-points-display {
+                .grid-container {
+                    margin-top: 5px;
+                    border: 1px solid mat-color($foreground, secondary-text);
+                    padding: 1em;
+                    border-radius: 3px;
+                }
+            }
+        }
+
+        .line {
+            padding: 10px;
+
+            &:not(:last-child) {
+                border-bottom: 1px solid map-get($background, app-bar);
+            }
+        }
+
+        .tabs {
             &.tablet-portrait {
-                font-size: $text-sm;
+                .mat-tab-label {
+                    font-size: $text-xs-mobile*1.5;
+                }
             }
 
             &.mobile {
-                font-size: $text-xs-mobile*1.25;
+                .mat-tab-label {
+                    font-size: $text-xs-mobile;
+                    padding-right: 3px;
+                    padding-left: 3px;
+                }
             }
         }
 
-        app-customer-information {
-            .details-row {
-                margin-bottom: 20px;
-                padding-left: 10px;
-                padding-right: 10px;
+        .tabs.mobile {
+            mat-card {
+                margin: 0px;
+                padding: 0px;
+            }
+
+            .no-items {
+                padding-top: 5px;
+                padding-bottom: 5px;
+
+                &.tablet-portrait {
+                    font-size: $text-sm;
+                }
+
+                &.mobile {
+                    font-size: $text-xs-mobile*1.25;
+                }
+            }
+
+            app-customer-information {
+                .details-row {
+                    margin-bottom: 20px;
+                    padding-left: 10px;
+                    padding-right: 10px;
+                }
             }
         }
     }
