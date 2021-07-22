@@ -118,6 +118,7 @@ eclipse {
 }
 
 test {
+    maxHeapSize = "1024m"
     if (project.hasProperty('ignoreFailures')) {
        ignoreFailures = project.property('ignoreFailures').toBoolean()
     }
