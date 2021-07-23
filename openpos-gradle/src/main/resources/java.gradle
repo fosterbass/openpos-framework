@@ -86,7 +86,6 @@ idea {
         excludeDirs += file('build')
         excludeDirs += file('dist')
         excludeDirs += file('node_modules')
-        excludeDirs += file('src/main/resources/public')
         downloadJavadoc = true
         downloadSources = true
     }
