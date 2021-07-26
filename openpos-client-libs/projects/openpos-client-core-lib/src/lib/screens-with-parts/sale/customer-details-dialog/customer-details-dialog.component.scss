@@ -169,13 +169,7 @@ app-content-card {
   width: 100%;
   padding: 12px 4px;
 
-  display: grid;
-  grid-template-areas:
-    'img title price links'
-    'img labels price links';
-
-  grid-template-columns: 10% 50% 20% 20%;
-  grid-template-rows: auto 1fr;
+  display: inline-block;
 
   > .image-container {
     grid-area: img;

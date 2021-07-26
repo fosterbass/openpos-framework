@@ -84,6 +84,8 @@ idea {
         resourceDirs += file('src/test/resources')
         excludeDirs += file('bin')
         excludeDirs += file('build')
+        excludeDirs += file('dist')
+        excludeDirs += file('node_modules')
         downloadJavadoc = true
         downloadSources = true
     }
@@ -115,6 +117,7 @@ eclipse {
 }
 
 test {
+    maxHeapSize = "1024m"
     if (project.hasProperty('ignoreFailures')) {
        ignoreFailures = project.property('ignoreFailures').toBoolean()
     }

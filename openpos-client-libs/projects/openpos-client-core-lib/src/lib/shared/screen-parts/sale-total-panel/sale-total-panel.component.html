@@ -1,11 +1,8 @@
 <div class="sale-total-wrapper">
-    <div *ngIf="!(isMobile$ | async)" class="sale-total-header">
+    <div *ngIf="!(isMobile$ | async) && shouldShowHeader()" class="sale-total-header">
         <button responsive-class
                 mat-flat-button
-                *ngIf="!screenData.readOnly
-                    && !screenData.linkedCustomerButton
-                    && screenData.loyaltyButton
-                    && !(isLoyaltySignupInProgressOnCustomerDisplay$ | async)"
+                *ngIf="shouldShowLinkCustomer() && !(isLoyaltySignupInProgressOnCustomerDisplay$ | async)"
                 [actionItem]="screenData.loyaltyButton"
                 (actionClick)="doAction(screenData.loyaltyButton)"
                 (click)="doAction(screenData.loyaltyButton)"
@@ -23,10 +20,7 @@
         </button>
         <div responsive-class
              class="loyalty-signup-customer-display"
-             *ngIf="!screenData.readOnly
-                && !screenData.linkedCustomerButton
-                && screenData.loyaltyCancelButton
-                && (isLoyaltySignupInProgressOnCustomerDisplay$ | async)">
+             *ngIf="shouldShowLoyaltySignupInProgress() && (isLoyaltySignupInProgressOnCustomerDisplay$ | async)">
             <div class="loyalty-signup-customer-display-in-progress">
                 <app-icon [iconName]="screenData.loyaltySignupInProgressIcon"
                           [@glowPulse]="glowPulseRepeatTrigger"
@@ -58,7 +52,7 @@
                 </div>
             </div>
         </div>
-        <button *ngIf="!screenData.readOnly && screenData.linkedCustomerButton && screenData.customer"
+        <button *ngIf="shouldShowLinkedCustomer()"
                 class="linked-customer-summary header"
                 style="width: 100%;"
                 responsive-class

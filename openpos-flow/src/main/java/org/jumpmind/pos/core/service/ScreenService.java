@@ -207,7 +207,6 @@ public class ScreenService implements IScreenService, IActionListener {
         IStateManager stateManager = stateManagerContainer.retrieve(deviceId);
         if (stateManager != null) {
             try {
-                String appId = stateManager.getAppId();
                 stateManagerContainer.setCurrentStateManager(stateManager);
                 if (SessionTimer.ACTION_KEEP_ALIVE.equals(action.getName())) {
                     stateManager.keepAlive();

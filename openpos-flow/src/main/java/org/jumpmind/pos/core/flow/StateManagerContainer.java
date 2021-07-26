@@ -178,7 +178,6 @@ public class StateManagerContainer implements IStateManagerContainer, Applicatio
             }
         } else {
             setupLogging("server");
-
         }
     }
 
@@ -189,12 +188,7 @@ public class StateManagerContainer implements IStateManagerContainer, Applicatio
     @Override
     public void onApplicationEvent(Event event) {
         for (StateManager stateManager : new ArrayList<>(stateManagersByDeviceId.values())) {
-            try {
-                setCurrentStateManager(stateManager);
-                stateManager.onEvent(event);
-            } finally {
-                setCurrentStateManager(null);
-            }
+            stateManager.onEvent(event);
         }
     }
 

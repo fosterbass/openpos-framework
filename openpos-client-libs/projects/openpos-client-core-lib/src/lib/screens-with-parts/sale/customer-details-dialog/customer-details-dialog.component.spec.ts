@@ -159,6 +159,7 @@ describe('CustomerDetailsDialog', () => {
               ]
               component.screen.customer.memberships = memberships;
               component.screen.membershipEnabled = true;
+              component.screen.memberTierLabel = '';
               fixture.detectChanges();
             });
 
