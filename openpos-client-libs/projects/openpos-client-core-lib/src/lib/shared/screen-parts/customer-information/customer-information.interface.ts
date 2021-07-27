@@ -6,13 +6,16 @@ export interface CustomerDetails {
     name: string,
     loyaltyNumber: string,
     phoneNumber: string,
+    phoneNumberType: string,
     email: string,
+    emailType: string,
     address: {
         line1: string,
         line2: string,
         city: string,
         state: string,
-        postalCode: string
+        postalCode: string,
+        type: string
     },
     memberships: Membership[],
     rewards: Reward[],

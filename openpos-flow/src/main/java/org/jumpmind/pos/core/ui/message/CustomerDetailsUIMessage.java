@@ -34,6 +34,7 @@ public class CustomerDetailsUIMessage extends UIMessage {
     private String noPromotionsText;
     private String rewardsLabel;
     private String expiresLabel;
+    private String rewardHistoryIcon;
     private String rewardHistoryLabel;
     private String expiredLabel;
     private String loyaltyProgramNameLabel;
@@ -52,6 +53,8 @@ public class CustomerDetailsUIMessage extends UIMessage {
     private String nonMemberIcon;
     private String expiredIcon;
     private String appliedIcon;
+    private String applyIcon;
+    private String backIcon;
 
     public CustomerDetailsUIMessage() {
         setScreenType(UIMessageType.CUSTOMER_DETAILS_DIALOG);

@@ -1,8 +1,8 @@
-<div class="grid-container">
+<div [ngClass]="isMobile ? 'points-container' : 'grid-container'">
     <div class="icon">
-        <app-icon [iconName]="screenData.membershipPointsIcon" [iconClass]="'material-icons mat-36'"></app-icon>
+        <app-icon [iconName]="screenData.membershipPointsIcon" [iconClass]="'material-icons ' + (isMobile ? 'mat-24' : 'mat-36')"></app-icon>
     </div>
-    <div class="details">
+    <div class="details" [ngClass]="getMobileClass()">
         {{screenData.loyaltyProgramNameLabel}}: <span class="value">{{screenData.customer.loyaltyPoints}} {{screenData.pointsLabel}}</span>
     </div>
 </div>

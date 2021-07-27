@@ -60,11 +60,11 @@
 
 .mobile-reward-line-item-wrapper {
   display: grid;
-  grid-template-columns: 6fr 1fr 2fr 1fr;
+  grid-template-columns: 7fr 2fr 1fr;
   grid-template-rows: 1fr;
   gap: 0px 0px;
   grid-template-areas:
-    "details status-text reward apply";
+    "details reward apply";
   .loyalty-icon {
     grid-area: loyalty-icon;
     text-align: center;
@@ -82,8 +82,14 @@
   .details {
     grid-area: details;
     .name {
+
+      .status-text {
+        text-align: left;
+        font-weight: normal;
+      }
+
       @extend %text-md;
-      font-weight: 500;
+      font-weight: bold;
       &.tablet-portrait {
         font-size: $text-sm;
       }
@@ -133,8 +139,11 @@
     grid-area: apply;
     text-align: center;
     justify-self: end;
+    align-self: center;
     a {
       @extend %text-md;
+      padding: 0 .25em;
+
       &.tablet-portrait {
         font-size: $text-sm;
       }

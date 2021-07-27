@@ -10,6 +10,8 @@ import {ScreenPartComponent} from '../screen-part';
 export class MembershipDisplayComponent extends ScreenPartComponent<MembershipDisplayComponentInterface> {
     @Input()
     membership: Membership;
+    @Input()
+    iconMatClass: string = 'mat-24';
     @Output()
     clickEvent: EventEmitter<Membership> = new EventEmitter();
 

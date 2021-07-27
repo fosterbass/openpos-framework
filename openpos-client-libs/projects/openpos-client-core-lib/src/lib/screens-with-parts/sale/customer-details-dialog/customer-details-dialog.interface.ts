@@ -24,7 +24,14 @@ export interface CustomerDetailsDialogInterface extends IAbstractScreen {
     noMembershipsFoundLabel: string;
 
     appliedIcon: string;
+    applyIcon: string;
+    backIcon: string;
     membershipCardIcon: string;
     profileIcon: string;
     statusIcon: string;
+    phoneIcon: string;
+    emailIcon: string;
+    locationIcon: string;
+    loyaltyNumberIcon: string;
+    rewardHistoryIcon: string;
 }

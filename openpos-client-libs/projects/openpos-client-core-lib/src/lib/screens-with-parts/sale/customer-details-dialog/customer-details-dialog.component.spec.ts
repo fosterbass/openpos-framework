@@ -368,6 +368,10 @@ describe('CustomerDetailsDialog', () => {
       fixture.detectChanges();
     });
     describe('template', () => {
+      it('shows on mobile', () => {
+        validateExist(fixture, '.mobile-dialog-container');
+      });
+
       describe('details', () => {
         describe('when membershipPoints is enabled', () => {
           beforeEach(() => {
@@ -391,17 +395,27 @@ describe('CustomerDetailsDialog', () => {
           });
         });
       });
-      describe('tabs', () => {
-        it('has the mobile class', () => {
-          const tabsElement = fixture.debugElement.query(By.css('.tabs'));
-          expect(tabsElement.nativeElement.classList).toContain('mobile');
+      describe('paged sections', () => {
+        it('show on mobile', () => {
+          validateExist(fixture, '.paged-nav-list');
         });
 
-        it('always shows the tab section', () => {
+        it('has non-required Rewards and Rewards History sections of selectable content', () => {
           component.screen.rewardTabEnabled = false;
           component.screen.rewardHistoryTabEnabled = false;
           fixture.detectChanges();
-          validateExist(fixture, '.tabs');
+          const navListItems = fixture.debugElement.queryAll(By.css('.paged-nav-list-item'));
+          expect(navListItems.length).toEqual(1);
+          validateExist(fixture, '.paged-nav-list');
+        });
+
+        it('has three sections of selectable content', () => {
+          component.screen.rewardTabEnabled = true;
+          component.screen.rewardHistoryTabEnabled = true;
+          fixture.detectChanges();
+          const navListItems = fixture.debugElement.queryAll(By.css('.paged-nav-list-item'));
+          expect(navListItems.length).toEqual(3);
+          validateExist(fixture, '.paged-nav-list');
         });
       });
     });

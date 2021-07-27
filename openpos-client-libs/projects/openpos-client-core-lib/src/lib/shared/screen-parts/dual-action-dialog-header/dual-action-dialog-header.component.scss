@@ -1,0 +1,19 @@
+@import '../../../styles/mixins/typography';
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: $text-md;
+
+  &.mobile {
+    font-size: $text-md-mobile;
+  }
+}
+
+@supports not(display: grid) {
+  .back-button {
+    position: absolute;
+    left: 95%;
+  }
+}
