@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * Searches a given parent object recursively for all descendant Objects of a given type.  Does not search for
@@ -67,6 +68,10 @@ public class ObjectFinder<T extends Object> {
     }
 
     public void searchRecursive(Object obj) {
+        searchRecursive(obj, null);
+    }
+
+    public void searchRecursive(Object obj, ObjectSearchVisitor visitor) {
         if (obj == null) {
             return;
         }
@@ -86,6 +91,9 @@ public class ObjectFinder<T extends Object> {
 
                     if (value != null) {
                         if (targetType.isAssignableFrom(type)) {
+                            if (visitor != null) {
+                                visitor.visit(obj, value, field);
+                            }
                             addToResults((T) value);
                         }
 

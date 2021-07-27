@@ -1,14 +1,21 @@
 package org.jumpmind.pos.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.PostConstruct;
+
 @Configuration
 @ComponentScan(
         basePackages = {  "org.jumpmind.pos.service", "org.jumpmind.pos.util" })
+@EnableConfigurationProperties
+@SpringBootApplication
 public class TestServiceConfig {
 
     @Bean

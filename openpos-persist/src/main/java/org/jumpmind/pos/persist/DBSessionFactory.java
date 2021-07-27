@@ -127,18 +127,13 @@ public class DBSessionFactory {
     }
 
     public static QueryTemplates getQueryTemplates(String tablePrefix) {
+        final String resourceName = tablePrefix + "-query.yml";
         try {
-            Enumeration<URL> urls = Thread.currentThread().getContextClassLoader().getResources(tablePrefix + "-query.yml");
+            List<URL> urls = getQueryResources(resourceName);
 
             QueryTemplates templates = new QueryTemplates();
 
-            if (!urls.hasMoreElements()) {
-                log.debug("Could not locate " + tablePrefix + "-query.yml on the classpath.");
-                return new QueryTemplates();
-            }
-
-            while (urls.hasMoreElements()) {
-                URL url = urls.nextElement();
+            for (URL url : urls) {
                 log.info(String.format("Loading %s...", url.toString()));
                 InputStream queryYamlStream = url.openStream();
                 QueryTemplates queryTemplates = new Yaml(new Constructor(QueryTemplates.class)).load(queryYamlStream);
@@ -149,32 +144,51 @@ public class DBSessionFactory {
             }
 
             return templates;
-
         } catch (Exception ex) {
-            log.error("ERROR: Failed to load query file " + tablePrefix + "-query.yml");
-            throw new PersistException("Failed to load " + tablePrefix + "-query.yml", ex);
+            throw new PersistException("Failed to load " + resourceName, ex);
         }
     }
 
     public static DmlTemplates getDmlTemplates(String tablePrefix) {
+        final String resourceName = tablePrefix + "-dml.yml";
         try {
-            URL url = Thread.currentThread().getContextClassLoader().getResource(tablePrefix + "-dml.yml");
-            if (url != null) {
+            List<URL> urls = getQueryResources(resourceName);
+
+            DmlTemplates templates = new DmlTemplates();
+
+            for (URL url : urls) {
                 log.info(String.format("Loading %s...", url.toString()));
                 InputStream dmlYamlStream = url.openStream();
                 DmlTemplates dmlTemplates = new Yaml(new Constructor(DmlTemplates.class)).load(dmlYamlStream);
                 if (dmlTemplates != null) {
-                    dmlTemplates.addDmls("default", dmlTemplates.getDmls());
-                    dmlTemplates.addDmls("training", dmlTemplates.getDmls());
+                    templates.addDmls("default", dmlTemplates.getDmls());
+                    templates.addDmls("training", dmlTemplates.getDmls());
                 }
-
-                return dmlTemplates;
-            } else {
-                log.debug("Could not locate " + tablePrefix + "-dml.yml on the classpath.");
-                return new DmlTemplates();
             }
+
+            return templates;
         } catch (Exception ex) {
-            throw new PersistException("Failed to load " + tablePrefix + "-dml.yml", ex);
+            throw new PersistException("Failed to load " + resourceName, ex);
+        }
+    }
+
+    protected static List<URL> getQueryResources(String resourceName) {
+        try {
+            Enumeration<URL> urls = Thread.currentThread().getContextClassLoader().getResources(resourceName);
+
+            if (!urls.hasMoreElements()) {
+                log.debug("Could not locate " + resourceName + " on the classpath.");
+                return new ArrayList<>();
+            }
+
+            List<URL> resources = Collections.list(urls);
+            // reverse the order from classpath so that higher ordered files can applied last and thus take effect.
+            // MMM 07-20-2021: Additional note, there probably isn't a strong reason the query yml's couldn't fit
+            // under the application.yml structure at this point.
+            Collections.reverse(resources);
+            return resources;
+        } catch (Exception ex) {
+            throw new PersistException("Failed to load " + resourceName, ex);
         }
     }
 
