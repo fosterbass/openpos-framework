@@ -189,7 +189,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/api").setAllowedOrigins("*").withSockJS().setInterceptors(new HandshakeInterceptor() {
+        registry.addEndpoint("/api").setAllowedOriginPatterns("*").withSockJS().setInterceptors(new HandshakeInterceptor() {
 
             @Override
             public void afterHandshake(
