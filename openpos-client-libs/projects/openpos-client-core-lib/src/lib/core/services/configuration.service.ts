@@ -1,5 +1,5 @@
 import { IVersion } from './../interfaces/version.interface';
-import { VERSION } from './../../version';
+import { VERSIONS } from './../../version';
 import { Injectable } from '@angular/core';
 import { SessionService } from './session.service';
 import { Configuration } from './../../configuration/configuration';
@@ -36,7 +36,7 @@ export class ConfigurationService {
         this.getConfiguration<ThemeChangedMessage>('theme').subscribe( m => this.theme$.next(m.name));
         this.getConfiguration<VersionsChangedMessage>('versions').subscribe( m => {
             this.versions = m.versions.map( v => v);
-            this.versions.push(VERSION as IVersion);
+            this.versions.concat(VERSIONS as IVersion[]);
         });
     }
 
