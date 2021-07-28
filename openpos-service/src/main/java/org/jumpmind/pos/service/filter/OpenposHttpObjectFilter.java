@@ -9,6 +9,7 @@ import org.jumpmind.pos.util.DefaultObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -16,18 +17,19 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import javax.servlet.http.HttpServletRequest;
 
+
 @Slf4j
 @Component
 public class OpenposHttpObjectFilter implements HandlerMethodArgumentResolver {
 
-    private ObjectMapper objectMapper = DefaultObjectMapper.defaultObjectMapper();
-
     @Autowired
     EndpointFilterManager endpointFilterManager;
+    private ObjectMapper objectMapper = DefaultObjectMapper.defaultObjectMapper();
 
     @Override
     public boolean supportsParameter(MethodParameter methodParameter) {
-        return !ClassUtils.isSimpleType(methodParameter.getParameterType());
+        return !ClassUtils.isSimpleType(methodParameter.getParameterType())
+                && methodParameter.getParameterAnnotation(RequestBody.class) != null;
     }
 
     @Override

@@ -15,11 +15,11 @@ public interface ITestingCustomerService {
 
     @RequestMapping(path = "/saveCustomer", method = RequestMethod.POST)
     @ResponseBody
-    public TestingSaveCustomerResponse saveCustomer(TestingSaveCustomerRequest saveCustomerRequest);
+    public TestingSaveCustomerResponse saveCustomer(@RequestBody TestingSaveCustomerRequest saveCustomerRequest);
 
     @RequestMapping(path = "/unlinkCustomer", method = RequestMethod.POST)
     @ResponseBody
-    public TestingSaveCustomerResponse unlinkCustomer(TestingSaveCustomerRequest saveCustomerRequest);
+    public TestingSaveCustomerResponse unlinkCustomer(@RequestBody TestingSaveCustomerRequest saveCustomerRequest);
 
 
 }

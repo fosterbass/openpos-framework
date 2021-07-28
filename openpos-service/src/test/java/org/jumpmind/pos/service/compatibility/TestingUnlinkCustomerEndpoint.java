@@ -2,6 +2,7 @@ package org.jumpmind.pos.service.compatibility;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.jumpmind.pos.service.Endpoint;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.List;
 @Endpoint(path="/testingCustomer/unlinkCustomer")
 public class TestingUnlinkCustomerEndpoint {
 
-    public TestingSaveCustomerResponse unlinkCustomer(TestingSaveCustomerRequest request) {
+    public TestingSaveCustomerResponse unlinkCustomer(@RequestBody TestingSaveCustomerRequest request) {
         if (request == null || request.getCustomerModel() == null || request.getCustomerModel().getCustomerId() == null) {
             throw new RuntimeException("Invalid request=" + request);
         }
