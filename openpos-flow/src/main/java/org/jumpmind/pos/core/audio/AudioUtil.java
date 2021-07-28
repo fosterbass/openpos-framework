@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 public final class AudioUtil {
     public static final String AUDIO_LICENSE = "licenses.csv";
     public static final String AUDIO_CONTENT_ROOT = "audio/";
+    protected static final int CONTENT_PROVIDER_RETRY_LIMIT = 45;
 
     public static AudioConfigMessage getInteractionMessageFromConfig(IStateManager stateManager, AudioConfig config) {
         AudioConfig configCopy = (AudioConfig) config.clone();
@@ -40,18 +41,23 @@ public final class AudioUtil {
             return;
         }
 
-        ContentProviderService contentProviderService = stateManager.getApplicationState().getScopeValue("contentProviderService");
-
-        String audioKey = getKey(request.getSound());
-        String soundUrl = contentProviderService.resolveContent(stateManager.getDeviceId(), audioKey);
-        request.setUrl(soundUrl);
+        ContentProviderService contentProviderService = tryToGetContentProviderService(stateManager);
+        
+        if (contentProviderService != null) {
+            String audioKey = getKey(request.getSound());
+            String soundUrl = contentProviderService.resolveContent(stateManager.getDeviceId(), audioKey);
+            request.setUrl(soundUrl);
+        } else {
+            log.info("Unable to get ContentProviderService. Could not get url for audio key \'" + getKey(request.getSound()) + "\'");
+            request.setUrl(null);
+        }
     }
 
     public static String getKey(String sound) {
         return AUDIO_CONTENT_ROOT + sound;
     }
 
-    public static List<String> getAllContentKeys() {
+    public static List<String> getAllContentKeys(AudioConfig audioConfig) {
         Resource[] resources;
         ArrayList<String> contentKeys = new ArrayList<>();
 
@@ -64,6 +70,9 @@ public final class AudioUtil {
                             Path resourcePath = Paths.get(resource.getURI());
                             // The parent folder of each file is the content key
                             String parentFolder = resourcePath.getParent().getFileName().toString();
+                            if (audioConfig.getSupportedLocales() != null && audioConfig.getSupportedLocales().contains(parentFolder)) {
+                                parentFolder = resourcePath.getParent().getParent().getFileName().toString() + "/" + parentFolder;
+                            }
                             contentKeys.add(parentFolder);
                         } catch (IOException e) {
                             log.info("Unable to load audio content resources", e);
@@ -76,11 +85,31 @@ public final class AudioUtil {
         return contentKeys;
     }
 
-    public static List<String> getAllContentUrls(IStateManager stateManager) {
+    public static List<String> getAllContentUrls(IStateManager stateManager, AudioConfig audioConfig) {
+
+        ContentProviderService contentProviderService = tryToGetContentProviderService(stateManager);
+        if (contentProviderService != null) {
+            return getAllContentKeys(audioConfig).stream().map(contentKey -> contentProviderService
+                    .resolveContent(stateManager.getDeviceId(), AUDIO_CONTENT_ROOT + contentKey))
+                    .collect(Collectors.toList());
+        } else {
+            log.info("Unable to get ContentProviderService. Could not get Audio keys.");
+            return null;
+        }
+    }
+    
+    protected static ContentProviderService tryToGetContentProviderService(IStateManager stateManager) {
         ContentProviderService contentProviderService = stateManager.getApplicationState().getScopeValue("contentProviderService");
 
-        return getAllContentKeys().stream()
-                .map(contentKey -> contentProviderService.resolveContent(stateManager.getDeviceId(), AUDIO_CONTENT_ROOT + contentKey))
-                .collect(Collectors.toList());
+        int retry = 0;
+        while (contentProviderService == null && retry <= CONTENT_PROVIDER_RETRY_LIMIT) {
+            retry++;
+            try {
+                log.debug("ContentProviderService may not have been created yet. Retrying.");
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {}
+            contentProviderService = stateManager.getApplicationState().getScopeValue("contentProviderService");
+        }
+        return contentProviderService;
     }
 }

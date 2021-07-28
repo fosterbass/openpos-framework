@@ -16,6 +16,7 @@ public class AudioConfig implements Serializable {
     private Double volume;
     private List<AudioRequest> systemErrorSounds;
     private AudioInteractionSet interactions;
+    private List<String> supportedLocales;
 
     @Override
     public Object clone() {

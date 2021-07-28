@@ -56,12 +56,13 @@ public class AudioActionListener implements IActionListener {
         List<String> urls = new ArrayList<>();
 
         if (audioConfig.getEnabled() != null && audioConfig.getEnabled()) {
-            urls = AudioUtil.getAllContentUrls(stateManager);
+            urls = AudioUtil.getAllContentUrls(stateManager, audioConfig);
         } else {
             log.warn("Not getting content URLs to preload because audio is disabled");
         }
 
         AudioPreloadMessage message = AudioPreloadMessage.builder().urls(urls).build();
+        log.warn("Sending audio preload", message);
         this.messageService.sendMessage(stateManager.getAppId(), stateManager.getDeviceId(), message);
     }
 

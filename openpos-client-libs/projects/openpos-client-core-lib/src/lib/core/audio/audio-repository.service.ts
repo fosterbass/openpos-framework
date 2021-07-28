@@ -1,9 +1,9 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { SessionService } from '../services/session.service';
-import { BehaviorSubject, EMPTY, Observable, of, Subject } from 'rxjs';
+import { BehaviorSubject, EMPTY, Observable, of, Subject, race, NEVER, ReplaySubject } from 'rxjs';
 import { AudioConfig } from './audio-config.interface';
 import { MessageTypes } from '../messages/message-types';
-import { skip, takeUntil, tap } from 'rxjs/operators';
+import { skip, takeUntil, tap, timeout, timeoutWith } from 'rxjs/operators';
 import { AudioConfigMessage } from './audio-config-message.interface';
 import { AudioCache } from './audio-cache.interface';
 import { AudioRequest } from './audio-request.interface';
@@ -122,8 +122,15 @@ export class AudioRepositoryService implements OnDestroy {
             ).subscribe(message => this.onAudioConfigMessage(message));
     }
 
+    onPreloadingTimeout(): Observable<any> {
+        const timeout$ = new ReplaySubject<string>(1);
+        timeout$.next("[AudioRepositoryService]: Preloading has timed out. Working with what we got.");
+        timeout$.complete();
+        return timeout$;
+    }
+
     fillBrowserCache(urls: string[]): Observable<any> {
-        const done$ = new Subject<string[]>();
+        const done$ = new Subject<string>();
         let loadedCount = 0;
 
         if (urls.length === 0) {
@@ -138,22 +145,22 @@ export class AudioRepositoryService implements OnDestroy {
 
                 audio.oncanplay = () => {
                     loadedCount++;
+                    console.log(`[AudioRepositoryService]: Loaded audio file ${loadedCount} at url ${url}`);
 
                     if (loadedCount === urls.length) {
                         console.log(`[AudioRepositoryService]: Finished preloading ${urls.length} audio files`, urls);
-                        done$.next();
+                        done$.next("[AudioRepositoryService]: Preloading successful.");
                         done$.complete();
                     }
                 };
                 audio.onerror = error => {
                     console.error(`[AudioRepositoryService]: Failed to preload ${url}`);
-                    done$.next();
+                    done$.next("[AudioRepositoryService]: Preloading ended in error.");
                     done$.error(error);
                 };
                 audio.src = url;
                 audio.load();
             });
-
         return done$;
     }
 
@@ -166,6 +173,8 @@ export class AudioRepositoryService implements OnDestroy {
 
     onAudioPreloadMessage(message: AudioPreloadMessage): void {
         console.log('[AudioRepositoryService]: Received preload message', message);
-        this.fillBrowserCache(message.urls).subscribe(() => this.preloading$.next(false));
+        race(this.fillBrowserCache(message.urls), NEVER.pipe(timeoutWith(25000, this.onPreloadingTimeout()))).subscribe(x => {
+            console.log(x);
+            this.preloading$.next(false);});
     }
 }

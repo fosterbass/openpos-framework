@@ -2,6 +2,8 @@ package org.jumpmind.pos.core.audio;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope("device")
 public class AudioService implements IAudioService {
+        
     @Value("${openpos.audio.enabled:true}")
     protected boolean enableAudio;
 
