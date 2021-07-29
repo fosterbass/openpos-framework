@@ -1,8 +1,7 @@
 package org.jumpmind.pos.core.flow;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.*;
 
 
 import org.jumpmind.pos.core.clientconfiguration.LocaleMessageFactory;
@@ -24,7 +23,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;

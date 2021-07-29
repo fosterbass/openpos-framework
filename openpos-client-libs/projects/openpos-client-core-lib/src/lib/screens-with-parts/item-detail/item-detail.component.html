@@ -70,7 +70,7 @@
                         <tbody>
                             <tr *ngFor="let store of buddyStores$ | async">
                                 <td>{{store.storeName}}</td>
-                                <td>{{store.storeCount}}</td>
+                                <td class="buddy-store-inventory-count">{{store.storeCount}}</td>
                             </tr>
                         </tbody>
                     </table>

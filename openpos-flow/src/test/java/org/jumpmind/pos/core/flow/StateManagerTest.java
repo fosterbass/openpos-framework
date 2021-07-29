@@ -1,8 +1,7 @@
 package org.jumpmind.pos.core.flow;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -56,7 +55,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StateManagerTest {
