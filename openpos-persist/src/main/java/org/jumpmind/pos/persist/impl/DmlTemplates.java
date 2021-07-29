@@ -55,11 +55,11 @@ public class DmlTemplates extends AbstractSqlTemplates {
                     Table regularTable = dbSchema.getTableForDeviceMode("default", modelClass, modelClass);
                     Table shadowTable = dbSchema.getTableForDeviceMode("training", modelClass, modelClass);
 
-                    if (regularTable == null)  {
+                    if (regularTable == null) {
                         //  For whatever reason, we could not find a table associated with the given model class.
                         continue;
 
-                    } else if (shadowTable == null)  {
+                    } else if (shadowTable == null) {
                         shadowTable = regularTable;
                     }
 
@@ -68,12 +68,24 @@ public class DmlTemplates extends AbstractSqlTemplates {
 
                     if (validateTablesInQueries) {
                         scanSqlTextForLiteralTableName(template.getDml(), "", template.getName(), regularTableName, shadowTableName, dbSchema.getTablePrefix(), modelClassName);
+                        scanSqlTextForLiteralTableName(template.getWhere(), "WHERE", template.getName(), regularTableName, shadowTableName, dbSchema.getTablePrefix(), modelClassName);
+                        for (String optionalWhereClause : template.getOptionalWhereClauses()) {
+                            scanSqlTextForLiteralTableName(optionalWhereClause, "optional WHERE clause", template.getName(), regularTableName, shadowTableName, dbSchema.getTablePrefix(), modelClassName);
+                        }
                     }
 
                     //  In the case below, we always want the model class, NOT its superclass.
                     String tableName = (deviceMode.equals("training") ? shadowTableName : regularTableName);
 
                     template.setDml(replaceClassModelNameInSqlText(template.getDml(), modelClassName, tableName));
+                    template.setWhere(replaceClassModelNameInSqlText(template.getWhere(), modelClassName, tableName));
+                    if (template.hasOptionalWhereClauses()) {
+                        ArrayList<String> newOptionalWhereClauses = new ArrayList<>();
+                        for (String optionalWhereClause : template.getOptionalWhereClauses()) {
+                            newOptionalWhereClauses.add(replaceClassModelNameInSqlText(optionalWhereClause, modelClassName, tableName));
+                        }
+                        template.setOptionalWhereClauses(newOptionalWhereClauses);
+                    }
                 }
             }
         }
@@ -87,14 +99,14 @@ public class DmlTemplates extends AbstractSqlTemplates {
     private Map<String, DmlTemplate> buildDmlTemplatesByNameMap(List<DmlTemplate> templateList) {
         Map<String, DmlTemplate> dmlTemplatesMap = new HashMap<>();
         if (templateList != null) {
-            for (DmlTemplate t : templateList)  {
+            for (DmlTemplate t : templateList) {
                 dmlTemplatesMap.put(t.getName(), t.copy());
             }
         }
         return dmlTemplatesMap;
     }
 
-    private Map<String, DmlTemplate> getDmlTemplateMapForDeviceMode(String deviceMode)  {
+    private Map<String, DmlTemplate> getDmlTemplateMapForDeviceMode(String deviceMode) {
         //  Normalize the Device Mode. Currently only "training" and "default" are supported.
         deviceMode = (deviceMode == null ? "default" : (deviceMode.equalsIgnoreCase("training") ? "training" : "default"));
         Map<String, DmlTemplate> queryMap = dmlsByDeviceMode.get(deviceMode);

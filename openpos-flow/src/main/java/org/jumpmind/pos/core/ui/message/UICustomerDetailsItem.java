@@ -17,7 +17,9 @@ public class UICustomerDetailsItem extends SelectableItem implements Serializabl
     private String loyaltyNumber;
     private BigDecimal loyaltyPoints;
     private String email;
+    private String emailType;
     private String phoneNumber;
+    private String phoneNumberType;
     private UIAddress address;
     private List<UIMembership> memberships = new ArrayList<>();
     private List<UILoyaltyReward> rewards = new ArrayList<>();

@@ -4,3 +4,25 @@ dmls:
   name: test
   dml: > 
    update me set x=? where y=?
+-
+  name: updateModelYear
+  dml:
+    update CarModel set model_year = ${year}
+  optionalWhereClauses:
+    - make = ${make}
+    - model = ${model}
+-
+  name: updateVIN
+  dml:
+    update CarModel set vin = ${vin}
+  where:
+    make = ${make}
+  optionalWhereClauses:
+    - model = ${model}
+    - antique = ${antique}
+-
+  name: updateValue
+  dml:
+    update CarModel set estimated_value = ${value}
+  where:
+    make = ${make} and model = ${model}

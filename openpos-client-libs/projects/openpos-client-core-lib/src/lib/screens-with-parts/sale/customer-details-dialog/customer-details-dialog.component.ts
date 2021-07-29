@@ -25,6 +25,11 @@ import {ActionService} from "../../../core/actions/action.service";
 })
 export class CustomerDetailsDialogComponent extends PosScreen<CustomerDetailsDialogInterface> implements OnDestroy {
 
+  pagedContent: string;
+  selectContent(content: string) : void {
+    this.pagedContent = content;
+  }
+
   isMobile: Observable<boolean>;
   spacebarSubscription: Subscription;
   constructor(public actionService: ActionService, injector: Injector, private media: OpenposMediaService, protected keyPresses: KeyPressProvider) {

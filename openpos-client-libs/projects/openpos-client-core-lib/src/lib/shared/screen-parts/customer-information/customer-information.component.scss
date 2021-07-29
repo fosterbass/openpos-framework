@@ -14,6 +14,9 @@
     font-size: $text-xs-mobile*1.25;
   }
 }
-.address-details {
+.inline-grid {
   display: inline-grid;
 }
+
+.extra-row-spacing { margin-bottom: 2.5em; }
+.field-header { color: darkgray; margin-bottom: .25em; }

@@ -61,7 +61,7 @@
 
 .mobile-reward-history-line-item-wrapper {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 2fr 1fr 1fr;
   grid-template-rows: 1fr;
   gap: 0px 0px;
   grid-template-areas:
@@ -128,8 +128,8 @@
 
   .status {
     grid-area: status;
-    text-align: center;
-    margin: auto;
+    text-align: right;
+    margin: auto 0;
     span {
       @extend %text-md;
       &.tablet-portrait {

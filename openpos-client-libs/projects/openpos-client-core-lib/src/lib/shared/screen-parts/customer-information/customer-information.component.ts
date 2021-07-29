@@ -11,6 +11,11 @@ export class CustomerInformationComponent  extends ScreenPartComponent<CustomerI
     @Input()
     customer: CustomerDetails;
 
+    @Input()
+    isMobile: boolean = false;
+    @Input()
+    showFieldHeaders: boolean = false;
+
     screenDataUpdated() {
     }
 }

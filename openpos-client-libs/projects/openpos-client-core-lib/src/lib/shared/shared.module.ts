@@ -89,6 +89,7 @@ import {DisplayPropertyComponent} from './components/display-property/display-pr
 import {TransactionItemListComponent} from './components/transaction-item-list/transaction-item-list.component';
 import {GridTableComponent} from './components/grid-table/grid-table.component';
 import {DialogHeaderComponent} from './screen-parts/dialog-header/dialog-header.component';
+import {DualActionDialogHeaderComponent} from './screen-parts/dual-action-dialog-header/dual-action-dialog-header.component'
 import {BaconStripComponent} from './screen-parts/bacon-strip/bacon-strip.component';
 import {NotificationsComponent} from './screen-parts/notifications/notifications.component';
 import {ScanOrSearchComponent} from './screen-parts/scan-or-search/scan-or-search.component';
@@ -179,6 +180,7 @@ const screenParts = [
     SausageLinksComponent,
     ScanOrSearchComponent,
     BaconStripComponent,
+    DualActionDialogHeaderComponent,
     DialogHeaderComponent,
     SaleFooterComponent,
     SaleItemListComponent,
