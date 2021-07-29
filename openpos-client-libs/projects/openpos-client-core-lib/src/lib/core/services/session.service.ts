@@ -1,4 +1,4 @@
-import { VERSION } from './../../version';
+import { VERSIONS } from './../../version';
 import { ILoading } from './../interfaces/loading.interface';
 
 import { Configuration } from './../../configuration/configuration';
@@ -227,7 +227,7 @@ export class SessionService implements IMessageHandler<any> {
             appId: this.personalization.getAppId$().getValue(),
             deviceId: this.personalization.getDeviceId$().getValue(),
             queryParams: JSON.stringify(this.queryParams),
-            version: JSON.stringify(VERSION)
+            version: JSON.stringify(VERSIONS)
         };
         this.appendPersonalizationProperties(headers);
         this.clientContexts.forEach( context => {

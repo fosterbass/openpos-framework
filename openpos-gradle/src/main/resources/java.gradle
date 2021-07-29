@@ -117,7 +117,8 @@ eclipse {
 }
 
 test {
-    maxHeapSize = "1024m"
+    maxHeapSize = '1024m'
+    jvmArgs '-XX:MaxPermSize=256m'
     if (project.hasProperty('ignoreFailures')) {
        ignoreFailures = project.property('ignoreFailures').toBoolean()
     }
