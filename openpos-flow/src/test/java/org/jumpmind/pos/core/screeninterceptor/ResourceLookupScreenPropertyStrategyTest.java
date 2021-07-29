@@ -79,8 +79,7 @@ public class ResourceLookupScreenPropertyStrategyTest {
         // Mocks getting a string from the ResourceLookupService from a property named 'some.property'
         when(lookupService.getString("12345-11", "common", "some.property")).thenReturn("String with {{variable1}}");
         when(lookupService.getString("12345-11", "common", "variable1")).thenReturn("some value with nested variable {{variable2}}");
-        when(lookupService.getString("12345-11", "common", "variable2")).thenReturn("value2");
-        
+
         // Create JSON property string with no given parameters, which should cause
         // lookup service to be used to resolve value of 'variable1'
         String json = new ResourceLookupStringBuilder("some.property").toJson();
@@ -107,7 +106,6 @@ public class ResourceLookupScreenPropertyStrategyTest {
     @Test
     public void testVariableSubstitutionWithIndexedAndNamedArgs() {
         when(lookupService.getString("12345-11", "common", "some.property")).thenReturn("String with {0} and {1} and {{variable1}}");
-        when(lookupService.getString("12345-11", "common", "variable1")).thenReturn("value1");
 
         String json = new ResourceLookupStringBuilder("some.property").addParameter("variable1", "value1").addIndexedArgs("b", "c").toJson();
         String result = this.testedStrategy.doStrategy("12345-11", json, String.class, null, null).toString();
