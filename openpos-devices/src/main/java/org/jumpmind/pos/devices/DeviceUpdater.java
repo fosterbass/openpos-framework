@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.StreamSupport;
+import java.util.Objects;
 
 import static org.apache.commons.lang3.StringUtils.*;
 
@@ -88,9 +89,15 @@ public class DeviceUpdater implements ApplicationListener<DeviceConnectedEvent> 
             updateDevice(devicesRepository.getDevice(event.getDeviceId()));
             log.info("A device just connected.  Updated the device model in the database. {}-{}", event.getDeviceId(), event.getAppId());
             if (cacheManager != null) {
-                cacheManager.getCache("/context/config").clear();
-                cacheManager.getCache("/context/buttons").clear();
-                cacheManager.getCache("/devices/device").clear();
+                if(Objects.nonNull(cacheManager.getCache("/context/config"))) {
+                    cacheManager.getCache("/context/config").clear();
+                }
+                if(Objects.nonNull(cacheManager.getCache("/devices/device"))) {
+                    cacheManager.getCache("/devices/device").clear();
+                }
+                if(Objects.nonNull(cacheManager.getCache("/context/buttons"))) {
+                    cacheManager.getCache("/context/buttons").clear();
+                }
             }
         } catch (DeviceNotFoundException ex) {
             // ignore
