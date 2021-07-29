@@ -1,9 +1,10 @@
 package org.jumpmind.pos.service.filter;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Builder;
 import lombok.Data;
-import org.apache.commons.io.IOUtils;
+import org.springframework.core.MethodParameter;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
@@ -20,5 +21,6 @@ public class RequestContext {
     Class<?> inputType;
     Class<?> outputType;
     String json;
-
+    JavaType javaType;
+    MethodParameter methodParameter;
 }

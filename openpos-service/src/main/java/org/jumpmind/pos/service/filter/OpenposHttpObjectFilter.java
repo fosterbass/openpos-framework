@@ -1,5 +1,6 @@
 package org.jumpmind.pos.service.filter;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -7,6 +8,7 @@ import org.jumpmind.pos.service.PosServerException;
 import org.jumpmind.pos.util.ClassUtils;
 import org.jumpmind.pos.util.DefaultObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,6 +18,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Type;
 
 
 @Slf4j
@@ -47,7 +50,7 @@ public class OpenposHttpObjectFilter implements HandlerMethodArgumentResolver {
         Class<?> inputType = methodParameter.getParameterType();
         Class<?> outputType = methodParameter.getMethod().getReturnType();
         String json = IOUtils.toString(request.getInputStream(), "UTF-8");
-
+        JavaType javaType = getJavaType(methodParameter);
         RequestContext context = RequestContext.builder()
                 .objectMapper(objectMapper)
                 .request(request)
@@ -56,12 +59,15 @@ public class OpenposHttpObjectFilter implements HandlerMethodArgumentResolver {
                 .version(version)
                 .inputType(inputType)
                 .outputType(outputType)
-                .json(json).build();
+                .json(json)
+                .javaType(javaType)
+                .methodParameter(methodParameter)
+                .build();
 
         try {
             Object result = endpointFilterManager.filterRequest(context);
             if (result == null) {
-                result = objectMapper.readValue(json, inputType);
+                result = objectMapper.readValue(json, context.getJavaType());
             }
             return result;
         } catch (Exception ex) {
@@ -69,5 +75,15 @@ public class OpenposHttpObjectFilter implements HandlerMethodArgumentResolver {
             log.warn(msg, ex);
             throw new PosServerException(msg, ex);
         }
+    }
+
+    private JavaType getJavaType(MethodParameter param) {
+            param = param.nestedIfOptional();
+
+            Type genericParameterType = param.getNestedGenericParameterType();
+            Class<?> contextClass = param.getContainingClass();
+            Type type = GenericTypeResolver.resolveType(genericParameterType, contextClass);
+            return this.objectMapper.getTypeFactory().constructType(type);
+
     }
 }
