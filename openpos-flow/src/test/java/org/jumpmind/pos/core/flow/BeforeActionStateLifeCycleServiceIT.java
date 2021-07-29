@@ -5,7 +5,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doNothing;
 
 
-import net.bytebuddy.implementation.bytecode.Throw;
 import org.jumpmind.pos.core.clientconfiguration.LocaleMessageFactory;
 import org.jumpmind.pos.core.error.IErrorHandler;
 import org.jumpmind.pos.core.flow.TestStates.HomeState;
@@ -46,8 +45,6 @@ public class BeforeActionStateLifeCycleServiceIT {
     
     @Before
     public void setUp() throws Exception {
-        doNothing().when(messageService).sendMessage(any(String.class), any(Message.class));
-
         FlowConfig config = new FlowConfig();
         config.setInitialState(FlowBuilder.addState(HomeState.class)
             .withTransition("TestSingleBeforeActionMethod", StateWithBeforeActionMethod.class)

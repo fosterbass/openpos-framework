@@ -84,9 +84,6 @@ public class StateManagerTest {
 
     @Before
     public void setup() throws Exception {
-
-        doNothing().when(messageService).sendMessage(any(String.class), any(Message.class));
-
         FlowConfig customerSignupFlow = new FlowConfig();
         customerSignupFlow.setInitialState(
                 FlowBuilder.addState(CustomerSignupState.class).withTransition("CustomerSignedup", CompleteState.class)

@@ -1,13 +1,13 @@
 package org.jumpmind.pos.core.screeninterceptor;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
 import static org.mockito.AdditionalMatchers.and;
-import static org.mockito.AdditionalMatchers.not;
-import static org.mockito.Matchers.anyMapOf;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.isA;
-import static org.mockito.Matchers.startsWith;
+import static org.mockito.AdditionalMatchers.*;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.ArgumentMatchers.startsWith;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -23,7 +23,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -42,17 +42,11 @@ public class AbstractMessagePropertyCrawlerInterceptorTest {
         // Set up mock IMessagePropertyStrategy to do the following:
         // If the property being processed is a String and starts with "@" character, return hardcoded "foo"
         // else, for all other cases just return the given unmodified value back
-        when(
-            mockStrategy.doStrategy(
-                anyString(), and(isA(String.class), startsWith("@")),
-                any(Class.class), isA(TestMessage.class), anyMapOf(String.class, Object.class)
-            )
-        ).thenReturn("foo");
         
         when(
             mockStrategy.doStrategy(
-                anyString(), not(and(isA(String.class), startsWith("@"))),
-                any(Class.class), isA(TestMessage.class), anyMapOf(String.class, Object.class)
+                    anyString(), any(),
+                any(), isA(TestMessage.class), anyMap()
             )
         ).then(returnCurrentPropertyValue());
         
@@ -63,7 +57,12 @@ public class AbstractMessagePropertyCrawlerInterceptorTest {
         return new Answer<Object>() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
-                return invocation.getArguments()[1];
+                Object answer = (Object)invocation.getArguments()[1];
+                if (answer instanceof String && ((String)answer).startsWith("@")) {
+                    return "foo";
+                } else {
+                    return answer;
+                }
             }
         };
     }
