@@ -1,17 +1,24 @@
 package org.jumpmind.pos.core.audio;
 
 import lombok.extern.slf4j.Slf4j;
+
+import org.apache.commons.lang3.StringUtils;
 import org.jumpmind.pos.core.content.ContentProviderService;
 import org.jumpmind.pos.core.flow.IStateManager;
 import org.jumpmind.pos.util.ResourceUtils;
 import org.springframework.core.io.Resource;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
+import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -61,32 +68,45 @@ public final class AudioUtil {
         Resource[] resources;
         ArrayList<String> contentKeys = new ArrayList<>();
 
+        //Audio will still work if this fails. We just want to try our best.
         try {
             resources = ResourceUtils.getContentResources(AudioUtil.AUDIO_CONTENT_ROOT + "**/*.*");
             Arrays.stream(resources)
-                    .filter(resource -> !resource.getFilename().equals(AUDIO_LICENSE))
+                    .filter(resource -> resource.getFilename() != null && !resource.getFilename().equals(AUDIO_LICENSE))
                     .forEach(resource -> {
+                        String key = null;
                         try {
-                            Path resourcePath = Paths.get(resource.getURI());
-                            // The parent folder of each file is the content key
-                            String parentFolder = resourcePath.getParent().getFileName().toString();
-                            if (audioConfig.getSupportedLocales() != null && audioConfig.getSupportedLocales().contains(parentFolder)) {
-                                parentFolder = resourcePath.getParent().getParent().getFileName().toString() + "/" + parentFolder;
-                            }
-                            contentKeys.add(parentFolder);
-                        } catch (IOException e) {
-                            log.info("Unable to load audio content resources", e);
+                            key = tryToGetAudioKey(resource, audioConfig);
+                        } catch (Exception e) {
+                            log.info("Unable to load audio content for resource: " + resource.getFilename(), e);
+                        }
+                        if (key != null) {
+                            contentKeys.add(key);
                         }
                     });
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.info("Unable to load audio content resources", e);
         }
 
         return contentKeys;
     }
+    
+    private static void createFileSystem(URI uri) throws IOException {
+        Map<String, String> env = new HashMap<>(); 
+        env.put("create", "true");
+        FileSystems.newFileSystem(uri, env);
+    }
+    
+    private static String tryToGetAudioKey(Resource resource, AudioConfig config) throws Exception {
+        String key = "";
+        URL url = resource.getURL();
+        String path = url.getPath();
+        key = path.substring(path.indexOf(AUDIO_CONTENT_ROOT), path.indexOf(resource.getFilename()));
+        key = key.replace(AUDIO_CONTENT_ROOT, "");
+        return key;
+    }
 
     public static List<String> getAllContentUrls(IStateManager stateManager, AudioConfig audioConfig) {
-
         ContentProviderService contentProviderService = tryToGetContentProviderService(stateManager);
         if (contentProviderService != null) {
             return getAllContentKeys(audioConfig).stream().map(contentKey -> contentProviderService
@@ -94,7 +114,7 @@ public final class AudioUtil {
                     .collect(Collectors.toList());
         } else {
             log.info("Unable to get ContentProviderService. Could not get Audio keys.");
-            return null;
+            return new ArrayList<>();
         }
     }
     
