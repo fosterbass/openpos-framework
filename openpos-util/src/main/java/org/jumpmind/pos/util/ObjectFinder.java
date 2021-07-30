@@ -10,13 +10,17 @@ import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Searches a given parent object recursively for all descendant Objects of a given type.  Does not search for
@@ -36,6 +40,8 @@ public class ObjectFinder<T extends Object> {
     private Collection<T> results;
     private Class<T> targetType;
     private boolean distinctResults = true;
+    private Set<Object> recursionInto;
+    private static final Pattern SHORT_FQCN = Pattern.compile("\\B\\w+(\\.\\w)");
     private static final Set<Class<?>> WRAPPER_TYPES = new HashSet<>();
     static {
         WRAPPER_TYPES.add(Boolean.class);
@@ -47,6 +53,10 @@ public class ObjectFinder<T extends Object> {
         WRAPPER_TYPES.add(Float.class);
         WRAPPER_TYPES.add(Double.class);
         WRAPPER_TYPES.add(Void.class);
+    }
+
+    private static String shortenFqcn(final String fqcn) {
+        return SHORT_FQCN.matcher(fqcn).replaceAll("$1");
     }
 
     public static boolean isWrapperType(Class<?> clazz) {
@@ -81,7 +91,24 @@ public class ObjectFinder<T extends Object> {
             return;
         }
 
-        while (clazz != null) {
+        if (!recursionInto.add(obj)) {
+            String ident = String.format("%s@%x", clazz.getName(), obj.hashCode());
+            log.warn("avoiding infinite recursion into {}", ident);
+
+            /* useful detail for untangling cyclical object graphs */
+            if (log.isDebugEnabled()) {
+                log.debug("cyclical object graph detected: {} (-> {})",
+                        recursionInto.stream().
+                            map(o -> String.format("%s@%x", o.getClass().getName(), o.hashCode())).
+                            map(ObjectFinder::shortenFqcn).
+                            collect(Collectors.joining(" -> ")),
+                        shortenFqcn(ident));
+            }
+
+            return;
+        }
+
+        do {
             Field[] fields = clazz.getDeclaredFields();
             for (Field field : fields) {
                 field.setAccessible(true);
@@ -105,8 +132,7 @@ public class ObjectFinder<T extends Object> {
                     log.warn("", e);
                 }
             }
-            clazz = clazz.getSuperclass();
-        }
+        } while ((clazz = clazz.getSuperclass()) != null);
     }
 
     public boolean isDistinctResults() {
@@ -122,6 +148,7 @@ public class ObjectFinder<T extends Object> {
 
     protected void initResults() {
         this.results = distinctResults ? new HashSet<>() : new ArrayList<>();
+        recursionInto = new LinkedHashSet<>();
     }
 
     protected void addToResults(T value) {
@@ -205,10 +232,10 @@ public class ObjectFinder<T extends Object> {
 
     protected boolean isSimpleType(Class<?> clazz) {
         if (clazz.isPrimitive()
-                || String.class == clazz
+                || clazz.getPackage().getName().startsWith("java.lang")
                 || BigDecimal.class == clazz
                 || Money.class == clazz
-                || Date.class == clazz) {
+                || Date.class.isAssignableFrom(clazz)) {
             return true;
         } else {
             return false;

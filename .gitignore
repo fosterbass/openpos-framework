@@ -10,6 +10,9 @@
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
+# Vim swap files
+*.swp
+
 # Package Files #
 *.war
 *.ear
