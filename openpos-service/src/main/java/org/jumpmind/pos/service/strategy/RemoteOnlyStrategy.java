@@ -1,7 +1,9 @@
 package org.jumpmind.pos.service.strategy;
 
-import net.bytebuddy.implementation.bytecode.Throw;
-import org.jumpmind.pos.service.*;
+import org.jumpmind.pos.service.EndpointInvocationContext;
+import org.jumpmind.pos.service.PosServerException;
+import org.jumpmind.pos.service.ProfileConfig;
+import org.jumpmind.pos.service.ServiceConfig;
 import org.jumpmind.pos.util.clientcontext.ClientContext;
 import org.jumpmind.pos.util.model.ServiceException;
 import org.jumpmind.pos.util.model.ServiceResult;
@@ -31,6 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static org.jumpmind.pos.util.RestApiSupport.REST_API_TOKEN_HEADER_NAME;
 
 @Component(RemoteOnlyStrategy.REMOTE_ONLY_STRATEGY)
 public class RemoteOnlyStrategy extends AbstractInvocationStrategy implements IInvocationStrategy, IStatusReporter {
@@ -122,6 +126,12 @@ public class RemoteOnlyStrategy extends AbstractInvocationStrategy implements II
         RequestMethod[] requestMethods = mapping.method();
 
         HttpHeaders headers = new HttpHeaders();
+
+        if (profileConfig.getApiToken() != null) {
+            headers.set(REST_API_TOKEN_HEADER_NAME, profileConfig.getApiToken());
+        } else {
+            logger.warn("missing apiToken for service profile \"{}\"", profileId);
+        }
 
         if( clientContext != null ) {
             clientContext.put("correlationId", UUID.randomUUID().toString());
