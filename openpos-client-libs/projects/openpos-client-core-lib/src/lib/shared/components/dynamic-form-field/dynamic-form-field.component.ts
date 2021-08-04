@@ -124,6 +124,9 @@ export class DynamicFormFieldComponent implements OnInit, OnDestroy, AfterViewIn
         this.formGroup.get(this.formField.id).setValue(this.formField.value);
       }
     }
+    if(this.formField.requiredOverridden) {
+      this.overrideField();
+    }
     if(this.formField.preValidate) {
       this.field.ngControl.control.markAsDirty();
     }
@@ -235,6 +238,33 @@ export class DynamicFormFieldComponent implements OnInit, OnDestroy, AfterViewIn
           }
         )
     ).catch( error => console.info(`Scanning failed: ${error}`));
+  }
+
+  isRequired(): boolean { 
+    return this.formField.required && !this.formField.requiredOverridden;
+  }
+
+  onFormElementOverridden(formField: IFormElement): void {
+    if (!formField.requiredOverridden) {
+      this.formField.requiredOverridden = true;
+      this.overrideField();
+    } else {
+      this.formField.requiredOverridden = false;
+      this.allowField();
+    }
+    this.onFormElementChanged(formField);
+  }
+
+  private overrideField() {
+    this.field.ngControl.control.markAsPristine();
+    this.setFieldValue(this.formField.id, null);
+    this.formField.disabled = true;
+    this.field.ngControl.control.disable();
+  }
+
+  private allowField() {
+    this.field.ngControl.control.enable();
+    this.formField.disabled = false;
   }
 
   private setFieldValue(fieldId: string, value: any) {
