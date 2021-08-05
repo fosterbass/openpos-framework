@@ -7,9 +7,15 @@
             [class.error]="statusMessage.status === Status.ERROR"
   ></app-icon>
 </section>
-<section class="system-info-left" responsive-class>
-  {{line1$ | async}}
+<section class="system-info-left" responsive-class #leftStatus>
+  <span *ngIf="leftStatus.classList.contains('mobile'); else regularLine1">
+    {{(systemInfo$ | async)?.line1}}
+  </span>
+  <ng-template #regularLine1>{{line1$ | async}}</ng-template>
 </section>
-<section class="system-info-right" responsive-class>
-  {{(systemInfo$ | async)?.line2}}
+<section class="system-info-right" responsive-class #rightStatus>
+  <span *ngIf="rightStatus.classList.value.includes('-portrait'); else regularLine2">
+    {{(systemInfo$ | async)?.line2Short}}
+  </span>
+  <ng-template #regularLine2>{{(systemInfo$ | async)?.line2}}</ng-template>
 </section>
