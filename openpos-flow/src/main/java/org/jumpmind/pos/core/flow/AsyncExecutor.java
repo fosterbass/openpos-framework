@@ -45,6 +45,12 @@ public class AsyncExecutor {
         }
     }
 
+    synchronized public void stop() {
+        if (this.scheduler != null) {
+            this.scheduler.getScheduledExecutor().shutdownNow();
+        }
+    }
+
     synchronized public <T, R> void execute(T request, Function<T, R> doWork, Consumer<R> handleResult, Consumer<Throwable> handleError) {
        execute(request, doWork, handleResult, handleError, r-> log.info("The executor returned but the results are being ignored because it was cancelled.  The ignored results were {}", r), null);
     }

@@ -64,7 +64,7 @@ public class ApplicationState {
         scope.getDeviceScope().values().stream().
                 filter(s->s.getValue() instanceof AsyncExecutor).
                 map(s-> (AsyncExecutor)s.getValue()).
-                forEach(a->a.cancel());
+                forEach(a->a.stop());
 
         scope = new Scope();
         stateStack = new LinkedList<>();
