@@ -148,6 +148,9 @@ public class Form implements Serializable {
         field.setRequired(required);
         field.setValue(value);
         field.setSearchable(searchable);
+        if(searchable) {
+            field.setInstructions(label);
+        }
         return field;
     }
 
