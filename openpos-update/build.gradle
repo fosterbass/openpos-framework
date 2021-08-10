@@ -1,0 +1,7 @@
+apply from: '../openpos-gradle/src/main/resources/java.gradle'
+apply from: '../openpos-gradle/src/main/resources/openpos.gradle'
+apply from: '../openpos-gradle/src/main/resources/spring.gradle'
+
+dependencies {
+    api group: 'org.update4j', name: 'update4j', version: '1.5.7'
+}
