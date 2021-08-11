@@ -195,7 +195,6 @@ public class DevToolsActionListener implements IActionListener {
             deviceModel = DeviceModel.builder().
                     deviceId(customerDisplayDeviceId).
                     appId(customerDisplayAppId).
-                    pairedDeviceId(deviceId).
                     build();
             devicesRepository.saveDevice(deviceModel);
             authToken = UUID.randomUUID().toString();
@@ -208,6 +207,7 @@ public class DevToolsActionListener implements IActionListener {
                 devicesRepository.saveDeviceAuth(customerDisplayDeviceId, authToken);
             }
         }
+        devicesRepository.pairDevice(deviceId, customerDisplayDeviceId);
         customDeviceMap.put("customerDisplayAuthToken", authToken);
         customDeviceMap.put("customerDisplayPort", customerDisplayPort);
         customDeviceMap.put("customerDisplayUrl", customerDisplayUrl);

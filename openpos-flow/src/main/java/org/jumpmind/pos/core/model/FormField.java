@@ -49,6 +49,13 @@ public class FormField implements IFormElement, IField, Serializable {
         this.label = label;
         setPlaceholder(placeholder);
     }
+
+    public FormField(String fieldId, String label, String placeholder, String value) {
+        this.fieldId = fieldId;
+        this.label = label;
+        this.value = value;
+        setPlaceholder(placeholder);
+    }
     
     public FormField(String fieldId, String label, FieldElementType elementType, FieldInputType inputType, String placeholder) {
         this.fieldId = fieldId;

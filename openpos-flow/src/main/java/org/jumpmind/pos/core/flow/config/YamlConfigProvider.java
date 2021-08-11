@@ -16,8 +16,8 @@ public class YamlConfigProvider implements IFlowConfigProvider {
     private YamlFlowConfigFileLoader flowConfigLoader = new YamlFlowConfigFileLoader();
     private YamlConfigConverter flowConfigConverter;
 
-    protected Map<String, List<FlowConfig>> loadedFlowConfigs = new LinkedHashMap<String, List<FlowConfig>>();
-    protected Map<String, List<YamlFlowConfig>> loadedYamlFlowConfigs = new HashMap<String, List<YamlFlowConfig>>();
+    protected Map<String, List<FlowConfig>> loadedFlowConfigs = new LinkedHashMap<>();
+    protected Map<String, List<YamlFlowConfig>> loadedYamlFlowConfigs = new HashMap<>();
     protected Map<String, String> appIdToStartFlowName = new HashMap<>();
 
     private Map<String, List<TransitionStepConfig>> transitionSteps = new HashMap<>();
@@ -164,15 +164,10 @@ public class YamlConfigProvider implements IFlowConfigProvider {
     }
 
     protected void loadYamlFlowConfigs(String appId, List<YamlFlowConfig> yamlFlowConfigs) {
-
         List<YamlFlowConfig> existingYamlFlowConfigs = loadedYamlFlowConfigs.get(appId);
 
-        List<FlowConfig> existingFlowConfigs = loadedFlowConfigs.get(appId);
-        if (existingFlowConfigs == null) {
-            existingFlowConfigs = new ArrayList<FlowConfig>();
-            loadedYamlFlowConfigs.put(appId, existingYamlFlowConfigs);
-            loadedFlowConfigs.put(appId, existingFlowConfigs);
-        }
+        List<FlowConfig> existingFlowConfigs = new ArrayList<>();
+        loadedFlowConfigs.put(appId, existingFlowConfigs);
 
         List<FlowConfig> flowConfigs = flowConfigConverter.convertFlowConfigs(existingYamlFlowConfigs, yamlFlowConfigs);
         existingFlowConfigs.addAll(flowConfigs);
