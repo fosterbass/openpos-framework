@@ -4,5 +4,5 @@ export interface MembershipPointsDisplayComponentInterface {
     pointsLabel: string;
     customer: {
         loyaltyPoints: number
-    }
+    };
 }

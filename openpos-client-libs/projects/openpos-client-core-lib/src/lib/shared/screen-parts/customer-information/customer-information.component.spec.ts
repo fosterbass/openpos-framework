@@ -1,5 +1,5 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core'
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import {ActionService} from '../../../core/actions/action.service';
 import {CustomerInformationComponent} from './customer-information.component';
 import {validateDoesNotExist, validateIcon, validateText} from '../../../utilites/test-utils';
@@ -14,15 +14,15 @@ import {TimeZoneContext} from '../../../core/client-context/time-zone-context';
 import {Subscription} from 'rxjs';
 import {KeyPressProvider} from '../../providers/keypress.provider';
 
-class MockMatDialog {};
-class MockActionService {};
-class ClientContext {};
-class MockElectronService {};
+class MockMatDialog {}
+class MockActionService {}
+class ClientContext {}
+class MockElectronService {}
 class MockKeyPressProvider {
     subscribe(): Subscription {
         return new Subscription();
     }
-};
+}
 
 describe('CustomerInformationComponent', () => {
     let component: CustomerInformationComponent;
@@ -66,7 +66,7 @@ describe('CustomerInformationComponent', () => {
             phoneIcon: 'phone',
             loyaltyNumberIcon: 'account_heart',
             locationIcon: 'place'
-        }
+        };
         fixture.detectChanges();
     });
 
@@ -131,7 +131,7 @@ describe('CustomerInformationComponent', () => {
                 it('does not render the row if line1 is undefined', () => {
                     component.customer.address.line1 = undefined;
                     fixture.detectChanges();
-                    validateDoesNotExist(fixture,'.address .line1');
+                    validateDoesNotExist(fixture, '.address .line1');
                 });
                 it('renders the line1 data', () => {
                     component.customer.address.line1 = 'line 1 content';
@@ -144,7 +144,7 @@ describe('CustomerInformationComponent', () => {
                 it('does not render the row if line2 is undefined', () => {
                     component.customer.address.line2 = undefined;
                     fixture.detectChanges();
-                    validateDoesNotExist(fixture,'.address .line2');
+                    validateDoesNotExist(fixture, '.address .line2');
                 });
                 it('renders the line2 data', () => {
                     component.customer.address.line2 = 'line 2 content';
@@ -157,7 +157,7 @@ describe('CustomerInformationComponent', () => {
                 it('does not render the "city, " if city is undefined', () => {
                     component.customer.address.city = undefined;
                     fixture.detectChanges();
-                    validateDoesNotExist(fixture,'.address .line3 .city');
+                    validateDoesNotExist(fixture, '.address .line3 .city');
                 });
 
                 it('renders the city', () => {
@@ -169,7 +169,7 @@ describe('CustomerInformationComponent', () => {
                 it('does not render the "state " if state is undefined', () => {
                     component.customer.address.state = undefined;
                     fixture.detectChanges();
-                    validateDoesNotExist(fixture,'.address .line3 .state');
+                    validateDoesNotExist(fixture, '.address .line3 .state');
                 });
 
                 it('renders the city', () => {
@@ -181,7 +181,7 @@ describe('CustomerInformationComponent', () => {
                 it('does not render the "postalCode" if postal code is undefined', () => {
                     component.customer.address.postalCode = undefined;
                     fixture.detectChanges();
-                    validateDoesNotExist(fixture,'.address .line3 .postalCode');
+                    validateDoesNotExist(fixture, '.address .line3 .postalCode');
                 });
 
                 it('renders the postalCode', () => {

@@ -17,14 +17,14 @@
   .details {
     grid-area: details;
     .name {
-      @extend %text-md;
+      @extend %text-sm;
       font-weight: 500;
       &.expired {
         text-decoration: line-through;
       }
     }
     .expiration {
-      @extend %text-md;
+      @extend %text-sm;
       app-icon {
         padding-right: 3px;
       }

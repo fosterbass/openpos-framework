@@ -1,18 +1,18 @@
-<div *ngIf="customer.email" class="details-row email" [ngClass]="{'extra-row-spacing': isMobile}" responsive-class>
+<div *ngIf="customer.email" class="details-row email {{isMobile ? 'extra-row-spacing' : ''}}" responsive-class>
     <app-icon [iconName]="screenData.emailIcon" [iconClass]="'material-icons mat-18'"></app-icon>
     <div class="inline-grid">
         <div *ngIf="showFieldHeaders" class="field-header">Email<span *ngIf="customer.emailType"> ({{customer.emailType}})</span></div>
         <div>{{customer.email}}</div>
     </div>
 </div>
-<div *ngIf="customer.phoneNumber" class="details-row phone-number" [ngClass]="{'extra-row-spacing': isMobile}" responsive-class>
+<div *ngIf="customer.phoneNumber" class="details-row phone-number {{isMobile ? 'extra-row-spacing' : ''}}" responsive-class>
     <app-icon [iconName]="screenData.phoneIcon" [iconClass]="'material-icons mat-18'"></app-icon>
     <div class="inline-grid">
         <div *ngIf="showFieldHeaders" class="field-header">Phone<span *ngIf="customer.phoneNumberType"> ({{customer.phoneNumberType}})</span></div>
         <div>{{customer.phoneNumber | phone}}</div>
     </div>
 </div>
-<div *ngIf="customer.loyaltyNumber" class="details-row loyalty-number" [ngClass]="{'extra-row-spacing': isMobile}" responsive-class>
+<div *ngIf="customer.loyaltyNumber" class="details-row loyalty-number {{isMobile ? 'extra-row-spacing' : ''}}" responsive-class>
     <app-icon [iconName]="screenData.loyaltyNumberIcon" [iconClass]="'material-icons mat-18'"></app-icon>
     <div class="inline-grid">
         <div *ngIf="showFieldHeaders" class="field-header">Loyalty #</div>

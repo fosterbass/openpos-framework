@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 public class UIRewardHistory implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    private String loyaltyPromotionId;
     private String promotionId;
     private String name;
     private String expirationDate;

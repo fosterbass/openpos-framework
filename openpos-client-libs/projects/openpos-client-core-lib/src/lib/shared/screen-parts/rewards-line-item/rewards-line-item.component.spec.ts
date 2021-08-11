@@ -1,5 +1,5 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core'
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import {MatDialog} from '@angular/material';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {Observable, of, Subscription} from 'rxjs';
@@ -15,15 +15,16 @@ import {IActionItem} from '../../../core/actions/action-item.interface';
 import {By} from '@angular/platform-browser';
 import {Reward, RewardsLineItemComponentInterface} from './rewards-line-item.interface';
 
-class MockActionService {};
-class MockMatDialog {};
+class MockActionService {}
+class MockMatDialog {}
 class MockKeyPressProvider {
     subscribe(): Subscription {
         return new Subscription();
     }
-};
-class MockElectronService {};
-class ClientContext {};
+}
+
+class MockElectronService {}
+class ClientContext {}
 
 describe('RewardsLineItemComponent', () => {
     let component: RewardsLineItemComponent;
@@ -32,13 +33,13 @@ describe('RewardsLineItemComponent', () => {
         observe(): Observable<boolean> {
             return of(false);
         }
-    };
+    }
 
     class MockOpenposMediaServiceMobileTrue {
         observe(): Observable<boolean> {
             return of(true);
         }
-    };
+    }
 
     describe('shared', () => {
         beforeEach( () => {
@@ -166,11 +167,11 @@ describe('RewardsLineItemComponent', () => {
                       fixture.detectChanges();
                     });
 
-                    it('does not render the app-currency-text', function () {
+                    it('does not render the app-currency-text', () => {
                         validateDoesNotExist(fixture, '.reward app-currency-text');
                     });
 
-                    it('does render a XX%', function () {
+                    it('does render a XX%', () => {
                         validateExist(fixture, '.reward .pctReward');
                         validateText(fixture, '.reward .pctReward', '50%');
                     });
@@ -206,7 +207,7 @@ describe('RewardsLineItemComponent', () => {
                 beforeEach(() => {
                     component.reward.promotionId = '123';
                     component.reward.actionButton = {title: 'a title', enabled: true} as IActionItem;
-                    component.reward.actionIcon = 'chevron_right'
+                    component.reward.actionIcon = 'chevron_right';
                     fixture.detectChanges();
                 });
 

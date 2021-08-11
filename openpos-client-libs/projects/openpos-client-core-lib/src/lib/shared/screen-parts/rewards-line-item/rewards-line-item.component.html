@@ -1,4 +1,4 @@
-<div [ngClass]="{'mobile-reward-line-item-wrapper': isMobile | async, 'reward-line-item-wrapper': !(isMobile | async)}">
+<div class="{{(isMobile | async) ? 'mobile-reward-line-item-wrapper' : 'reward-line-item-wrapper'}}">
     <div *ngIf="!(isMobile | async)" class="loyalty-icon">
         <app-icon [iconName]="screenData.loyaltyIcon" [iconClass]="'material-icons mat-36'"></app-icon>
     </div>
