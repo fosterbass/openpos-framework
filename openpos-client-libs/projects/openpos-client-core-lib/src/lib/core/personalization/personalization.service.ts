@@ -29,7 +29,7 @@ export class PersonalizationService {
     private readonly sslEnabled$ = new BehaviorSubject<boolean | null>(null);
     private readonly isManagedServer$ = new BehaviorSubject<boolean | null>(null);
     private readonly skipAutoPersonalization$ = new BehaviorSubject<boolean | null>(null);
-    private readonly personalizationSuccessFul$ = new BehaviorSubject<boolean>(false);
+    public readonly personalizationSuccessFul$ = new BehaviorSubject<boolean>(false);
 
     constructor(
         private storage: Storage,
