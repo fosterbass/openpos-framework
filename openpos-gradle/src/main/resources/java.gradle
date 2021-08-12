@@ -36,7 +36,7 @@ ext {
     javaposVersion='1.14.2'
     jacksonVersion='2.8.10'
     lombokVersion='1.18.16'
-    snakeYamlVersion='1.23'
+    snakeYamlVersion='1.27'
 }
 
 // update jar files with version information

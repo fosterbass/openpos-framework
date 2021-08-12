@@ -3,6 +3,8 @@ apply from: '../openpos-gradle/src/main/resources/java.gradle'
 dependencies {
     implementation "net.java.dev.jna:jna:$jnaVersion"
     implementation "net.java.dev.jna:jna-platform:$jnaVersion"
+    api group: 'org.update4j', name: 'update4j', version: '1.5.7'
+
 }
 
 jar.archiveBaseName = 'openpos-wrapper'
