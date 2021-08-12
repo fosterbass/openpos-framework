@@ -12,6 +12,9 @@ export class PeripheralDeviceSelectionMessage implements OpenposMessage {
 export interface PeripheralDeviceDescription {
     id: string;
     displayName: string;
+    requiresConfirmation: boolean;
+    confirmationTitle: string;
+    confirmationMessage: string;
 }
 
 export interface PeripheralCategoryDescription {

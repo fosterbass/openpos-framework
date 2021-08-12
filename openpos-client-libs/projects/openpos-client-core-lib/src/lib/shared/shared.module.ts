@@ -164,6 +164,7 @@ import { OverlayContainer } from '@angular/cdk/overlay';
 import { ModalOverlayContainer } from './modal-overlay-container/modal-overlay-container';
 import { StatusDetailsComponent } from './status/status-details/status-details.component';
 import { PeripheralSelectorComponent } from './status/status-details/selector/peripheral-selector.component';
+import { PeripheralSelectorConfirmationComponent } from './status/status-details/confirmation/peripheral-selector-confirmation.component';
 import { StatusDetailsItemComponent } from './status/status-details/item/status-details-item.component';
 import { StatusBarComponent } from './status/status-bar/status-bar.component';
 import { LocalizePipe } from './pipes/localize.pipe';
@@ -356,6 +357,7 @@ const pipes = [
         StatusDetailsComponent,
         StatusDetailsItemComponent,
         PeripheralSelectorComponent,
+        PeripheralSelectorConfirmationComponent,
         LocalizePipe,
         ModalOverlayContainerDirective,
     ],
@@ -370,7 +372,8 @@ const pipes = [
         HelpTextPageWrapperComponent,
         ToastComponent,
         StatusDetailsComponent,
-        PeripheralSelectorComponent
+        PeripheralSelectorComponent,
+        PeripheralSelectorConfirmationComponent
     ],
     imports: [
         FormsModule,

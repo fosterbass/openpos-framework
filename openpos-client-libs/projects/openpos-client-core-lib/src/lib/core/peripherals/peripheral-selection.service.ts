@@ -79,4 +79,7 @@ export type PeripheralDeviceRef = PeripheralDevice | string;
 export interface PeripheralDevice {
     id: string;
     displayName: string;
+    requiresConfirmation: boolean;
+    confirmationTitle: string;
+    confirmationMessage: string;
 }

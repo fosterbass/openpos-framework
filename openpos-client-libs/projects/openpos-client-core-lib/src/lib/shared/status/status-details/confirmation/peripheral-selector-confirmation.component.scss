@@ -1,0 +1,13 @@
+.buttons {
+    display: flex;
+    float: right;
+    grid-column-gap: 8px;
+    &.mobile {
+        grid-column-gap: 4px;
+    }
+}
+
+.mat-dialog-actions {
+    padding: 0;
+    margin: 0;
+}
