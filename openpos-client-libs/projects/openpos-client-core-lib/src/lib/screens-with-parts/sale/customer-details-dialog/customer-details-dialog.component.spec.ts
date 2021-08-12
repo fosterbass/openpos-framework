@@ -1,5 +1,5 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core'
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import {CustomerDetailsDialogComponent} from './customer-details-dialog.component';
 import {CustomerDetailsDialogInterface} from './customer-details-dialog.interface';
 import {ActionService} from '../../../core/actions/action.service';
@@ -15,17 +15,17 @@ import {TimeZoneContext} from '../../../core/client-context/time-zone-context';
 import {Observable, of, Subscription} from 'rxjs';
 import {MediaBreakpoints, OpenposMediaService} from '../../../core/media/openpos-media.service';
 import {Reward} from '../../../shared/screen-parts/rewards-line-item/rewards-line-item.interface';
-import {KeyPressProvider} from "../../../shared/providers/keypress.provider";
+import {KeyPressProvider} from '../../../shared/providers/keypress.provider';
 
 class MockKeyPressProvider {
   subscribe(): Subscription {
     return new Subscription();
   }
-};
-class MockActionService {};
-class MockMatDialog {};
-class MockElectronService {};
-class ClientContext {};
+}
+class MockActionService {}
+class MockMatDialog {}
+class MockElectronService {}
+class ClientContext {}
 
 describe('CustomerDetailsDialog', () => {
   let component: CustomerDetailsDialogComponent;
@@ -35,13 +35,13 @@ describe('CustomerDetailsDialog', () => {
     observe(): Observable<boolean> {
       return of(false);
     }
-  };
+  }
 
   class MockOpenposMediaServiceMobileTrue {
     observe(): Observable<boolean> {
       return of(true);
     }
-  };
+  }
 
   beforeEach(() => {
     customer = {
@@ -115,17 +115,17 @@ describe('CustomerDetailsDialog', () => {
         });
 
         it('returns "Rewards" when the rewards list is undefined', () => {
-          component.screen.customer.rewards = undefined;
+          component.screen.customer.numberOfActiveRewards = undefined;
           expect(component.getRewardsLabel()).toBe('Rewards');
         });
 
         it('returns "Rewards (0)" when the rewards list is empty', () => {
-          component.screen.customer.rewards = [];
+          component.screen.customer.numberOfActiveRewards = 0;
           expect(component.getRewardsLabel()).toBe('Rewards (0)');
         });
 
         it('returns "Rewards (#)" when the rewards list has items', () => {
-          component.screen.customer.rewards = [{} as Reward];
+          component.screen.customer.numberOfActiveRewards = 1;
           expect(component.getRewardsLabel()).toBe('Rewards (1)');
         });
       });
@@ -154,7 +154,7 @@ describe('CustomerDetailsDialog', () => {
             beforeEach(() => {
               memberships = [
                 {}, {}, {}
-              ]
+              ];
               component.screen.customer.memberships = memberships;
               component.screen.membershipEnabled = true;
               fixture.detectChanges();
@@ -192,7 +192,7 @@ describe('CustomerDetailsDialog', () => {
           });
 
         });
-      })
+      });
       describe('tabs', () => {
         it('displays the tabs section', () => {
           const tabsElement = fixture.debugElement.query(By.css('.tabs'));
@@ -368,6 +368,10 @@ describe('CustomerDetailsDialog', () => {
       fixture.detectChanges();
     });
     describe('template', () => {
+      it('shows on mobile', () => {
+        validateExist(fixture, '.mobile-dialog-container');
+      });
+
       describe('details', () => {
         describe('when membershipPoints is enabled', () => {
           beforeEach(() => {
@@ -391,17 +395,27 @@ describe('CustomerDetailsDialog', () => {
           });
         });
       });
-      describe('tabs', () => {
-        it('has the mobile class', () => {
-          const tabsElement = fixture.debugElement.query(By.css('.tabs'));
-          expect(tabsElement.nativeElement.classList).toContain('mobile');
+      describe('paged sections', () => {
+        it('show on mobile', () => {
+          validateExist(fixture, '.paged-nav-list');
         });
 
-        it('always shows the tab section', () => {
+        it('has non-required Rewards and Rewards History sections of selectable content', () => {
           component.screen.rewardTabEnabled = false;
           component.screen.rewardHistoryTabEnabled = false;
           fixture.detectChanges();
-          validateExist(fixture, '.tabs');
+          const navListItems = fixture.debugElement.queryAll(By.css('.paged-nav-list-item'));
+          expect(navListItems.length).toEqual(1);
+          validateExist(fixture, '.paged-nav-list');
+        });
+
+        it('has three sections of selectable content', () => {
+          component.screen.rewardTabEnabled = true;
+          component.screen.rewardHistoryTabEnabled = true;
+          fixture.detectChanges();
+          const navListItems = fixture.debugElement.queryAll(By.css('.paged-nav-list-item'));
+          expect(navListItems.length).toEqual(3);
+          validateExist(fixture, '.paged-nav-list');
         });
       });
     });

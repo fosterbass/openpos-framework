@@ -8,8 +8,11 @@ import {ScreenPartComponent} from '../screen-part';
     templateUrl: './membership-display.component.html',
     styleUrls: ['./membership-display.component.scss']})
 export class MembershipDisplayComponent extends ScreenPartComponent<MembershipDisplayComponentInterface> {
+
     @Input()
     membership: Membership;
+    @Input()
+    iconMatClass = 'mat-24';
     @Output()
     clickEvent: EventEmitter<Membership> = new EventEmitter();
 

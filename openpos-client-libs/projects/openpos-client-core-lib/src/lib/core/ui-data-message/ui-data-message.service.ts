@@ -11,14 +11,14 @@ import {SessionService} from '../services/session.service';
 })
 export class UIDataMessageService {
 
-  //Accumulates the payloads by type
-  private accumulatedResultsMap = new Map<String, ReplaySubject<any[]>>();
-  //Splits out the messages by type
-  private dataMessages = new Map<String, Subject<UIDataMessage<any[]>>>();
+  // Accumulates the payloads by type
+  private accumulatedResultsMap = new Map<string, ReplaySubject<any[]>>();
+  // Splits out the messages by type
+  private dataMessages = new Map<string, Subject<UIDataMessage<any[]>>>();
 
   constructor( private sessionService: SessionService) {
       this.sessionService.getMessages(MessageTypes.CONNECTED).subscribe( m => {
-          //Clear out out cache if the server reboots. Otherwise we could end up out of sync
+          // Clear out out cache if the server reboots. Otherwise we could end up out of sync
           this.accumulatedResultsMap.clear();
           this.dataMessages.clear();
       });
@@ -29,39 +29,39 @@ export class UIDataMessageService {
           this.dataMessages.clear();
       });
 
-    this.sessionService.getMessages(MessageTypes.DATA).subscribe( (message: UIDataMessage<any>) => {
-        if(message.seriesId === -1){
+      this.sessionService.getMessages(MessageTypes.DATA).subscribe( (message: UIDataMessage<any>) => {
+        if (message.seriesId === -1) {
             // -1 signals stale data that no longer exists on the server so clean up.
             this.dataMessages.get(message.dataType).complete();
             this.dataMessages.delete(message.dataType);
             this.accumulatedResultsMap.get(message.dataType).complete();
             this.accumulatedResultsMap.delete(message.dataType);
-            console.log(`Clearing out Data ${message.dataType}`)
+            console.log(`Clearing out Data ${message.dataType}`);
             return;
         }
-        if( !this.dataMessages.has(message.dataType)){
-            //If we don't have listeners set up yet create them
-            console.log(`Received new data type ${message.dataType}`)
+        if ( !this.dataMessages.has(message.dataType)) {
+            // If we don't have listeners set up yet create them
+            console.log(`Received new data type ${message.dataType}`);
             this.createDataListener(message.dataType);
         }
-        console.log(`Received new data for type ${message.dataType}`)
+        console.log(`Received new data for type ${message.dataType}`);
         this.dataMessages.get(message.dataType).next(message);
     } );
   }
 
   public getData$(key: string): Observable<any[]> {
-      if(!this.accumulatedResultsMap.has(key)){
-          //If we don't have any data for this key yet, add an entry and start listening
+      if (!this.accumulatedResultsMap.has(key)) {
+          // If we don't have any data for this key yet, add an entry and start listening
           this.createDataListener(key);
       }
       return this.accumulatedResultsMap.get(key);
   }
 
-  public requestMoreData(key: string){
+  public requestMoreData(key: string) {
       this.sessionService.sendMessage(new ActionMessage(key, true));
   }
 
-  private createDataListener( dataType: string){
+  private createDataListener( dataType: string) {
       this.dataMessages.set(dataType, new Subject<UIDataMessage<any[]>>());
       this.accumulatedResultsMap.set(dataType, new ReplaySubject<any[]>(1));
 
@@ -71,11 +71,11 @@ export class UIDataMessageService {
       this.dataMessages.get(dataType).pipe(
           scan( (acc: UIDataMessage<any[]>, curr: UIDataMessage<any[]>) => {
               // If this new data is part of our current series add to it.
-              if(curr.seriesId === acc.seriesId){
+              if (curr.seriesId === acc.seriesId) {
                   acc.data.push(...curr.data);
                   return acc;
               }
-              console.log(`New Series for ${curr.dataType}`)
+              console.log(`New Series for ${curr.dataType}`);
               // If this data is not part of our series throw away the old accumulation and start a new accumulation
               return curr;
           }),

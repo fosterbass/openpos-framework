@@ -1,9 +1,5 @@
 @import "../../../styles/mixins/typography";
 
-.details-wrapper, .tabs {
-  margin-bottom: 8px;
-}
-
 .tabs {
   margin-top: 8px;
   height: 40vmin;
@@ -11,7 +7,6 @@
     height: 100%;
   }
   mat-card {
-    overflow: scroll;
     margin: 0;
     .no-items {
       @extend %text-lg;
@@ -30,6 +25,7 @@
 .buttons {
   display: grid;
   grid-auto-flow: column;
+  align-content: end;
   justify-content: end;
   grid-column-gap: 8px;
   padding-bottom: 16px;
@@ -92,33 +88,101 @@ app-content-card {
   }
 }
 
-.mobile-grid-container {
-  display: grid;
-  grid-template-columns: 1fr 10fr;
-  grid-template-rows: 1fr;
-  gap: 0px 0px;
-  grid-template-areas:
-    "icon details"
-    "memberships memberships";
+.mobile-dialog-container {
+  height: 65vh;
+  max-height: 65vh;
 
-  .details {
-    .details-label {
-      @extend %text-md;
-      height: 100%;
-      padding-top: 16px;
+  .mobile-grid-container {
+    display: grid;
+    grid-template-columns: 1fr 10fr;
+    grid-template-rows: 1fr;
+    gap: 0px 0px;
+    grid-template-areas:
+      "icon details"
+      "memberships memberships";
+
+    .details {
+      .details-label {
+        @extend %text-md;
+        height: 100%;
+        padding-top: 16px;
+        padding-left: 5px;
+      }
+    }
+
+    .memberships {
+      padding-top: 10px;
+      padding-bottom: 5px;
+      display: inline-block;
+
+      .membership-items {
+        display: flex;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+
+        .item {
+          margin-right: .25em;
+          margin-bottom: .25em;
+        }
+      }
+    }
+
+    .contactTab {
       padding-left: 5px;
+      padding-right: 5px;
     }
   }
 
-  .memberships {
-    padding-top: 10px;
-    padding-bottom: 5px;
-    display: inline-block;
+  .mobile-memberships {
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    margin-bottom: .25em;
+
+    .item {
+      margin-right: .25em;
+      margin-bottom: .25em;
+    }
   }
 
-  .contactTab {
-    padding-left: 5px;
-    padding-right: 5px;
+  .details-wrapper, .tabs {
+    margin-bottom: 8px;
+
+    &.mobile {
+      max-height: 15vh;
+    }
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: .5em;
+    font-size: $text-sm;
+
+    app-icon { padding-right: .5em; }
+    &.mobile {
+      font-size: $text-sm-mobile;
+    }
+  }
+  .section-content {
+    height: 50vh;
+    .overflow { overflow: auto; }
+  }
+  .paged-nav-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1em 0em;
+
+    span {
+      flex-grow: 1;
+      padding-left: 1em;
+      @extend %text-sm;
+    }
+  }
+
+  .paged-nav-list {
+    max-height: 35vh;
   }
 }
 
@@ -138,10 +202,29 @@ app-content-card {
   grid-area: memberships;
 }
 
+.rewardItem {
+  margin:5px 0px;
+  padding:15px;
+
+  &.mobile {
+      padding: 0.25em;
+  }
+}
+
 .no-promotions {
   display: flex;
   justify-content: center;
   flex-direction: column;
+  text-align: center;
+
+  @extend %text-md;
+}
+
+.rewardsContentMobile, .rewardsHistoryContentMobile {
+  display:grid;
+  overflow-y: hidden;
+  overflow-x: hidden;
+  height: 100%;
 }
 
 .rewardsContent.with-points, .rewardsHistoryContent.with-points {

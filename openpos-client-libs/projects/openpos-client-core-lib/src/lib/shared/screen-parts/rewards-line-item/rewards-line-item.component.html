@@ -1,14 +1,20 @@
-<div [ngClass]="{'mobile-reward-line-item-wrapper': isMobile | async, 'reward-line-item-wrapper': !(isMobile | async)}">
-    <div *ngIf="!(isMobile | async)" class="loyalty-icon"><app-icon [iconName]="screenData.loyaltyIcon" [iconClass]="'material-icons mat-36'"></app-icon></div>
+<div class="{{(isMobile | async) ? 'mobile-reward-line-item-wrapper' : 'reward-line-item-wrapper'}}">
+    <div *ngIf="!(isMobile | async)" class="loyalty-icon">
+        <app-icon [iconName]="screenData.loyaltyIcon" [iconClass]="'material-icons mat-36'"></app-icon>
+    </div>
     <div class="details">
-        <div class="name" responsive-class>{{reward.name}}</div>
+        <div class="name" responsive-class>
+            <span>{{reward.name}}</span>
+            <div class="status-text" *ngIf="isMobile | async">{{reward.statusText}}</div>
+        </div>
         <div *ngIf="reward.expirationDate" class="expiration" responsive-class><app-icon [iconName]="screenData.expiredIcon" [iconClass]="'material-icons' + (isMobile | async) ? ' mat-16' : ' mat-24'"></app-icon>{{screenData.expiresLabel}} {{reward.expirationDate}}</div>
     </div>
-    <div class="status-text">
+    <div class="status-text" *ngIf="!(isMobile | async)">
         <div *ngIf="reward.statusText" class="name" responsive-class>{{reward.statusText}}</div>
     </div>
     <div class="reward" responsive-class>
-        <app-currency-text *ngIf="reward.amount" [amountText]="reward.amount"></app-currency-text>
+        <app-currency-text *ngIf="reward.reward && reward.rewardType != 'PCT'" [amountText]="reward.reward"></app-currency-text>
+        <div class="pctReward" *ngIf="reward.reward && reward.rewardType == 'PCT'">{{reward.reward * 100}}% off</div>
     </div>
     <div class="apply">
         <a *ngIf="reward.actionButton"
@@ -18,7 +24,7 @@
            [disabled]="!reward.actionButton.enabled"
            mat-button
            responsive-class>
-            {{reward.actionButton.title}} <app-icon [iconName]="reward.actionIcon" [iconClass]="'material-icons mat-24'"></app-icon>
+            {{reward.actionButton.title}} <app-icon *ngIf="reward.actionIcon" [iconName]="reward.actionIcon" [iconClass]="'material-icons mat-24'"></app-icon>
         </a>
     </div>
 </div>

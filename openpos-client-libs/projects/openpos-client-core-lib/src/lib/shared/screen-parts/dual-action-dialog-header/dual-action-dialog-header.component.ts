@@ -1,19 +1,21 @@
 import { ScreenPart } from '../../decorators/screen-part.decorator';
 import {Component, Injector, Input} from '@angular/core';
-import { DialogHeaderInterface } from './dialog-header.interface';
 import { ScreenPartComponent } from '../screen-part';
+import {DialogHeaderInterface} from "../dialog-header/dialog-header.interface";
 
 @ScreenPart({
-    name: 'dialogHeader'})
+    name: 'dualActionDialogHeader'})
 @Component({
-    selector: 'app-dialog-header',
-    templateUrl: './dialog-header.component.html',
-    styleUrls: ['./dialog-header.component.scss']
+    selector: 'app-dual-action-dialog-header',
+    templateUrl: './dual-action-dialog-header.component.html',
+    styleUrls: ['./dual-action-dialog-header.component.scss']
 })
-export class DialogHeaderComponent extends ScreenPartComponent<DialogHeaderInterface> {
+export class DualActionDialogHeaderComponent extends ScreenPartComponent<DialogHeaderInterface> {
 
     @Input()
     headerIcon: string;
+    @Input()
+    headerIconClass: string;
 
     @Input()
     headerText: string;

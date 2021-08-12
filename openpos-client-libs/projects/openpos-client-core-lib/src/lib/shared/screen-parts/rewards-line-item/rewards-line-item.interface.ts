@@ -4,7 +4,8 @@ export interface Reward {
     promotionId: string;
     name: string;
     expirationDate: string;
-    amount: number;
+    rewardType: string;
+    reward: number;
     actionButton: IActionItem;
     actionIcon: string;
     statusText: string;
@@ -12,7 +13,7 @@ export interface Reward {
 
     selected: boolean;
     enabled: boolean;
-};
+}
 
 export interface RewardsLineItemComponentInterface {
     expiresLabel: string;
