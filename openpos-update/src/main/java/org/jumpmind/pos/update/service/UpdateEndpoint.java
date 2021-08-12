@@ -25,7 +25,7 @@ public class UpdateEndpoint {
 
         // TODO make base uri and path configurable
         Configuration.Builder configBuilder = Configuration.builder()
-                .baseUri("http://localhost:6140/update/download/" + version +"/")
+                .baseUri("http://localhost:6142/update/download/" + version +"/")
                 .basePath("${user.dir}")
                 .property("default.launcher.main.class", "org.jumpmind.pos.app.Commerce");
 
