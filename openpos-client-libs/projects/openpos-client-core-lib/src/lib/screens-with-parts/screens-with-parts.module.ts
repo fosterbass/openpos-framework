@@ -40,6 +40,7 @@ import { LoyaltyCustomerFormDialogComponent } from "./loyalty-customer-form-dial
 import {MembershipDetailsDialogComponent} from "./sale/membership-details-dialog/membership-details-dialog.component";
 import {MembershipPlanDetailsDialogComponent} from "./sale/membership-plan-details-dialog/membership-plan-details-dialog.component";
 import {ProgramPlanSelectDialogComponent} from "./sale/program-plan-select-dialog/program-plan-select-dialog.component";
+import {EnrollmentConfirmationDialogComponent} from "./enrollment-confirmation-dialog/enrollment-confirmation-dialog.component";
 
 
 const screens = [
@@ -85,7 +86,8 @@ const dialogs = [
     DataTableDialogComponent,
     CustomerSearchResultDialogComponent,
     DataTableDialogComponent,
-    LoyaltyCustomerFormDialogComponent
+    LoyaltyCustomerFormDialogComponent,
+    EnrollmentConfirmationDialogComponent
 ];
 
 @NgModule({

@@ -1,0 +1,46 @@
+@import '../../styles/variables/spacing';
+
+.dialog-outer{
+    display:grid;
+    grid-auto-flow: column;
+    grid-template-rows: auto auto auto;
+    height: 100%;
+
+    .dialog-body {
+        display: grid;
+        justify-self: center;
+        align-content: center;
+        width:100%;
+        @extend %page-spaced-content;
+
+        .message {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width:100%;
+            padding: 5em 0em 5em 0em;
+            div {
+                justify-self: center;
+                align-content: center;
+            }
+        }
+    }
+
+    .button-row{
+        display: flex;
+        justify-content: flex-end;
+        padding-top: 1em;
+        .continue {
+            width: 20%;
+        }
+
+        app-secondary-button {
+            span{
+                padding-left: .5em;
+            }
+            padding-right: 1em;
+        }
+    }
+}
+
+
