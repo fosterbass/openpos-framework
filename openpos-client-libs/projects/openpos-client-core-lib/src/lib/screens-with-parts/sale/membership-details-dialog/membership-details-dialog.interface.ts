@@ -3,9 +3,5 @@ import {CustomerDetails} from '../../../shared/screen-parts/customer-information
 import {SubscriptionAccount} from "../program-interface";
 
 export interface MembershipDetailsDialogInterface extends IAbstractScreen {
-    customer: CustomerDetails;
-    membershipLabel: string;
-    membershipCardIcon: string;
-    profileIcon: string;
     subscriptionAccounts: SubscriptionAccount[];
 }

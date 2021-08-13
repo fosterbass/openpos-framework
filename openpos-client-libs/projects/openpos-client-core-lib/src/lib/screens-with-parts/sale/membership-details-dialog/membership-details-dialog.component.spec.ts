@@ -78,12 +78,7 @@ describe('LinkedCustomerMembershipState', () => {
       }).compileComponents();
       fixture = TestBed.createComponent(MembershipDetailsDialogComponent);
       component = fixture.componentInstance;
-      component.screen = {
-        customer: customer,
-        membershipLabel: "membershipLabel",
-        membershipCardIcon: "membershipCardIcon",
-        profileIcon: "profileIcon"
-      } as MembershipDetailsDialogInterface;
+      component.screen = { } as MembershipDetailsDialogInterface;
       fixture.detectChanges();
     });
 
@@ -171,18 +166,6 @@ describe('LinkedCustomerMembershipState', () => {
         subscriptionAccounts.push(subscriptionAccount);
         component.screen.subscriptionAccounts = subscriptionAccounts
         fixture.detectChanges();
-      });
-
-      it('renders the profile icon in the customer details', () => {
-        validateExist(fixture, '.details-wrapper .icon app-icon');
-      });
-
-      it('renders the customer name in the customer details', () => {
-        validateText(fixture, '.details-wrapper .details .details-label', customer.name);
-      });
-
-      it('renders the customer name in the customer details', () => {
-        validateExist(fixture, '.details-wrapper .memberships .list');
       });
 
       describe('tab functionality', () => {
