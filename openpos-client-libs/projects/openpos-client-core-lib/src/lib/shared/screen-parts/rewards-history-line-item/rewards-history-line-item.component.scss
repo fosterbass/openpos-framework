@@ -38,8 +38,11 @@
     @extend %text-md;
     grid-area: reward;
     align-self: center;
+    .pctReward {
+      font-weight: bold;
+    }
     &.expired {
-      .currency-text-after-symbol {
+      .currency-text-after-symbol, .pctReward {
         text-decoration: line-through;
       }
     }

@@ -13,6 +13,7 @@ public class UIRewardHistory implements Serializable {
     private String promotionId;
     private String name;
     private String expirationDate;
-    private BigDecimal amount;
+    private String rewardType;
+    private BigDecimal reward;
     private Boolean redeemed;
 }
