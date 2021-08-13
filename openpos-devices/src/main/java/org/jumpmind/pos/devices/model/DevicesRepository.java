@@ -8,9 +8,9 @@ import org.jumpmind.pos.persist.DBSession;
 import org.jumpmind.pos.persist.ModelId;
 import org.jumpmind.pos.persist.Query;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
 
@@ -28,6 +28,10 @@ public class DevicesRepository {
 
     @Autowired
     VirtualDeviceRepository virtualDeviceRepository;
+
+    @Autowired
+    @Lazy
+    CacheManager cacheManager;
 
     Query<DeviceStatusModel> connectedDevicesQuery = new Query<DeviceStatusModel>().named("connectedDevices").result(DeviceStatusModel.class);
 
@@ -78,10 +82,6 @@ public class DevicesRepository {
                 .collect(Collectors.toList());
     }
 
-    @Caching(evict = {
-            @CacheEvict(value = CACHE_NAME, key = "#deviceId"),
-            @CacheEvict(value = CACHE_NAME, key = "#pairedDeviceId")
-    })
     public void pairDevice(String deviceId, String pairedDeviceId) {
         DeviceModel device = getDevice(deviceId);
 
@@ -93,27 +93,32 @@ public class DevicesRepository {
         // Pair device
         device.setPairedDeviceId(pairedDeviceId);
         saveDevice(device);
+        clearCache(deviceId);
 
         // Link paired device to device it's paired with
         DeviceModel pairedDevice = getDevice(pairedDeviceId);
+        
+        if (StringUtils.isNotBlank(pairedDevice.getPairedDeviceId())) {
+            unpairDevice(pairedDeviceId, pairedDevice.getPairedDeviceId());
+        }
+
         pairedDevice.setPairedDeviceId(deviceId);
         saveDevice(pairedDevice);
+        clearCache(pairedDeviceId);
     }
 
-    @Caching(evict = {
-            @CacheEvict(value = CACHE_NAME, key = "#deviceId"),
-            @CacheEvict(value = CACHE_NAME, key = "#pairedDeviceId")
-    })
     public void unpairDevice(String deviceId, String pairedDeviceId) {
         // Unpair device
         DeviceModel device = getDevice(deviceId);
         device.setPairedDeviceId(null);
         saveDevice(device);
+        clearCache(deviceId);
 
         // Unlink paired device to device it was paired with
         DeviceModel pairedDevice = getDevice(pairedDeviceId);
         pairedDevice.setPairedDeviceId(null);
         saveDevice(pairedDevice);
+        clearCache(pairedDeviceId);
     }
 
     @CacheEvict(value = CACHE_NAME, key = "#deviceId")
@@ -240,4 +245,9 @@ public class DevicesRepository {
         devSession.save(statusModel);
     }
 
+    private void clearCache(String deviceId) {
+        if (cacheManager != null) {
+            cacheManager.getCache(CACHE_NAME + deviceId).clear();
+        }
+    }
 }

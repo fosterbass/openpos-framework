@@ -89,6 +89,7 @@ export * from './lib/core/oldplugins/scan';
 
 export * from './lib/core/platform-plugins/barcode-scanners/barcode-scanner.service';
 export * from './lib/core/platform-plugins/cordova-plugins/android-content-provider-plugin';
+export * from './lib/core/startup/plugin-startup-task'
 export * from './lib/core/messages/single-sign-on-message';
 
 export * from './lib/core/services/app-version';
@@ -131,6 +132,7 @@ export * from './lib/core/messages/message';
 export * from './lib/core/help-text/help-text.service';
 export * from './lib/core/lock-screen/lock-screen.service';
 export * from './lib/core/services/simulated-peripheral-service';
+export * from './lib/core/platform-plugins/platform-plugin.interface';
 
 export * from './lib/core/audio/audio-request.interface';
 export * from './lib/core/audio/audio.service';

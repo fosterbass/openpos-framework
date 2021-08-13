@@ -2,6 +2,7 @@ package org.jumpmind.pos.core.service;
 
 import org.jumpmind.pos.core.model.StartupMessage;
 import org.jumpmind.pos.devices.model.DeviceModel;
+import org.jumpmind.pos.util.Version;
 import org.jumpmind.pos.util.event.DeviceConnectedEvent;
 import org.jumpmind.pos.core.flow.IStateManager;
 import org.jumpmind.pos.core.flow.IStateManagerContainer;
@@ -27,6 +28,7 @@ import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import static org.jumpmind.pos.util.AppUtils.setupLogging;
@@ -129,7 +131,8 @@ public class SessionSubscribedListener implements ApplicationListener<SessionSub
             stateManager.setClientContext(clientContext);
             stateManager.getApplicationState().getScope().setDeviceScope("device", sessionAuthTracker.getDeviceModel(sessionId));
 
-            eventPublisher.publish(new DeviceConnectedEvent(deviceId, appId, stateManager.getPairedDeviceId()));
+            eventPublisher.publish(new DeviceConnectedEvent(deviceId, appId, stateManager.getPairedDeviceId(),
+                    (List<Version>)queryParams.get("deviceVersions")));
 
             if (!created) {
                 stateManager.refreshScreen();

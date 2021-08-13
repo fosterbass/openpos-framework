@@ -1,0 +1,13 @@
+<mat-card-title gdAreas="header backbutton" gdColumns="1fr auto" gdAlignColumns="center center">
+    <div class="header" gdArea="header" gdColumns="auto 1fr" responsive-class>
+        <span class="header-text">{{data.device?.confirmationTitle | localize: data.device?.displayName}}</span>
+    </div>
+</mat-card-title>
+
+<div mat-dialog-content>
+    <p>{{data.device?.confirmationMessage | localize: data.device?.displayName}}</p>
+</div>
+<div mat-dialog-actions class="buttons">
+    <app-secondary-button (click)="close()">No</app-secondary-button>
+    <app-primary-button (click)="continue()">Yes</app-primary-button>
+</div>
