@@ -1,11 +1,13 @@
 package org.jumpmind.pos.devices.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.jumpmind.pos.persist.*;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @TableDef(name = "device_auth",

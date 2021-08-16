@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @Repository
 @Slf4j
 public class DevicesRepository {
-    private final static String CACHE_NAME = "/devices/device";
+    final static String CACHE_NAME = "/devices/device";
 
     @Autowired
     @Lazy
@@ -84,40 +84,36 @@ public class DevicesRepository {
 
     public void pairDevice(String deviceId, String pairedDeviceId) {
         DeviceModel device = getDevice(deviceId);
+        DeviceModel pairedDevice = getDevice(pairedDeviceId);
 
-        // First unpair an existing paired device
         if (StringUtils.isNotBlank(device.getPairedDeviceId())) {
             unpairDevice(deviceId, device.getPairedDeviceId());
         }
-
-        // Pair device
-        device.setPairedDeviceId(pairedDeviceId);
-        saveDevice(device);
-        clearCache(deviceId);
-
-        // Link paired device to device it's paired with
-        DeviceModel pairedDevice = getDevice(pairedDeviceId);
-        
         if (StringUtils.isNotBlank(pairedDevice.getPairedDeviceId())) {
             unpairDevice(pairedDeviceId, pairedDevice.getPairedDeviceId());
         }
 
+        device.setPairedDeviceId(pairedDeviceId);
+        saveDevice(device);
+
         pairedDevice.setPairedDeviceId(deviceId);
         saveDevice(pairedDevice);
+
+        clearCache(deviceId);
         clearCache(pairedDeviceId);
     }
 
     public void unpairDevice(String deviceId, String pairedDeviceId) {
-        // Unpair device
         DeviceModel device = getDevice(deviceId);
+        DeviceModel pairedDevice = getDevice(pairedDeviceId);
+
         device.setPairedDeviceId(null);
         saveDevice(device);
-        clearCache(deviceId);
 
-        // Unlink paired device to device it was paired with
-        DeviceModel pairedDevice = getDevice(pairedDeviceId);
         pairedDevice.setPairedDeviceId(null);
         saveDevice(pairedDevice);
+
+        clearCache(deviceId);
         clearCache(pairedDeviceId);
     }
 
@@ -146,15 +142,11 @@ public class DevicesRepository {
     }
 
     public List<DeviceAuthModel> getDisconnectedDevices(String businessUnitId, String installationId) {
-        Map<String, Object> statusParams = new HashMap<>();
-        statusParams.put("deviceStatus", DeviceStatusConstants.CONNECTED);
-        Set<String> connectedDevices = getConnectedDeviceIds(businessUnitId, installationId);
+        Set<String> connectedDeviceIds = getConnectedDeviceIds(businessUnitId, installationId);
 
-        Map<String, Object> deviceParams = new HashMap<>();
-        deviceParams.put("businessUnitId", businessUnitId);
-        final Set<String> devices = devSession.findByFields(DeviceModel.class, deviceParams, 10000).stream().map(DeviceModel::getDeviceId).collect(Collectors.toSet());
-        devices.removeAll(connectedDevices);
-        return devSession.findAll(DeviceAuthModel.class, 10000).stream().filter(d -> devices.contains(d.getDeviceId())).sorted().collect(Collectors.toList());
+        final Set<String> allDeviceIds = findDevices(businessUnitId).stream().map(DeviceModel::getDeviceId).collect(Collectors.toSet());
+        allDeviceIds.removeAll(connectedDeviceIds);
+        return devSession.findAll(DeviceAuthModel.class, 10000).stream().filter(d -> allDeviceIds.contains(d.getDeviceId())).sorted().collect(Collectors.toList());
     }
 
     public Set<String> getConnectedDeviceIds(String businessUnitId, String installationId) {
@@ -164,7 +156,7 @@ public class DevicesRepository {
         statusParams.put("deviceStatus", DeviceStatusConstants.CONNECTED);
         List<DeviceStatusModel> deviceStatuses =
                 devSession.query(connectedDevicesQuery, statusParams, 10000);
-        return deviceStatuses.stream().map(s->s.getDeviceId()).collect(Collectors.toSet());
+        return deviceStatuses.stream().map(DeviceStatusModel::getDeviceId).collect(Collectors.toSet());
     }
 
     public DeviceModel getDeviceByAuth(String auth) {
@@ -226,7 +218,7 @@ public class DevicesRepository {
 
         return model;
     }
-  
+
     private List<DeviceParamModel> getDeviceParams(String deviceId) {
         Map<String, Object> params = new HashMap<>();
         params.put("deviceId", deviceId);
@@ -247,7 +239,7 @@ public class DevicesRepository {
 
     private void clearCache(String deviceId) {
         if (cacheManager != null) {
-            cacheManager.getCache(CACHE_NAME + deviceId).clear();
+            Objects.requireNonNull(cacheManager.getCache(CACHE_NAME)).evict(deviceId);
         }
     }
 }
