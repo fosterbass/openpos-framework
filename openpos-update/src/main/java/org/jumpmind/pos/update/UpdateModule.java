@@ -11,13 +11,14 @@ import org.springframework.core.annotation.Order;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+@Profile(UpdateModule.NAME)
 @Configuration("UpdateModule")
 @EnableTransactionManagement()
 @Conditional(ModuleEnabledCondition.class)
 @Order(10)
 public class UpdateModule extends AbstractRDBMSModule {
 
-    public final String NAME = "update";
+    public static final String NAME = "update";
 
     IUpdateService updateService;
 

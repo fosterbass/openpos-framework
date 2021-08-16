@@ -1,0 +1,6 @@
+dollar: $
+openpos:
+  update:
+    softwareProvider: fileSystemSoftwareProvider
+    installUrl: http://localhost:6142
+    installBasePath: ${dollar}{user.dir}

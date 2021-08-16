@@ -2,6 +2,8 @@ package org.jumpmind.pos.update.service;
 
 import org.apache.commons.io.IOUtils;
 import org.jumpmind.pos.service.Endpoint;
+import org.jumpmind.pos.update.UpdateModule;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +15,7 @@ import java.nio.file.Paths;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+@Profile(UpdateModule.NAME)
 @Endpoint(path = DownloadEndpoint.PATH + "{version}/**")
 public class DownloadEndpoint {
 
