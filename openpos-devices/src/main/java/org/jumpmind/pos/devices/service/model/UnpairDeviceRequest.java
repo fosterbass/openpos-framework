@@ -5,13 +5,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Builder
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class UnpairDeviceRequest {
     private String deviceId;
-    private String appId;
     private String pairedDeviceId;
-    private String pairedAppId;
 }
