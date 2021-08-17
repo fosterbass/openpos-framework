@@ -129,7 +129,7 @@ public class EndpointInvoker implements InvocationHandler {
 
                 Method[] methods = i.getMethods();
                 for (Method method : methods) {
-                    String path = buildPath(method);
+                    String path = buildPath(service, method);
 
                     //  See if there is an endpoint override bean for this service and path, both normal and Training Mode.
 
@@ -286,7 +286,7 @@ public class EndpointInvoker implements InvocationHandler {
         if (method.getName().equals("equals")) {
             return false;
         }
-        String path = buildPath(method);
+        String path = buildPath(proxy, method);
         if ((endPointsByPath == null) || (trainingEndPointsByPath == null)) {
             throw new PosServerException("endPointsByPath == null and/or trainingEndPointsByPath == null.  This class has not been fully initialized by Spring");
         }
@@ -296,7 +296,7 @@ public class EndpointInvoker implements InvocationHandler {
         Map<String, Object> endpointsByPathMap = getEndpointsByPathMapForImplementation(implementation);
         Object endpointObj = endpointsByPathMap.get(path);
 
-        ServiceSpecificConfig config = getSpecificConfig(method);
+        ServiceSpecificConfig config = getSpecificConfig(proxy, method);
         EndpointSpecificConfig endConfig = null;
         String endpointImplementation = null;
         if(endpointObj != null) {
@@ -367,8 +367,8 @@ public class EndpointInvoker implements InvocationHandler {
         }
     }
 
-    private ServiceSpecificConfig getSpecificConfig(Method method) {
-        String serviceName = AbstractInvocationStrategy.getServiceName(method);
+    private ServiceSpecificConfig getSpecificConfig(Object service, Method method) {
+        String serviceName = AbstractInvocationStrategy.getServiceName(service, method);
         if (StringUtils.isNotBlank(serviceName)) {
             String deviceId = clientContext.get("deviceId");
             if(deviceId == null) {

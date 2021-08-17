@@ -193,7 +193,7 @@ public class RemoteOnlyStrategy extends AbstractInvocationStrategy implements II
 
     protected String buildUrl(ProfileConfig profileConfig, Object proxy, Method method, Object[] args) {
         String url = profileConfig.getUrl();
-        String path = buildPath(method);
+        String path = buildPath(proxy, method);
         url = String.format("%s%s", url, path);
         return url;
     }
