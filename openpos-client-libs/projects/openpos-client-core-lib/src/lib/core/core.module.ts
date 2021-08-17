@@ -48,8 +48,6 @@ import locale_enCA from '@angular/common/locales/en-CA';
 import locale_frCA from '@angular/common/locales/fr-CA';
 import { LocationService, PROVIDERS } from './services/location.service';
 import { LocationProviderDefault } from './location-providers/location-provider-default';
-import { ConsoleIntercepter, LOGGERS } from './logging/console-interceptor.service';
-import { ServerLogger } from './logging/server-logger.service';
 import { CLIENTCONTEXT } from './client-context/client-context-provider.interface';
 import { TimeZoneContext } from './client-context/time-zone-context';
 import { UIDataMessageService } from './ui-data-message/ui-data-message.service';
@@ -83,6 +81,9 @@ import { CapacitorZeroconf } from './startup/zeroconf/capacitor-zeroconf';
 import { CapacitorService } from './services/capacitor.service';
 import { LoyaltySignupService } from './services/loyalty-signup.service';
 import { DebugImageScanner } from './platform-plugins/barcode-scanners/debug-image-scanner/debug-image-scanner.service';
+import { CommerceServerSinkModule } from './logging/commerce-server/commerce-server-sink.module';
+import { NewRelicSinkModule } from './logging/new-relic/new-relic-sink.module';
+import { ConfigProvidersModule } from './platforms/config-provider/config-providers.module';
 
 registerLocaleData(locale_enCA, 'en-CA');
 registerLocaleData(locale_frCA, 'fr-CA');
@@ -111,7 +112,10 @@ registerLocaleData(locale_frCA, 'fr-CA');
         BrowserModule,
         BrowserAnimationsModule,
         NgxElectronModule,
-        ToastrModule.forRoot()
+        ToastrModule.forRoot(),
+        CommerceServerSinkModule,
+        NewRelicSinkModule,
+        ConfigProvidersModule
     ],
     exports: [
         BrowserModule,
@@ -170,7 +174,6 @@ registerLocaleData(locale_frCA, 'fr-CA');
         TrainingOverlayService,
         ConfigurationService,
         KeyPressProvider,
-        { provide: LOGGERS, useExisting: ServerLogger, multi: true, deps: [HttpClient, PersonalizationService, ConsoleIntercepter] },
         HelpTextService,
         { provide: CLIENTCONTEXT, useClass: TimeZoneContext, multi: true },
         { provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher },
@@ -187,7 +190,6 @@ export class CoreModule {
 
     constructor(@Optional() @SkipSelf() parentModule: CoreModule,
                 private injector: Injector,
-                logger: ConsoleIntercepter,
                 toastService: ToastService,
                 uiDataService: UIDataMessageService,
                 clientExecutableService: ClientExecutableService,
