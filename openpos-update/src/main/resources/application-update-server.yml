@@ -1,9 +1,22 @@
-dollar: $
-openpos:
-  update:
-    softwareProvider: fileSystemSoftwareProvider
-    installUrl: http://localhost:6142
-    installBasePath: ${dollar}{user.dir}
-    fileSystemSoftwareProvider:
-      artifactExtension: zip
-      baseDir: /Users/cshenso/Downloads/artifacts
+server:
+  jetty:
+    DOC__max-http-form-post-size: "SymmetricDS sends ACKs as post messages.  If you send too many batches the post can exceed the default size"
+    max-http-form-post-size: 10MB
+  DOC__port: "The port that the web server will use.  The default port is a shout out to the 614 area code"
+  port: 6145
+
+spring:
+  config:
+
+    # Spring >2.4 changes configuration a little which causes some problems, for now lets turn this legacy processing on
+    # to match the behavior pre-upgrade. See https://stackoverflow.com/a/64911924/1148915
+    use-legacy-processing: true
+  datasource:
+    DOC__initialize: "Turn off Spring Boot's database connection pool in favor of maintaining our own"
+    initialize: false
+  main:
+    allow-bean-definition-overriding: true
+  servlet:
+    multipart:
+      maxFileSize: 100MB
+      maxRequestSize: 100MB
