@@ -1,6 +1,5 @@
 package org.jumpmind.pos.core.service;
 
-import org.jumpmind.pos.core.model.StartupMessage;
 import org.jumpmind.pos.devices.model.DeviceModel;
 import org.jumpmind.pos.util.Version;
 import org.jumpmind.pos.util.event.DeviceConnectedEvent;
@@ -109,7 +108,7 @@ public class SessionSubscribedListener implements ApplicationListener<SessionSub
                 return;
             }
 
-            IStateManager stateManager = stateManagerContainer.retrieve(deviceId);
+            IStateManager stateManager = stateManagerContainer.retrieve(deviceId, true);
             boolean created = false;
             DeviceModel sessionDevice = sessionAuthTracker.getDeviceModel(sessionId);
             String appId = sessionDevice != null ? sessionDevice.getAppId() : null;

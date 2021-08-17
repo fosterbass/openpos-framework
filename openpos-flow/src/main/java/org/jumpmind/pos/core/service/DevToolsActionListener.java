@@ -14,7 +14,6 @@ import org.jumpmind.pos.core.model.MessageType;
 import org.jumpmind.pos.core.model.OpenposBarcodeType;
 import org.jumpmind.pos.core.model.ScanData;
 import org.jumpmind.pos.devices.DeviceNotFoundException;
-import org.jumpmind.pos.devices.model.DeviceAuthModel;
 import org.jumpmind.pos.devices.model.DeviceModel;
 import org.jumpmind.pos.devices.model.DevicesRepository;
 import org.jumpmind.pos.server.model.Action;
@@ -78,7 +77,7 @@ public class DevToolsActionListener implements IActionListener {
     
     @Override
     public void actionOccurred(String deviceId, Action action) {
-        IStateManager stateManager = stateManagerFactory.retrieve(deviceId);
+        IStateManager stateManager = stateManagerFactory.retrieve(deviceId, true);
         
         if (action.getName().contains("DevTools::Scan")) {
             SimulatedScannerService service = SimulatedScannerService.instance;

@@ -2,11 +2,9 @@ package org.jumpmind.pos.core.flow;
 
 import org.jumpmind.pos.core.flow.config.IFlowConfigProvider;
 import org.jumpmind.pos.util.clientcontext.ClientContext;
-import org.jumpmind.pos.util.startup.DeviceStartupTaskConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.context.ApplicationContext;
 
@@ -42,7 +40,7 @@ public class StateManagerContainerTest {
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 50; j++) {
                 container.create("pos", "0000-"+i, null, null);
-                container.retrieve("0000-"+j);
+                container.retrieve("0000-"+j, true);
                 container.removeSessionIdVariables("blah");
                 container.getAllStateManagers();
                 container.remove("0000-"+j);
