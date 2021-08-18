@@ -143,7 +143,7 @@ public class SessionSubscribedListenerTest {
         Mockito.when(sessionAuthTracker.isSessionAuthenticated(Mockito.any())).thenReturn(true);
         Mockito.when(sessionAuthTracker.isSessionCompatible(Mockito.any())).thenReturn(true);
         Mockito.when(sessionAuthTracker.getDeviceModel(Mockito.anyString())).thenReturn(DeviceModel.builder().deviceId("11111-111").appId("pos").build());
-        Mockito.when(stateManagerContainer.retrieve(Mockito.anyString())).thenReturn(null);
+        Mockito.when(stateManagerContainer.retrieve(Mockito.anyString(), Mockito.anyBoolean())).thenReturn(null);
         IStateManager stateManager = makeMockStateManager();
         Mockito.when(stateManagerContainer.create(Mockito.anyString(), Mockito.anyString(), Mockito.any(), Mockito.any())).thenReturn(stateManager);
 
@@ -168,7 +168,7 @@ public class SessionSubscribedListenerTest {
         Mockito.when(sessionAuthTracker.isSessionCompatible(Mockito.any())).thenReturn(true);
 
         IStateManager stateManager = makeMockStateManager();
-        Mockito.when(stateManagerContainer.retrieve(Mockito.anyString())).thenReturn(stateManager);
+        Mockito.when(stateManagerContainer.retrieve(Mockito.anyString(), Mockito.anyBoolean())).thenReturn(stateManager);
 
         sessionSubscribedListener.onApplicationEvent(
                 makeMockEvent(

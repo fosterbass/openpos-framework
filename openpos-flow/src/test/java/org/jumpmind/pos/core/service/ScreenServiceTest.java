@@ -52,7 +52,7 @@ public class ScreenServiceTest {
      */
     @Test
     public void test_Action_sent_withLinkedHashMap_onMessageWithForm() {
-        when(stateMgrCtr.retrieve(anyString())).thenReturn(stateMgr);
+        when(stateMgrCtr.retrieve(anyString(), anyBoolean())).thenReturn(stateMgr);
         ApplicationState appState = new ApplicationState();
         appState.setLastScreen(new DummyFormUIMessage());
         when(stateMgr.getApplicationState()).thenReturn(appState);

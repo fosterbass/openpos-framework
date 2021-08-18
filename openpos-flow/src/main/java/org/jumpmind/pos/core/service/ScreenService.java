@@ -103,7 +103,7 @@ public class ScreenService implements IScreenService, IActionListener {
 
         logger.debug("Received a request for content: {}", contentPath);
 
-        IStateManager stateManager = stateManagerContainer.retrieve(deviceId);
+        IStateManager stateManager = stateManagerContainer.retrieve(deviceId, true);
         if (stateManager != null) {
             String contentType = MimeTypeUtil.getContentType(contentPath);
             response.setContentType(contentType);
@@ -204,7 +204,7 @@ public class ScreenService implements IScreenService, IActionListener {
     @Override
     public void actionOccurred(String deviceId, Action action) {
         logger.trace("actionOccurred -> deviceId: {}, action: {}", deviceId, action != null ? action.getName() : null);
-        IStateManager stateManager = stateManagerContainer.retrieve(deviceId);
+        IStateManager stateManager = stateManagerContainer.retrieve(deviceId, true);
         if (stateManager != null) {
             try {
                 stateManagerContainer.setCurrentStateManager(stateManager);
@@ -241,7 +241,7 @@ public class ScreenService implements IScreenService, IActionListener {
     }
 
     protected UIMessage removeLastDialog(String deviceId) {
-        IStateManager stateManager = stateManagerContainer.retrieve(deviceId);
+        IStateManager stateManager = stateManagerContainer.retrieve(deviceId, true);
         ApplicationState applicationState = stateManager != null ? stateManager.getApplicationState() : null;
         if (applicationState != null && applicationState.getLastDialog() != null) {
             UIMessage lastDialog = applicationState.getLastDialog();
@@ -254,7 +254,7 @@ public class ScreenService implements IScreenService, IActionListener {
 
     @Override
     public UIMessage getLastDialog(String deviceId) {
-        IStateManager stateManager = stateManagerContainer.retrieve(deviceId);
+        IStateManager stateManager = stateManagerContainer.retrieve(deviceId, true);
         ApplicationState applicationState = stateManager != null ? stateManager.getApplicationState() : null;
         if (applicationState != null) {
             return applicationState.getLastDialog();
@@ -265,7 +265,7 @@ public class ScreenService implements IScreenService, IActionListener {
 
     @Override
     public UIMessage getLastScreen(String deviceId) {
-        IStateManager stateManager = stateManagerContainer.retrieve(deviceId);
+        IStateManager stateManager = stateManagerContainer.retrieve(deviceId, true);
         ApplicationState applicationState = stateManager != null ? stateManager.getApplicationState() : null;
         if (applicationState != null) {
             return applicationState.getLastScreen();
@@ -276,7 +276,7 @@ public class ScreenService implements IScreenService, IActionListener {
     
     @Override
     public UIMessage getLastPreInterceptedScreen(String deviceId) {
-        IStateManager stateManager = stateManagerContainer.retrieve(deviceId);
+        IStateManager stateManager = stateManagerContainer.retrieve(deviceId, true);
         ApplicationState applicationState = stateManager != null ? stateManager.getApplicationState() : null;
         if (applicationState != null) {
             return applicationState.getLastPreInterceptedScreen();
@@ -287,7 +287,7 @@ public class ScreenService implements IScreenService, IActionListener {
     
     @Override
     public UIMessage getLastPreInterceptedDialog(String deviceId) {
-        IStateManager stateManager = stateManagerContainer.retrieve(deviceId);
+        IStateManager stateManager = stateManagerContainer.retrieve(deviceId, true);
         ApplicationState applicationState = stateManager != null ? stateManager.getApplicationState() : null;
         if (applicationState != null) {
             return applicationState.getLastPreInterceptedDialog();
@@ -315,7 +315,7 @@ public class ScreenService implements IScreenService, IActionListener {
 
     @Override
     public void showScreen(String deviceId, UIMessage screen, Map<String, UIDataMessageProvider<?>> uiDataMessageProviders) {
-        IStateManager stateManager = stateManagerContainer.retrieve(deviceId);
+        IStateManager stateManager = stateManagerContainer.retrieve(deviceId, true);
         if (screen != null && stateManager != null) {
             ApplicationState applicationState = stateManager.getApplicationState();
             screen.setSequenceNumber(applicationState.incrementAndScreenSequenceNumber());

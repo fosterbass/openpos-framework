@@ -33,7 +33,7 @@ public class AudioActionListener implements IActionListener {
 
     @Override
     public void actionOccurred(String deviceId, Action action) {
-        IStateManager stateManager = stateManagerContainer.retrieve(deviceId);
+        IStateManager stateManager = stateManagerContainer.retrieve(deviceId, true);
         audioConfig = audioConfig != null ? audioConfig : new AudioConfig();
 
         if ("GetConfig".equals(action.getName())) {

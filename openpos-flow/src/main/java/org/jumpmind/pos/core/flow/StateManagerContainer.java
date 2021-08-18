@@ -78,9 +78,11 @@ public class StateManagerContainer implements IStateManagerContainer, Applicatio
     }
 
     @Override
-    public synchronized IStateManager retrieve(String deviceId) {
+    public synchronized IStateManager retrieve(String deviceId, boolean forUseAsDevice) {
         IStateManager stateManager = stateManagersByDeviceId.get(deviceId);
-        setCurrentStateManager(stateManager);
+        if (forUseAsDevice) {
+            setCurrentStateManager(stateManager);
+        }
         return stateManager;
     }
 
@@ -106,6 +108,16 @@ public class StateManagerContainer implements IStateManagerContainer, Applicatio
             stateManager.init(appId, deviceId);
         }
         return stateManager;
+    }
+
+    @Override
+    public void changeAppId(String deviceId, String appId) {
+        StateManager stateManager = stateManagersByDeviceId.get(deviceId);
+        if (stateManager != null) {
+            stateManager.getApplicationState().setAppId(appId);
+            stateManager.setInitialFlowConfig(flowConfigProvider.getConfig(appId, deviceId));
+            stateManager.reset();
+        }
     }
 
     private List<TransitionStepConfig> createTransitionSteps(String appId, String deviceId) {
