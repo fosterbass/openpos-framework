@@ -9,7 +9,7 @@ $loyalty-signup-column-gap: 8px;
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: min-content 1fr;
-    gap: 0px 0px;
+    gap: 0 0;
     grid-template-areas:
             "header"
             "body";
@@ -109,17 +109,39 @@ $loyalty-signup-column-gap: 8px;
                 grid-template-rows: auto 1fr;
                 gap: 10px 5px;
                 grid-template-areas:
-                    "Icon Name"
-                    "Memberships Memberships";
+                    "Icon              Name"
+                    "Memberships       Memberships"
+                    "MembershipRewards MembershipRewards";
+
+                &.tablet,
+                &.mobile {
+                    gap: 5px;
+                }
+
                 .name {
                     grid-area: Name;
-                    .customer-name {
+                    white-space: normal;
+
+                    .membership-customer-email {
                         overflow: hidden;
+                        text-overflow: ellipsis;
                         white-space: normal;
+                    }
+                    .customer-name {
                         @extend %text-md;
-                        .loyalty-keybind {
-                            margin-left: 10px;
+                    }
+                    .membership-customer-email,
+                    .membership-tier {
+                        @extend %text-xs;
+                        line-height: 1.3rem;
+
+                        &.tablet,
+                        &.mobile {
+                            line-height: 1rem;
                         }
+                    }
+                    .loyalty-keybind {
+                        margin-left: 10px;
                     }
                 }
                 .icon {
@@ -157,6 +179,48 @@ $loyalty-signup-column-gap: 8px;
                 }
             }
         }
+    }
+}
+
+.membership-rewards {
+    grid-area: MembershipRewards;
+}
+
+.membership-rewards-title {
+    @extend %text-xs;
+    font-weight: normal;
+    line-height: $text-xs*2;
+    margin: 0;
+
+    &.tablet,
+    &.mobile {
+        font-size: $text-xs-mobile;
+        line-height: $text-xs-mobile*2;
+    }
+}
+
+.membership-rewards-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    /* Show 3 items before scrolling */
+    max-height: 4.5rem;
+    overflow: auto;
+
+    &.tablet,
+    &.mobile {
+        /* Show 2 items before scrolling */
+        max-height: 2rem;
+    }
+}
+
+.membership-rewards-list-item {
+    @extend %text-xs;
+    line-height: $text-xs*1.25;
+
+    &.tablet,
+    &.mobile {
+        line-height: $text-xs-mobile*1.25;
     }
 }
 

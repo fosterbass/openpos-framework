@@ -6,4 +6,5 @@ export interface Membership {
 
 export interface MembershipDisplayComponentInterface {
     checkMarkIcon: string;
+    uncheckMarkIcon: string;
 }

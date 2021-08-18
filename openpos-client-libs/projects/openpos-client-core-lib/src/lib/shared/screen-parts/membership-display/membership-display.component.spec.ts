@@ -13,15 +13,15 @@ import {CLIENTCONTEXT} from '../../../core/client-context/client-context-provide
 import {KeyPressProvider} from '../../providers/keypress.provider';
 import {Subscription} from 'rxjs/internal/Subscription';
 
-class MockActionService {};
-class MockMatDialog {};
-class MockElectronService {};
-class ClientContext {};
+class MockActionService {}
+class MockMatDialog {}
+class MockElectronService {}
+class ClientContext {}
 class MockKeyPressProvider {
     subscribe(): Subscription {
         return new Subscription();
     }
-};
+}
 
 describe('MembershipDisplayComponent', () => {
     let component: MembershipDisplayComponent;
@@ -48,7 +48,8 @@ describe('MembershipDisplayComponent', () => {
         fixture = TestBed.createComponent(MembershipDisplayComponent);
         component = fixture.componentInstance;
         component.screenData = {
-            checkMarkIcon: 'check'
+            checkMarkIcon: 'check',
+            uncheckMarkIcon: 'uncheck'
         };
         membership = {
             id: '1',
@@ -109,6 +110,10 @@ describe('MembershipDisplayComponent', () => {
 
             it('does not have the check icon', () => {
                validateDoesNotExist(fixture, 'mat-chip mat-icon');
+            });
+
+            it('displays the uncheck icon', () => {
+                validateIcon(fixture, 'mat-chip app-icon', 'uncheck');
             });
         });
     });

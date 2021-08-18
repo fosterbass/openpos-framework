@@ -21,7 +21,7 @@ export interface CustomerDetails {
     itemHistory: PurchasedItem[],
     birthDate: string,
     memberTier: string
-};
+}
 
 export interface CustomerInformationComponentInterface {
     emailIcon: string;

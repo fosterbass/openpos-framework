@@ -20,7 +20,7 @@
                 </div>
             </div>
             <div class="memberships" *ngIf="screen.membershipEnabled">
-                <div class="details-row" *ngIf="screen.memberTierLabel != undefined">{{screen.memberTierLabel}}: {{screen.customer.memberTier}}</div>
+                <div class="details-row" *ngIf="screen.memberTierLabel != undefined">{{screen.memberTierLabel}} {{screen.customer.memberTier}}</div>
                 <div class="wrapper">
                     <div class="list">
                         <div class="details-label" *ngIf="!(isMobile | async)">
@@ -60,7 +60,7 @@
                     </div>
                     <app-membership-points-display *ngIf="!(isMobile | async) && screen.membershipPointsEnabled" class="points"></app-membership-points-display>
                     <div *ngIf="!(screen.customer.rewards && screen.customer.rewards.length)" class="no-items" responsive-class>
-                        {{screen.noPromotionsText}}
+                        {{screen.noPromotionsLabel}}
                     </div>
                 </mat-card>
             </mat-tab>
@@ -135,7 +135,7 @@
                         </div>
                     </div>
                     <div *ngIf="!(screen.customer.rewardHistory && screen.customer.rewardHistory.length)" class="no-items" responsive-class>
-                        {{screen.noPromotionsText}}
+                        {{screen.noPromotionsLabel}}
                     </div>
                     <app-membership-points-display *ngIf="!(isMobile | async) && screen.membershipPointsEnabled"></app-membership-points-display>
                 </mat-card>

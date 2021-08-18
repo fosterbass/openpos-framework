@@ -1,12 +1,12 @@
 import {IActionItem} from '../../../core/actions/action-item.interface';
 
 export interface Reward {
-    promotionId: string;
+    promotionId?: string;
     name: string;
-    expirationDate: string;
+    expirationDate?: string;
     amount: number;
-    applyButton: IActionItem;
-};
+    applyButton?: IActionItem;
+}
 
 export interface RewardsLineItemComponentInterface {
     expiresLabel: string;

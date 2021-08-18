@@ -24,7 +24,7 @@ public class CustomerDetailsUIMessage extends UIMessage {
 
     private String membershipLabel;
     private String contactLabel;
-    private String noPromotionsText;
+    private String noPromotionsLabel;
     private String rewardsLabel;
     private String expiresLabel;
     private String rewardHistoryLabel;
@@ -42,6 +42,7 @@ public class CustomerDetailsUIMessage extends UIMessage {
     private String loyaltyNumberIcon;
     private String locationIcon;
     private String checkMarkIcon;
+    private String uncheckMarkIcon;
     private String expiredIcon;
     private String applyIcon;
     private String birthDateIcon;

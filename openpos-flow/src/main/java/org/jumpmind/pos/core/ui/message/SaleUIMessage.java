@@ -39,6 +39,7 @@ public class SaleUIMessage extends UIMessage {
     private String customerMissingInfoIcon;
     private String customerMissingInfoLabel;
     private String checkMarkIcon;
+    private String uncheckMarkIcon;
     private String noMembershipsFoundLabel;
     private ActionItem mobileLoyaltyButton;
     private ActionItem linkedCustomerButton;
@@ -61,6 +62,16 @@ public class SaleUIMessage extends UIMessage {
     private String loyaltySignupInProgressIcon;
     private String loyaltySignupInProgressDetailsIcon;
     private ActionItem loyaltyCancelButton;
+
+    private boolean rewardsVisibleOnLinkButton;
+    private boolean membershipVisibleOnLinkButton;
+    private String customerEmail;
+    private String memberTierLabel;
+    private String rewardsLabel;
+    private String memberTier;
+    private String noPromotionsLabel;
+    private String loyaltyIcon;
+    private List<UILoyaltyReward> loyaltyRewards;
 
     public SaleUIMessage() {
         this.setScreenType(UIMessageType.SALE);
