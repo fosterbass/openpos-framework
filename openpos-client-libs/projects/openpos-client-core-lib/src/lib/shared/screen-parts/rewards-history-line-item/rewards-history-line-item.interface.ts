@@ -2,9 +2,10 @@ export interface RewardHistory {
     promotionId: string;
     name: string;
     expirationDate: string;
-    amount: number;
+    rewardType: string;
+    reward: number;
     redeemed: boolean;
-};
+}
 
 export interface RewardsHistoryLineItemComponentInterface {
     redeemedLabel: string;

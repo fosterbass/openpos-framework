@@ -1,6 +1,6 @@
 @import "../../../styles/mixins/typography";
 
-.grid-container {
+.grid-container, .points-container {
   display: grid;
   grid-template-columns: 1fr 10fr;
   grid-template-rows: 1fr;
@@ -8,6 +8,8 @@
   grid-gap: 1em;
   grid-template-areas:
     "icon details";
+  align-items: center;
+  
   .icon {
     grid-area: icon;
   }

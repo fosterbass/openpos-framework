@@ -4,25 +4,27 @@ import {RewardHistory} from '../rewards-history-line-item/rewards-history-line-i
 import { IActionItem } from '../../../core/actions/action-item.interface';
 
 export interface CustomerDetails {
-    name: string,
-    loyaltyNumber: string,
-    phoneNumber: string,
-    email: string,
+    name: string;
+    loyaltyNumber: string;
+    phoneNumber: string;
+    phoneNumberType: string;
+    email: string;
+    emailType: string;
     address: {
         line1: string,
         line2: string,
         city: string,
         state: string,
-        postalCode: string
-    },
-    memberships: Membership[],
-    rewards: Reward[],
-    rewardHistory: RewardHistory[],
-    itemHistory: PurchasedItem[],
-    birthDate: string,
-    memberTier: string
-};
-
+        postalCode: string,
+        type: string
+    };
+    memberships: Membership[];
+    itemHistory: PurchasedItem[];
+    numberOfActiveRewards: number;
+    numberOfHistoricRewards: number;
+    birthDate: string;
+    memberTier: string;
+}
 export interface CustomerInformationComponentInterface {
     emailIcon: string;
     phoneIcon: string;
@@ -39,7 +41,7 @@ export interface PurchasedItem {
     labels: UILabel[];
     transaction: TransactionIdentifier;
     transactionDetailsAction: IActionItem;
-    itemId: String;
+    itemId: string;
     itemDetailsAction: IActionItem;
 }
 

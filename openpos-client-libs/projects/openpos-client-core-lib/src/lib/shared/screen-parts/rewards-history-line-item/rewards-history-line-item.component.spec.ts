@@ -1,5 +1,5 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core'
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import {MatDialog} from '@angular/material';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {Observable, of, Subscription} from 'rxjs';
@@ -14,15 +14,15 @@ import {RewardHistory, RewardsHistoryLineItemComponentInterface} from './rewards
 import {validateDoesNotExist, validateExist, validateIcon, validateText} from '../../../utilites/test-utils';
 import {By} from '@angular/platform-browser';
 
-class MockActionService {};
-class MockMatDialog {};
+class MockActionService {}
+class MockMatDialog {}
 class MockKeyPressProvider {
     subscribe(): Subscription {
         return new Subscription();
     }
-};
-class MockElectronService {};
-class ClientContext {};
+}
+class MockElectronService {}
+class ClientContext {}
 
 describe('RewardsHistoryLineItemComponent', () => {
     let component: RewardsHistoryLineItemComponent;
@@ -31,13 +31,13 @@ describe('RewardsHistoryLineItemComponent', () => {
         observe(): Observable<boolean> {
             return of(false);
         }
-    };
+    }
 
     class MockOpenposMediaServiceMobileTrue {
         observe(): Observable<boolean> {
             return of(true);
         }
-    };
+    }
 
     describe('shared', () => {
         beforeEach( () => {
@@ -112,7 +112,7 @@ describe('RewardsHistoryLineItemComponent', () => {
 
                     const nameElement = fixture.debugElement.query(By.css('.details .name'));
                     expect(nameElement.nativeElement.classList).toContain('expired');
-                })
+                });
 
                 describe('expiration', () => {
                     describe('when there is an expiration date', () => {
@@ -144,21 +144,42 @@ describe('RewardsHistoryLineItemComponent', () => {
             describe('reward', () => {
                 describe('when reward has an amount', () => {
                     beforeEach(() => {
-                        component.reward.amount = 200;
+                        component.reward.reward = 200;
                         fixture.detectChanges();
                     });
                     it('renders the app-currency-text', () => {
                         validateExist(fixture, '.reward app-currency-text');
                     });
+
+                    it('does not renders the .pctReward', () => {
+                        validateDoesNotExist(fixture, '.reward .pctReward');
+                    });
                 });
 
                 describe('when reward does not have an amount', () => {
                     beforeEach(() => {
-                        component.reward.amount = undefined;
+                        component.reward.reward = undefined;
                         fixture.detectChanges();
                     });
                     it('does not render the app-currency-text', () => {
                         validateDoesNotExist(fixture, '.reward app-currency-text');
+                    });
+                });
+
+                describe('when reward has a percent amount', () => {
+                    beforeEach(() => {
+                      component.reward.rewardType = 'PCT';
+                      component.reward.reward = .5;
+                      fixture.detectChanges();
+                    });
+
+                    it('does not render the app-currency-text', () => {
+                        validateDoesNotExist(fixture, '.reward app-currency-text');
+                    });
+
+                    it('does render a XX%', () => {
+                        validateExist(fixture, '.reward .pctReward');
+                        validateText(fixture, '.reward .pctReward', '50%');
                     });
                 });
             });
@@ -166,12 +187,12 @@ describe('RewardsHistoryLineItemComponent', () => {
             describe('status', () => {
                it('shows the redeemedLabel when the reward is redeemed', () => {
                    component.screenData.redeemedLabel = 'redeemed label';
-                    component.reward.redeemed = true;
-                    fixture.detectChanges();
-                    validateText(fixture, '.status', component.screenData.redeemedLabel);
+                   component.reward.redeemed = true;
+                   fixture.detectChanges();
+                   validateText(fixture, '.status', component.screenData.redeemedLabel);
                });
 
-                it('shows the expiredLabel when the reward is not redeemed', () => {
+               it('shows the expiredLabel when the reward is not redeemed', () => {
                     component.screenData.expiredLabel = 'expired label';
                     component.reward.redeemed = false;
                     fixture.detectChanges();

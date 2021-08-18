@@ -5,18 +5,11 @@ import {DialogComponent} from '../../../shared/decorators/dialog-component.decor
 import {PosScreen} from '../../pos-screen/pos-screen.component';
 import {Observable} from 'rxjs';
 import {MediaBreakpoints, OpenposMediaService} from '../../../core/media/openpos-media.service';
-import { PurchasedItem } from '../../../shared/screen-parts/customer-information/customer-information.interface';
-import { UIDataMessageService } from '../../../core/ui-data-message/ui-data-message.service';
-import {IActionItem} from "../../../core/actions/action-item.interface";
-import {Configuration} from "../../../configuration/configuration";
-import {ISelectableListData} from "../../../shared/components/selectable-item-list/selectable-list-data.interface";
-import {SelectableItemListComponentConfiguration} from "../../../shared/components/selectable-item-list/selectable-item-list.component";
-import {SelectionMode} from "../../../core/interfaces/selection-mode.enum";
-import {Reward} from "../../../shared/screen-parts/rewards-line-item/rewards-line-item.interface";
-import {KeyPressProvider} from "../../../shared/providers/keypress.provider";
-import {Subscription} from "rxjs/internal/Subscription";
-import {KeyboardClassKey} from "../../../keyboard/enums/keyboard-class-key.enum";
-import {ActionService} from "../../../core/actions/action.service";
+import {IActionItem} from '../../../core/actions/action-item.interface';
+import {Configuration} from '../../../configuration/configuration';
+import {KeyPressProvider} from '../../../shared/providers/keypress.provider';
+import {ActionService} from '../../../core/actions/action.service';
+import { MatTabChangeEvent } from '@angular/material';
 
 @DialogComponent({
   name: 'CustomerDetailsDialog'
@@ -28,29 +21,29 @@ import {ActionService} from "../../../core/actions/action.service";
 })
 export class CustomerDetailsDialogComponent extends PosScreen<CustomerDetailsDialogInterface> implements OnDestroy {
 
+  changedToRewardTab = true;
+  changedToRewardHistoryTab = false;
+  changedToItemHistoryTab = false;
+  pagedContent: string;
   isMobile: Observable<boolean>;
-  spacebarSubscription: Subscription;
   readonly itemsHistoryFilterController = new ItemsHistoryFilterController(this);
 
   constructor(injector: Injector,
               public actionService: ActionService,
               private media: OpenposMediaService,
-              protected keyPresses: KeyPressProvider,
-              private resultsService: UIDataMessageService) {
+              protected keyPresses: KeyPressProvider) {
     super(injector);
     this.initIsMobile();
-    this.subscribeSpacebar();
   }
 
-  public subscribeSpacebar() {
-    this.spacebarSubscription = this.keyPresses.subscribe(KeyboardClassKey.Space, 1, (event: KeyboardEvent) => {
-      if (event.repeat || event.type !== 'keydown' || !Configuration.enableKeybinds) { return; }
-      if (event.type === 'keydown' && this.selectedReward) {
-        if(this.selectedReward.actionButton && this.selectedReward.actionButton.enabled) {
-          this.actionService.doAction(this.selectedReward.actionButton);
-        }
-      }
-    })
+  buildScreen() {
+    if (this.screen.itemHistoryEnabled) {
+      this.itemsHistoryFilterController.build();
+    }
+  }
+
+  selectContent(content: string): void {
+    this.pagedContent = content;
   }
 
   initIsMobile(): void {
@@ -64,66 +57,37 @@ export class CustomerDetailsDialogComponent extends PosScreen<CustomerDetailsDia
     ]));
   }
 
-  index = 0;
-  selectedReward: Reward;
-  public onItemChange(event: any): void {
-    if(event == -1) {
-      this.actionService.doAction(this.screen.backButton);
-    } else {
-      this.index = event;
-      this.selectedReward = this.screen.customer.rewards[event];
+  onTabChanged(event: MatTabChangeEvent) {
+    if (event.tab.textLabel === this.getRewardsLabel()) {
+      this.changedToRewardTab = true;
+      this.changedToRewardHistoryTab = false;
+      this.changedToItemHistoryTab = false;
+    } else if (event.tab.textLabel === this.screen.rewardHistoryLabel) {
+      this.changedToRewardHistoryTab = true;
+      this.changedToRewardTab = false;
+      this.changedToItemHistoryTab = false;
+    } else if (event.tab.textLabel === this.screen.itemHistoryLabel) {
+      this.changedToItemHistoryTab = true;
+      this.changedToRewardTab = false;
+      this.changedToRewardHistoryTab = false;
     }
   }
 
-  listData: Observable<ISelectableListData<Reward>>;
-  listConfig: SelectableItemListComponentConfiguration;
-
-  allRewards: Map<number, Reward> = new Map<number, Reward>();
-  allDisabledRewards: Map<number, Reward> = new Map<number, Reward>();
-
-  buildScreen() {
-    this.itemsHistoryFilterController.build();
-
-    for (let i = 0; i < this.screen.customer.rewards.length; i++) {
-      const reward = this.screen.customer.rewards[i];
-      reward.enabled = (reward.actionButton && reward.actionButton.enabled == true);
-      this.allRewards.set(i, reward);
-      if(!reward.enabled) {
-        this.allDisabledRewards.set(i, reward);
-      }
-    }
-
-      this.listData = new Observable<ISelectableListData<Reward>>((observer) => {
-        observer.next({
-          items: this.allRewards,
-          disabledItems: this.allDisabledRewards
-        } as ISelectableListData<Reward>);
-      });
-
-    this.listConfig = new SelectableItemListComponentConfiguration();
-    if(this.allRewards.size === this.allDisabledRewards.size) {
-      this.index = -1;
-    } else {
-      this.listConfig.defaultSelectItemIndex = this.index;
-      this.selectedReward = this.screen.customer.rewards[this.index];
-    }
-    this.listConfig.selectionMode = SelectionMode.Single;
-    this.listConfig.numItemsPerPage = Number.MAX_VALUE;
-    this.listConfig.totalNumberOfItems = this.screen.customer.rewards.length;
+  getRewardsLabel(): string {
+    return this.screen.rewardsLabel +
+    ((this.screen.customer.numberOfActiveRewards !== undefined) ? ' (' + this.screen.customer.numberOfActiveRewards + ')' : '');
   }
 
-  getRewardsLabel() : string {
-    return this.screen.rewardsLabel + ((this.screen.customer.rewards) ? ' (' + this.screen.customer.rewards.length + ')': '');
+  hasRewards(): boolean {
+    return this.screen.customer && this.screen.customer.numberOfActiveRewards && this.screen.customer.numberOfActiveRewards > 0;
+  }
+
+  hasRewardsHistory(): boolean {
+    return this.screen.customer && this.screen.customer.numberOfHistoricRewards && this.screen.customer.numberOfHistoricRewards > 0;
   }
 
   public keybindsEnabled(menuItem: IActionItem): boolean {
     return Configuration.enableKeybinds && !!menuItem.keybind && menuItem.keybind !== 'Enter';
-  }
-
-  ngOnDestroy() {
-    if (this.spacebarSubscription) {
-      this.spacebarSubscription.unsubscribe();
-    }
   }
 }
 
@@ -145,7 +109,7 @@ class ItemsHistoryFilterController {
   toDateFilterChanged(value: Date) {
     this.doItemHistoryFilterAction({ ...this.serverState, toDate: value.toISOString() });
   }
-  
+
   onFilterKeyPress(event: KeyboardEvent) {
     if (event.key === 'Enter') {
       if (event.target instanceof HTMLInputElement) {

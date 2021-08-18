@@ -8,9 +8,10 @@ import {CLIENTCONTEXT} from '../../../core/client-context/client-context-provide
 import {TimeZoneContext} from '../../../core/client-context/time-zone-context';
 import {ActionService} from '../../../core/actions/action.service';
 import {KeyPressProvider} from '../../providers/keypress.provider';
-import {validateIcon, validateText} from '../../../utilites/test-utils';
-import {MembershipPointsDisplayComponentInterface} from './membership-points-display.interface';
-import {MembershipPointsDisplayComponent} from './membership-points-display.component';
+import {validateExist, validateIcon, validateText} from '../../../utilites/test-utils';
+import {DualActionDialogHeaderComponent} from './dual-action-dialog-header.component';
+import {IActionItem} from '../../../core/actions/action-item.interface';
+import {DialogHeaderInterface} from '../dialog-header/dialog-header.interface';
 
 class MockActionService {}
 class MockMatDialog {}
@@ -22,16 +23,16 @@ class MockKeyPressProvider {
 class MockElectronService {}
 class ClientContext {}
 
-describe('MembershipPointsDisplayComponent', () => {
-    let component: MembershipPointsDisplayComponent;
-    let fixture: ComponentFixture<MembershipPointsDisplayComponent>;
+describe('DualActionDialogHeaderComponent', () => {
+    let component: DualActionDialogHeaderComponent;
+    let fixture: ComponentFixture<DualActionDialogHeaderComponent>;
 
     describe('shared', () => {
         beforeEach( () => {
             TestBed.configureTestingModule({
                 imports: [ HttpClientTestingModule],
                 declarations: [
-                    MembershipPointsDisplayComponent
+                    DualActionDialogHeaderComponent
                 ],
                 providers: [
                     { provide: ActionService, useClass: MockActionService },
@@ -45,17 +46,14 @@ describe('MembershipPointsDisplayComponent', () => {
                     NO_ERRORS_SCHEMA,
                 ]
             }).compileComponents();
-            fixture = TestBed.createComponent(MembershipPointsDisplayComponent);
+            fixture = TestBed.createComponent(DualActionDialogHeaderComponent);
             component = fixture.componentInstance;
 
             component.screenData = {
-                membershipPointsIcon: 'some icon',
-                pointsLabel: 'some label',
-                loyaltyProgramNameLabel: 'loyalty program name',
-                customer: {
-                    loyaltyPoints: 2
-                }
-            } as MembershipPointsDisplayComponentInterface;
+                backButton: { } as IActionItem,
+                headerIcon: 'header-icon',
+                headerText: 'My Header'
+            } as DialogHeaderInterface;
             fixture.detectChanges();
         });
 
@@ -63,20 +61,15 @@ describe('MembershipPointsDisplayComponent', () => {
             expect(component).toBeDefined();
         });
 
-        describe('component', () => {
-        });
-
         describe('template', () => {
-            it('has an icon that uses screenData.membershipPointsIcon', () => {
-               validateIcon(fixture, '.icon app-icon', component.screenData.membershipPointsIcon);
+            it('has a text header', () => {
+                validateText(fixture, '.header', component.screenData.headerText);
             });
-            describe('details', () => {
-                it('displays the loyaltyProgramName, loyaltyPoints of the customer, and the unit of the rewards program', () => {
-                    const expectedValue =   component.screenData.loyaltyProgramNameLabel + ': ' +
-                                            component.screenData.customer.loyaltyPoints + ' ' +
-                                            component.screenData.pointsLabel;
-                    validateText(fixture, '.details', expectedValue);
-                });
+            it('has a profile header icon', () => {
+                validateIcon(fixture, '.screen-icon', component.screenData.headerIcon);
+            });
+            it('has a close button', () => {
+                validateExist(fixture, '.back-button');
             });
         });
     });

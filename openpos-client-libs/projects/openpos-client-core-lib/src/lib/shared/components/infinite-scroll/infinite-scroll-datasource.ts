@@ -9,7 +9,7 @@ export class InfiniteScrollDatasource<T> extends DataSource<T> {
     private dataStream = new BehaviorSubject<(T | undefined)[]>([]);
     private readonly moreData: () => void;
 
-    constructor( data: Observable<T[]>, moreData: () => void, private dataLoadBuffer: number){
+    constructor( data: Observable<T[]>, moreData: () => void, private dataLoadBuffer: number) {
         super();
         this.moreData = moreData;
         this.subscription.add(data.subscribe( d => {
@@ -24,7 +24,7 @@ export class InfiniteScrollDatasource<T> extends DataSource<T> {
     connect(collectionViewer: CollectionViewer): Observable<T[] | ReadonlyArray<T>> {
 
         this.subscription.add(collectionViewer.viewChange.subscribe( range => {
-            if(range.end >= this.data.length - this.dataLoadBuffer){
+            if (range.end >= this.data.length - this.dataLoadBuffer) {
                 this.moreData();
             }
         }));
@@ -33,7 +33,7 @@ export class InfiniteScrollDatasource<T> extends DataSource<T> {
     }
 
     disconnect(collectionViewer: CollectionViewer): void {
-        if(this.subscription){
+        if (this.subscription) {
             this.subscription.unsubscribe();
         }
     }

@@ -111,8 +111,6 @@
         }
 
         .line {
-            padding: 10px;
-
             &:not(:last-child) {
                 border-bottom: 1px solid map-get($background, app-bar);
             }

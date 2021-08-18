@@ -13,7 +13,7 @@ export interface Reward {
 
     selected: boolean;
     enabled: boolean;
-};
+}
 
 export interface RewardsLineItemComponentInterface {
     expiresLabel: string;

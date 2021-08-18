@@ -4,10 +4,12 @@ import {CustomerDetails} from '../../../shared/screen-parts/customer-information
 
 export interface CustomerDetailsDialogInterface extends IAbstractScreen {
     message: string;
+    rewardsDataKey: string;
+    rewardsHistoryDataKey: string;
     customer: CustomerDetails;
     membershipEnabled: boolean;
     membershipPointsEnabled: boolean;
-    membershipLabel: String;
+    membershipLabel: string;
     appliedLabel: string;
     loyaltyPromotions: IActionItem;
     backButton: IActionItem;
@@ -27,12 +29,19 @@ export interface CustomerDetailsDialogInterface extends IAbstractScreen {
     itemHistoryLabel: string;
 
     appliedIcon: string;
+    applyIcon: string;
+    backIcon: string;
     membershipCardIcon: string;
-
-    itemsHistoryDataProviderKey: string;
     profileIcon: string;
     statusIcon: string;
-    
+    phoneIcon: string;
+    emailIcon: string;
+    locationIcon: string;
+    loyaltyNumberIcon: string;
+    rewardHistoryIcon: string;
+    itemHistoryIcon: string;
+
+    itemsHistoryDataProviderKey: string;
     itemHistoryFilter: CustomerItemHistoryFilter;
 }
 

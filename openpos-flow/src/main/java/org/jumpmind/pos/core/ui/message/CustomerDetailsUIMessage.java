@@ -14,6 +14,9 @@ public class CustomerDetailsUIMessage extends UIMessage {
     private static final long serialVersionUID = 1L;
 
     private String title;
+    private String itemsHistoryDataProviderKey;
+    private String rewardsHistoryDataKey;
+    private String rewardsDataKey;
 
     private ActionItem backButton;
     private ActionItem unlinkButton;
@@ -35,6 +38,7 @@ public class CustomerDetailsUIMessage extends UIMessage {
     private String noPromotionsText;
     private String rewardsLabel;
     private String expiresLabel;
+    private String rewardHistoryIcon;
     private String rewardHistoryLabel;
     private String expiredLabel;
     private String loyaltyProgramNameLabel;
@@ -55,11 +59,11 @@ public class CustomerDetailsUIMessage extends UIMessage {
     private String expiredIcon;
     private String appliedIcon;
     private String applyIcon;
+    private String backIcon;
     private String birthDateIcon;
     private String memberTierLabel;
-
     private String itemHistoryLabel;
-    private String itemsHistoryDataProviderKey;
+    private String itemHistoryIcon;
 
     private UICustomerItemHistoryFilter itemHistoryFilter;
 

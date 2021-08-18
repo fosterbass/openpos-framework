@@ -1,0 +1,19 @@
+<mat-card-title gdAreas="actionButton header backbutton" gdColumns="auto 1fr auto" gdAlignColumns="center center center">
+    <ng-content gdArea="actionButton"></ng-content>
+    <div class="header" gdArea="header" responsive-class>
+        <app-icon   *ngIf="screenData.headerIcon" 
+                    class="screen-icon" 
+                    [iconName]="screenData.headerIcon"
+                    [iconClass]="headerIconClass"></app-icon>
+
+        <span><ng-container *ngIf="!!screenData.headerIcon && !!screenData.headerText">&nbsp;</ng-container>{{screenData.headerText}}</span>
+    </div>
+    <app-icon-button 
+        class="back-button" 
+        gdArea="backbutton" 
+        *ngIf="screenData.backButton"
+        (buttonClick)="doAction(screenData.backButton)"
+        [actionItem]="screenData.backButton"
+        [iconName]="'close'"
+        ></app-icon-button>
+</mat-card-title> 

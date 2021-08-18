@@ -89,6 +89,7 @@ import { DisplayPropertyComponent } from './components/display-property/display-
 import { TransactionItemListComponent } from './components/transaction-item-list/transaction-item-list.component';
 import { GridTableComponent } from './components/grid-table/grid-table.component';
 import { DialogHeaderComponent } from './screen-parts/dialog-header/dialog-header.component';
+import { DualActionDialogHeaderComponent } from './screen-parts/dual-action-dialog-header/dual-action-dialog-header.component';
 import { BaconStripComponent } from './screen-parts/bacon-strip/bacon-strip.component';
 import { NotificationsComponent } from './screen-parts/notifications/notifications.component';
 import { ScanOrSearchComponent } from './screen-parts/scan-or-search/scan-or-search.component';
@@ -173,10 +174,11 @@ import { DisplayCustomerLookupComponent } from './screen-parts/display-customer-
 import { MembershipDisplayComponent } from './screen-parts/membership-display/membership-display.component';
 import { ImageScannerComponent } from '../core/platform-plugins/barcode-scanners/image-scanner.component';
 import { RewardsLineItemComponent } from './screen-parts/rewards-line-item/rewards-line-item.component';
+import { PurchaseHistoryItemComponent } from './screen-parts/purchase-history-item/purchase-history-item.component';
 import { CustomerInformationComponent } from './screen-parts/customer-information/customer-information.component';
-import { MutableListItemWithLabelComponent } from "./screen-parts/mutable-list-item-with-label-component/mutable-list-item-with-label.component";
+import { MutableListItemWithLabelComponent } from './screen-parts/mutable-list-item-with-label-component/mutable-list-item-with-label.component';
 import { RewardsHistoryLineItemComponent } from './screen-parts/rewards-history-line-item/rewards-history-line-item.component';
-import { MembershipPointsDisplayComponent } from "./screen-parts/membership-points-display/membership-points-display.component";
+import { MembershipPointsDisplayComponent } from './screen-parts/membership-points-display/membership-points-display.component';
 
 const screenParts = [
     TenderPartComponent,
@@ -185,6 +187,7 @@ const screenParts = [
     SausageLinksComponent,
     ScanOrSearchComponent,
     BaconStripComponent,
+    DualActionDialogHeaderComponent,
     DialogHeaderComponent,
     SaleFooterComponent,
     SaleItemListComponent,
@@ -197,6 +200,7 @@ const screenParts = [
     MutableListItemWithLabelComponent,
     RewardsLineItemComponent,
     RewardsHistoryLineItemComponent,
+    PurchaseHistoryItemComponent,
     ProgressBarPartComponent,
     WebcamViewerComponent,
     SystemStatusComponent,

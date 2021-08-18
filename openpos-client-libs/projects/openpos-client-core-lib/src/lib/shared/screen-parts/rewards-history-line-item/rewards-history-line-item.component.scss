@@ -17,14 +17,14 @@
   .details {
     grid-area: details;
     .name {
-      @extend %text-md;
+      @extend %text-sm;
       font-weight: 500;
       &.expired {
         text-decoration: line-through;
       }
     }
     .expiration {
-      @extend %text-md;
+      @extend %text-sm;
       app-icon {
         padding-right: 3px;
       }
@@ -61,7 +61,7 @@
 
 .mobile-reward-history-line-item-wrapper {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 2fr 1fr 1fr;
   grid-template-rows: 1fr;
   gap: 0px 0px;
   grid-template-areas:
@@ -112,8 +112,11 @@
     grid-area: reward;
     align-self: center;
     text-align: center;
+    .pctReward {
+      font-weight: bold;
+    }
     &.expired {
-      .currency-text-after-symbol {
+      .currency-text-after-symbol, .pctReward {
         text-decoration: line-through;
       }
     }
@@ -128,8 +131,8 @@
 
   .status {
     grid-area: status;
-    text-align: center;
-    margin: auto;
+    text-align: right;
+    margin: auto 0;
     span {
       @extend %text-md;
       &.tablet-portrait {

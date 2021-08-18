@@ -1,17 +1,17 @@
-import {Component, Injector, Input} from '@angular/core';
-import {ScreenPartComponent} from '../screen-part';
-import {Reward, RewardsLineItemComponentInterface} from './rewards-line-item.interface';
-import {Observable} from 'rxjs';
-import {MediaBreakpoints, OpenposMediaService} from '../../../core/media/openpos-media.service';
+import { Component, Injector, Input } from '@angular/core';
+import { Observable } from 'rxjs';
+import { MediaBreakpoints, OpenposMediaService } from '../../../core/media/openpos-media.service';
+import { PurchasedItem } from '../customer-information/customer-information.interface';
+import { ScreenPartComponent } from '../screen-part';
 
 @Component({
-    selector: 'app-rewards-line-item',
-    templateUrl: './rewards-line-item.component.html',
-    styleUrls: ['./rewards-line-item.component.scss']})
-export class RewardsLineItemComponent extends ScreenPartComponent<RewardsLineItemComponentInterface> {
+    selector: 'app-purchase-history-item',
+    templateUrl: './purchase-history-item.component.html',
+    styleUrls: ['./purchase-history-item.component.scss']})
+export class PurchaseHistoryItemComponent extends ScreenPartComponent<PurchasedItem> {
 
     @Input()
-    reward: Reward;
+    item: PurchasedItem;
 
     isMobile: Observable<boolean>;
 
