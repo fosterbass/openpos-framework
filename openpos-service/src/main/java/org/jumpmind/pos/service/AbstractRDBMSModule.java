@@ -350,7 +350,7 @@ abstract public class AbstractRDBMSModule extends AbstractServiceFactory impleme
         for (Table table : tables) {
             if (includeModuleTables || !(
                     table.getName().toLowerCase().endsWith("module") ||
-                    table.getName().toLowerCase().endsWith("sample")))
+                            table.getName().toLowerCase().endsWith("sample")))
                 if (new JdbcTemplate(dataSource).queryForObject("select count(*) from " + table.getName(), Integer.class) > 0) {
                     try (OutputStream os = new BufferedOutputStream(
                             new FileOutputStream(new File(dir, String.format("%s_post_01_%s.%s", getVersion(), table.getName().toLowerCase().replaceAll("_", "-"), format.toLowerCase()))))) {
@@ -369,6 +369,11 @@ abstract public class AbstractRDBMSModule extends AbstractServiceFactory impleme
     }
 
     public void updateDataModel(DBSession session) {
+        if (!isDatabaseUpgradeable()) {
+            log.info("Module {} database configured as non-upgradeable", getName());
+            return;
+        }
+
         String fromVersion = null;
 
         try {
@@ -429,6 +434,19 @@ abstract public class AbstractRDBMSModule extends AbstractServiceFactory impleme
             public void afterSchemaCreate(DBSessionFactory sessionFactory) {
             }
         };
+    }
+
+    protected boolean isDatabaseUpgradeable() {
+        if (loaderConfig == null) {
+            return true;
+        }
+        if (loaderConfig.hasIncludes()) {
+            return loaderConfig.includes(getName());
+        }
+        if (loaderConfig.hasExcludes()) {
+            return !loaderConfig.excludes(getName());
+        }
+        return true;
     }
 
     private boolean hasShadowTables(String modulePrefix, List<String> includesList)  {
