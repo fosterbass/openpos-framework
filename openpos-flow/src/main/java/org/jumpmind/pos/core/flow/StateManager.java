@@ -54,9 +54,9 @@ import org.jumpmind.pos.server.model.Action;
 import org.jumpmind.pos.server.service.IMessageService;
 import org.jumpmind.pos.util.ClassUtils;
 import org.jumpmind.pos.util.Versions;
+import org.jumpmind.pos.util.clientcontext.ClientContext;
 import org.jumpmind.pos.util.event.Event;
 import org.jumpmind.pos.util.event.EventPublisher;
-import org.jumpmind.pos.util.model.Message;
 import org.jumpmind.pos.util.model.PrintMessage;
 import org.jumpmind.pos.util.startup.DeviceStartupTaskConfig;
 import org.slf4j.Logger;
@@ -131,6 +131,9 @@ public class StateManager implements IStateManager {
 
     @Autowired
     EventPublisher eventPublisher;
+
+    @Autowired
+    ClientContext deviceClientContext;
 
     ApplicationState applicationState = new ApplicationState();
 
@@ -216,6 +219,7 @@ public class StateManager implements IStateManager {
             public void run() {
                 try {
                     stateManagerContainer.setCurrentStateManager(StateManager.this);
+                    initDeviceClientContext();  // Init ClientContext threadLocal properties for this thread
                     transitionTo(new Action(startupAction), initialState);
                     runningFlag.set(true);
                     actionLoop();
@@ -1187,6 +1191,14 @@ public class StateManager implements IStateManager {
     public void registerPersonalizationProperties(Map<String, String> personalizationProperties) {
         log.info("Registering personalization properties " + personalizationProperties.toString());
         applicationState.getScope().setScopeValue(ScopeType.Device, "personalizationProperties", personalizationProperties);
+    }
+
+    protected void initDeviceClientContext() {
+        ScopeValue scopeValue = getApplicationState().getScope().getScopeValue(ScopeType.Device, "personalizationProperties");
+        if (scopeValue != null && scopeValue.getValue() != null) {
+            Map<String, String> personalizationProperties = scopeValue.getValue();
+            personalizationProperties.entrySet().forEach(entry -> deviceClientContext.put(entry.getKey(), entry.getValue()));
+        }
     }
 
     public Injector getInjector() {

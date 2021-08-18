@@ -69,9 +69,6 @@ abstract public class AbstractRDBMSModule extends AbstractServiceFactory impleme
     @Value("${openpos.installationId:undefined}")
     protected String installationId;
 
-    @Value("${openpos.businessunitId:undefined}")
-    protected String businessUnitId;
-
     @Autowired
     protected TagHelper tagHelper;
 

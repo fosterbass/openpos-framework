@@ -20,6 +20,8 @@ public class DevicePersonalizationModel extends AbstractModel {
     private String deviceId;
     @ColumnDef
     private String appId;
+    @ColumnDef
+    private String businessUnitId;
     @ColumnDef(type= Types.LONGVARCHAR)
     private String personalizationParams;
 }

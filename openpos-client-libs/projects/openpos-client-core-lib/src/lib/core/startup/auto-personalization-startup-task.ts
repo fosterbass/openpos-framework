@@ -33,35 +33,57 @@ export class AutoPersonalizationStartupTask implements IStartupTask {
                         return this.manualPersonalization();
                     }));
             } else {
-                let name: string = null;
-                let serviceConfig: ZeroconfService = null;
-
-                console.log('Starting ZeroConf watch on device ', this.wrapperService.getDeviceName());
-
-                return Zeroconf.watch(this.TYPE, this.DOMAIN).pipe(
-                    timeout(Configuration.autoPersonalizationRequestTimeoutMillis),
-                    first(conf => conf.action === 'resolved'),
-                    tap(conf => {
-                        serviceConfig = conf.service;
-                        console.log('service resolved', conf.service);
-                    }),
-                    flatMap(() => this.wrapperService.getDeviceName()),
-                    tap(deviceName => name = deviceName),
-                    flatMap(() => {
-                        const url = `${serviceConfig.hostname}:${serviceConfig.port}/${serviceConfig.txtRecord.path}`;
-                        return this.attemptAutoPersonalize(url, name);
-                    }),
-                    catchError(e => {
-                        this.logPersonalizationError(e);
-                        return this.personalizeWithHostname();
-                    })
-                );
+                return this.personalizeUsingZeroConf();
+                // For testing locally in a browser ensure shouldAutoPersonalize() returns true
+                // and use this personalizeUsingZeroConfMock() method instead
+                // return this.personalizeUsingZeroConfMock();
             }
         } else {
             return of("No auto personalization available for device");
         }
     }
 
+/*
+    // Switch to this method if you need to test auto personalization
+    // locally in your browser
+    personalizeUsingZeroConfMock(): Observable<string> {
+        let name: string = null;
+        return of("jason_device").pipe(
+            tap(deviceName => name = deviceName),
+            flatMap(() => {
+                const url = `localhost:6140/rest/admin/personalizeMe`;
+                return this.attemptAutoPersonalize(url, name);
+            })
+        );
+    }
+*/
+    personalizeUsingZeroConf(): Observable<string> {
+        let name: string = null;
+
+        let serviceConfig: ZeroconfService = null;
+
+        console.log('Starting ZeroConf watch on device ', this.wrapperService.getDeviceName());
+
+        return Zeroconf.watch(this.TYPE, this.DOMAIN).pipe(
+            timeout(Configuration.autoPersonalizationRequestTimeoutMillis),
+            first(conf => conf.action === 'resolved'),
+            tap(conf => {
+                serviceConfig = conf.service;
+                console.log('service resolved', conf.service);
+            }),
+            flatMap(() => this.wrapperService.getDeviceName()),
+            tap(deviceName => name = deviceName),
+            flatMap(() => {
+                const url = `${serviceConfig.hostname}:${serviceConfig.port}/${serviceConfig.txtRecord.path}`;
+                return this.attemptAutoPersonalize(url, name);
+            }),
+            catchError(e => {
+                this.logPersonalizationError(e);
+                return this.personalizeWithHostname();
+            })
+        );
+
+    }
 
     personalizeWithHostname(): Observable<string> {
         const servicePath = Configuration.autoPersonalizationServicePath;
@@ -100,6 +122,10 @@ export class AutoPersonalizationStartupTask implements IStartupTask {
             .pipe(
                 flatMap(info => {
                     if (info) {
+                        // Handle case when personalizationParams come through as a Javascript object
+                        if (info.personalizationParams && ! (info.personalizationParams instanceof Map)) {
+                            info.personalizationParams = new Map<string, string>(Object.entries(info.personalizationParams));
+                        }
                         return this.personalization.personalize(
                             info.serverAddress,
                             info.serverPort,

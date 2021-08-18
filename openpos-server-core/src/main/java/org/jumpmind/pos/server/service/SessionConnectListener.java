@@ -13,6 +13,7 @@ import org.jumpmind.pos.devices.service.model.PersonalizationParameter;
 import org.jumpmind.pos.devices.service.model.PersonalizationParameters;
 import org.jumpmind.pos.util.BoxLogging;
 import org.jumpmind.pos.util.DefaultObjectMapper;
+import org.jumpmind.pos.util.clientcontext.ClientContext;
 import org.jumpmind.pos.util.clientcontext.ClientContextConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,6 +116,9 @@ public class SessionConnectListener implements ApplicationListener<SessionConnec
                 if(paramModel != null){
                     personalizationResults.put(prop, paramModel.getParamValue());
                 }
+            }
+            if (! personalizationResults.containsKey(ClientContext.BUSINESS_UNIT_ID)) {
+                personalizationResults.put(ClientContext.BUSINESS_UNIT_ID, deviceModel.getBusinessUnitId());
             }
             sessionPersonalizationResults.put(sessionId, personalizationResults);
         }
