@@ -14,7 +14,7 @@ public abstract class UIDataMessageProvider<T> {
     private String providerKey;
     @Getter
     @Setter
-    static private int seriesId = new Random().nextInt();
+    private int seriesId = new Random().nextInt();
     private boolean newSeries;
 
     abstract public List<T> getNextDataChunk();
