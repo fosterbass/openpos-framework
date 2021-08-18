@@ -11,8 +11,24 @@
                     <app-membership-display *ngFor="let membership of screen.customer.memberships" class="item"
                                             [membership]="membership" [iconMatClass]="'mat-16'"></app-membership-display>
                 </div>
-                <div *ngIf="!(screen.customer.memberships && screen.customer.memberships.length)" class="no-promotions">
-                    <span>{{screen.noMembershipsFoundLabel}}</span>
+                <span *ngIf="!(screen.customer.memberships && screen.customer.memberships.length)" class="no-memberships-mobile" responsive-class>
+                    {{screen.noMembershipsFoundLabel}}
+                </span>
+                <div *ngIf="screen.customer.membershipSignUpAction">
+                    <app-secondary-button responsive-class
+                                          class="membership-sign-up"
+                                          [disabled]="!screen.customer.membershipSignUpAction.enabled"
+                                          [actionItem]="screen.customer.membershipSignUpAction"
+                                          (actionClick)="doAction(screen.customer.membershipSignUpAction)"
+                                          (click)="doAction(screen.customer.membershipSignUpAction)">
+                        <app-icon *ngIf="screen.customer.membershipSignUpAction.icon"
+                                  [iconName]="screen.customer.membershipSignUpAction.icon"
+                                  [iconClass]="'sm'"></app-icon>
+                        <span>{{screen.customer.membershipSignUpAction.title}}</span>
+                        <span *ngIf="keybindsEnabled(screen.customer.membershipSignUpAction)" class="muted-color keybinding" >
+                            {{screen.customer.membershipSignUpAction.keybindDisplayName}}
+                        </span>
+                    </app-secondary-button>
                 </div>
             </div>
             <app-membership-points-display *ngIf="screen.membershipPointsEnabled" [isMobile]="isMobile | async"></app-membership-points-display>
@@ -56,24 +72,73 @@
                 <app-customer-information [customer]="screen.customer" [isMobile]="isMobile | async" [showFieldHeaders]="true"></app-customer-information>
             </div>
 
-            <div *ngIf="pagedContent === 'rewards'" class="overflow"
-                 [ngClass]="{'rewardsContent': true, 'with-points': false, 'no-promotions': !(screen.customer.rewards && screen.customer.rewards.length)}">
-                <div class="reward-list" *ngIf="(screen.customer.rewards && screen.customer.rewards.length)" >
-                    <app-selectable-item-list [listData]="listData" [configuration]="listConfig" [defaultSelect]="true" [selectedItem]="selectedReward"
-                                              (selectedItemChange)="onItemChange($event)">
-                        <ng-template let-reward>
-                            <app-rewards-line-item [reward]="reward"></app-rewards-line-item>
-                        </ng-template>
-                    </app-selectable-item-list>
+            <div *ngIf="pagedContent === 'rewards'" class="overflow rewardsContentMobile" [ngClass]="{'no-promotions': !hasRewards()}">
+                <app-infinite-scroll
+                        [dataKey]="screen.rewardsDataKey"
+                        [itemTemplate]="itemTemplate"
+                        [noItemsTemplate]="noItemTemplate"
+                        virtualScrollMinBufferPx="700"
+                        [itemHeightPx]=" (isMobile | async) ? 150 : 50">
+                    <ng-template #itemTemplate let-item>
+                        <div class="reward-list line">
+                            <app-rewards-line-item [reward]="item"></app-rewards-line-item>
+                        </div>
+                    </ng-template>
+                    <ng-template #noItemTemplate>
+                        <div class="no-promotions" responsive-class>
+                            {{screen.noPromotionsText}}
+                        </div>
+                    </ng-template>
+                </app-infinite-scroll>
+            </div>
+
+            <div *ngIf="pagedContent === 'rewardHistory'" class="rewardsHistoryContentMobile" [ngClass]="{'no-promotions': !hasRewardsHistory()}">
+                <app-infinite-scroll
+                        [dataKey]="screen.rewardsHistoryDataKey"
+                        [itemTemplate]="itemTemplate"
+                        [noItemsTemplate]="noItemTemplate"
+                        virtualScrollMinBufferPx="700"
+                        [itemHeightPx]=" (isMobile | async) ? 150 : 50">
+                    <ng-template #itemTemplate let-item>
+                        <div class="reward-list line">
+                            <app-rewards-history-line-item [reward]="item"></app-rewards-history-line-item>
+                        </div>
+                    </ng-template>
+                    <ng-template #noItemTemplate>
+                        <div class="no-promotions" responsive-class>
+                            {{screen.noPromotionsText}}
+                        </div>
+                    </ng-template>
+                </app-infinite-scroll>
+            </div>
+        </app-content-card>
+    </div>
+</div>
+
+<div *ngIf="!(isMobile | async)">
+    <app-dialog-header></app-dialog-header>
+    <app-content-card class="details-wrapper" >
+        <div class="grid-container">
+            <div class="icon">
+                <app-icon [iconName]="screen.profileIcon" [iconClass]="'material-icons'"></app-icon>
+            </div>
+            <div class="details">
+                <div class="details-label">
+                    {{screen.customer.name}}
                 </div>
-                <div *ngIf="!(screen.customer.rewards && screen.customer.rewards.length)" class="no-promotions" responsive-class>
-                    {{screen.noPromotionsText}}
+                <div class="customer-details muted-color">
+                    <app-customer-information [customer]="screen.customer"></app-customer-information>
+                </div>
+            </div>
+            <div class="membership-icon" *ngIf="screen.membershipEnabled">
+                <div class="icon">
+                    <app-icon [iconName]="screen.membershipCardIcon" [iconClass]="'material-icons'"></app-icon>
                 </div>
             </div>
             <div class="memberships" *ngIf="screen.membershipEnabled">
                 <div class="wrapper">
                     <div class="list">
-                        <div class="details-label" *ngIf="!(isMobile | async)">
+                        <div class="details-label">
                             {{screen.membershipLabel}}
                         </div>
                         <div *ngIf="screen.customer.memberships && screen.customer.memberships.length">
@@ -104,110 +169,64 @@
                         </div>
                     </div>
                 </div>
-                <div *ngIf="!(screen.customer.rewardHistory && screen.customer.rewardHistory.length)" class="no-promotions" responsive-class>
-                    {{screen.noPromotionsText}}
-                </div>
             </div>
-        </app-content-card>
-    </div>
-</div>
-
-<div *ngIf="!(isMobile | async)">
-    <app-dialog-header></app-dialog-header>
-    <div>
-        <app-content-card class="details-wrapper" >
-            <div class="grid-container">
-                <div class="icon">
-                    <app-icon [iconName]="screen.profileIcon" [iconClass]="'material-icons'"></app-icon>
-                </div>
-                <div class="details">
-                    <div class="details-label">
-                        {{screen.customer.name}}
-                    </div>
-                    <div class="customer-details muted-color">
-                        <app-customer-information [customer]="screen.customer"></app-customer-information>
-                    </div>
-                </div>
-                <div class="membership-icon" *ngIf="screen.membershipEnabled">
-                    <div class="icon">
-                        <app-icon [iconName]="screen.membershipCardIcon" [iconClass]="'material-icons'"></app-icon>
-                    </div>
-                </div>
-                <div class="memberships" *ngIf="screen.membershipEnabled">
-                    <div class="wrapper">
-                        <div class="list">
-                            <div class="details-label">
-                                {{screen.membershipLabel}}
-                            </div>
-                            <div *ngIf="screen.customer.memberships && screen.customer.memberships.length">
-                                <span *ngFor="let membership of screen.customer.memberships" class="item">
-                                    <app-membership-display [membership]="membership"></app-membership-display>
-                                </span>
-                            </div>
-                            <div *ngIf="!(screen.customer.memberships && screen.customer.memberships.length)">
-                                <span>
-                                    {{screen.noMembershipsFoundLabel}}
-                                </span>
-                            </div>
-                            <div *ngIf="screen.customer.membershipSignUpAction">
-                                <app-secondary-button responsive-class
-                                                      class="membership-sign-up"
-                                                      [disabled]="!screen.customer.membershipSignUpAction.enabled"
-                                                      [actionItem]="screen.customer.membershipSignUpAction"
-                                                      (actionClick)="doAction(screen.customer.membershipSignUpAction)"
-                                                      (click)="doAction(screen.customer.membershipSignUpAction)">
-                                    <app-icon *ngIf="screen.customer.membershipSignUpAction.icon"
-                                              [iconName]="screen.customer.membershipSignUpAction.icon"
-                                              [iconClass]="'material-icons' + ((isMobile | async) ? ' mat-64' : '')"></app-icon>
-                                    <span>{{screen.customer.membershipSignUpAction.title}}</span>
-                                    <span *ngIf="keybindsEnabled(screen.customer.membershipSignUpAction)" class="muted-color keybinding" >
-                                    {{screen.customer.membershipSignUpAction.keybindDisplayName}}
-                                </span>
-                                </app-secondary-button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </app-content-card>
-        <div *ngIf="screen.rewardTabEnabled || screen.rewardHistoryTabEnabled"
-             class="tabs" [ngClass]="{'tabs': true, 'mobile': false}" responsive-class>
-            <mat-tab-group mat-align-tabs="start" animationDuration="0ms">
-                <mat-tab *ngIf="screen.rewardTabEnabled" class="rewardsTab" [label]="getRewardsLabel()">
-                    <mat-card [ngClass]="{'rewardsContent': true, 'with-points': screen.membershipPointsEnabled, 'no-promotions': !(screen.customer.rewards && screen.customer.rewards.length)}">
-                        <div class="reward-list" *ngIf="(screen.customer.rewards && screen.customer.rewards.length)" >
-                            <app-selectable-item-list [listData]="listData" [configuration]="listConfig" [defaultSelect]="true" [selectedItem]="selectedReward"
-                                                      (selectedItemChange)="onItemChange($event)">
-                                <ng-template let-reward>
-                                    <app-rewards-line-item [reward]="reward"></app-rewards-line-item>
-                                </ng-template>
-                            </app-selectable-item-list>
-                        </div>
-                        <app-membership-points-display *ngIf="screen.membershipPointsEnabled" class="points"></app-membership-points-display>
-                        <div *ngIf="!(screen.customer.rewards && screen.customer.rewards.length)" class="no-items" responsive-class>
-                            {{screen.noPromotionsText}}
-                        </div>
-                    </mat-card>
-                </mat-tab>
-                <mat-tab *ngIf="screen.rewardHistoryTabEnabled" class="rewardsHistoryTab" [label]="screen.rewardHistoryLabel">
-                    <mat-card [ngClass]="{'rewardsHistoryContent': true, 'with-points': screen.membershipPointsEnabled, 'no-promotions': !(screen.customer.rewardHistory && screen.customer.rewardHistory.length)}">
-                        <div *ngIf="(screen.customer.rewardHistory && screen.customer.rewardHistory.length)" >
-                            <div *ngFor="let reward of screen.customer.rewardHistory" class="line">
-                                <app-rewards-history-line-item [reward]="reward"></app-rewards-history-line-item>
-                            </div>
-                        </div>
-                        <div *ngIf="!(screen.customer.rewardHistory && screen.customer.rewardHistory.length)" class="no-items" responsive-class>
-                            {{screen.noPromotionsText}}
-                        </div>
-                        <app-membership-points-display *ngIf="screen.membershipPointsEnabled"></app-membership-points-display>
-                    </mat-card>
-                </mat-tab>
-            </mat-tab-group>
         </div>
+    </app-content-card>
+    <div *ngIf="screen.rewardTabEnabled || screen.rewardHistoryTabEnabled" class="tabs" responsive-class>
+        <mat-tab-group mat-align-tabs="start" animationDuration="0ms" (selectedTabChange)="onTabChanged($event)">
+            <mat-tab *ngIf="screen.rewardTabEnabled" class="rewardsTab" [label]="getRewardsLabel()">
+                <mat-card class="rewardsContent" [ngClass]="{'with-points': screen.membershipPointsEnabled, 'no-promotions': !hasRewards()}">
+                    <app-infinite-scroll
+                            [dataKey]="screen.rewardsDataKey"
+                            [itemTemplate]="itemTemplate"
+                            [noItemsTemplate]="noItemTemplate"
+                            virtualScrollMinBufferPx="200"
+                            virtualScrollMaxBufferPx="400"
+                            [itemHeightPx]=" (isMobile | async) ? 150 : 50"
+                            [tabChanged]="changedToRewardTab">
+                        <ng-template #itemTemplate let-item>
+                            <div class="reward-list line">
+                                <app-rewards-line-item class="rewardItem" [reward]="item"></app-rewards-line-item>
+                            </div>
+                        </ng-template>
+                        <ng-template #noItemTemplate>
+                            <div class="no-promotions" responsive-class>
+                                {{screen.noPromotionsText}}
+                            </div>
+                        </ng-template>
+                    </app-infinite-scroll>
+                    <app-membership-points-display *ngIf="screen.membershipPointsEnabled" class="points"></app-membership-points-display>
+                </mat-card>
+            </mat-tab>
+            <mat-tab *ngIf="screen.rewardHistoryTabEnabled" class="rewardsHistoryTab" [label]="screen.rewardHistoryLabel">
+                <mat-card class= "rewardsHistoryContent" [ngClass]="{'with-points': screen.membershipPointsEnabled, 'no-promotions': !hasRewardsHistory()}">
+                    <app-infinite-scroll
+                            [dataKey]="screen.rewardsHistoryDataKey"
+                            [itemTemplate]="itemTemplate"
+                            [noItemsTemplate]="noItemTemplate"
+                            virtualScrollMinBufferPx="200"
+                            virtualScrollMaxBufferPx="400"
+                            [itemHeightPx]=" (isMobile | async) ? 150 : 50"
+                            [tabChanged]="changedToRewardHistoryTab">
+                        <ng-template #itemTemplate let-item>
+                            <div class="reward-list line">
+                                <app-rewards-history-line-item class="rewardItem" [reward]="item"></app-rewards-history-line-item>
+                            </div>
+                        </ng-template>
+                        <ng-template #noItemTemplate>
+                            <div class="no-promotions" responsive-class>
+                                {{screen.noPromotionsText}}
+                            </div>
+                        </ng-template>
+                    </app-infinite-scroll>
+                    <app-membership-points-display *ngIf="screen.membershipPointsEnabled" class="points"></app-membership-points-display>
+                </mat-card>
+            </mat-tab>
+        </mat-tab-group>
     </div>
 </div>
 
-<mat-dialog-actions align="end" class="buttons">
+<mat-dialog-actions class="buttons">
     <app-secondary-button responsive-class
                           *ngFor="let menuItem of screen.additionalActions"
                           [disabled]="!menuItem?.enabled"

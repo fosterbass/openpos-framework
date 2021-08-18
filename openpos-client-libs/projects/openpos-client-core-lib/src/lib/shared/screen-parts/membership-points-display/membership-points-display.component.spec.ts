@@ -1,5 +1,5 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core'
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import {MatDialog} from '@angular/material';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {Subscription} from 'rxjs';
@@ -8,20 +8,19 @@ import {CLIENTCONTEXT} from '../../../core/client-context/client-context-provide
 import {TimeZoneContext} from '../../../core/client-context/time-zone-context';
 import {ActionService} from '../../../core/actions/action.service';
 import {KeyPressProvider} from '../../providers/keypress.provider';
-import {validateDoesNotExist, validateExist, validateIcon, validateText} from '../../../utilites/test-utils';
-import {By} from '@angular/platform-browser';
-import {MembershipPointsDisplayComponentInterface} from "./membership-points-display.interface";
-import {MembershipPointsDisplayComponent} from "./membership-points-display.component";
+import {validateIcon, validateText} from '../../../utilites/test-utils';
+import {MembershipPointsDisplayComponentInterface} from './membership-points-display.interface';
+import {MembershipPointsDisplayComponent} from './membership-points-display.component';
 
-class MockActionService {};
-class MockMatDialog {};
+class MockActionService {}
+class MockMatDialog {}
 class MockKeyPressProvider {
     subscribe(): Subscription {
         return new Subscription();
     }
-};
-class MockElectronService {};
-class ClientContext {};
+}
+class MockElectronService {}
+class ClientContext {}
 
 describe('MembershipPointsDisplayComponent', () => {
     let component: MembershipPointsDisplayComponent;
@@ -77,7 +76,7 @@ describe('MembershipPointsDisplayComponent', () => {
                                             component.screenData.customer.loyaltyPoints + ' ' +
                                             component.screenData.pointsLabel;
                     validateText(fixture, '.details', expectedValue);
-                })
+                });
             });
         });
     });

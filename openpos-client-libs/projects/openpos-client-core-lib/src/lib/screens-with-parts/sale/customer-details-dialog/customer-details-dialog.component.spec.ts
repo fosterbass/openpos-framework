@@ -1,5 +1,5 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core'
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import {CustomerDetailsDialogComponent} from './customer-details-dialog.component';
 import {CustomerDetailsDialogInterface} from './customer-details-dialog.interface';
 import {ActionService} from '../../../core/actions/action.service';
@@ -15,17 +15,17 @@ import {TimeZoneContext} from '../../../core/client-context/time-zone-context';
 import {Observable, of, Subscription} from 'rxjs';
 import {MediaBreakpoints, OpenposMediaService} from '../../../core/media/openpos-media.service';
 import {Reward} from '../../../shared/screen-parts/rewards-line-item/rewards-line-item.interface';
-import {KeyPressProvider} from "../../../shared/providers/keypress.provider";
+import {KeyPressProvider} from '../../../shared/providers/keypress.provider';
 
 class MockKeyPressProvider {
   subscribe(): Subscription {
     return new Subscription();
   }
-};
-class MockActionService {};
-class MockMatDialog {};
-class MockElectronService {};
-class ClientContext {};
+}
+class MockActionService {}
+class MockMatDialog {}
+class MockElectronService {}
+class ClientContext {}
 
 describe('CustomerDetailsDialog', () => {
   let component: CustomerDetailsDialogComponent;
@@ -35,13 +35,13 @@ describe('CustomerDetailsDialog', () => {
     observe(): Observable<boolean> {
       return of(false);
     }
-  };
+  }
 
   class MockOpenposMediaServiceMobileTrue {
     observe(): Observable<boolean> {
       return of(true);
     }
-  };
+  }
 
   beforeEach(() => {
     customer = {
@@ -115,17 +115,17 @@ describe('CustomerDetailsDialog', () => {
         });
 
         it('returns "Rewards" when the rewards list is undefined', () => {
-          component.screen.customer.rewards = undefined;
+          component.screen.customer.numberOfActiveRewards = undefined;
           expect(component.getRewardsLabel()).toBe('Rewards');
         });
 
         it('returns "Rewards (0)" when the rewards list is empty', () => {
-          component.screen.customer.rewards = [];
+          component.screen.customer.numberOfActiveRewards = 0;
           expect(component.getRewardsLabel()).toBe('Rewards (0)');
         });
 
         it('returns "Rewards (#)" when the rewards list has items', () => {
-          component.screen.customer.rewards = [{} as Reward];
+          component.screen.customer.numberOfActiveRewards = 1;
           expect(component.getRewardsLabel()).toBe('Rewards (1)');
         });
       });
@@ -154,7 +154,7 @@ describe('CustomerDetailsDialog', () => {
             beforeEach(() => {
               memberships = [
                 {}, {}, {}
-              ]
+              ];
               component.screen.customer.memberships = memberships;
               component.screen.membershipEnabled = true;
               fixture.detectChanges();
@@ -238,7 +238,7 @@ describe('CustomerDetailsDialog', () => {
             expect(component.doAction).toHaveBeenCalledWith(configuration);
           });
         });
-      })
+      });
       describe('tabs', () => {
         it('displays the tabs section', () => {
           const tabsElement = fixture.debugElement.query(By.css('.tabs'));

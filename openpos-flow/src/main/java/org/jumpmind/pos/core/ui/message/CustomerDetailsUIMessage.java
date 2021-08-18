@@ -14,6 +14,8 @@ public class CustomerDetailsUIMessage extends UIMessage {
     private static final long serialVersionUID = 1L;
 
     private String title;
+    private String rewardsDataKey;
+    private String rewardsHistoryDataKey;
 
     private ActionItem backButton;
     private ActionItem unlinkButton;

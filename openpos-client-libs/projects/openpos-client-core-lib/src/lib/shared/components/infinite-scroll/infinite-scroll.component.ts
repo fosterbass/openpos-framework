@@ -1,4 +1,5 @@
-import {Component, ElementRef, Input, OnInit, Renderer2, TemplateRef} from '@angular/core';
+import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import {Component, ElementRef, Input, OnChanges, OnInit, Renderer2, TemplateRef, ViewChild} from '@angular/core';
 import {UIDataMessageService} from '../../../core/ui-data-message/ui-data-message.service';
 import {InfiniteScrollDatasource} from './infinite-scroll-datasource';
 
@@ -11,7 +12,9 @@ import {InfiniteScrollDatasource} from './infinite-scroll-datasource';
   templateUrl: './infinite-scroll.component.html',
   styleUrls: ['./infinite-scroll.component.scss']
 })
-export class InfiniteScrollComponent<T> implements OnInit {
+export class InfiniteScrollComponent<T> implements OnInit, OnChanges {
+
+  @ViewChild('viewport') viewport: CdkVirtualScrollViewport;
 
   /**
    * Key to use to fetch the data from the server
@@ -30,7 +33,7 @@ export class InfiniteScrollComponent<T> implements OnInit {
    * the buffer we fetch more
    */
   @Input()
-  dataLoadBuffer: number = 1;
+  dataLoadBuffer = 1;
 
   /**
    * Template to apply to each item
@@ -68,6 +71,9 @@ export class InfiniteScrollComponent<T> implements OnInit {
   @Input()
   listClass: string;
 
+  @Input()
+  tabChanged: boolean;
+
 
   dataSource: InfiniteScrollDatasource<T>;
 
@@ -81,11 +87,21 @@ export class InfiniteScrollComponent<T> implements OnInit {
         () => this.dataMessageService.requestMoreData(this.dataKey),
         this.dataLoadBuffer);
     this.dataSource.dataLoaded.subscribe( loaded => {
-      if( loaded ){
+      if ( loaded ) {
         this.renderer.addClass(this.el.nativeElement, 'data-loaded');
       } else {
         this.renderer.removeClass(this.el.nativeElement, 'data-loaded');
       }
-    })
+    });
+  }
+
+  ngOnChanges(): void {
+    if (this.tabChanged) {
+      if (this.viewport) {
+        this.viewport.scrollToIndex(0);
+        this.viewport.checkViewportSize();
+        this.tabChanged = false;
+      }
+    }
   }
 }

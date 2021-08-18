@@ -7,7 +7,6 @@
     height: 100%;
   }
   mat-card {
-    overflow: scroll;
     margin: 0;
     .no-items {
       @extend %text-lg;
@@ -26,6 +25,7 @@
 .buttons {
   display: grid;
   grid-auto-flow: column;
+  align-content: end;
   justify-content: end;
   grid-column-gap: 8px;
   padding-bottom: 16px;
@@ -142,8 +142,8 @@ app-content-card {
   }
 
   .mobile-memberships {
-    display: flex;
-    justify-content: flex-start;
+    display: grid;
+    grid-template-columns: 1fr auto;
     flex-wrap: wrap;
     margin-bottom: .25em;
 
@@ -210,13 +210,36 @@ app-content-card {
   grid-area: memberships;
 }
 
+.rewardItem {
+  margin:5px 0px;
+  padding:15px;
+
+  &.mobile {
+      padding: 0.25em;
+  }
+}
+
 .no-promotions {
-  display: flex;
+  display: grid;
   justify-content: center;
   flex-direction: column;
   text-align: center;
 
   @extend %text-md;
+}
+
+.no-memberships-mobile{
+  align-self: center;
+  flex-direction: column;
+
+  @extend %text-md;
+}
+
+.rewardsContentMobile, .rewardsHistoryContentMobile {
+  display:grid;
+  overflow-y: hidden;
+  overflow-x: hidden;
+  height: 100%;
 }
 
 .rewardsContent.with-points, .rewardsHistoryContent.with-points {

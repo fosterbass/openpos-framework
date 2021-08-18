@@ -4,6 +4,8 @@ import {CustomerDetails} from '../../../shared/screen-parts/customer-information
 
 export interface CustomerDetailsDialogInterface extends IAbstractScreen {
     message: string;
+    rewardsDataKey: string;
+    rewardsHistoryDataKey: string;
     customer: CustomerDetails;
     membershipEnabled: boolean;
     membershipPointsEnabled: boolean;
@@ -21,7 +23,6 @@ export interface CustomerDetailsDialogInterface extends IAbstractScreen {
     rewardHistoryTabEnabled: boolean;
     noPromotionsText: string;
     noMembershipsFoundLabel: string;
-
     appliedIcon: string;
     applyIcon: string;
     backIcon: string;

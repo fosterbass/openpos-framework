@@ -5,7 +5,8 @@
         <div *ngIf="reward.expirationDate"  class="expiration" responsive-class><app-icon [iconName]="screenData.expiredIcon" [iconClass]="'material-icons' + (isMobile | async) ? ' mat-16' : 'mat-24'"></app-icon>{{screenData.expiredLabel}} {{reward.expirationDate}}</div>
     </div>
     <div [ngClass]="{'reward': true, 'expired': !reward.redeemed}" responsive-class>
-        <app-currency-text *ngIf="reward.amount" [amountText]="reward.amount"></app-currency-text>
+        <app-currency-text *ngIf="reward.reward && reward.rewardType != 'PCT'" [amountText]="reward.reward"></app-currency-text>
+        <div class="pctReward" *ngIf="reward.reward && reward.rewardType == 'PCT'">{{reward.reward * 100}}% off</div>
     </div>
     <div class="status" >
         <span responsive-class>{{(reward.redeemed) ? screenData.redeemedLabel : screenData.expiredLabel}}</span>

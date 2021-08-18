@@ -1,5 +1,5 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core'
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import {ActionService} from '../../../core/actions/action.service';
 import {MembershipDisplayComponent} from './membership-display.component';
 import {validateDoesNotExist, validateIcon, validateText} from '../../../utilites/test-utils';
@@ -13,15 +13,15 @@ import {CLIENTCONTEXT} from '../../../core/client-context/client-context-provide
 import {KeyPressProvider} from '../../providers/keypress.provider';
 import {Subscription} from 'rxjs/internal/Subscription';
 
-class MockActionService {};
-class MockMatDialog {};
-class MockElectronService {};
-class ClientContext {};
+class MockActionService {}
+class MockMatDialog {}
+class MockElectronService {}
+class ClientContext {}
 class MockKeyPressProvider {
     subscribe(): Subscription {
         return new Subscription();
     }
-};
+}
 
 describe('MembershipDisplayComponent', () => {
     let component: MembershipDisplayComponent;
@@ -56,7 +56,7 @@ describe('MembershipDisplayComponent', () => {
             name: 'My Membership',
             member: true
         };
-        component.membership = membership
+        component.membership = membership;
         fixture.detectChanges();
     });
 
@@ -79,7 +79,7 @@ describe('MembershipDisplayComponent', () => {
             chip.nativeElement.click();
 
             expect(component.clickEvent.emit).toHaveBeenCalledWith(component.membership);
-        })
+        });
 
         describe('when the user is a member', () => {
             beforeEach(() => {
@@ -103,7 +103,7 @@ describe('MembershipDisplayComponent', () => {
 
         describe('when the user is not a member', () => {
             beforeEach(() => {
-                component.membership.member = false
+                component.membership.member = false;
                 fixture.detectChanges();
             });
 

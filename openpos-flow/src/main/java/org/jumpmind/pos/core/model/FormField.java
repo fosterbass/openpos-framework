@@ -38,6 +38,9 @@ public class FormField implements IFormElement, IField, Serializable {
 
     private boolean preValidate = false;
 
+    private boolean requiredOverridable = false;
+    private boolean requiredOverridden = false;
+
     public FormField() {
     }
     
@@ -365,4 +368,21 @@ public class FormField implements IFormElement, IField, Serializable {
     public void setPreValidate(boolean preValidate) {
         this.preValidate = preValidate;
     }
+
+    public boolean isRequiredOverridable() {
+        return requiredOverridable;
+    }
+
+    public void setRequiredOverridable(boolean requiredOverridable) {
+        this.requiredOverridable = requiredOverridable;
+    }
+
+    public boolean isRequiredOverridden() {
+        return requiredOverridden;
+    }
+
+    public void setRequiredOverridden(boolean requiredOverridden) {
+        this.requiredOverridden = requiredOverridden;
+    }
+
 }
