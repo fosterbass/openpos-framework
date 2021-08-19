@@ -1,5 +1,5 @@
-@import "../../styles/variables/spacing";
-@import "../../styles/mixins/typography";
+@import '../../styles/variables/spacing';
+@import '../../styles/mixins/typography';
 
 .form-body {
     display: grid;
@@ -69,15 +69,15 @@
     grid-template-columns: 1fr 1fr;
     gap: 0px 2.5em;
     grid-template-areas:
-    "left right";
+    'left right';
     
     .left {
         grid-area: left;
         display: grid;
         grid-template-areas:
-        "basic-info"
-        "contact"
-        "extraFormFields";
+        'basic-info'
+        'contact'
+        'extraFormFields';
         .basic-info {
             grid-area: basic-info;
             display: grid;
@@ -85,7 +85,7 @@
             grid-template-rows: 1fr;
             gap: 0px 1em;
             grid-template-areas:
-            "portrait names";
+            'portrait names';
     
             .portrait {
                 grid-area: portrait;
@@ -102,9 +102,9 @@
         grid-area: right;
         display: grid;
         grid-template-areas: 
-        "loyalty"
-        "location"
-        "extraFormFields";
+        'loyalty'
+        'location'
+        'extraFormFields';
         
         .location {
             display: grid;
@@ -112,10 +112,10 @@
             grid-template-rows: 0fr 0fr 0fr 0fr;
             gap: 0px 1em;
             grid-template-areas:
-            "icon1 line1 line1 line1"
-            "icon2 line2 line2 line2"
-            "icon3 cityStateZip cityStateZip cityStateZip"
-            "icon4 country country country";
+            'icon1 line1 line1 line1'
+            'icon2 line2 line2 line2'
+            'icon3 cityStateZip cityStateZip cityStateZip'
+            'icon4 country country country';
             
             .icon1 {
                 grid-area: icon1;
@@ -154,7 +154,7 @@
             grid-template-rows: 1fr;
             gap: 0px 1em;
             grid-template-areas:
-            ". .";
+            '. .';
 
             app-icon { align-self: center; }
         }
@@ -180,7 +180,7 @@
 
         .no-memberships {
             font-size: 18px;
-            font-family: Roboto, "Helvetica Neue", sans-serif;
+            font-family: Roboto, 'Helvetica Neue', sans-serif;
             color: rgba(0, 0, 0, 0.54);
         }
     }
@@ -195,24 +195,22 @@
             grid-template-rows: 1fr;
             gap: 0px 1em;
             grid-template-areas:
-            ". .";
+            '. .';
 
             app-icon { align-self: center; }
         }
     }
-
-    .extraFormFields { grid-area: extraFormFields; }
 }
 
 .mobile-grid-container {
     display: grid;
     grid-template-columns: 1fr;
     grid-template-areas:
-    "basic-info"
-    "contact"
-    "location"
-    "loyalty"
-    "extraFormFields";
+    'basic-info'
+    'contact'
+    'location'
+    'loyalty'
+    'extraFormFields';
 
     .basic-info {
         grid-area: basic-info;
@@ -221,7 +219,7 @@
         grid-template-rows: 1fr;
         gap: 0px 1em;
         grid-template-areas:
-        "portrait names";
+        'portrait names';
 
         .portrait {
             grid-area: portrait;
@@ -242,7 +240,7 @@
             grid-template-rows: 1fr;
             gap: 0px 1em;
             grid-template-areas:
-            ". .";
+            '. .';
 
             app-icon { align-self: center; }
         }
@@ -255,10 +253,10 @@
         grid-template-rows: 0fr 0fr 0fr 0fr;
         gap: 0px 1em;
         grid-template-areas:
-            "icon1 line1 line1 line1"
-            "icon2 line2 line2 line2"
-            "icon3 cityStateZip cityStateZip cityStateZip"
-            "icon4 country country country";
+            'icon1 line1 line1 line1'
+            'icon2 line2 line2 line2'
+            'icon3 cityStateZip cityStateZip cityStateZip'
+            'icon4 country country country';
 
         .icon1 {
             grid-area: icon1;
@@ -297,7 +295,7 @@
             grid-template-rows: 1fr;
             grid-column-gap: 1em;
             grid-template-areas:
-            ". .";
+            '. .';
 
             app-icon { align-self: center; }
         }
@@ -307,7 +305,7 @@
 
             .no-memberships {
                 font-size: 18px;
-                font-family: Roboto, "Helvetica Neue", sans-serif;
+                font-family: Roboto, 'Helvetica Neue', sans-serif;
                 text-align: center;
                 color: rgba(0, 0, 0, 0.54);
             }
@@ -327,6 +325,26 @@
             }
         }
     }
+}
 
-    .extraFormFields { grid-area: extraFormFields; }
+.extraFormFields {
+    grid-area: extraFormFields;
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    column-gap: 1em;
+    grid-template-areas: '. extraField';
+}
+
+.extra-form-field {
+    grid-area: extraField;
+}
+
+.mobile {
+    .location {
+        grid-template-columns: 18px 1fr 1fr 1fr;
+    }
+
+    .extraFormFields {
+        grid-template-columns: 18px 1fr;
+    }
 }

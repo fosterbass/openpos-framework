@@ -62,10 +62,13 @@
                                 </div>
                             </div>
                             <div class="extraFormFields">
-                                <div *ngFor="let formElement of screen.form.formElements">
+                                <ng-container *ngFor="let formElement of screen.form.formElements">
                                     <app-dynamic-form-field *ngIf="handledFormFields.indexOf(formElement.id) == -1"
-                                                            [formGroup]="screen.formGroup" [formField]="formElement" (onFieldChanged)="onFieldChanged($event)"></app-dynamic-form-field>
-                                </div>
+                                                            class="extra-form-field"
+                                                            [formGroup]="screen.formGroup"
+                                                            [formField]="formElement"
+                                                            (onFieldChanged)="onFieldChanged($event)"></app-dynamic-form-field>
+                                </ng-container>
                             </div>
                         </div>
                         <div class="right">
