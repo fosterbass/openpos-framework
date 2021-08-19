@@ -1,5 +1,7 @@
 package org.jumpmind.pos.util.event;
 
+import org.jumpmind.pos.util.model.DeviceStatus;
+
 /**
  * A marker interface to indicate that an event should not be persisted to track
  * the current state of a Device.  This can be used to tag events such as
@@ -8,4 +10,5 @@ package org.jumpmind.pos.util.event;
  */
 public interface ITransientEvent {
 
+    void updateDeviceStatus(DeviceStatus deviceStatus);
 }

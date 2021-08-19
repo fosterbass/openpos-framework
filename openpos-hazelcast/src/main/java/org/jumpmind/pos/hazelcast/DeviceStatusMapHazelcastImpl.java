@@ -44,7 +44,7 @@ public class DeviceStatusMapHazelcastImpl implements IDeviceStatusMap, Membershi
 
     @EventListener(classes = AppEvent.class)
     protected void updateDeviceStatus(AppEvent event) {
-        if (!event.isRemote() && !(event instanceof ITransientEvent)) {
+        if (!event.isRemote()) {
             update(event);
         }
     }
@@ -73,7 +73,7 @@ public class DeviceStatusMapHazelcastImpl implements IDeviceStatusMap, Membershi
     @Override
     public synchronized void update(AppEvent event) {
         // FYI: map.compute() method doesn't work with hazelcast or I'd use it.
-        
+
         DeviceStatus status = get().get(event.getDeviceId());
         if (status == null) {
             status = new DeviceStatus(event.getDeviceId(), hz.getLocalEndpoint().getUuid().toString());
@@ -81,8 +81,13 @@ public class DeviceStatusMapHazelcastImpl implements IDeviceStatusMap, Membershi
             status = status.shallowCopy();
         }
         status.setLastActiveTimeMs(System.currentTimeMillis());
-        status.setLatestEvent(event);
-        
+
+        if(event instanceof ITransientEvent) {
+            ((ITransientEvent) event).updateDeviceStatus(status);
+        } else {
+            status.setLatestEvent(event);
+        }
+
         get().put(event.getDeviceId(), status);
     }
 

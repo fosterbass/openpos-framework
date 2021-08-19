@@ -3,6 +3,7 @@ package org.jumpmind.pos.core.event;
 import lombok.ToString;
 import org.jumpmind.pos.util.event.AppEvent;
 import org.jumpmind.pos.util.event.ITransientEvent;
+import org.jumpmind.pos.util.model.DeviceStatus;
 
 /**
  * DevicHeartbeatEvents are published periodically to indicate that a device is 
@@ -23,5 +24,7 @@ public class DeviceHeartbeatEvent extends AppEvent implements ITransientEvent {
     public DeviceHeartbeatEvent(String deviceId, String appId) {
         super(deviceId, appId);
     }
-    
+
+    @Override
+    public void updateDeviceStatus(DeviceStatus deviceStatus) {}
 }
