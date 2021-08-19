@@ -7,7 +7,6 @@ import lombok.Data;
 import org.jumpmind.pos.core.model.Total;
 import org.jumpmind.pos.core.ui.ActionItem;
 import org.jumpmind.pos.core.ui.AssignKeyBindings;
-import org.jumpmind.pos.core.ui.UIMessage;
 import org.jumpmind.pos.core.ui.data.AdditionalLabel;
 import org.jumpmind.pos.core.ui.data.OrderSummary;
 
@@ -16,11 +15,32 @@ import org.jumpmind.pos.core.ui.data.OrderSummary;
 public class SaleUIMessage extends TransactionUIMessage {
     private static final long serialVersionUID = 1L;
 
+    private String providerKey;
+
+    private List<Total> totals;
+    private Total grandTotal;
+    private List<Total> itemCounts;
+
     private List<OrderSummary> orders;
     private ActionItem removeOrderAction;
 
     private ActionItem helpButton;
     private ActionItem logoutButton;
+    private ActionItem loyaltyButton;
+    private String loyaltyIDLabel;
+    private String profileIcon;
+    private List<UIMembership> memberships;
+    private boolean membershipEnabled;
+    private boolean customerMissingInfoEnabled;
+    private boolean customerMissingInfo;
+    private String customerMissingInfoIcon;
+    private String customerMissingInfoLabel;
+    private String checkMarkIcon;
+    private String uncheckMarkIcon;
+    private String noMembershipsFoundLabel;
+    private ActionItem mobileLoyaltyButton;
+    private ActionItem linkedCustomerButton;
+    private ActionItem linkedEmployeeButton;
     private ActionItem promoButton;
 
     private AdditionalLabel taxExemptCertificateDetail;
@@ -30,6 +50,21 @@ public class SaleUIMessage extends TransactionUIMessage {
 
     private boolean enableCollapsibleItems = true;
     private String iconName;
+
+    private String loyaltySignupInProgressTitle;
+    private String loyaltySignupInProgressIcon;
+    private String loyaltySignupInProgressDetailsIcon;
+    private ActionItem loyaltyCancelButton;
+
+    private boolean rewardsVisibleOnLinkButton;
+    private boolean membershipVisibleOnLinkButton;
+    private String customerEmail;
+    private String memberTierLabel;
+    private String rewardsLabel;
+    private String memberTier;
+    private String noPromotionsLabel;
+    private String loyaltyIcon;
+    private List<UILoyaltyReward> loyaltyRewards;
 
     public SaleUIMessage() {
         this.setScreenType(UIMessageType.SALE);
@@ -46,5 +81,15 @@ public class SaleUIMessage extends TransactionUIMessage {
     public void setTaxExemptCertificateDetail(String label, String value) {
         this.taxExemptCertificateDetail = new AdditionalLabel(label, value);
     }
-    
+
+    public void addItemCount(Total total) {
+        if (itemCounts == null) {
+            itemCounts = new ArrayList<>();
+        }
+        itemCounts.add(total);
+    }
+
+    public void addItemCount(String name, String amount) {
+        addItemCount(new Total(name, amount));
+    }
 }

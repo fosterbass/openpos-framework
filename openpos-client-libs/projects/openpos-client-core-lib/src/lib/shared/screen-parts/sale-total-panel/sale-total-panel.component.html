@@ -61,11 +61,21 @@
                 (actionClick)="doAction(screenData.linkedCustomerButton)"
                 (click)="doAction(screenData.linkedCustomerButton)">
             <div class="button-wrapper">
-                <div class="grid-container">
+                <div class="grid-container" responsive-class>
                     <div class="name">
                         <div responsive-class class="customer-name">
                             {{screenData.customer.name}}
                         </div>
+                        <ng-container *ngIf="screenData.membershipVisibleOnLinkButton">
+                            <div class="membership-customer-email" responsive-class>
+                                {{screenData.customerEmail}}
+                            </div>
+                            <div class="membership-tier" responsive-class>
+                                {{screenData.memberTierLabel}} {{screenData.memberTier}}
+                            </div>
+                        </ng-container>
+                        <div *ngIf="keybindsEnabled(screenData.linkedCustomerButton)"
+                              class="muted-color loyalty-keybind">{{screenData.linkedCustomerButton.keybindDisplayName}}</div>
                     </div>
                     <div class="icon"><app-icon [iconName]="screenData.profileIcon" [iconClass]="(isMobile$ | async) ? null: 'material-icons mat-36'"></app-icon></div>
                     <div class="loyalty-icon">
@@ -96,9 +106,9 @@
                                 <span class="text">{{screenData.customerMissingInfoLabel}}</span>
                             </app-warn-button>
                         </div>
-                        <span *ngIf="!screenData.membershipEnabled && !isMissingCustomerInfo()" class="loyaltyId">
+                        <div *ngIf="!screenData.membershipEnabled && !isMissingCustomerInfo()" class="loyaltyId">
                             {{screenData.loyaltyIDLabel}}: {{screenData.customer.id}}
-                        </span>
+                        </div>
                         <div *ngIf="screenData.membershipEnabled && !isMissingCustomerInfo()">
                             <div *ngFor="let membership of screenData.memberships">
                                 <app-membership-display (clickEvent)="doAction(screenData.linkedCustomerButton)"
@@ -109,6 +119,23 @@
                                     {{screenData.noMembershipsFoundLabel}}
                                 </span>
                             </div>
+                        </div>
+                    </div>
+                    <div *ngIf="screenData.rewardsVisibleOnLinkButton" class="membership-rewards">
+                        <ng-container *ngIf="screenData.loyaltyRewards?.length">
+                            <h4 class="membership-rewards-title" responsive-class>{{screenData.rewardsLabel}}</h4>
+                            <ul class="membership-rewards-list" responsive-class>
+                                <li *ngFor="let reward of screenData.loyaltyRewards"
+                                    class="membership-rewards-list-item"
+                                    responsive-class>
+                                    <app-rewards-line-item [reward]="{name: reward.name, amount: reward.amount}"
+                                                           class="membership-rewards-item"
+                                                           responsive-class></app-rewards-line-item>
+                                </li>
+                            </ul>
+                        </ng-container>
+                        <div *ngIf="!screenData.loyaltyRewards?.length" class="membership-no-rewards">
+                            {{screenData.noPromotionsLabel}}
                         </div>
                     </div>
                 </div>
