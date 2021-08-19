@@ -14,6 +14,7 @@ public class DeviceStatus implements Serializable {
 
     private String serverId;
     private String deviceId;
+    private Boolean helpRequested = false;
     @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property="__class")
     private AppEvent latestEvent;
     private long lastActiveTimeMs;
@@ -32,12 +33,17 @@ public class DeviceStatus implements Serializable {
         this.serverId = serverId;
     }
 
+    public void setHelpRequested(boolean helpRequested) {
+        this.helpRequested = helpRequested;
+    }
+
     public DeviceStatus shallowCopy() {
         DeviceStatus copy = new DeviceStatus(this.deviceId);
         copy.serverId = this.serverId;
         copy.latestEvent = this.latestEvent;
         copy.lastActiveTimeMs = this.lastActiveTimeMs;
         copy.payload = this.payload;
+        copy.helpRequested = this.helpRequested;
 
         return copy;
     }

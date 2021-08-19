@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.jumpmind.pos.core.event.DeviceHeartbeatEvent;
 import org.jumpmind.pos.util.event.AppEvent;
+import org.jumpmind.pos.util.event.ITransientEvent;
+import org.jumpmind.pos.util.model.DeviceStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
@@ -31,6 +33,11 @@ public class HazelcastPublisher implements IEventDistributor, ApplicationListene
         if (!(event instanceof DeviceHeartbeatEvent)) {
             try {
                 if (!event.isRemote()) {
+                    if(event instanceof ITransientEvent) {
+                        DeviceStatus status = deviceStatusMap.get().get(event.getDeviceId());
+                        ((ITransientEvent) event).updateDeviceStatus(status);
+                    }
+
                     log.info("{} received an event {},{} from {}. PUBLISHING IT ", this.getClass().getSimpleName(), event.toString(), System.identityHashCode(event), event.getSource());
                     // then share it with the world
                     ITopic<AppEvent> topic = hz.getTopic("commerce/events");

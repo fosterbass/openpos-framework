@@ -1,20 +1,21 @@
 import { Component, Injector } from '@angular/core';
-import { BasicBaconStripInterface } from './basic-bacon-strip.interface';
+import { DynamicBaconStripInterface } from './dynamic-bacon-strip.interface';
 import { ScreenPart } from '../../decorators/screen-part.decorator';
 import { ScreenPartComponent } from '../screen-part';
 import { Observable } from 'rxjs';
 import { OpenposMediaService, MediaBreakpoints } from '../../../core/media/openpos-media.service';
+import {BaconStripInterface} from "../bacon-strip/bacon-strip.interface";
 
 
 @ScreenPart({
-  name: 'basicBaconStrip'
+  name: 'dynamicBaconStrip'
 })
 @Component({
-  selector: 'app-basic-bacon-strip',
-  templateUrl: './basic-bacon-strip.component.html',
-  styleUrls: ['./basic-bacon-strip.component.scss']
+  selector: 'app-dynamic-bacon-strip',
+  templateUrl: './dynamic-bacon-strip.component.html',
+  styleUrls: ['./dynamic-bacon-strip.component.scss']
 })
-export class BasicBaconStripComponent extends ScreenPartComponent<BasicBaconStripInterface> {
+export class DynamicBaconStripComponent extends ScreenPartComponent<DynamicBaconStripInterface> {
 
   isMobile: Observable<boolean>;
 
