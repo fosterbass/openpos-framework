@@ -84,6 +84,16 @@ app-bacon-strip{
         margin-top: 2rem;
     }
 
+    .notify {
+        grid-area: actions;
+        display: grid;
+        grid-auto-flow: column;
+        justify-content: center;
+        grid-column-gap: 1rem;
+        margin-top: 2rem;
+        color: #F89406;
+    }
+
     .carousel {
         grid-area: image;
         justify-self: center;
@@ -120,6 +130,7 @@ app-bacon-strip{
         display: grid;
         grid-auto-flow: column;
         margin-bottom: 16px;
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
     }
 
     ul{
@@ -214,6 +225,10 @@ td.promotion-icon {
     padding-right: 5px;
 }
 
+.buddy-store-inventory-count {
+    text-align: right;
+}
+
 .item-details-table {
     width: 100%;
 }
@@ -230,4 +245,16 @@ table.item-details-table {
     th, td {
         padding: 5px;
     }
+}
+
+.icon-heading {
+    display: flex;
+    flex-direction: row;
+}
+
+h3.icon-heading > app-icon {
+    align-self: center;
+    width: 32px;
+    height: 32px;
+    margin-left: 12px;
 }

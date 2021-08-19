@@ -6,8 +6,8 @@ export class MessageTypes {
     static TOAST = 'Toast';
     static SCREEN = 'Screen';
     static CONFIG_CHANGED = 'ConfigChanged';
-    static DATA = "UIData";
-    static CONNECTED = 'Connected'
+    static DATA = 'UIData';
+    static CONNECTED = 'Connected';
     static SINGLE_SIGN_ON_REQUEST = 'SingleSignOnRequest';
     static STATUS = 'Status';
     static LOCK_SCREEN = 'LockScreen';
@@ -22,7 +22,13 @@ export class MessageTypes {
     static AUDIO_PRELOAD = 'AudioPreload';
     static LOADING = 'Loading';
     static PERIPHERAL_DEVICE_SELECTION = 'PeripheralDeviceSelection';
+    static DEVICE_PAIRING_CHANGED = 'DevicePairingChanged';
     static WATERMARK = 'Watermark';
     static HIDE_WATERMARK = 'HideWatermark';
+    static STATUS_BAR = 'StatusBar';
+    static HIDE_STATUS_BAR = 'HideStatusBar';
     static CLIENT_EXECUTABLE = 'ClientExecutable';
+    static CLOSE_STATUS_DETAILS = 'CloseStatusDetails';
+    static DATA_CLEAR = 'DataClear';
+    static LOYALTY_SIGNUP = 'LoyaltySignup';
 }

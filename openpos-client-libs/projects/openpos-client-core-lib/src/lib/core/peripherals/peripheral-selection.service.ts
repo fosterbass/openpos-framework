@@ -30,7 +30,8 @@ export class PeripheralSelectionService {
                     icon: m.category.icon,
                     localizationNoCategorySelectedKey: m.category.localizationNoCategorySelectedKey,
                     knownDevices: devices,
-                    selectedDevice: devices.find(d => d.id === m.selectedId)
+                    selectedDevice: m.selectedDevice,
+                    enabled: m.enabled
                 };
             }),
             tap(n => this._categoryNameToData.set(n.id, n)),
@@ -78,4 +79,7 @@ export type PeripheralDeviceRef = PeripheralDevice | string;
 export interface PeripheralDevice {
     id: string;
     displayName: string;
+    requiresConfirmation: boolean;
+    confirmationTitle: string;
+    confirmationMessage: string;
 }

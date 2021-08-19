@@ -1,4 +1,4 @@
-import { VERSION } from './../../version';
+import { VERSIONS } from './../../version';
 import { ILoading } from './../interfaces/loading.interface';
 
 import { Configuration } from './../../configuration/configuration';
@@ -6,7 +6,7 @@ import { IMessageHandler } from './../interfaces/message-handler.interface';
 import { PersonalizationService } from '../personalization/personalization.service';
 
 import { Observable, Subscription, BehaviorSubject, Subject, merge, timer, ConnectableObservable } from 'rxjs';
-import { map, filter, takeWhile, publishReplay } from 'rxjs/operators';
+import { map, filter, takeWhile, publishReplay, take } from 'rxjs/operators';
 import { Message } from '@stomp/stompjs';
 import { Injectable, NgZone, Inject, } from '@angular/core';
 import { StompState, StompRService } from '@stomp/ng2-stompjs';
@@ -141,7 +141,7 @@ export class SessionService implements IMessageHandler<any> {
 
         this.screenMessage$ = screenMessagesBehavior;
 
-        // We need to capture incomming screen messages even with no subscribers, so make this hot 🔥
+        // We need to capture incoming screen messages even with no subscribers, so make this hot 🔥
         screenMessagesBehavior.connect();
     }
 
@@ -175,7 +175,7 @@ export class SessionService implements IMessageHandler<any> {
     }
 
     private buildTopicName(): string {
-        return '/topic/app/' + this.personalization.getAppId$().getValue() + '/node/' + this.personalization.getDeviceId$().getValue();
+        return '/topic/app/device/' + this.personalization.getDeviceId$().getValue();
     }
 
     public setAuthToken(token: string) {
@@ -189,6 +189,7 @@ export class SessionService implements IMessageHandler<any> {
     public connected(): boolean {
         return this.stompService && this.stompService.connected();
     }
+
     private appendPersonalizationProperties(headers: any) {
         const personalizationProperties = this.personalization.getPersonalizationProperties$().getValue();
         if (personalizationProperties && headers) {
@@ -226,7 +227,7 @@ export class SessionService implements IMessageHandler<any> {
             appId: this.personalization.getAppId$().getValue(),
             deviceId: this.personalization.getDeviceId$().getValue(),
             queryParams: JSON.stringify(this.queryParams),
-            version: JSON.stringify(VERSION)
+            version: JSON.stringify(VERSIONS)
         };
         this.appendPersonalizationProperties(headers);
         this.clientContexts.forEach( context => {
@@ -306,8 +307,17 @@ export class SessionService implements IMessageHandler<any> {
             if (!this.onServerConnect.value) {
                 this.onServerConnect.next(true);
             }
+
             this.sendMessage(new ConnectedMessage());
-            this.cancelLoading();
+
+            // Screens will cancel the loading when they receive a message upon
+            // connection, but just for sanity we're going to ensure it gets
+            // cancelled after some due time. We need to let the screens handle
+            // closing the dialog to prevent a user from executing actions before
+            // the proper screen is displayed.
+            timer(10000).pipe(take(1)).subscribe(() => {
+                this.cancelLoading();
+            });
         } else if (stompState === 'DISCONNECTING') {
             console.info('STOMP disconnecting');
         } else if (stompState === 'CLOSED') {
@@ -465,7 +475,7 @@ export class SessionService implements IMessageHandler<any> {
             // tslint:disable-next-line:max-line-length
             console.info(`>>> Publish deviceResponse requestId: "${deviceResponse.requestId}" deviceId: ${deviceResponse.deviceId} type: ${deviceResponse.type}`);
             this.stompService.publish(
-                `/app/device/app/${this.personalization.getAppId$().getValue()}/node/${this.personalization.getDeviceId$().getValue()}/device/${deviceResponse.deviceId}`,
+                `/app/device/device/${this.personalization.getDeviceId$().getValue()}`,
                 JSON.stringify(deviceResponse));
         };
 
@@ -499,15 +509,14 @@ export class SessionService implements IMessageHandler<any> {
             return false;
         }
         const deviceId = this.personalization.getDeviceId$().getValue();
-        const appId = this.personalization.getAppId$().getValue();
-        if ( appId && deviceId) {
+        if (deviceId) {
             console.info(`Publishing action '${actionString}' of type '${type}' to server...`);
-            this.stompService.publish('/app/action/app/' + appId + '/node/' + deviceId,
+            this.stompService.publish('/app/action/device/' + deviceId,
                 JSON.stringify({ name: actionString, type, data: payload, doNotBlockForResponse: doNotBlockForResponse }));
             return true;
         } else {
             console.info(`Can't publish action '${actionString}' of type '${type}' ` +
-                `due to undefined App ID (${appId}) or Device ID (${deviceId})`);
+                `due to undefined Device ID (${deviceId})`);
             return false;
         }
     }

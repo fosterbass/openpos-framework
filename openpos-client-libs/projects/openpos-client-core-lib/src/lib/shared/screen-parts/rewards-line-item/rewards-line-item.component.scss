@@ -2,11 +2,11 @@
 
 .reward-line-item-wrapper {
   display: grid;
-  grid-template-columns: 1fr 10fr 1fr 3fr;
+  grid-template-columns: 1fr 8fr 2fr 2fr 4fr;
   grid-template-rows: 1fr;
   gap: 0px 0px;
   grid-template-areas:
-    "loyalty-icon details reward apply";
+    "loyalty-icon details status-text reward apply";
   .loyalty-icon {
     grid-area: loyalty-icon;
     text-align: center;
@@ -30,10 +30,20 @@
       display: inline-block;
     }
   }
+  .status-text {
+    @extend %text-xs;
+    font-style: italic;
+    grid-area: status-text;
+    align-self: center;
+    text-align: center;
+  }
   .reward {
     @extend %text-md;
     grid-area: reward;
     align-self: center;
+    .pctReward {
+      font-weight: bold;
+    }
   }
   .apply {
     grid-area: apply;
@@ -50,7 +60,7 @@
 
 .mobile-reward-line-item-wrapper {
   display: grid;
-  grid-template-columns: 3fr 1fr 1fr;
+  grid-template-columns: 7fr 2fr 1fr;
   grid-template-rows: 1fr;
   gap: 0px 0px;
   grid-template-areas:
@@ -62,11 +72,24 @@
       display: inline-block;
     }
   }
+  .status-text {
+    @extend %text-xs;
+    font-style: italic;
+    grid-area: status-text;
+    align-self: center;
+    text-align: center;
+  }
   .details {
     grid-area: details;
     .name {
+
+      .status-text {
+        text-align: left;
+        font-weight: normal;
+      }
+
       @extend %text-md;
-      font-weight: 500;
+      font-weight: bold;
       &.tablet-portrait {
         font-size: $text-sm;
       }
@@ -116,8 +139,11 @@
     grid-area: apply;
     text-align: center;
     justify-self: end;
+    align-self: center;
     a {
       @extend %text-md;
+      padding: 0 .25em;
+      
       &.tablet-portrait {
         font-size: $text-sm;
       }

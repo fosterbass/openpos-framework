@@ -2,6 +2,7 @@ package org.jumpmind.pos.util.event;
 
 import lombok.Data;
 import lombok.ToString;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 
@@ -12,14 +13,19 @@ public class AppEvent extends Event implements Serializable {
 
     String deviceId;
     String appId;
+    String pairedDeviceId;
     boolean remote;
 
     public AppEvent() {
-      super();
+        super();
     }
 
     public AppEvent(String deviceId, String appId) {
         this(deviceId, appId, false);
+    }
+
+    public AppEvent(String deviceId, String appId, String pairedDeviceId) {
+        this(deviceId, appId, pairedDeviceId, false);
     }
 
     public AppEvent(String deviceId, String appId, boolean remote) {
@@ -28,8 +34,27 @@ public class AppEvent extends Event implements Serializable {
         this.appId = appId;
     }
 
+    public AppEvent(String deviceId, String appId, String pairedDeviceId, boolean remote) {
+        super(createSourceString(appId, deviceId, pairedDeviceId));
+        this.deviceId = deviceId;
+        this.appId = appId;
+        this.pairedDeviceId = pairedDeviceId;
+    }
+
     public static String createSourceString(String appId, String deviceId) {
         return appId + "/" + deviceId;
     }
 
+    public static String createSourceString(String appId, String deviceId, String pairedDeviceId) {
+        if (StringUtils.isBlank(pairedDeviceId)) {
+            return createSourceString(appId, deviceId);
+        }
+
+        return appId + "/" + deviceId + "/" + pairedDeviceId;
+    }
+
+    @Override
+    public String getSource() {
+        return createSourceString(appId, deviceId, pairedDeviceId);
+    }
 }

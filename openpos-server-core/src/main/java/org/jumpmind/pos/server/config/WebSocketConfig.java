@@ -55,7 +55,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Value("${openpos.general.websocket.sendBufferSizeLimit:8192000}")
     int sendBufferSizeLimit;
 
-    @Value("${openpos.logging.messages.enabled:true}")
+    @Value("${openpos.logging.messages.enabled:false}")
     boolean loggingEnabled;
 
     Map<String, SessionContext> deviceToSessionMap = Collections.synchronizedMap(new HashMap<>());
@@ -180,7 +180,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 SimpMessageType messageType = accessor.getMessageType();
                 if (messageType == SimpMessageType.MESSAGE && loggingEnabled) {
                     String[] tokens = accessor.getDestination().split("/");
-                    setupLogging(tokens[3], tokens[5]);
+                    setupLogging(tokens[2]);
                     log.info("Post send of message for session " + accessor.getSessionId() + " with destination " + accessor.getDestination() + ":\n" + new String((byte[]) message.getPayload()));
                 }
             }
@@ -189,7 +189,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/api").setAllowedOrigins("*").withSockJS().setInterceptors(new HandshakeInterceptor() {
+        registry.addEndpoint("/api").setAllowedOriginPatterns("*").withSockJS().setInterceptors(new HandshakeInterceptor() {
 
             @Override
             public void afterHandshake(

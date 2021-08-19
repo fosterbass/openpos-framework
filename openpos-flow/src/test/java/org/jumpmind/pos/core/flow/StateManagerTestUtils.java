@@ -1,11 +1,8 @@
 package org.jumpmind.pos.core.flow;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import org.jumpmind.pos.core.clientconfiguration.LocaleMessageFactory;
 import org.jumpmind.pos.core.flow.config.FlowConfig;
@@ -35,7 +32,7 @@ public class StateManagerTestUtils {
         StateManager stateManager = new StateManager();
 
         IMessageService messageService = Mockito.mock(IMessageService.class);
-        doNothing().when(messageService).sendMessage(any(String.class), any(String.class), any(Message.class));
+        doNothing().when(messageService).sendMessage(any(String.class), any(Message.class));
 
         DeviceStartupTaskConfig deviceStartupTaskConfig = Mockito.mock(DeviceStartupTaskConfig.class);
         TestUtil.setField(stateManager, "deviceStartupTaskConfig", deviceStartupTaskConfig);

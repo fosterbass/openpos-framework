@@ -14,7 +14,6 @@ import org.jumpmind.pos.core.model.MessageType;
 import org.jumpmind.pos.core.model.OpenposBarcodeType;
 import org.jumpmind.pos.core.model.ScanData;
 import org.jumpmind.pos.devices.DeviceNotFoundException;
-import org.jumpmind.pos.devices.model.DeviceAuthModel;
 import org.jumpmind.pos.devices.model.DeviceModel;
 import org.jumpmind.pos.devices.model.DevicesRepository;
 import org.jumpmind.pos.server.model.Action;
@@ -50,7 +49,7 @@ public class DevToolsActionListener implements IActionListener {
     @Value("${openpos.customerDisplayViewer.customerDisplayPort:#{null}}")
     String customerDisplayPort;
 
-    @Value("${openpos.customerDisplayViewer.appId:'customerdisplay'}")
+    @Value("${openpos.customerDisplayViewer.appId:customerdisplay}")
     String customerDisplayAppId;
 
     @Value("${openpos.customerDisplayViewer.customerDisplayUrl:#{null}}")
@@ -77,8 +76,8 @@ public class DevToolsActionListener implements IActionListener {
     }
     
     @Override
-    public void actionOccured(String appId, String deviceId, Action action) {
-        IStateManager stateManager = stateManagerFactory.retrieve(appId, deviceId);
+    public void actionOccurred(String deviceId, Action action) {
+        IStateManager stateManager = stateManagerFactory.retrieve(deviceId, true);
         
         if (action.getName().contains("DevTools::Scan")) {
             SimulatedScannerService service = SimulatedScannerService.instance;
@@ -108,7 +107,7 @@ public class DevToolsActionListener implements IActionListener {
 
         }
 
-        messageService.sendMessage(appId, deviceId, createMessage(stateManager, deviceId));
+        messageService.sendMessage(deviceId, createMessage(stateManager, deviceId));
     }
     
     private Message createMessage(IStateManager sm, String deviceId) {
@@ -153,21 +152,26 @@ public class DevToolsActionListener implements IActionListener {
         Map<String, String> simulatorMap = new HashMap<>();
         DeviceModel deviceModel = null;
         String authToken = null;
+        String simulatorDeviceId = deviceId + "-sim";
         try {
-            deviceModel = devicesRepository.getDevice(deviceId, simAppId);
+            deviceModel = devicesRepository.getDevice(simulatorDeviceId);
         } catch (DeviceNotFoundException ex) {
         }
         if (deviceModel == null) {
-            deviceModel = DeviceModel.builder().deviceId(deviceId).appId(simAppId).build();
+            deviceModel = DeviceModel.builder().
+                    deviceId(simulatorDeviceId).
+                    appId(simAppId).
+                    pairedDeviceId(deviceId).
+                    build();
             devicesRepository.saveDevice(deviceModel);
             authToken = UUID.randomUUID().toString();
-            devicesRepository.saveDeviceAuth(simAppId, deviceId, authToken);
+            devicesRepository.saveDeviceAuth(simulatorDeviceId, authToken);
         } else {
             try {
-                authToken = devicesRepository.getDeviceAuth(deviceId, simAppId);
+                authToken = devicesRepository.getDeviceAuth(simulatorDeviceId);
             } catch (DeviceNotFoundException ex) {
                 authToken = UUID.randomUUID().toString();
-                devicesRepository.saveDeviceAuth(simAppId, deviceId, authToken);
+                devicesRepository.saveDeviceAuth(simulatorDeviceId, authToken);
             }
         }
         simulatorMap.put("simAuthToken", authToken);
@@ -179,12 +183,30 @@ public class DevToolsActionListener implements IActionListener {
 
     private void setCustomerDisplayAuthData(String deviceId, Message message) {
         Map<String, String> customDeviceMap = new HashMap<>();
-        String authToken = "";
-        try{
-            authToken = devicesRepository.getDeviceAuth(deviceId, customerDisplayAppId);
-        } catch (DeviceNotFoundException ex){
-            authToken = "";
+        DeviceModel deviceModel = null;
+        String authToken = null;
+        String customerDisplayDeviceId = deviceId + "-customerdisplay";
+        try {
+            deviceModel = devicesRepository.getDevice(customerDisplayDeviceId);
+        } catch (DeviceNotFoundException ex) {
         }
+        if (deviceModel == null) {
+            deviceModel = DeviceModel.builder().
+                    deviceId(customerDisplayDeviceId).
+                    appId(customerDisplayAppId).
+                    build();
+            devicesRepository.saveDevice(deviceModel);
+            authToken = UUID.randomUUID().toString();
+            devicesRepository.saveDeviceAuth(customerDisplayDeviceId, authToken);
+        } else {
+            try {
+                authToken = devicesRepository.getDeviceAuth(customerDisplayDeviceId);
+            } catch (DeviceNotFoundException ex) {
+                authToken = UUID.randomUUID().toString();
+                devicesRepository.saveDeviceAuth(customerDisplayDeviceId, authToken);
+            }
+        }
+        devicesRepository.pairDevice(deviceId, customerDisplayDeviceId);
         customDeviceMap.put("customerDisplayAuthToken", authToken);
         customDeviceMap.put("customerDisplayPort", customerDisplayPort);
         customDeviceMap.put("customerDisplayUrl", customerDisplayUrl);
@@ -254,8 +276,10 @@ public class DevToolsActionListener implements IActionListener {
         Set<String> keys = map.keySet();
         List<ScopeField> res = new ArrayList<>();
         for (String key : keys) {
-            res.add(new ScopeField(key, map.get(key).getCreatedTime().toString(),
-                    map.get(key).getCreatedStackTrace().replaceAll("at ", "\nat_")));
+            if (map.get(key).getCreatedStackTrace() != null) {
+                res.add(new ScopeField(key, map.get(key).getCreatedTime().toString(),
+                        map.get(key).getCreatedStackTrace().replaceAll("at ", "\nat_")));
+            }
         }
         return res;
     }

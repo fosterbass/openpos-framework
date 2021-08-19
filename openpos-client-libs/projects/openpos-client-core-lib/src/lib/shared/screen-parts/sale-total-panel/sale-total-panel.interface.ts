@@ -29,4 +29,8 @@ export interface SaleTotalPanelInterface extends IAbstractScreen {
     customerMissingInfo: boolean;
     customerMissingInfoIcon: string;
     customerMissingInfoLabel: string;
+    loyaltySignupInProgressTitle: string;
+    loyaltySignupInProgressIcon: string;
+    loyaltySignupInProgressDetailsIcon: string;
+    loyaltyCancelButton: IActionItem;
 }

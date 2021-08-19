@@ -92,4 +92,5 @@ export class StatusBarComponent {
 class SystemInfo extends ConfigChangedMessage {
   public line1: string;
   public line2: string;
+  public line2Short: string;
 }

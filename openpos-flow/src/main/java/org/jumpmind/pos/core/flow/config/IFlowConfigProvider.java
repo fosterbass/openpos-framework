@@ -24,8 +24,8 @@ package org.jumpmind.pos.core.flow.config;
 import java.util.List;
 
 public interface IFlowConfigProvider {
-    public List<TransitionStepConfig> getTransitionStepConfig(String appId, String nodeId);
-    public FlowConfig getConfigByName(String appId, String nodeId, String name);
-    public FlowConfig getConfig(String appId, String nodeId);
+    public List<TransitionStepConfig> getTransitionStepConfig(String appId, String deviceId);
+    public FlowConfig getConfigByName(String appId, String deviceId, String name);
+    public FlowConfig getConfig(String appId, String deviceId);
     public void load(String appId, String path, String startFlowName);
 }

@@ -1,5 +1,5 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core'
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import {ActionService} from '../../../core/actions/action.service';
 import {MembershipDisplayComponent} from './membership-display.component';
 import {validateDoesNotExist, validateIcon, validateText} from '../../../utilites/test-utils';
@@ -13,15 +13,15 @@ import {CLIENTCONTEXT} from '../../../core/client-context/client-context-provide
 import {KeyPressProvider} from '../../providers/keypress.provider';
 import {Subscription} from 'rxjs/internal/Subscription';
 
-class MockActionService {};
-class MockMatDialog {};
-class MockElectronService {};
-class ClientContext {};
+class MockActionService {}
+class MockMatDialog {}
+class MockElectronService {}
+class ClientContext {}
 class MockKeyPressProvider {
     subscribe(): Subscription {
         return new Subscription();
     }
-};
+}
 
 describe('MembershipDisplayComponent', () => {
     let component: MembershipDisplayComponent;
@@ -48,14 +48,15 @@ describe('MembershipDisplayComponent', () => {
         fixture = TestBed.createComponent(MembershipDisplayComponent);
         component = fixture.componentInstance;
         component.screenData = {
-            checkMarkIcon: 'check'
+            memberIcon: 'check',
+            nonMemberIcon: 'close'
         };
         membership = {
             id: '1',
             name: 'My Membership',
             member: true
         };
-        component.membership = membership
+        component.membership = membership;
         fixture.detectChanges();
     });
 
@@ -78,7 +79,7 @@ describe('MembershipDisplayComponent', () => {
             chip.nativeElement.click();
 
             expect(component.clickEvent.emit).toHaveBeenCalledWith(component.membership);
-        })
+        });
 
         describe('when the user is a member', () => {
             beforeEach(() => {
@@ -91,14 +92,18 @@ describe('MembershipDisplayComponent', () => {
                 expect(chip.nativeElement.classList).toContain('in');
             });
 
-            it('displays the check icon', () => {
+            it('displays the membership icon', () => {
                 validateIcon(fixture, 'mat-chip app-icon', 'check');
+            });
+
+            it('does not have the non membership icon', () => {
+                validateDoesNotExist(fixture, 'mat-chip app-icon .not-in');
             });
         });
 
         describe('when the user is not a member', () => {
             beforeEach(() => {
-                component.membership.member = false
+                component.membership.member = false;
                 fixture.detectChanges();
             });
 
@@ -107,8 +112,12 @@ describe('MembershipDisplayComponent', () => {
                 expect(chip.nativeElement.classList).toContain('not-in');
             });
 
-            it('does not have the check icon', () => {
-               validateDoesNotExist(fixture, 'mat-chip mat-icon');
+            it('does not have the membership icon', () => {
+                validateDoesNotExist(fixture, 'mat-chip app-icon .in');
+            });
+
+            it('has the non membership icon', () => {
+                validateIcon(fixture, 'mat-chip app-icon', 'close');
             });
         });
     });

@@ -2,10 +2,13 @@ package org.jumpmind.pos.devices.model;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jumpmind.pos.devices.DeviceNotFoundException;
 import org.jumpmind.pos.persist.DBSession;
 import org.jumpmind.pos.persist.ModelId;
+import org.jumpmind.pos.persist.Query;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
@@ -17,6 +20,7 @@ import java.util.stream.Collectors;
 @Repository
 @Slf4j
 public class DevicesRepository {
+    final static String CACHE_NAME = "/devices/device";
 
     @Autowired
     @Lazy
@@ -25,18 +29,24 @@ public class DevicesRepository {
     @Autowired
     VirtualDeviceRepository virtualDeviceRepository;
 
-    @Cacheable(value="/devices/device", key="#deviceId + '-' + #appId")
-    public DeviceModel getDevice(String deviceId, String appId) {
-        DeviceModel device = devSession.findByNaturalId(DeviceModel.class, new ModelId("deviceId", deviceId, "appId", appId));
+    @Autowired
+    @Lazy
+    CacheManager cacheManager;
+
+    Query<DeviceStatusModel> connectedDevicesQuery = new Query<DeviceStatusModel>().named("connectedDevices").result(DeviceStatusModel.class);
+
+    @Cacheable(value = CACHE_NAME, key = "#deviceId")
+    public DeviceModel getDevice(String deviceId) {
+        DeviceModel device = devSession.findByNaturalId(DeviceModel.class, new ModelId("deviceId", deviceId));
         if (device != null) {
-            device.setDeviceParamModels(getDeviceParams(device.getDeviceId(), device.getAppId()));
+            device.setDeviceParamModels(getDeviceParams(device.getDeviceId()));
             return device;
         } else {
-            DeviceModel virtualDevice = virtualDeviceRepository.getByDeviceIdAppId(deviceId, appId);
+            DeviceModel virtualDevice = virtualDeviceRepository.getByDeviceId(deviceId);
             if (virtualDevice != null) {
                 return virtualDevice;
             }
-            throw new DeviceNotFoundException("No device found for appId=" + appId + " deviceId=" + deviceId);
+            throw new DeviceNotFoundException("No device found for deviceId=" + deviceId);
         }
     }
 
@@ -46,8 +56,79 @@ public class DevicesRepository {
         return devSession.findByFields(DeviceModel.class, params, 1000);
     }
 
-    public String getDeviceAuth(String deviceId, String appId) {
-        DeviceAuthModel deviceAuthModel = devSession.findByNaturalId(DeviceAuthModel.class, new ModelId("deviceId", deviceId, "appId", appId));
+    public List<DeviceModel> getUnpairedDevices(String businessUnitId) {
+        return findDevices(businessUnitId)
+                .stream()
+                .filter(device -> StringUtils.isBlank(device.getPairedDeviceId()))
+                .collect(Collectors.toList());
+    }
+
+    public List<DeviceModel> getUnpairedDevicesByAppId(String businessUnitId, String appId) {
+        return getUnpairedDevices(businessUnitId).stream()
+                .filter(device -> device.getAppId().equals(appId))
+                .collect(Collectors.toList());
+    }
+
+    public List<DeviceModel> getPairedDevices(String businessUnitId) {
+        return findDevices(businessUnitId)
+                .stream()
+                .filter(device -> StringUtils.isNotBlank(device.getPairedDeviceId()))
+                .collect(Collectors.toList());
+    }
+
+    public List<DeviceModel> getPairedDevicesByAppId(String businessUnitId, String appId) {
+        return getPairedDevices(businessUnitId).stream()
+                .filter(device -> device.getAppId().equals(appId))
+                .collect(Collectors.toList());
+    }
+
+    public void pairDevice(String deviceId, String pairedDeviceId) {
+        DeviceModel device = getDevice(deviceId);
+        DeviceModel pairedDevice = getDevice(pairedDeviceId);
+
+        if (StringUtils.isNotBlank(device.getPairedDeviceId())) {
+            unpairDevice(deviceId, device.getPairedDeviceId());
+        }
+        if (StringUtils.isNotBlank(pairedDevice.getPairedDeviceId())) {
+            unpairDevice(pairedDeviceId, pairedDevice.getPairedDeviceId());
+        }
+
+        device.setPairedDeviceId(pairedDeviceId);
+        saveDevice(device);
+
+        pairedDevice.setPairedDeviceId(deviceId);
+        saveDevice(pairedDevice);
+
+        clearCache(deviceId);
+        clearCache(pairedDeviceId);
+    }
+
+    public void unpairDevice(String deviceId, String pairedDeviceId) {
+        DeviceModel device = getDevice(deviceId);
+        DeviceModel pairedDevice = getDevice(pairedDeviceId);
+
+        device.setPairedDeviceId(null);
+        saveDevice(device);
+
+        pairedDevice.setPairedDeviceId(null);
+        saveDevice(pairedDevice);
+
+        clearCache(deviceId);
+        clearCache(pairedDeviceId);
+    }
+
+    @CacheEvict(value = CACHE_NAME, key = "#deviceId")
+    public void setAppId(String deviceId, String newAppId) {
+        String deviceAuth = getDeviceAuth(deviceId);
+        DeviceModel device = getDeviceByAuth(deviceAuth);
+
+        device.setAppId(newAppId);
+        saveDevice(device);
+        saveDeviceAuth(deviceId, deviceAuth);
+    }
+
+    public String getDeviceAuth(String deviceId) {
+        DeviceAuthModel deviceAuthModel = getDeviceAuthModel(deviceId);
 
         if (deviceAuthModel != null) {
             return deviceAuthModel.getAuthToken();
@@ -56,20 +137,30 @@ public class DevicesRepository {
         }
     }
 
-    public List<DeviceAuthModel> getDisconnectedDevices(String businessUnitId) {
-        Map<String, Object> statusParams = new HashMap<>();
-        statusParams.put("deviceStatus", DeviceStatusConstants.CONNECTED);
-        Set<String> connectedDevices = devSession.findByFields(DeviceStatusModel.class, statusParams, 10000).stream().map(d-> d.getDeviceId()+":"+d.getAppId()).collect(Collectors.toSet());
+    public DeviceAuthModel getDeviceAuthModel(String deviceId) {
+        return devSession.findByNaturalId(DeviceAuthModel.class, new ModelId("deviceId", deviceId));
+    }
 
-        Map<String, Object> deviceParams = new HashMap<>();
-        deviceParams.put("businessUnitId", businessUnitId);
-        final Set<String> devices = devSession.findByFields(DeviceModel.class, deviceParams,10000).stream().map(d-> d.getDeviceId()+":"+d.getAppId()).collect(Collectors.toSet());
-        devices.removeAll(connectedDevices);
-        return devSession.findAll(DeviceAuthModel.class, 10000).stream().filter(d-> devices.contains(d.getDeviceId()+":"+d.getAppId())).sorted().collect(Collectors.toList());
+    public List<DeviceAuthModel> getDisconnectedDevices(String businessUnitId, String installationId) {
+        Set<String> connectedDeviceIds = getConnectedDeviceIds(businessUnitId, installationId);
+
+        final Set<String> allDeviceIds = findDevices(businessUnitId).stream().map(DeviceModel::getDeviceId).collect(Collectors.toSet());
+        allDeviceIds.removeAll(connectedDeviceIds);
+        return devSession.findAll(DeviceAuthModel.class, 10000).stream().filter(d -> allDeviceIds.contains(d.getDeviceId())).sorted().collect(Collectors.toList());
+    }
+
+    public Set<String> getConnectedDeviceIds(String businessUnitId, String installationId) {
+        Map<String, Object> statusParams = new HashMap<>();
+        statusParams.put("businessUnitId", businessUnitId);
+        statusParams.put("installationId", installationId);
+        statusParams.put("deviceStatus", DeviceStatusConstants.CONNECTED);
+        List<DeviceStatusModel> deviceStatuses =
+                devSession.query(connectedDevicesQuery, statusParams, 10000);
+        return deviceStatuses.stream().map(DeviceStatusModel::getDeviceId).collect(Collectors.toSet());
     }
 
     public DeviceModel getDeviceByAuth(String auth) {
-        Map<String, Object> params = new HashMap();
+        Map<String, Object> params = new HashMap<>();
         params.put("authToken", auth);
 
         DeviceAuthModel authModel = devSession.findFirstByFields(DeviceAuthModel.class, params, 1);
@@ -80,7 +171,6 @@ public class DevicesRepository {
 
         params = new HashMap<>();
         params.put("deviceId", authModel.getDeviceId());
-        params.put("appId", authModel.getAppId());
 
         DeviceModel deviceModel = devSession.findFirstByFields(DeviceModel.class, params, 1);
 
@@ -88,12 +178,12 @@ public class DevicesRepository {
             throw new DeviceNotFoundException();
         }
 
-        deviceModel.setDeviceParamModels(getDeviceParams(deviceModel.getDeviceId(), deviceModel.getAppId()));
+        deviceModel.setDeviceParamModels(getDeviceParams(deviceModel.getDeviceId()));
 
         return deviceModel;
     }
 
-    @CacheEvict(value = "/devices/device", key="#device.deviceId + '-' + #device.appId")
+    @CacheEvict(value = CACHE_NAME, key = "#device.deviceId")
     public void saveDevice(DeviceModel device) {
 
         devSession.save(device);
@@ -107,10 +197,9 @@ public class DevicesRepository {
         }
     }
 
-    public void saveDeviceAuth(String appId, String deviceId, String authToken) {
+    public void saveDeviceAuth(String deviceId, String authToken) {
 
         DeviceAuthModel authModel = new DeviceAuthModel();
-        authModel.setAppId(appId);
         authModel.setDeviceId(deviceId);
         authModel.setAuthToken(authToken);
 
@@ -118,28 +207,39 @@ public class DevicesRepository {
     }
 
     public DevicePersonalizationModel findDevicePersonalizationModel(String deviceName) {
-        return devSession.findByNaturalId(DevicePersonalizationModel.class, new ModelId("deviceName", deviceName));
+        final DevicePersonalizationModel model = devSession.findByNaturalId(DevicePersonalizationModel.class, new ModelId("deviceName", deviceName));
+        List<DeviceParamModel> params = getDeviceParams(model.getDeviceId());
+
+        if (params == null) {
+            params = new ArrayList<>();
+        }
+
+        model.setDeviceParamModels(params);
+
+        return model;
     }
 
-    private List<DeviceParamModel> getDeviceParams(String deviceId, String appId) {
+    private List<DeviceParamModel> getDeviceParams(String deviceId) {
         Map<String, Object> params = new HashMap<>();
         params.put("deviceId", deviceId);
-        params.put("appId", appId);
 
         return devSession.findByFields(DeviceParamModel.class, params, 10000);
     }
 
-    public void updateDeviceStatus(String deviceId, String appId, String status) {
+    public void updateDeviceStatus(String deviceId, String status) {
         DeviceStatusModel statusModel = devSession.findByNaturalId(DeviceStatusModel.class,
-                ModelId.builder().
-                key("deviceId", deviceId).
-                key("appId", appId).build());
-        if (statusModel == null) {
-            statusModel = DeviceStatusModel.builder().deviceId(deviceId).appId(appId).build();
+                ModelId.builder().key("deviceId", deviceId).build());
+        if (statusModel == null || !statusModel.getDeviceId().equals(deviceId)) {
+            statusModel = DeviceStatusModel.builder().deviceId(deviceId).build();
         }
         statusModel.setDeviceStatus(status);
         statusModel.setLastUpdateTime(new Date());
         devSession.save(statusModel);
     }
 
+    private void clearCache(String deviceId) {
+        if (cacheManager != null) {
+            Objects.requireNonNull(cacheManager.getCache(CACHE_NAME)).evict(deviceId);
+        }
+    }
 }

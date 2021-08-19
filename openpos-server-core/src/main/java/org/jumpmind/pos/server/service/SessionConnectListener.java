@@ -1,9 +1,8 @@
 package org.jumpmind.pos.server.service;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
+import lombok.SneakyThrows;
 import org.jumpmind.pos.devices.model.DeviceModel;
 import org.jumpmind.pos.devices.model.DeviceParamModel;
 import org.jumpmind.pos.devices.service.IDevicesService;
@@ -13,6 +12,8 @@ import org.jumpmind.pos.devices.service.model.PersonalizationParameter;
 import org.jumpmind.pos.devices.service.model.PersonalizationParameters;
 import org.jumpmind.pos.util.BoxLogging;
 import org.jumpmind.pos.util.DefaultObjectMapper;
+import org.jumpmind.pos.util.Version;
+import org.jumpmind.pos.util.Versions;
 import org.jumpmind.pos.util.clientcontext.ClientContextConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +39,8 @@ public class SessionConnectListener implements ApplicationListener<SessionConnec
 
     Map<String, Map<String, Object>> sessionQueryParamsMap = Collections.synchronizedMap(new HashMap<>());
 
+    Map<String, String> sessionAppIdMap = Collections.synchronizedMap(new HashMap<>());
+
     Map<String, Map<String, String>> clientContext = Collections.synchronizedMap(new HashMap<>());
 
     Map<String, DeviceModel> deviceModelMap = Collections.synchronizedMap(new HashMap<>());
@@ -57,16 +60,24 @@ public class SessionConnectListener implements ApplicationListener<SessionConnec
     @Autowired
     IDevicesService devicesService;
 
+    @SneakyThrows
     public void onApplicationEvent(SessionConnectEvent event) {
         String sessionId = (String) event.getMessage().getHeaders().get("simpSessionId");
         String authToken = getHeader(event.getMessage(), "authToken");
         String deviceToken = getHeader(event.getMessage(), "deviceToken");
-        String clientVersion = getHeader(event.getMessage(), "version");
-
-        log.info(BoxLogging.box("Session Connected " + sessionId) + "\n" + clientVersion + "\n");
+        String clientVersions = getHeader(event.getMessage(), "version");
+        log.info(BoxLogging.box("Session Connected " + sessionId) + "\n" + clientVersions + "\n");
         String compatibilityVersion = getHeader(event.getMessage(), COMPATIBILITY_VERSION_HEADER);
         String queryParams = getHeader(event.getMessage(), QUERY_PARAMS_HEADER);
-        sessionQueryParamsMap.put(sessionId, toQueryParams(queryParams));
+
+        List<Version> deviceVersions = new ArrayList<>();
+        if (clientVersions != null) {
+            deviceVersions = DefaultObjectMapper.defaultObjectMapper().readValue(clientVersions, new TypeReference<List<Version>>() {
+            });
+        }
+
+        sessionAppIdMap.put(sessionId, getHeader(event.getMessage(), APPID_HEADER));
+        sessionQueryParamsMap.put(sessionId, toQueryParams(queryParams, deviceVersions));
 
         DeviceModel deviceModel = devicesService.authenticateDevice(
                 AuthenticateDeviceRequest.builder()
@@ -120,11 +131,13 @@ public class SessionConnectListener implements ApplicationListener<SessionConnec
         }
     }
 
-    private Map<String, Object> toQueryParams(String json) {
+    private Map<String, Object> toQueryParams(String json, List<Version> deviceVersions) {
         TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {
         };
         try {
-            return DefaultObjectMapper.build().readValue(json, typeRef);
+            Map<String, Object> map = DefaultObjectMapper.build().readValue(json, typeRef);
+            map.put("deviceVersions", deviceVersions);
+            return map;
         } catch (Exception e) {
             log.error("Failed to parse query params", e);
             return Collections.emptyMap();

@@ -6,4 +6,8 @@
 .selection-list {
     margin:5px 0px;
     padding:15px;
+
+    &.mobile {
+        padding: 0.25em;
+    }
 }

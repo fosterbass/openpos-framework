@@ -120,24 +120,19 @@ public class DBSessionFactory {
         return new DBSession(null, null, databaseSchema, databasePlatform, sessionContext, queryTemplates, dmlTemplates, tagHelper, augmenterHelper);
     }
 
-    public org.jumpmind.db.model.Table getTableForEnhancement(Class<?> entityClazz) {
-        List<org.jumpmind.db.model.Table> tables = this.databaseSchema.getTables("default", entityClazz);
+    public org.jumpmind.db.model.Table getTableForEnhancement(String deviceMode, Class<?> entityClazz) {
+        List<org.jumpmind.db.model.Table> tables = this.databaseSchema.getTables(deviceMode, entityClazz);
         return tables != null && tables.size() > 0 ? tables.get(0) : null;
     }
 
     public static QueryTemplates getQueryTemplates(String tablePrefix) {
+        final String resourceName = tablePrefix + "-query.yml";
         try {
-            Enumeration<URL> urls = Thread.currentThread().getContextClassLoader().getResources(tablePrefix + "-query.yml");
+            List<URL> urls = getQueryResources(resourceName);
 
             QueryTemplates templates = new QueryTemplates();
-            
-            if(!urls.hasMoreElements()) {
-                log.debug("Could not locate " + tablePrefix + "-query.yml on the classpath.");
-                return new QueryTemplates();
-            }
-            
-            while(urls.hasMoreElements()){
-                URL url = urls.nextElement();
+
+            for (URL url : urls) {
                 log.info(String.format("Loading %s...", url.toString()));
                 InputStream queryYamlStream = url.openStream();
                 QueryTemplates queryTemplates = new Yaml(new Constructor(QueryTemplates.class)).load(queryYamlStream);
@@ -148,33 +143,51 @@ public class DBSessionFactory {
             }
             
             return templates;
-
         } catch (Exception ex) {
-            log.error("ERROR: Failed to load query file " + tablePrefix + "-query.yml");
-            throw new PersistException("Failed to load " + tablePrefix + "-query.yml", ex);
+            throw new PersistException("Failed to load " + resourceName, ex);
         }
     }
 
     public static DmlTemplates getDmlTemplates(String tablePrefix) {
+        final String resourceName = tablePrefix + "-dml.yml";
         try {
-            URL url = Thread.currentThread().getContextClassLoader().getResource(tablePrefix + "-dml.yml");
-            if (url != null) {
+            List<URL> urls = getQueryResources(resourceName);
+
+            DmlTemplates templates = new DmlTemplates();
+
+            for (URL url : urls) {
                 log.info(String.format("Loading %s...", url.toString()));
                 InputStream queryYamlStream = url.openStream();
                 DmlTemplates dmlTemplates = new Yaml(new Constructor(DmlTemplates.class)).load(queryYamlStream);
                 if (dmlTemplates != null) {
-                    dmlTemplates.addDmls("default", dmlTemplates.getDmls());
-                    dmlTemplates.addDmls("training", dmlTemplates.getDmls());
+                    templates.addDmls("default", dmlTemplates.getDmls());
+                    templates.addDmls("training", dmlTemplates.getDmls());
                 }
-
-                return dmlTemplates;
-            } else {
-                log.debug("Could not locate " + tablePrefix + "-dml.yml on the classpath.");
-                return new DmlTemplates();
             }
+
+            return templates;
         } catch (Exception ex) {
-            log.error("ERROR: Failed to load DML query file " + tablePrefix + "-dml.yml");
-            throw new PersistException("Failed to load " + tablePrefix + "-dml.yml", ex);
+            throw new PersistException("Failed to load " + resourceName, ex);
+        }
+    }
+
+    protected static List<URL> getQueryResources(String resourceName) {
+        try {
+            Enumeration<URL> urls = Thread.currentThread().getContextClassLoader().getResources(resourceName);
+
+            if (!urls.hasMoreElements()) {
+                log.debug("Could not locate " + resourceName + " on the classpath.");
+                return new ArrayList<>();
+            }
+
+            List<URL> resources = Collections.list(urls);
+            // reverse the order from classpath so that higher ordered files can applied last and thus take effect.
+            // MMM 07-20-2021: Additional note, there probably isn't a strong reason the query yml's couldn't fit
+            // under the application.yml structure at this point.
+            Collections.reverse(resources);
+            return resources;
+        } catch (Exception ex) {
+            throw new PersistException("Failed to load " + resourceName, ex);
         }
     }
 
@@ -198,10 +211,21 @@ public class DBSessionFactory {
     }
 
     protected void augmentTable(Class<?> entityClass, AugmenterConfig augmenterConfig) {
-        Table table = getTableForEnhancement(entityClass);
+        //  Normal table.
+
+        Table table = getTableForEnhancement("default", entityClass);
         warnOrphanedAugmentedColumns(augmenterConfig, table);
         modifyAugmentColumns(augmenterConfig, table);
         addAugmentColumns(augmenterConfig, table);
+
+        //  The corresponding shadow table, if any.
+
+        Table shadowTable = getTableForEnhancement("training", entityClass);
+        if ((shadowTable != null) && !shadowTable.getName().equalsIgnoreCase(table.getName())) {
+            warnOrphanedAugmentedColumns(augmenterConfig, shadowTable);
+            modifyAugmentColumns(augmenterConfig, shadowTable);
+            addAugmentColumns(augmenterConfig, shadowTable);
+        }
     }
 
     protected void addAugmentColumns(AugmenterConfig augmenterConfig, Table table) {
@@ -278,10 +302,21 @@ public class DBSessionFactory {
     }
 
     protected void enhanceTaggedTable(Class<?> entityClass, List<TagModel> tags, boolean includeInPk) {
-        Table table = getTableForEnhancement(entityClass);
+        //  Normal table.
+
+        Table table = getTableForEnhancement("default", entityClass);
         warnOrphanedTagColumns(tags, table);
         modifyTagColumns(tags, table, includeInPk);
         addTagColumns(tags, table, includeInPk);
+
+        //  The corresponding shadow table, if any.
+
+        Table shadowTable = getTableForEnhancement("training", entityClass);
+        if ((shadowTable != null) && !shadowTable.getName().equalsIgnoreCase(table.getName()))  {
+            warnOrphanedTagColumns(tags, shadowTable);
+            modifyTagColumns(tags, shadowTable, includeInPk);
+            addTagColumns(tags, shadowTable, includeInPk);
+        }
     }
 
     protected void modifyTagColumns(List<TagModel> tags, Table table, boolean includeInPk) {

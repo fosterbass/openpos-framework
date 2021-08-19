@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.StreamSupport;
+import java.util.Objects;
 
 import static org.apache.commons.lang3.StringUtils.*;
 
@@ -34,6 +35,9 @@ public class DeviceUpdater implements ApplicationListener<DeviceConnectedEvent> 
 
     @Value("${openpos.businessunitId:undefined}")
     String businessUnitId;
+
+    @Value("${openpos.installationId:'not set'}")
+    String installationId;
 
     @Autowired(required = false)
     List<ITagProvider> tagProviders;
@@ -50,6 +54,7 @@ public class DeviceUpdater implements ApplicationListener<DeviceConnectedEvent> 
     synchronized public void updateDevice(DeviceModel deviceModel) {
         deviceModel.setTimezoneOffset(clientContext.get("timezoneOffset"));
         deviceModel.setBusinessUnitId(businessUnitId);
+        deviceModel.setInstallationId(installationId);
         // TODO check properties also before using default
         deviceModel.setLocale(Locale.getDefault().toString());
         deviceModel.setLastUpdateTime(new Date());
@@ -81,12 +86,18 @@ public class DeviceUpdater implements ApplicationListener<DeviceConnectedEvent> 
     @Override
     public void onApplicationEvent(DeviceConnectedEvent event) {
         try {
-            updateDevice(devicesRepository.getDevice(event.getDeviceId(), event.getAppId()));
+            updateDevice(devicesRepository.getDevice(event.getDeviceId()));
             log.info("A device just connected.  Updated the device model in the database. {}-{}", event.getDeviceId(), event.getAppId());
             if (cacheManager != null) {
-                cacheManager.getCache("/context/config").clear();
-                cacheManager.getCache("/context/buttons").clear();
-                cacheManager.getCache("/devices/device").clear();
+                if(Objects.nonNull(cacheManager.getCache("/context/config"))) {
+                    cacheManager.getCache("/context/config").clear();
+                }
+                if(Objects.nonNull(cacheManager.getCache("/devices/device"))) {
+                    cacheManager.getCache("/devices/device").clear();
+                }
+                if(Objects.nonNull(cacheManager.getCache("/context/buttons"))) {
+                    cacheManager.getCache("/context/buttons").clear();
+                }
             }
         } catch (DeviceNotFoundException ex) {
             // ignore

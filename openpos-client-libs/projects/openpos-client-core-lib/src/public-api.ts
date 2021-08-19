@@ -74,6 +74,7 @@ export * from './lib/core/messages/ui-data-message';
 export * from './lib/core/discovery/discovery-params.interface';
 export * from './lib/core/discovery/discovery-response.interface';
 export * from './lib/core/discovery/discovery-status.enum';
+export * from './lib/core/peripherals/peripheral-selection.service';
 
 export * from './lib/core/oldplugins/barcode-scanner.plugin';
 export * from './lib/core/oldplugins/cordova-device-plugin';
@@ -88,6 +89,7 @@ export * from './lib/core/oldplugins/scan';
 
 export * from './lib/core/platform-plugins/barcode-scanners/barcode-scanner.service';
 export * from './lib/core/platform-plugins/cordova-plugins/android-content-provider-plugin';
+export * from './lib/core/startup/plugin-startup-task'
 export * from './lib/core/messages/single-sign-on-message';
 
 export * from './lib/core/services/app-version';
@@ -130,6 +132,7 @@ export * from './lib/core/messages/message';
 export * from './lib/core/help-text/help-text.service';
 export * from './lib/core/lock-screen/lock-screen.service';
 export * from './lib/core/services/simulated-peripheral-service';
+export * from './lib/core/platform-plugins/platform-plugin.interface';
 
 export * from './lib/core/audio/audio-request.interface';
 export * from './lib/core/audio/audio.service';
@@ -332,6 +335,13 @@ export * from './lib/shared/screen-parts/status-strip/status-strip.component';
 export * from './lib/shared/screen-parts/status-strip/status-strip.interface';
 export * from './lib/shared/screen-parts/system-status/system-status.component';
 export * from './lib/shared/screen-parts/image-text-panel/image-text-panel.interface';
+
+export * from './lib/shared/animations/glow.animation';
+export * from './lib/shared/animations/throb.animation';
+export * from './lib/shared/animations/gradient-inner-glow.animation';
+export * from './lib/shared/animations/shake.animation';
+export * from './lib/shared/animations/bounce.animation';
+export * from './lib/shared/animations/swing.animation';
 
 export * from './lib/shared/utils/date.utils';
 export * from './lib/shared/validators/openpos-validators';

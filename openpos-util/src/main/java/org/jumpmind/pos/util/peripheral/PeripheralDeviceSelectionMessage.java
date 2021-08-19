@@ -12,7 +12,8 @@ import java.util.List;
 public class PeripheralDeviceSelectionMessage extends Message {
     CategoryDescriptor category;
     List<PeripheralDeviceDescription> available;
-    String selectedId;
+    PeripheralDeviceDescription selectedDevice;
+    boolean enabled;
 
     @Override
     public String getType() {

@@ -2,17 +2,23 @@ package org.jumpmind.pos.core.ui.message;
 
 import lombok.Data;
 import org.jumpmind.pos.core.ui.ActionItem;
+import org.jumpmind.pos.core.ui.AssignKeyBindings;
 import org.jumpmind.pos.core.ui.UIMessage;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@AssignKeyBindings
 public class CustomerDetailsUIMessage extends UIMessage {
     private static final long serialVersionUID = 1L;
 
     private String title;
+    private String itemsHistoryDataProviderKey;
+    private String rewardsHistoryDataKey;
+    private String rewardsDataKey;
 
+    private ActionItem backButton;
     private ActionItem unlinkButton;
     private ActionItem editButton;
     private ActionItem doneButton;
@@ -24,12 +30,15 @@ public class CustomerDetailsUIMessage extends UIMessage {
     private Boolean membershipPointsEnabled;
     private Boolean rewardTabEnabled;
     private Boolean rewardHistoryTabEnabled;
+    private Boolean itemHistoryEnabled;
 
+    private String appliedLabel;
     private String membershipLabel;
     private String contactLabel;
     private String noPromotionsText;
     private String rewardsLabel;
     private String expiresLabel;
+    private String rewardHistoryIcon;
     private String rewardHistoryLabel;
     private String expiredLabel;
     private String loyaltyProgramNameLabel;
@@ -45,8 +54,18 @@ public class CustomerDetailsUIMessage extends UIMessage {
     private String loyaltyNumberIcon;
     private String locationIcon;
     private String checkMarkIcon;
+    private String memberIcon;
+    private String nonMemberIcon;
     private String expiredIcon;
+    private String appliedIcon;
     private String applyIcon;
+    private String backIcon;
+    private String birthDateIcon;
+    private String memberTierLabel;
+    private String itemHistoryLabel;
+    private String itemHistoryIcon;
+
+    private UICustomerItemHistoryFilter itemHistoryFilter;
 
     public CustomerDetailsUIMessage() {
         setScreenType(UIMessageType.CUSTOMER_DETAILS_DIALOG);

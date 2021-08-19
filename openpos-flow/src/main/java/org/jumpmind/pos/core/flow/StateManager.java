@@ -31,6 +31,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import static java.lang.String.*;
+
+import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.jumpmind.pos.core.clientconfiguration.ClientConfigChangedMessage;
@@ -40,7 +42,7 @@ import org.jumpmind.pos.core.clientconfiguration.LocaleMessageFactory;
 import org.jumpmind.pos.core.error.IErrorHandler;
 import org.jumpmind.pos.core.event.DeviceResetEvent;
 import org.jumpmind.pos.core.flow.config.*;
-import org.jumpmind.pos.core.model.MessageType;
+import org.jumpmind.pos.core.model.DataClearMessage;
 import org.jumpmind.pos.core.model.StartupMessage;
 import org.jumpmind.pos.core.service.UIDataMessageProviderService;
 import org.jumpmind.pos.core.ui.CloseToast;
@@ -50,6 +52,7 @@ import org.jumpmind.pos.core.service.IScreenService;
 import org.jumpmind.pos.core.service.spring.DeviceScope;
 import org.jumpmind.pos.core.ui.UIMessage;
 import org.jumpmind.pos.core.ui.data.UIDataMessageProvider;
+import org.jumpmind.pos.devices.model.DeviceModel;
 import org.jumpmind.pos.server.model.Action;
 import org.jumpmind.pos.server.service.IMessageService;
 import org.jumpmind.pos.util.ClassUtils;
@@ -73,8 +76,6 @@ import org.springframework.stereotype.Component;
 public class StateManager implements IStateManager {
 
     final Logger log = LoggerFactory.getLogger(getClass());
-    final Logger loggerGraphical = LoggerFactory.getLogger(getClass().getName() + ".graphical");
-    final StateManagerLogger stateManagerLogger = new StateManagerLogger(loggerGraphical);
 
     final static AtomicInteger threadCounter = new AtomicInteger(1);
 
@@ -92,6 +93,10 @@ public class StateManager implements IStateManager {
 
     @Autowired(required = false)
     List<? extends ISessionListener> sessionListeners;
+
+    @Autowired
+    @Getter
+    StateManagerObservers stateManagerObservers;
 
     @Autowired
     IMessageService messageService;
@@ -160,11 +165,8 @@ public class StateManager implements IStateManager {
     AtomicBoolean busyFlag = new AtomicBoolean(false);
 
     AtomicReference<Date> lastInteractionTime = new AtomicReference<Date>(new Date());
-    AtomicInteger activeCalls = new AtomicInteger(0);
     AtomicBoolean transitionRestFlag = new AtomicBoolean(false);
-    AtomicLong lastActionTimeInMs = new AtomicLong(0);
     AtomicLong lastShowTimeInMs = new AtomicLong(0);
-    AtomicReference<Thread> activeThread = new AtomicReference<>();
 
     @Override
     public void reset() {
@@ -220,7 +222,7 @@ public class StateManager implements IStateManager {
                     runningFlag.set(true);
                     actionLoop();
                 } catch (Throwable ex) {
-                    log.error("Unhandled exception from StatManager thread. StateManager thread exiting.", ex);
+                    log.error("Unhandled exception from StateManager thread. StateManagerThread exiting.", ex);
                 }
 
             }
@@ -239,6 +241,9 @@ public class StateManager implements IStateManager {
             try {
                 actionContext = actionQueue.poll(60, TimeUnit.SECONDS);
                 if (actionContext != null) {
+                    // an action may originally come from a device but then get forwarded back through here from a state.
+                    // we only want to know that it originated from the screen/device the first time it came through.
+                    actionContext.getAction().setOriginatesFromDeviceFlag(false);
                     busyFlag.set(true);
                     if (actionContext.getAction().getName().equals(STATE_MANAGER_RESET_ACTION)) {
                         log.info("StateManager reset queued");
@@ -248,6 +253,7 @@ public class StateManager implements IStateManager {
                         init(this.getAppId(), this.getDeviceId());
                         log.info("StateManager reset");
                         this.eventPublisher.publish(new DeviceResetEvent(getDeviceId(), getAppId()));
+                        sendDataClearMessage();
                         break;
                     } else if (actionContext.getAction().getName().equals(STATE_MANAGER_STOP_ACTION)) {
                         actionContext.getAction().markProcessed();
@@ -282,16 +288,19 @@ public class StateManager implements IStateManager {
         log.info("State action actionLoop is exiting.");
     }
 
-    public void sendStartupCompleteMessage() {
-        String appId = applicationState.getAppId();
+    public void sendDataClearMessage() {
         String deviceId = applicationState.getDeviceId();
-        messageService.sendMessage(appId, deviceId, new StartupMessage(true, "StateManager Startup Complete"));
+        messageService.sendMessage(deviceId, new DataClearMessage());
+    }
+
+    public void sendStartupCompleteMessage() {
+        String deviceId = applicationState.getDeviceId();
+        messageService.sendMessage(deviceId, new StartupMessage(true, "StateManager Startup Complete"));
     }
 
     public void sendPrintMessage(PrintMessage message) {
-        String appId = applicationState.getAppId();
         String deviceId = applicationState.getDeviceId();
-        messageService.sendMessage(appId, deviceId, message);
+        messageService.sendMessage(deviceId, message);
     }
 
     protected void setTransitionSteps(List<TransitionStepConfig> transitionStepConfigs) {
@@ -341,11 +350,6 @@ public class StateManager implements IStateManager {
     }
 
     @Override
-    public boolean isSessionAuthenticated(String sessionId) {
-        return this.sessionAuthenticated.get(sessionId) != null && this.sessionAuthenticated.get(sessionId);
-    }
-
-    @Override
     public boolean areAllSessionsAuthenticated() {
         return !sessionAuthenticated.values().contains(false);
     }
@@ -367,6 +371,11 @@ public class StateManager implements IStateManager {
 
     public void removeSessionCompatible(String sessionId) {
         this.sessionCompatible.remove(sessionId);
+    }
+
+    @Override
+    public boolean areSessionsConnected() {
+        return this.sessionCompatible.size() > 0;
     }
 
     protected void transitionTo(Action action, StateConfig stateConfig) {
@@ -541,22 +550,19 @@ public class StateManager implements IStateManager {
 
     void completeTransition(TransitionResult transitionResult, Action action) {
         Transition transition = transitionResult.getTransition();
-        boolean exitSubState = transition.getResumeSuspendedState() != null;
         String returnActionName = null;
-        if (exitSubState) {
+        if (transition.isExitingSubstate()) {
             returnActionName = getReturnActionName(action);
         }
 
-        boolean enterSubState = transition.getEnterSubStateConfig() != null;
+        if (stateManagerObservers != null) {
+            stateManagerObservers.onTransition(applicationState, transition, action, returnActionName);
+        }
 
-        stateManagerLogger.logStateTransition(applicationState.getCurrentContext().getState(), transition.getTargetState(), action, returnActionName,
-                transition.getEnterSubStateConfig(), exitSubState ? applicationState.getCurrentContext() : null, getApplicationState(),
-                transition.getResumeSuspendedState());
-
-        if (enterSubState) {
+        if (transition.isEnteringSubstate()) {
             applicationState.getStateStack().push(applicationState.getCurrentContext());
             applicationState.setCurrentContext(buildSubStateContext(transition.getEnterSubStateConfig(), action));
-        } else if (exitSubState) {
+        } else if (transition.isExitingSubstate()) {
             applicationState.setCurrentContext(transition.getResumeSuspendedState());
         }
 
@@ -623,8 +629,8 @@ public class StateManager implements IStateManager {
          * Hang onto the dialog since showing the last screen first will clear
          * the last dialog from the screen service
          */
-        UIMessage lastDialog = screenService.getLastPreInterceptedDialog(applicationState.getAppId(), applicationState.getDeviceId());
-        UIMessage lastScreen = screenService.getLastPreInterceptedScreen(applicationState.getAppId(), applicationState.getDeviceId());
+        UIMessage lastDialog = screenService.getLastPreInterceptedDialog(applicationState.getDeviceId());
+        UIMessage lastScreen = screenService.getLastPreInterceptedScreen(applicationState.getDeviceId());
         if (lastScreen != null) {
             lastScreen.put("refreshAlways", true);
             showScreen(lastScreen, dataProviders);
@@ -692,6 +698,11 @@ public class StateManager implements IStateManager {
             log.warn("Discarding invalid action: " + action);
             return;
         }
+
+        if (stateManagerObservers != null) {
+            stateManagerObservers.onAction(applicationState, action);
+        }
+
         ActionContext actionContext = null;
         if (isOnStateManagerThread()) {
             actionContext = new ActionContext(action, Thread.currentThread().getStackTrace());
@@ -1061,7 +1072,7 @@ public class StateManager implements IStateManager {
             throw new FlowException("Persistent toast message requires ID");
         }
 
-        screenService.showToast(applicationState.getAppId(), applicationState.getDeviceId(), toast);
+        screenService.showToast(applicationState.getDeviceId(), toast);
 
         lastShowTimeInMs.set(System.currentTimeMillis());
     }
@@ -1076,7 +1087,7 @@ public class StateManager implements IStateManager {
                         "There is no applicationState.getCurrentContext() on this StateManager.  HINT: States should use @In(scope=ScopeType.Node) to get the StateManager, not @Autowired.");
             }
             CloseToast closeToast = new CloseToast(toast.getPersistedId());
-            screenService.closeToast(applicationState.getAppId(), applicationState.getDeviceId(), closeToast);
+            screenService.closeToast(applicationState.getDeviceId(), closeToast);
 
             lastShowTimeInMs.set(System.currentTimeMillis());
         }
@@ -1093,7 +1104,7 @@ public class StateManager implements IStateManager {
         }
         if (applicationState.getCurrentContext().getState() != null
                 && applicationState.getCurrentContext().getState() instanceof IMessageInterceptor) {
-            ((IMessageInterceptor<UIMessage>) applicationState.getCurrentContext().getState()).intercept(applicationState.getAppId(),
+            ((IMessageInterceptor<UIMessage>) applicationState.getCurrentContext().getState()).intercept(
                     applicationState.getDeviceId(), screen);
         }
 
@@ -1107,7 +1118,10 @@ public class StateManager implements IStateManager {
             sessionTimeoutAction = null;
         }
 
-        screenService.showScreen(applicationState.getAppId(), applicationState.getDeviceId(), screen, dataMessageProviderMap);
+        screenService.showScreen(applicationState.getDeviceId(), screen, dataMessageProviderMap);
+        if (stateManagerObservers != null) {
+            stateManagerObservers.onScreen(applicationState, screen); // log after because interceptors in screenService may modify the screen
+        }
 
         lastShowTimeInMs.set(System.currentTimeMillis());
     }
@@ -1121,6 +1135,12 @@ public class StateManager implements IStateManager {
     @Override
     public String getDeviceId() {
         return applicationState.getDeviceId();
+    }
+
+    @Override
+    public String getPairedDeviceId() {
+        DeviceModel currentDevice = ((DeviceModel) applicationState.getScopeValue(ScopeType.Device, "device"));
+        return currentDevice != null ? currentDevice.getPairedDeviceId() : null;
     }
 
     @Override
@@ -1189,7 +1209,6 @@ public class StateManager implements IStateManager {
     }
 
     public void sendConfigurationChangedMessage() {
-        String appId = applicationState.getAppId();
         String deviceId = applicationState.getDeviceId();
 
         Map<String, String> properties = applicationState.getScopeValue("personalizationProperties");
@@ -1198,18 +1217,18 @@ public class StateManager implements IStateManager {
         try {
             if (clientConfigSelector != null) {
                 Map<String, Map<String, String>> configs = clientConfigSelector.getConfigurations(properties, additionalTags);
-                configs.forEach((name, clientConfiguration) -> messageService.sendMessage(appId, deviceId,
+                configs.forEach((name, clientConfiguration) -> messageService.sendMessage(deviceId,
                         new ClientConfigChangedMessage(name, clientConfiguration)));
             }
 
             // Send versions
             ClientConfigChangedMessage versionConfiguration = new ClientConfigChangedMessage("versions");
             versionConfiguration.put("versions", Versions.getVersions());
-            messageService.sendMessage(appId, deviceId, versionConfiguration);
+            messageService.sendMessage(deviceId, versionConfiguration);
 
             // Send supported locales
             LocaleChangedMessage localeMessage = localeMessageFactory.getMessage();
-            messageService.sendMessage(appId, deviceId, localeMessage);
+            messageService.sendMessage(deviceId, localeMessage);
 
         } catch (NoSuchBeanDefinitionException e) {
             log.info("An {} is not configured. Will not be sending client configuration to the client",
@@ -1221,8 +1240,4 @@ public class StateManager implements IStateManager {
         this.actionQueue.offer(new ActionContext(new Action(STATE_MANAGER_PROCESS_EVENT_ACTION, event)));
     }
 
-    @Override
-    public long getLastActionTimeInMs() {
-        return lastActionTimeInMs.get();
-    }
 }

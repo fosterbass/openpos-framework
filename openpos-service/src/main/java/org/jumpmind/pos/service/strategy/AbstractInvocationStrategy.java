@@ -17,9 +17,9 @@ abstract public class AbstractInvocationStrategy {
     @Autowired
     protected ApplicationContext applicationContext;
     
-    public static String buildPath(Method method) {
+    public static String buildPath(Object object, Method method) {
         StringBuilder path = new StringBuilder();
-        RequestMapping clazzMapping = getRequestMapping(method);
+        RequestMapping clazzMapping = getRequestMapping(object, method);
         if (clazzMapping != null) {
             path.append(clazzMapping.value()[0]);
         }
@@ -34,31 +34,41 @@ abstract public class AbstractInvocationStrategy {
         return path.toString();
     }
     
-    public static <A extends Annotation> A getAnnotation(Method method, Class<A> annotation) {
+    public static <A extends Annotation> A getAnnotation(Object object, Method method, Class<A> annotation) {
         Class<?> methodClazz = method.getDeclaringClass();
         A a = methodClazz.getAnnotation(annotation);
         if (a == null) {
             Class<?>[] interfaces = methodClazz.getInterfaces();
-            for (Class<?> i : interfaces) {
-                a = i.getAnnotation(annotation);
-                if (a != null) {
-                    break;
-                }
+            a = findAnnotation(interfaces, annotation);
+            if (a == null) {
+                interfaces = object.getClass().getInterfaces();
+                a = findAnnotation(interfaces, annotation);
+            }
+        }
+        return a;
+    }
+
+    static <A extends Annotation> A findAnnotation(Class<?>[] classes, Class<A> annotation) {
+        A a = null;
+        for (Class<?> i : classes) {
+            a = i.getAnnotation(annotation);
+            if (a != null) {
+                break;
             }
         }
         return a;
     }
     
-    public static RequestMapping getRequestMapping(Method method) {
-        return getAnnotation(method, RequestMapping.class);
+    public static RequestMapping getRequestMapping(Object object, Method method) {
+        return getAnnotation(object, method, RequestMapping.class);
     }
     
-    public static RestController getRestController(Method method) {
-        return getAnnotation(method, RestController.class);
+    public static RestController getRestController(Object object, Method method) {
+        return getAnnotation(object, method, RestController.class);
     }
     
-    public static String getServiceName(Method method) {
-        RestController restController = getRestController(method);
+    public static String getServiceName(Object object, Method method) {
+        RestController restController = getRestController(object, method);
         if (restController != null) {
             return restController.value();
         } else {

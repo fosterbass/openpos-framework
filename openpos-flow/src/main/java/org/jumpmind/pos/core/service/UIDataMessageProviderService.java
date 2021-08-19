@@ -1,8 +1,7 @@
 package org.jumpmind.pos.core.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.jumpmind.pos.core.flow.ApplicationState;
-import org.jumpmind.pos.core.flow.IMessageInterceptor;
+import org.jumpmind.pos.core.flow.*;
 import org.jumpmind.pos.core.ui.UIDataMessage;
 import org.jumpmind.pos.core.ui.data.IHasObservableUIDataMessageProviderProperty;
 import org.jumpmind.pos.core.ui.data.UIDataMessageProvider;
@@ -44,7 +43,7 @@ public class UIDataMessageProviderService implements PropertyChangeListener {
                             ((IHasObservableUIDataMessageProviderProperty)provider).addPropertyChangeListener(this);
                         }
                         if(provider.isNewSeries()) {
-                            provider.setSeriesId( provider.getSeriesId() + 1);
+                            provider.setSeriesId(getNextSeriesId());
                             provider.setNewSeries(false);
                         }
                         //If it is a new provider or series add it and initialize it
@@ -65,12 +64,19 @@ public class UIDataMessageProviderService implements PropertyChangeListener {
                     ((IHasObservableUIDataMessageProviderProperty)provider).addPropertyChangeListener(this);
                 }
                 if(provider.isNewSeries()) {
-                    provider.setSeriesId( provider.getSeriesId() + 1);
+                    provider.setSeriesId(getNextSeriesId());
                     provider.setNewSeries(false);
                 }
                 sendDataMessage(applicationState.getAppId(), applicationState.getDeviceId(), provider.getNextDataChunk(), key, provider.getSeriesId());
             });
         }
+    }
+
+    // sets series ID to a random int
+    // resolves issue with matching series ID 1 when a device is reset
+    private int getNextSeriesId() {
+        Random random = new Random();
+        return random.nextInt(Integer.MAX_VALUE);
     }
 
     public boolean handleAction(Action action, ApplicationState applicationState){
@@ -109,20 +115,19 @@ public class UIDataMessageProviderService implements PropertyChangeListener {
         String[] screenInterceptorBeanNames = applicationContext.getBeanNamesForType(ResolvableType.forClassWithGenerics(IMessageInterceptor.class, UIDataMessage.class));
         UIDataMessage message = UIDataMessage.builder()
                 .data(data)
-                .dataType( dataType )
-                .seriesId( series )
+                .dataType(dataType)
+                .seriesId(series)
                 .build();
 
         if (screenInterceptorBeanNames != null) {
-            for (String beanName: screenInterceptorBeanNames) {
+            for (String beanName : screenInterceptorBeanNames) {
                 @SuppressWarnings("unchecked")
-                IMessageInterceptor<UIDataMessage> screenInterceptor =  (IMessageInterceptor<UIDataMessage>) applicationContext.getBean(beanName);
-                screenInterceptor.intercept(appId, deviceId, message);
+                IMessageInterceptor<UIDataMessage> screenInterceptor = (IMessageInterceptor<UIDataMessage>) applicationContext.getBean(beanName);
+                screenInterceptor.intercept(deviceId, message);
 
             }
         }
-
-        messageService.sendMessage(appId, deviceId, message);
+        messageService.sendMessage(deviceId, message);
     }
 
     @Override
@@ -130,7 +135,7 @@ public class UIDataMessageProviderService implements PropertyChangeListener {
         if(evt instanceof UIDataMessageProviderPropertyChangeEvent) {
             UIDataMessageProvider uiDataMessageProvider = (UIDataMessageProvider) evt.getSource();
             if(uiDataMessageProvider.isNewSeries()) {
-                uiDataMessageProvider.setSeriesId( uiDataMessageProvider.getSeriesId() + 1);
+                uiDataMessageProvider.setSeriesId(getNextSeriesId());
                 uiDataMessageProvider.setNewSeries(false);
             }
             sendDataMessage(((UIDataMessageProviderPropertyChangeEvent) evt).getAppId(),

@@ -25,9 +25,6 @@
     grid-auto-flow: column;
     justify-content: left;
     align-content: center;
-    &.mobile{
-      justify-content: right;
-    }
   }
 
   .system-info-right{
@@ -36,8 +33,5 @@
     grid-auto-flow: column;
     justify-content: right;
     align-content: center;
-    &.mobile{
-      display: none;
-    }
   }
 }

@@ -32,7 +32,7 @@ import org.jumpmind.pos.devices.model.DeviceModel;
 import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor;
 
 /**
- * Responsible for housing all true state data for a node. That is, it should be
+ * Responsible for housing all true state data for a device. That is, it should be
  * possible to serialize this class and use it to reengage the application at
  * exactly the same point it was in.
  */
@@ -64,7 +64,7 @@ public class ApplicationState {
         scope.getDeviceScope().values().stream().
                 filter(s->s.getValue() instanceof AsyncExecutor).
                 map(s-> (AsyncExecutor)s.getValue()).
-                forEach(a->a.cancel());
+                forEach(a->a.stop());
 
         scope = new Scope();
         stateStack = new LinkedList<>();

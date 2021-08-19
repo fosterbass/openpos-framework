@@ -3,15 +3,18 @@ import { OpenposMessage } from './message';
 
 export class PeripheralDeviceSelectionMessage implements OpenposMessage {
     type = MessageTypes.PERIPHERAL_DEVICE_SELECTION;
-    
-    selectedId: string;
+    selectedDevice: PeripheralDeviceDescription;
     category: PeripheralCategoryDescription;
     available: PeripheralDeviceDescription[];
+    enabled: boolean;
 }
 
 export interface PeripheralDeviceDescription {
     id: string;
     displayName: string;
+    requiresConfirmation: boolean;
+    confirmationTitle: string;
+    confirmationMessage: string;
 }
 
 export interface PeripheralCategoryDescription {

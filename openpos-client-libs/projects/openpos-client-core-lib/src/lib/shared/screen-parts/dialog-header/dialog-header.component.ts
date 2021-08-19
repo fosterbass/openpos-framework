@@ -1,7 +1,6 @@
 import { ScreenPart } from '../../decorators/screen-part.decorator';
-import { Component, Injector } from '@angular/core';
+import { Component, Injector, Input } from '@angular/core';
 import { DialogHeaderInterface } from './dialog-header.interface';
-import { MessageProvider } from '../../providers/message.provider';
 import { ScreenPartComponent } from '../screen-part';
 
 @ScreenPart({
@@ -13,11 +12,19 @@ import { ScreenPartComponent } from '../screen-part';
 })
 export class DialogHeaderComponent extends ScreenPartComponent<DialogHeaderInterface> {
 
+    @Input()
+    headerIcon: string;
+
+    @Input()
+    headerText: string;
+
     constructor( injector: Injector) {
         super(injector);
     }
 
     screenDataUpdated() {
+        this.screenData.headerText = this.headerText ? this.headerText : this.screenData.headerText;
+        this.screenData.headerIcon = this.headerIcon ? this.headerIcon : this.screenData.headerIcon;
         if (this.screenData.backButton) {
             this.screenData.backButton.keybind = 'Escape';
         }

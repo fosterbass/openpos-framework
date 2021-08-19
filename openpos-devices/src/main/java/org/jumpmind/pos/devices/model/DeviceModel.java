@@ -26,7 +26,7 @@ import org.springframework.core.env.MutablePropertySources;
 @ToString(onlyExplicitlyIncluded = true)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @TableDef(name = "device", description = "A device used to transaction commerce for a Business Unit",
-        primaryKey = {"deviceId", "appId"})
+        primaryKey = {"deviceId"})
 public class DeviceModel extends AbstractModel implements ITaggedModel {
 
     @ToString.Include
@@ -38,6 +38,11 @@ public class DeviceModel extends AbstractModel implements ITaggedModel {
     @EqualsAndHashCode.Include
     @ColumnDef
     private String appId;
+
+    @ToString.Include
+    @EqualsAndHashCode.Include
+    @ColumnDef
+    private String pairedDeviceId;
 
     @ColumnDef(size = "10", description = "The locale under which this Device currently operates")
     String locale;
@@ -51,6 +56,9 @@ public class DeviceModel extends AbstractModel implements ITaggedModel {
 
     @ColumnDef(size = "255", description = "A user defined name for the Device")
     private String description;
+
+    @ColumnDef
+    private String installationId;
 
     @Builder.Default
     private Map<String, String> tags = new CaseInsensitiveMap<>();

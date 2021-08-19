@@ -23,6 +23,11 @@ public class TransactionUIMessage extends UIMessage {
     private ActionItem linkedCustomerButton;
     private ActionItem linkedEmployeeButton;
 
+    private String loyaltySignupInProgressTitle;
+    private String loyaltySignupInProgressIcon;
+    private String loyaltySignupInProgressDetailsIcon;
+    private ActionItem loyaltyCancelButton;
+
     private String loyaltyIDLabel;
     private String profileIcon;
     private List<UIMembership> memberships;
@@ -31,7 +36,8 @@ public class TransactionUIMessage extends UIMessage {
     private boolean customerMissingInfo;
     private String customerMissingInfoIcon;
     private String customerMissingInfoLabel;
-    private String checkMarkIcon;
+    private String memberIcon;
+    private String nonMemberIcon;
     private String noMembershipsFoundLabel;
     private ActionItem mobileLoyaltyButton;
 
