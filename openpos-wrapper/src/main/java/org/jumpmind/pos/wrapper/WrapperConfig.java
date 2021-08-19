@@ -20,10 +20,7 @@
  */
 package org.jumpmind.pos.wrapper;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 import org.jumpmind.pos.wrapper.jna.WinsvcEx;
@@ -33,20 +30,23 @@ public class WrapperConfig {
 
 	protected String configFile;
 	
-    protected Map<String, ArrayList<String>> prop;
+    protected Map<String, ArrayList<String>> properties;
     
     protected File workingDirectory;
     
     protected File javaProcessWorkingDirectory;
 
     protected String jarFile;
+
+    protected Properties envProperties;
     
-    public WrapperConfig(String applHomeDir, String configFile, String jarFile) throws IOException {
-        prop = getProperties(configFile);
+    public WrapperConfig(String appHomeDir, String configFile, String jarFile) throws IOException {
+        this.envProperties = this.loadEnvProperties();
+        this.properties = getProperties(configFile);
         this.configFile = new File(configFile).getAbsolutePath();
         this.jarFile = new File(jarFile).getAbsolutePath();
-        workingDirectory = new File(applHomeDir);
-    }   
+        this.workingDirectory = new File(appHomeDir);
+    }
 
     public String getWrapperJarPath()  {
     	return jarFile;
@@ -61,19 +61,19 @@ public class WrapperConfig {
     }
 
     public String getLogFile() {
-        return getProperty(prop, "wrapper.logfile", "logs/wrapper.log");
+        return getProperty(properties, "wrapper.logfile", "logs/wrapper.log");
     }
 
     public String getWrapperPidFile() {
-        return getProperty(prop, "wrapper.pidfile", "tmp/wrapper.pid");
+        return getProperty(properties, "wrapper.pidfile", "tmp/wrapper.pid");
     }
 
     public String getServerPidFile() {
-        return getProperty(prop, "wrapper.server.pidfile", "tmp/server.pid");
+        return getProperty(properties, "wrapper.server.pidfile", "tmp/server.pid");
     }
 
     public long getLogFileMaxSize() {
-        String str = getProperty(prop, "wrapper.logfile.maxsize", "10M").toUpperCase();
+        String str = getProperty(properties, "wrapper.logfile.maxsize", "10M").toUpperCase();
         int multiplier = 1;
         if (str.indexOf("K") != -1) {
             multiplier = 1024;
@@ -84,44 +84,44 @@ public class WrapperConfig {
     }
 
     public int getLogFileMaxFiles() {
-        return Integer.parseInt(getProperty(prop, "wrapper.logfile.maxfiles", "3"));
+        return Integer.parseInt(getProperty(properties, "wrapper.logfile.maxfiles", "3"));
     }
 
     public String getLogFileLogLevel() {
-        return getProperty(prop, "wrapper.logfile.loglevel", "INFO");
+        return getProperty(properties, "wrapper.logfile.loglevel", "INFO");
     }
 
     public String getName() {
-        return getProperty(prop, "wrapper.name", "symmetricds");
+        return getProperty(properties, "wrapper.name", "symmetricds");
     }
 
     public String getDisplayName() {
-        return getProperty(prop, "wrapper.displayname", "SymmetricDS");
+        return getProperty(properties, "wrapper.displayname", "SymmetricDS");
     }
 
     public String getDescription() {
-        return getProperty(prop, "wrapper.description", "SymmetricDS Database Synchronization");
+        return getProperty(properties, "wrapper.description", "SymmetricDS Database Synchronization");
     }
 
     public boolean isAutoStart() {
-        return getProperty(prop, "wrapper.ntservice.starttype", "auto").equalsIgnoreCase("auto");
+        return getProperty(properties, "wrapper.ntservice.starttype", "auto").equalsIgnoreCase("auto");
     }
 
     public boolean isDelayStart() {
-        return getProperty(prop, "wrapper.ntservice.starttype", "auto").equalsIgnoreCase("delay");
+        return getProperty(properties, "wrapper.ntservice.starttype", "auto").equalsIgnoreCase("delay");
     }
 
     public String getFailureActionCommand() {
-        return getProperty(prop, "wrapper.ntservice.failure.action.command", "");
+        return getProperty(properties, "wrapper.ntservice.failure.action.command", "");
     }
     
     public int getFailureResetPeriod() {
-        return Integer.parseInt(getProperty(prop, "wrapper.ntservice.failure.reset.period", "300"));
+        return Integer.parseInt(getProperty(properties, "wrapper.ntservice.failure.reset.period", "300"));
     }
 
     public List<FailureAction> getFailureActions() {
-        List<String> types = getListProperty(prop, "wrapper.ntservice.failure.action.type");
-        List<String> delays = getListProperty(prop, "wrapper.ntservice.failure.action.delay");
+        List<String> types = getListProperty(properties, "wrapper.ntservice.failure.action.type");
+        List<String> delays = getListProperty(properties, "wrapper.ntservice.failure.action.delay");
         int count = types.size() >= 3 ? 3 : types.size();
         List<FailureAction> actions = new ArrayList<FailureAction>(count);
         int i = 0;
@@ -137,12 +137,12 @@ public class WrapperConfig {
     }
 
     public List<String> getDependencies() {
-        return prop.get("wrapper.ntservice.dependency");
+        return properties.get("wrapper.ntservice.dependency");
     }
     
     public File getJavaProcessWorkingDirectory() {
         if (javaProcessWorkingDirectory == null) {
-            String workDir = getProperty(prop, "wrapper.java.process.workingdir", this.getWorkingDirectory().getAbsolutePath());
+            String workDir = getProperty(properties, "wrapper.java.process.workingdir", this.getWorkingDirectory().getAbsolutePath());
             javaProcessWorkingDirectory = new File(workDir);
         }
         
@@ -150,28 +150,28 @@ public class WrapperConfig {
     }
     
     public String getJavaCommand() {
-        return getProperty(prop, "wrapper.java.command", "java");
+        return getProperty(properties, "wrapper.java.command", "java");
     }
     
     public List<String> getOptions() {
-        return prop.get("wrapper.java.additional");
+        return properties.get("wrapper.java.additional");
     }
     
     public List<String> getApplicationParameters() {
-        return getListProperty(prop, "wrapper.app.parameter");
+        return getListProperty(properties, "wrapper.app.parameter");
     }
 
     public ArrayList<String> getCommand(boolean isConsole) {
         ArrayList<String> cmdList = new ArrayList<String>();
         cmdList.add(getJavaCommand());
 
-        String initMem = getProperty(prop, "wrapper.java.initmemory", "256");
+        String initMem = getProperty(properties, "wrapper.java.initmemory", "256");
         if (! initMem.toUpperCase().endsWith("M")) {
             initMem += "M";
         }        
         cmdList.add("-Xms" + initMem);
 
-        String maxMem = getProperty(prop, "wrapper.java.maxmemory", "256");
+        String maxMem = getProperty(properties, "wrapper.java.maxmemory", "256");
         if (! maxMem.toUpperCase().endsWith("M")) {
             maxMem += "M";
         }        
@@ -183,10 +183,10 @@ public class WrapperConfig {
             cmdList.add(cpath);
         }
         
-        List<String> javaAdditional = getListProperty(prop, "wrapper.java.additional");
+        List<String> javaAdditional = getListProperty(properties, "wrapper.java.additional");
         cmdList.addAll(javaAdditional);
         
-        List<String> appParams =  getListProperty(prop, "wrapper.app.parameter");
+        List<String> appParams =  getListProperty(properties, "wrapper.app.parameter");
         appParams.remove("--no-log-console");
         cmdList.addAll(appParams);
         
@@ -198,7 +198,7 @@ public class WrapperConfig {
     }
 
     public String getClassPath() {
-        List<String> cp = getListProperty(prop, "wrapper.java.classpath");
+        List<String> cp = getListProperty(properties, "wrapper.java.classpath");
         StringBuilder sb = new StringBuilder(cp.size());
         for (int i = 0; i < cp.size(); i++) {
             if (i > 0) {
@@ -210,7 +210,7 @@ public class WrapperConfig {
         return sb.toString();
     }
 
-    private String expandWildcard(String classPath) {
+    String expandWildcard(String classPath) {
         int index = classPath.indexOf("*");
         if (index != -1) {
             String dirName = classPath.substring(0, index);
@@ -232,13 +232,13 @@ public class WrapperConfig {
     }
 
     /**
-     * Read wrapper properties from symmetric-server.properties file
+     * Read wrapper properties from config file
      * 
-     * @param filename String containing name location of symmetric-server.properties file
+     * @param filename String containing name location of the file
      * @return Map keyed by property name with value of an ArrayList containing all values
      * @throws IOException
      */
-    private Map<String, ArrayList<String>> getProperties(String filename) throws IOException {
+    Map<String, ArrayList<String>> getProperties(String filename) throws IOException {
         HashMap<String, ArrayList<String>> map = new HashMap<String, ArrayList<String>>();
         BufferedReader reader = new BufferedReader(new FileReader(filename));
         String line = null;
@@ -257,7 +257,9 @@ public class WrapperConfig {
                         values = new ArrayList<String>();
                         map.put(name, values);
                     }
-                    values.add(value);
+
+
+                    values.add(doTokenReplacementOnValue(value));
                 }
             }
         }
@@ -265,8 +267,35 @@ public class WrapperConfig {
         
         return map;
     }
+
+    Properties loadEnvProperties() {
+        Properties properties = new Properties();
+        Map<String, String> envs = System.getenv();
+        for(String key : envs.keySet()) {
+            properties.put(key, envs.get(key));
+        }
+
+        InputStream is = getClass().getResourceAsStream("/application-env.properties");
+        if (is != null) {
+            try {
+                properties.load(is);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+        return properties;
+    }
+
+    String doTokenReplacementOnValue(String value) {
+        for (Map.Entry<Object, Object> e : envProperties.entrySet()) {
+            if (e.getValue() != null) {
+                value = value.replace("${" + e.getKey() + "}", (String)e.getValue());
+            }
+        }
+        return value;
+    }
     
-    private String getProperty(Map<String, ArrayList<String>> prop, String name, String defaultValue) {
+    String getProperty(Map<String, ArrayList<String>> prop, String name, String defaultValue) {
         ArrayList<String> values = prop.get(name);
         String value = null;
         if (values != null && values.size() > 0) {
@@ -277,7 +306,7 @@ public class WrapperConfig {
         return value;
     }
     
-    private List<String> getListProperty(Map<String, ArrayList<String>> prop, String name) {
+    List<String> getListProperty(Map<String, ArrayList<String>> prop, String name) {
         ArrayList<String> value = prop.get(name);
         if (value == null) {
             value = new ArrayList<String>(0);

@@ -4,7 +4,8 @@ dependencies {
     implementation "net.java.dev.jna:jna:$jnaVersion"
     implementation "net.java.dev.jna:jna-platform:$jnaVersion"
     api group: 'org.update4j', name: 'update4j', version: '1.5.7'
-
+    testImplementation('org.junit.jupiter:junit-jupiter-api:5.4.2')
+    testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine:5.4.2')
 }
 
 jar.archiveBaseName = 'openpos-wrapper'
