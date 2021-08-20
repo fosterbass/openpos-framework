@@ -45,68 +45,76 @@ export class NewRelicSink {
         sessionService: SessionService,
         capacitorService: CapacitorService
     ) {
-        combineLatest(
-            config.getConfiguration<NewRelicLoggerConfig>('new-relic-logger').pipe(
-                map(v => ({ enabled: v.enabled, apiKey: v.apiKey })),
-            ),
-            personalization.getAppId$(),
-            personalization.getDeviceId$(),
-            personalization.getServerName$(),
-            personalization.getServerPort$(),
-            concat(
-                of('none'),
-                sessionService.screenMessage$.pipe(map(s => s.screenType)),
-            ),
-            iif(
-                () => capacitorService.isRunningInCapacitor(),
-                defer(() => capacitorService.getDeviceName()),
-                of(undefined)
-            ),
-            consoleScraper.messages$.pipe(
-                map(cm => <NewRelicLogMessage> {
-                    log_level: cm.level,
-                    message: cm.message,
-                    timestamp: Math.round(Date.now())
-                }),
-                publishReplay(100, 5000),
-                refCount()
-            )
+        config.getConfiguration<NewRelicLoggerConfig>('new-relic-logger').pipe(
+            map(v => ({ enabled: v.enabled, apiKey: v.apiKey })),
         ).pipe(
-            map(c => (<NewRelicLogMessage> {
-                timestamp: Math.round(Date.now()),
-                config: c[0],
-                app_id: c[1] || undefined,
-                device_id: c[2] || undefined,
-                server_name: c[3] || undefined,
-                server_port: c[4] || undefined,
-                screen: c[5],
-                physical_device_name: c[6],
-                message: c[7]
-            })),
-            filter(g => !!g.config && g.config.enabled && !!g.config.apiKey),
-            bufferTime(1000),
-            filter(logs => logs.length > 0),
-            map(logs => ({
-                apiKey: logs[0].config.apiKey,
-                groups: Array.of(<NewRelicMessageGroup> {
-                    logs: logs.map(v => ({
-                        ...v,
-                        config: undefined,
-                    }))
-                })
-            })),
-            mergeMap(request => http.post(
-                'https://log-api.newrelic.com/log/v1', 
-                request.groups, 
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Api-Key': request.apiKey
-                    }
-                }).pipe(
-                    catchError(() => of())
-                )
-            )
-        ).subscribe();
+            switchMap(config => iif(
+                () => config && config.enabled && !!config.apiKey,
+
+                defer(() => combineLatest(
+                    of(config),
+                    personalization.getAppId$(),
+                    personalization.getDeviceId$(),
+                    personalization.getServerName$(),
+                    personalization.getServerPort$(),
+                    concat(
+                        of('none'),
+                        sessionService.screenMessage$.pipe(map(s => s.screenType)),
+                    ),
+                    iif(
+                        () => capacitorService.isRunningInCapacitor(),
+                        defer(() => capacitorService.getDeviceName()),
+                        of(undefined)
+                    ),
+                    consoleScraper.messages$.pipe(
+                        map(cm => <NewRelicLogMessage> {
+                            log_level: cm.level,
+                            message: cm.message,
+                            timestamp: Math.round(Date.now())
+                        }),
+                        publishReplay(100, 5000),
+                        refCount()
+                    )
+                ).pipe(
+                    map(c => (<NewRelicLogMessage> {
+                        timestamp: Math.round(Date.now()),
+                        config: c[0],
+                        app_id: c[1] || undefined,
+                        device_id: c[2] || undefined,
+                        server_name: c[3] || undefined,
+                        server_port: c[4] || undefined,
+                        screen: c[5],
+                        physical_device_name: c[6],
+                        message: c[7]
+                    })),
+                    filter(g => !!g.config && g.config.enabled && !!g.config.apiKey),
+                    bufferTime(1000),
+                    filter(logs => logs.length > 0),
+                    map(logs => ({
+                        apiKey: logs[0].config.apiKey,
+                        groups: Array.of(<NewRelicMessageGroup> {
+                            logs: logs.map(v => ({
+                                ...v,
+                                config: undefined,
+                            }))
+                        })
+                    })),
+                    mergeMap(request => http.post(
+                        'https://log-api.newrelic.com/log/v1', 
+                        request.groups, 
+                        {
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Api-Key': request.apiKey
+                            }
+                        }).pipe(
+                            catchError(() => of())
+                        )
+                    )
+                )),
+
+                of()
+            )),
+        );
     }
 }

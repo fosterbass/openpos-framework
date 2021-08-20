@@ -8,7 +8,7 @@ export interface ConsoleMessage {
     message: string,
 }
 
-type SupportedConsoleMethods = keyof Console & ('info' | 'debug' | 'error' | 'warn' | 'log');
+export type SupportedConsoleMethods = keyof Console & ('info' | 'debug' | 'error' | 'warn' | 'log');
 
 @Injectable({ providedIn: 'root' })
 export class ConsoleScraper {
@@ -48,36 +48,40 @@ export class ConsoleScraper {
     }
 
     private _handleLogMessage(observer: Subscriber<ConsoleMessage>, level: LogLevel, ...args: any[]) {
-        let message = '';
-
-        if (args.length <= 0) {
+        if (!args || args.length <= 0) {
             return;
         }
 
-        args.forEach(arg => {
-            if (typeof arg == 'object') {
-                let stringify = this._jsonStringifySanitize(arg);
+        let message = '';
 
-                if (stringify.length > 0) {
+        args.forEach(arg => {
+            if (arg !== null && arg !== undefined) {     
+                if (typeof arg === 'object') {
+                    let stringify = this._jsonStringifySanitize(arg);
+
+                    if (stringify.length > 0) {
+                        if (message.length > 0) {
+                            message += '; ';
+                        }
+
+                        message += stringify;
+                    }
+                } else {
                     if (message.length > 0) {
                         message += '; ';
                     }
 
-                    message += stringify;
+                    message += arg;
                 }
-            } else {
-                if (message.length > 0) {
-                    message += '; ';
-                }
-
-                message += arg;
             }
         });
 
-        observer.next({
-            level: level,
-            message: message,
-        });
+        if (message.length > 0) {
+            observer.next({
+                level: level,
+                message: message,
+            });
+        }
     }
 
     private _hookConsoleMethod(method: SupportedConsoleMethods, onlog: (...args: any[]) => void): () => void {
