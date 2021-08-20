@@ -51,6 +51,16 @@ public class TransactionUIMessage extends UIMessage {
 
     private boolean enableCollapsibleItems = true;
 
+    private boolean rewardsVisibleOnLinkButton;
+    private boolean membershipVisibleOnLinkButton;
+    private String customerEmail;
+    private String memberTierLabel;
+    private String rewardsLabel;
+    private String memberTier;
+    private String noPromotionsLabel;
+    private String loyaltyIcon;
+    private List<UILoyaltyReward> loyaltyRewards;
+
     public void addTotal(String name, String amount) {
         if (totals == null) {
             totals = new ArrayList<>();
