@@ -99,20 +99,36 @@ $loyalty-signup-column-gap: 8px;
     }
     .linked-customer-summary {
         padding: 5px;
+
+        &.header {
+            .button-wrapper {
+                .grid-container {
+                    &.desktop-portrait,
+                    &.tablet {
+                        grid-template-areas:
+                            "Icon Name              Name"
+                            ".    LoyaltyIcon       LoyaltyIcon"
+                            ".    MembershipDetails MembershipDetails";
+                    }
+                }
+            }
+        }
+
         .button-wrapper {
             vertical-align: inherit;
             width: 100%;
             text-align: left;
-            padding: 0px 10px;
+            padding: 0 10px;
             .grid-container {
                 display: grid;
-                grid-template-columns: 1fr 7fr 3fr;
+                grid-template-columns: auto minmax(0, 6fr) 4fr;
                 grid-template-rows: auto 1fr;
-                gap: 0px 5px;
+                gap: 0 5px;
                 grid-template-areas:
-                    "Icon              Name LoyaltyIcon"
-                    "Memberships       Memberships Memberships"
-                    "MembershipRewards MembershipRewards";
+                    "Icon              Name              LoyaltyIcon"
+                    ".                 MembershipDetails MembershipDetails"
+                    "Memberships       Memberships       Memberships"
+                    "MembershipRewards MembershipRewards MembershipRewards";
 
                 &.tablet,
                 &.mobile {
@@ -121,23 +137,16 @@ $loyalty-signup-column-gap: 8px;
                 .name {
                     grid-area: Name;
                     white-space: normal;
+                    align-self: center;
 
-                    .membership-customer-email {
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                        white-space: normal;
-                    }
                     .customer-name {
                         @extend %text-md;
-                    }
-                    .membership-customer-email,
-                    .membership-tier {
-                        @extend %text-xs;
-                        line-height: 1.3rem;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        line-height: 1.25em;
 
-                        &.tablet,
-                        &.mobile {
-                            line-height: 1rem;
+                        &.desktop-portrait {
+                            font-size: $text-sm;
                         }
                     }
                     .loyalty-keybind {
@@ -148,12 +157,35 @@ $loyalty-signup-column-gap: 8px;
                     grid-area: Icon;
                     display: inline-block;
                 }
+                .membership-details {
+                    grid-area: MembershipDetails;
+                }
+                .membership-customer-email,
+                .membership-tier {
+                    @extend %text-xs;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: normal;
+                    line-height: 1.3rem;
+                    font-weight: normal;
+
+                    &.tablet,
+                    &.mobile {
+                        line-height: 1rem;
+                    }
+                }
                 .loyalty-icon {
                     grid-area: LoyaltyIcon;
                     display: inline-block;
+
                     .sale-total-loyalty-button-icon {
                         max-height: 24px;
                         vertical-align: middle;
+
+                        &.desktop-portrait,
+                        &.tablet {
+                            max-height: 20px;
+                        }
                     }
                 }
                 .memberships {

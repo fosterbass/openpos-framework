@@ -66,25 +66,29 @@
                         <div responsive-class class="customer-name">
                             {{screenData.customer.name}}
                         </div>
-                        <ng-container *ngIf="screenData.membershipVisibleOnLinkButton">
-                            <div class="membership-customer-email" responsive-class>
-                                {{screenData.customerEmail}}
-                            </div>
-                            <div class="membership-tier" responsive-class>
-                                {{screenData.memberTierLabel}} {{screenData.memberTier}}
-                            </div>
-                        </ng-container>
                         <div *ngIf="keybindsEnabled(screenData.linkedCustomerButton)"
                               class="muted-color loyalty-keybind">{{screenData.linkedCustomerButton.keybindDisplayName}}</div>
                     </div>
-                    <div class="icon"><app-icon [iconName]="screenData.profileIcon" [iconClass]="(isMobile$ | async) ? null: 'material-icons mat-36'"></app-icon></div>
-                    <div class="loyalty-icon">
-                        <img *ngIf="screenData.loyaltyButton.icon" [src]="screenData.loyaltyButton.icon | imageUrl" class="sale-total-loyalty-button-icon">
+                    <div class="icon">
+                        <app-icon [iconName]="screenData.profileIcon" [iconClass]="(isMobile$ | async) ? null: 'material-icons mat-36'"></app-icon>
+                    </div>
+                    <div class="loyalty-icon" responsive-class>
+                        <img *ngIf="screenData.loyaltyButton.icon" [src]="screenData.loyaltyButton.icon | imageUrl"
+                             responsive-class
+                             class="sale-total-loyalty-button-icon">
+                    </div>
+                    <div class="membership-details" *ngIf="screenData.membershipVisibleOnLinkButton">
+                        <div *ngIf="screenData.customerEmail" class="membership-customer-email" responsive-class>
+                            {{screenData.customerEmail}}
+                        </div>
+                        <div *ngIf="screenData.memberTier" class="membership-tier" responsive-class>
+                            {{screenData.memberTierLabel}} {{screenData.memberTier}}
+                        </div>
                     </div>
                 </div>
             </div>
         </button>
-        <button *ngIf="!screenData.readOnly && screenData.linkedCustomerButton && screenData.customer"
+        <button *ngIf="shouldShowLinkedCustomer()"
                 class="linked-customer-summary content"
                 style="width: 100%;"
                 responsive-class
@@ -94,10 +98,6 @@
                 (click)="doAction(screenData.linkedCustomerButton)">
             <div class="button-wrapper">
                 <div class="grid-container">
-                    <div class="icon">
-                        <app-icon [iconName]="screenData.profileIcon"
-                                  [iconClass]="(isMobile$ | async) ? null: 'material-icons mat-36'"></app-icon>
-                    </div>
                     <div class="memberships">
                         <div *ngIf="isMissingCustomerInfo()" class="customer-missing-info">
                             <app-warn-button responsive-class>
@@ -128,7 +128,7 @@
                                 <li *ngFor="let reward of screenData.loyaltyRewards"
                                     class="membership-rewards-list-item"
                                     responsive-class>
-                                    <app-rewards-line-item [reward]="{name: reward.name, amount: reward.amount}"
+                                    <app-rewards-line-item [reward]="mapToSimpleReward(reward)"
                                                            class="membership-rewards-item"
                                                            responsive-class></app-rewards-line-item>
                                 </li>

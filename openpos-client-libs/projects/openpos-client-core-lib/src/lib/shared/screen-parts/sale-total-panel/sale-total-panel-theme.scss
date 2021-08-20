@@ -3,19 +3,21 @@
 @mixin sale-total-panel-theme($theme) {
     $border: map-get($mat-grey, 800);
     $item-count-background: map-get($mat-grey, 200);
-    $disabled-border: map-get(map-get($theme, foreground), disabled-text);
     $foreground: map-get($theme, foreground);
+    $disabled-border: map-get($foreground, disabled-text);
     $primary: map-get($theme, primary);
 
     app-sale-total-panel {
         .linked-customer-summary {
             color: mat-color($theme, openpos-linked-customer-color);
-        &.header {
-            background-color: mat-color($theme, openpos-linked-customer-background);
-            border-radius: 4px 4px 0px 0px;
-        }
-        &.content {
-            border-radius: 0px 0px 4px 4px;
+
+            &.header {
+                background-color: mat-color($theme, openpos-linked-customer-background);
+                border-radius: 4px 4px 0 0;
+            }
+            &.content {
+                color: lighten(mat-color($foreground, text), 35%);
+                border-radius: 0 0 4px 4px;
             }
 
             .memberships {
@@ -26,7 +28,7 @@
                         overflow-x: hidden !important;
                         white-space: pre-wrap !important;
                         max-width: 100%;
-                        padding: 0px 10px;
+                        padding: 0 10px;
 
                         app-icon {
                             padding-right: 10px;
@@ -74,7 +76,6 @@
                 .loyalty-icon app-icon,
                 .loyalty-icon app-icon .material-icons {
                     display: block;
-                    color: map_get($foreground, icon);
                     font-size: 24px;
                     width: 24px;
                     height: 24px;
@@ -157,24 +158,24 @@
 
         }
 
-    .sale-total-employee-sale-button {
-        button {
-            @extend %text-sm;
-            padding-top: 5px;
-            padding-bottom: 5px;
-            .mat-button-wrapper {
-                display: grid;
+        .sale-total-employee-sale-button {
+            button {
+                @extend %text-sm;
+                padding-top: 5px;
+                padding-bottom: 5px;
+                .mat-button-wrapper {
+                    display: grid;
 
-                    div {
-                        line-height: normal;
+                        div {
+                            line-height: normal;
+                        }
                     }
-                }
             }
 
             .sale-total-employee-sale-name {
                 display: grid;
                 grid-template-columns: auto 1fr;
-                grid-gap: 0px 5px;
+                grid-gap: 0 5px;
             }
         }
     }
