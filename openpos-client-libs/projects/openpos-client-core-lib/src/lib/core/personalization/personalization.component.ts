@@ -328,7 +328,7 @@ export class PersonalizationComponent implements IScreen, OnInit {
                     return null;
                 }),
                 catchError(error => {
-                    console.warn(`Personalization request failed with error: ${error}`);
+                    console.warn(`Personalization request failed with error: ${JSON.stringify(error)}`);
                     return of({'message': `${serverName}:${serverPort}`});
                 })
             );
