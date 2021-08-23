@@ -178,6 +178,7 @@ import { CustomerInformationComponent } from './screen-parts/customer-informatio
 import { MutableListItemWithLabelComponent } from "./screen-parts/mutable-list-item-with-label-component/mutable-list-item-with-label.component";
 import { RewardsHistoryLineItemComponent } from './screen-parts/rewards-history-line-item/rewards-history-line-item.component';
 import { MembershipPointsDisplayComponent } from "./screen-parts/membership-points-display/membership-points-display.component";
+import { StandbyComponent } from '../screens-with-parts/standby/standby.component';
 
 const screenParts = [
     TenderPartComponent,
@@ -300,7 +301,8 @@ const components = [
     ToastComponent,
     ImageScannerComponent,
     DisplayCustomerLookupComponent,
-    WatermarkComponent
+    WatermarkComponent,
+    StandbyComponent
 ];
 
 const directives = [
@@ -375,7 +377,8 @@ const pipes = [
         ToastComponent,
         StatusDetailsComponent,
         PeripheralSelectorComponent,
-        PeripheralSelectorConfirmationComponent
+        PeripheralSelectorConfirmationComponent,
+        StandbyComponent
     ],
     imports: [
         FormsModule,
