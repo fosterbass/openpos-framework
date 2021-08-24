@@ -5,35 +5,41 @@ import { Http } from '@angular/http';
 import { Configuration } from '../../configuration/configuration';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import {ConfigurationService} from "../services/configuration.service";
+import {filter} from "rxjs/operators";
 
 @Injectable({
     providedIn: 'root'
 })
 export class LocationProviderDefault implements ILocationProvider {
-
-    prevLat: number;
-    prevLong: number;
-
+    coordinateBuffer: number;
     private $locationData = new BehaviorSubject<ILocationData>(null);
 
-    constructor(private http: Http) {
+    constructor(private http: Http, private configurationService: ConfigurationService) {
+        this.configurationService.getConfiguration('uiConfig')
+            .pipe(filter(config => Object.keys(config).includes('googleApiKey')))
+            .subscribe(config => {
+            if(this.coordinateBuffer != null) {
+                this.getCurrentLocation(this.coordinateBuffer, config['googleApiKey']);
+            }
+        })
     }
 
     getProviderName(): string {
         return 'default';
     }
 
-    getCurrentLocation(coordinateBuffer: number): Observable<ILocationData> {
-        if (navigator.geolocation && Configuration.googleApiKey) {
+    getCurrentLocation(buffer: number, googleApiKey?: string): Observable<ILocationData> {
+        this.coordinateBuffer = buffer
+        if (navigator.geolocation && (Configuration.googleApiKey || googleApiKey)) {
             let zipCode = '';
             let  countryName = '';
             const previous = {latitude: 0, longitude: 0};
-            const buffer = coordinateBuffer;
             navigator.geolocation.watchPosition((position) => {
                 const lat = position.coords.latitude;
                 const long = position.coords.longitude;
-                if (lat > previous.latitude + buffer || lat < previous.latitude - buffer
-                    || long > previous.longitude + buffer || long < previous.longitude - buffer) {
+                if (lat > previous.latitude + this.coordinateBuffer || lat < previous.latitude - this.coordinateBuffer
+                    || long > previous.longitude + this.coordinateBuffer || long < previous.longitude - this.coordinateBuffer) {
                     previous.latitude = lat;
                     previous.longitude = long;
                     const latlong = lat + ',' + long;
@@ -55,6 +61,8 @@ export class LocationProviderDefault implements ILocationProvider {
                             this.$locationData.next({
                                 type: 'default',
                                 postalCode: zipCode,
+                                latitude: lat.toString(),
+                                longitude: long.toString(),
                                 country: countryName
                             } as ILocationData);
                         })
