@@ -43,6 +43,7 @@ export class ToastService {
             extendedTimeOut: toastMessage.duration,
             disableTimeOut: this.isStickyToast(toastMessage),
             tapToDismiss: !toastMessage.persistent,
+            closeButton: !toastMessage.persistent,
             positionClass: this.getPosition(toastMessage.verticalPosition),
             toastClass: `ngx-toastr app-${this.getType(toastMessage.toastType)}`,
             toastComponent: ToastComponent

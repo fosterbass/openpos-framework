@@ -74,6 +74,7 @@ describe('ToastService', () => {
                         extendedTimeOut: 2500,
                         disableTimeOut: false,
                         tapToDismiss: true,
+                        closeButton: true,
                         positionClass: 'toast-top-center',
                         toastClass: 'ngx-toastr app-toast-success',
                         toastComponent: ToastComponent
