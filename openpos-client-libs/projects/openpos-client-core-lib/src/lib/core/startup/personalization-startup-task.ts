@@ -127,7 +127,7 @@ export class PersonalizationStartupTask implements IStartupTask {
                         timeout(10000),
                         switchMap(p => this.attemptAutoPersonalize(data, this.getAutoPersonalizationUrl(p.service), p.deviceName)),
                         catchError(e => {
-                            console.error('failed to auto personalize', e);
+                            console.error('failed to auto personalize', JSON.stringify(e));
         
                             return concat(
                                 of('failed to auto personalize; attempting with auto-personalization hostname'),
