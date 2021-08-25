@@ -38,6 +38,7 @@ public interface IDevicesService {
     @RequestMapping(path = "/connectedDeviceIds", method = RequestMethod.POST)
     public GetConnectedDeviceIdsResponse getConnectedDeviceIds(@RequestBody GetConnectedDeviceIdsRequest request);
 
+    @SuppressMethodLogging
     @RequestMapping(path = "/find", method = RequestMethod.POST)
     public FindDevicesResponse findDevices(@RequestBody FindDevicesRequest request);
 

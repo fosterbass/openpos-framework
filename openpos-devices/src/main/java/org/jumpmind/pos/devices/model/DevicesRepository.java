@@ -50,6 +50,7 @@ public class DevicesRepository {
         }
     }
 
+    @Cacheable(value = CACHE_NAME, key = "#businessUnitId")
     public List<DeviceModel> findDevices(String businessUnitId) {
         Map<String, Object> params = new HashMap<>();
         params.put("businessUnitId", businessUnitId);
