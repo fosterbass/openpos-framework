@@ -17,6 +17,7 @@ public interface IDevicesService {
     @ResponseBody
     public PersonalizationResponse personalize(@RequestBody PersonalizationRequest request);
 
+    @SuppressMethodLogging
     @RequestMapping(path = "/device", method = RequestMethod.POST)
     @ResponseBody
     public GetDeviceResponse getDevice(@RequestBody GetDeviceRequest request);
