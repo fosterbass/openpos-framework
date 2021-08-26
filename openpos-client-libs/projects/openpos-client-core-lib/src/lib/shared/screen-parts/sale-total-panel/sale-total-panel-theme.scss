@@ -161,21 +161,20 @@
         .sale-total-employee-sale-button {
             button {
                 @extend %text-sm;
-                padding-top: 5px;
-                padding-bottom: 5px;
+
                 .mat-button-wrapper {
                     display: grid;
 
-                        div {
-                            line-height: normal;
-                        }
+                    div {
+                        line-height: normal;
                     }
+                }
             }
 
             .sale-total-employee-sale-name {
                 display: grid;
                 grid-template-columns: auto 1fr;
-                grid-gap: 0 5px;
+                grid-gap: 0px 5px;
             }
         }
     }

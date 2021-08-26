@@ -35,7 +35,7 @@ public class DevicesRepository {
 
     Query<DeviceStatusModel> connectedDevicesQuery = new Query<DeviceStatusModel>().named("connectedDevices").result(DeviceStatusModel.class);
 
-    @Cacheable(value = CACHE_NAME, key = "#deviceId")
+    @Cacheable(value = CACHE_NAME, key = "'getDevice' + #deviceId")
     public DeviceModel getDevice(String deviceId) {
         DeviceModel device = devSession.findByNaturalId(DeviceModel.class, new ModelId("deviceId", deviceId));
         if (device != null) {
@@ -50,6 +50,7 @@ public class DevicesRepository {
         }
     }
 
+    @Cacheable(value = CACHE_NAME, key = "'findDevices' + #businessUnitId")
     public List<DeviceModel> findDevices(String businessUnitId) {
         Map<String, Object> params = new HashMap<>();
         params.put("businessUnitId", businessUnitId);
@@ -117,7 +118,7 @@ public class DevicesRepository {
         clearCache(pairedDeviceId);
     }
 
-    @CacheEvict(value = CACHE_NAME, key = "#deviceId")
+    @CacheEvict(value = CACHE_NAME)
     public void setAppId(String deviceId, String newAppId) {
         String deviceAuth = getDeviceAuth(deviceId);
         DeviceModel device = getDeviceByAuth(deviceAuth);
@@ -183,7 +184,7 @@ public class DevicesRepository {
         return deviceModel;
     }
 
-    @CacheEvict(value = CACHE_NAME, key = "#device.deviceId")
+    @CacheEvict(value = CACHE_NAME)
     public void saveDevice(DeviceModel device) {
 
         devSession.save(device);
@@ -239,7 +240,7 @@ public class DevicesRepository {
 
     private void clearCache(String deviceId) {
         if (cacheManager != null) {
-            Objects.requireNonNull(cacheManager.getCache(CACHE_NAME)).evict(deviceId);
+            Objects.requireNonNull(cacheManager.getCache(CACHE_NAME)).clear();
         }
     }
 }

@@ -162,7 +162,7 @@
                 </div>
             </div>
             <div class="memberships" *ngIf="screen.membershipEnabled">
-                <div class="details-row" *ngIf="screen.memberTierLabel">{{screen.memberTierLabel}} {{screen.customer.memberTier}}</div>
+                <div class="details-row" *ngIf="screen.memberTierLabel != undefined">{{screen.memberTierLabel}} {{screen.customer.memberTier}}</div>
                 <div class="wrapper">
                     <div class="list">
                         <div class="details-label">

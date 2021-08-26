@@ -167,8 +167,7 @@ public class DevicesRepositoryTest {
         devicesRepository.pairDevice(mockDeviceId, mockPairedDeviceId);
         verify(devSession).save(getMockDevice(mockDeviceId, mockPairedDeviceId));
         verify(devSession).save(getMockDevice(mockPairedDeviceId, mockDeviceId));
-        verify(mockCache).evict(mockDeviceId);
-        verify(mockCache).evict(mockPairedDeviceId);
+        verify(mockCache, times(2)).clear();
     }
 
     @Test
@@ -192,10 +191,7 @@ public class DevicesRepositoryTest {
         verify(devSession).save(getMockDevice(mockDeviceId, mockPairedDeviceId));
         verify(devSession).save(getMockDevice(mockPairedDeviceId, mockDeviceId));
 
-        verify(mockCache, times(2)).evict(mockDeviceId);
-        verify(mockCache, times(2)).evict(mockPairedDeviceId);
-        verify(mockCache).evict(device3Id);
-        verify(mockCache).evict(device4Id);
+        verify(mockCache, times(6)).clear();
     }
 
     @Test
@@ -206,8 +202,7 @@ public class DevicesRepositoryTest {
         devicesRepository.unpairDevice(mockDeviceId, mockPairedDeviceId);
         verify(devSession).save(getMockDevice());
         verify(devSession).save(getMockDevice(mockPairedDeviceId));
-        verify(mockCache).evict(mockDeviceId);
-        verify(mockCache).evict(mockPairedDeviceId);
+        verify(mockCache, times(2)).clear();
     }
 
     @Test

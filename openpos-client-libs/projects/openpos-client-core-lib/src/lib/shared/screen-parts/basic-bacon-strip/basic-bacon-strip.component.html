@@ -1,4 +1,8 @@
 <div responsive-class class="container mat-elevation-z5">
-    <app-icon *ngIf="screenData.icon" [iconName]="screenData.icon" [iconClass]="(isMobile | async) ? 'mat-30': 'md'"></app-icon>
+    <app-icon *ngIf="screenData.icon"
+              [iconName]="screenData.icon"
+              [iconClass]="(isMobile | async) ? 'mat-30': 'md'"
+              (click)="handleClick()"></app-icon>
     <img *ngIf="screenData.logo" [src]="screenData.logo | imageUrl">
+    <div *ngIf="!screenData.logo && screenData.headerText">{{screenData.headerText}}</div>
 </div>

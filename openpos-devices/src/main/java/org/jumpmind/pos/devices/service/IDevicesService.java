@@ -17,6 +17,7 @@ public interface IDevicesService {
     @ResponseBody
     public PersonalizationResponse personalize(@RequestBody PersonalizationRequest request);
 
+    @SuppressMethodLogging
     @RequestMapping(path = "/device", method = RequestMethod.POST)
     @ResponseBody
     public GetDeviceResponse getDevice(@RequestBody GetDeviceRequest request);
@@ -37,6 +38,7 @@ public interface IDevicesService {
     @RequestMapping(path = "/connectedDeviceIds", method = RequestMethod.POST)
     public GetConnectedDeviceIdsResponse getConnectedDeviceIds(@RequestBody GetConnectedDeviceIdsRequest request);
 
+    @SuppressMethodLogging
     @RequestMapping(path = "/find", method = RequestMethod.POST)
     public FindDevicesResponse findDevices(@RequestBody FindDevicesRequest request);
 

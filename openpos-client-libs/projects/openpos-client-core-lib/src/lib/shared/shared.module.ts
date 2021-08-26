@@ -149,6 +149,7 @@ import { TenderPartComponent } from './screen-parts/tender-part/tender-part.comp
 import { OrderCardComponent } from './components/order-card/order-card.component';
 import { LocalizedDateNoTimePipe } from './pipes/localized-date-no-time.pipe';
 import { BasicBaconStripComponent } from './screen-parts/basic-bacon-strip/basic-bacon-strip.component';
+import { DynamicBaconStripComponent } from "./screen-parts/dynamic-bacon-strip/dynamic-bacon-strip.component";
 import { ButtonActionTimerComponent } from './components/button-action-timer/button-action-timer.component';
 import { ImageTextPanelComponent } from './screen-parts/image-text-panel/image-text-panel.component';
 import { TransactionSummaryComponent } from './components/transaction-summary/transaction-summary.component';
@@ -178,7 +179,8 @@ import { PurchaseHistoryItemComponent } from './screen-parts/purchase-history-it
 import { CustomerInformationComponent } from './screen-parts/customer-information/customer-information.component';
 import { MutableListItemWithLabelComponent } from './screen-parts/mutable-list-item-with-label-component/mutable-list-item-with-label.component';
 import { RewardsHistoryLineItemComponent } from './screen-parts/rewards-history-line-item/rewards-history-line-item.component';
-import { MembershipPointsDisplayComponent } from './screen-parts/membership-points-display/membership-points-display.component';
+import { MembershipPointsDisplayComponent } from "./screen-parts/membership-points-display/membership-points-display.component";
+import { StandbyComponent } from '../screens-with-parts/standby/standby.component';
 
 const screenParts = [
     TenderPartComponent,
@@ -216,6 +218,7 @@ const screenParts = [
     ScanPartComponent,
     SearchExpandInputComponent,
     BasicBaconStripComponent,
+    DynamicBaconStripComponent,
     ImageTextPanelComponent,
     TransactionHistoryPartComponent,
     PromptButtonRowComponent
@@ -302,7 +305,8 @@ const components = [
     ToastComponent,
     ImageScannerComponent,
     DisplayCustomerLookupComponent,
-    WatermarkComponent
+    WatermarkComponent,
+    StandbyComponent
 ];
 
 const directives = [
@@ -377,7 +381,8 @@ const pipes = [
         ToastComponent,
         StatusDetailsComponent,
         PeripheralSelectorComponent,
-        PeripheralSelectorConfirmationComponent
+        PeripheralSelectorConfirmationComponent,
+        StandbyComponent
     ],
     imports: [
         FormsModule,
