@@ -119,10 +119,6 @@ describe('MembershipDisplayComponent', () => {
             it('has the non membership icon', () => {
                 validateIcon(fixture, 'mat-chip app-icon', 'close');
             });
-
-            it('displays the uncheck icon', () => {
-                validateIcon(fixture, 'mat-chip app-icon', 'uncheck');
-            });
         });
     });
 });
