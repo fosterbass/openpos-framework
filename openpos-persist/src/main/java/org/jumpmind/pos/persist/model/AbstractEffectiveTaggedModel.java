@@ -2,8 +2,11 @@ package org.jumpmind.pos.persist.model;
 
 import java.util.Date;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.jumpmind.pos.persist.ColumnDef;
 
+@NoArgsConstructor
 abstract public class AbstractEffectiveTaggedModel extends AbstractTaggedModel implements IEffectiveDateModel {
 
     @SuppressWarnings("unused")
@@ -14,7 +17,16 @@ abstract public class AbstractEffectiveTaggedModel extends AbstractTaggedModel i
     
     @ColumnDef 
     Date effectiveEndTime;
-    
+
+    public AbstractEffectiveTaggedModel(Date effectiveStartTime, Date effectiveEndTime) {
+        if (effectiveStartTime != null) {
+            this.effectiveStartTime = effectiveStartTime;
+        } else {
+            this.effectiveStartTime = new Date();
+        }
+        this.effectiveEndTime = effectiveEndTime;
+    }
+
     @Override
     public void setEffectiveStartTime(Date effectiveStartTime) {
         this.effectiveStartTime = effectiveStartTime;
