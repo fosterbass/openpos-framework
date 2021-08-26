@@ -35,7 +35,7 @@ public class DevicesRepository {
 
     Query<DeviceStatusModel> connectedDevicesQuery = new Query<DeviceStatusModel>().named("connectedDevices").result(DeviceStatusModel.class);
 
-    @Cacheable(value = CACHE_NAME, key = "#deviceId")
+    @Cacheable(value = CACHE_NAME, key = "'getDevice' + #deviceId")
     public DeviceModel getDevice(String deviceId) {
         DeviceModel device = devSession.findByNaturalId(DeviceModel.class, new ModelId("deviceId", deviceId));
         if (device != null) {
@@ -50,7 +50,7 @@ public class DevicesRepository {
         }
     }
 
-    @Cacheable(value = CACHE_NAME, key = "#businessUnitId")
+    @Cacheable(value = CACHE_NAME, key = "'findDevices' + #businessUnitId")
     public List<DeviceModel> findDevices(String businessUnitId) {
         Map<String, Object> params = new HashMap<>();
         params.put("businessUnitId", businessUnitId);
