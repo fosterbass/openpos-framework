@@ -49,7 +49,6 @@ export interface TransactionIdentifier {
     sequenceNumber: number;
     deviceId: string;
     businessDate: string;
-
     voidedSequenceNumber?: number;
 }
 

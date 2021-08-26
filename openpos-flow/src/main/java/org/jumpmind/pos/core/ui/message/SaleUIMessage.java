@@ -7,7 +7,6 @@ import lombok.Data;
 import org.jumpmind.pos.core.model.Total;
 import org.jumpmind.pos.core.ui.ActionItem;
 import org.jumpmind.pos.core.ui.AssignKeyBindings;
-import org.jumpmind.pos.core.ui.UIMessage;
 import org.jumpmind.pos.core.ui.data.AdditionalLabel;
 import org.jumpmind.pos.core.ui.data.OrderSummary;
 
@@ -21,6 +20,21 @@ public class SaleUIMessage extends TransactionUIMessage {
 
     private ActionItem helpButton;
     private ActionItem logoutButton;
+    private ActionItem loyaltyButton;
+    private String loyaltyIDLabel;
+    private String profileIcon;
+    private List<UIMembership> memberships;
+    private boolean membershipEnabled;
+    private boolean customerMissingInfoEnabled;
+    private boolean customerMissingInfo;
+    private String customerMissingInfoIcon;
+    private String customerMissingInfoLabel;
+    private String checkMarkIcon;
+    private String uncheckMarkIcon;
+    private String noMembershipsFoundLabel;
+    private ActionItem mobileLoyaltyButton;
+    private ActionItem linkedCustomerButton;
+    private ActionItem linkedEmployeeButton;
     private ActionItem promoButton;
 
     private AdditionalLabel taxExemptCertificateDetail;
@@ -46,5 +60,4 @@ public class SaleUIMessage extends TransactionUIMessage {
     public void setTaxExemptCertificateDetail(String label, String value) {
         this.taxExemptCertificateDetail = new AdditionalLabel(label, value);
     }
-    
 }

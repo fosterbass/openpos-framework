@@ -2,7 +2,7 @@
 
 mat-chip {
   text-transform: uppercase;
-  &.tablet-portrait {
+  &.tablet{
     font-size: $text-sm;
   }
 
@@ -19,5 +19,5 @@ mat-chip {
 }
 
 .mat-chip-list-wrapper {
-  margin:0px;
+  margin: 0;
 }

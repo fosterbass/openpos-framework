@@ -1,114 +1,182 @@
+@import '../../../styles/mixins/typography';
+
 @mixin sale-total-panel-theme($theme) {
     $border: map-get($mat-grey, 800);
     $item-count-background: map-get($mat-grey, 200);
-    $disabled-border: map-get(map-get($theme, foreground), disabled-text);
     $foreground: map-get($theme, foreground);
+    $disabled-border: map-get($foreground, disabled-text);
     $primary: map-get($theme, primary);
 
-    .linked-customer-summary {
-        color: mat-color($theme, openpos-linked-customer-color);
-        &.header {
-            background-color: mat-color($theme, openpos-linked-customer-background);
-            border-radius: 4px 4px 0px 0px;
-        }
-        &.content {
-            border-radius: 0px 0px 4px 4px;
-        }
-        .memberships {
-            .customer-missing-info {
-                button {
-                    font-size: inherit;
-                    flex: inherit !important;
-                    overflow-x: hidden !important;
-                    white-space: pre-wrap !important;
-                    max-width: 100%;
-                    padding: 0px 10px;
+    app-sale-total-panel {
+        .linked-customer-summary {
+            color: mat-color($theme, openpos-linked-customer-color);
+
+            &.header {
+                background-color: mat-color($theme, openpos-linked-customer-background);
+                border-radius: 4px 4px 0 0;
+            }
+            &.content {
+                color: lighten(mat-color($foreground, text), 35%);
+                border-radius: 0 0 4px 4px;
+            }
+
+            .memberships {
+                .customer-missing-info {
+                    button {
+                        font-size: inherit;
+                        flex: inherit !important;
+                        overflow-x: hidden !important;
+                        white-space: pre-wrap !important;
+                        max-width: 100%;
+                        padding: 0 10px;
+
+                        app-icon {
+                            padding-right: 10px;
+                        }
+                    }
+                }
+
+                mat-chip {
+                    font-size: $text-xs;
+                    padding: 2px .5rem 2px .5rem;
+                    min-height: 24px;
+
+                    &.tablet {
+                        font-size: $text-xs-mobile;
+                    }
+
                     app-icon {
-                        padding-right: 10px;
+                        margin: 0 .25rem 0 0;
+
+                        &.tablet {
+                            width: 16px;
+                            height: 16px;
+                            font-size: 16px;
+                        }
                     }
                 }
             }
         }
-    }
 
-    .item-counts {
-        background-color: $item-count-background;
-    }
+        .membership-rewards-item {
+            .reward-line-item-wrapper {
+                grid-template-columns: min-content minmax(0, 1fr) min-content;
 
-    .link-customer,
-    .loyalty-signup-customer-display {
-        color: mat-color($theme, openpos-link-customer-color);
-        background-color: mat-color($theme, openpos-link-customer-background);
-        border-color: mat-color($theme, openpos-link-customer-background);
-        border-style: solid;
-        &[disabled] {
-            border-color: $disabled-border;
-        }
-    }
+                .reward,
+                .details .name {
+                    font-size: $text-xs !important;
 
-    .loyalty-signup-customer-display-action {
-        border-color: mat-color($theme, openpos-link-customer-color, .25);
-    }
+                    &.tablet,
+                    &.mobile {
+                        font-size: $text-xs-mobile !important;
+                    }
+                }
 
-    .notification {
-        background-color: mat-color($primary);
-    }
+                .loyalty-icon,
+                .loyalty-icon app-icon,
+                .loyalty-icon app-icon .material-icons {
+                    display: block;
+                    font-size: 24px;
+                    width: 24px;
+                    height: 24px;
 
-    .sale-total-total {
-        border-color: $border;
-    }
+                    &.tablet,
+                    &.mobile {
+                        font-size: 16px;
+                        width: 16px;
+                        height: 16px;
+                    }
+                }
 
-    .sale-total-loyalty-button {
-        min-height: 70px;
-
-        .sale-total-loyalty-button-icon {
-            max-width: 100%;
-            max-height: 2.75em;
-        }
-    }
-
-    .sale-total-customer-button {
-        button {
-            @extend %text-sm;
-            .mat-button-wrapper {
-                display: grid;
-
-                div {
-                    line-height: normal;
+                app-currency-text {
+                    position: relative;
+                    // For some reason this doesn't vertically center correctly
+                    top: -2px;
                 }
             }
         }
 
-        .sale-total-loyalty-linked-icon {
-            display: grid;
-            grid-template-columns: 1fr auto;
+        .item-counts {
+            background-color: $item-count-background;
+        }
 
-            .sale-total-loyalty-icon {
+        .link-customer,
+        .loyalty-signup-customer-display {
+            color: mat-color($theme, openpos-link-customer-color);
+            background-color: mat-color($theme, openpos-link-customer-background);
+            border-color: mat-color($theme, openpos-link-customer-background);
+            border-style: solid;
+
+            &[disabled] {
+                border-color: $disabled-border;
+            }
+        }
+
+        .loyalty-signup-customer-display-action {
+            border-color: mat-color($theme, openpos-link-customer-color, .25);
+        }
+
+        .notification {
+            background-color: mat-color($primary);
+        }
+
+        .sale-total-total {
+            border-color: $border;
+        }
+
+        .sale-total-loyalty-button {
+            min-height: 70px;
+
+            .sale-total-loyalty-button-icon {
                 max-width: 100%;
-                max-height: 3em;
+                max-height: 2.75em;
             }
         }
 
-    }
+        .sale-total-customer-button {
+            button {
+                @extend %text-sm;
 
-    .sale-total-employee-sale-button {
-        button {
-            @extend %text-sm;
-            padding-top: 5px;
-            padding-bottom: 5px;
-            .mat-button-wrapper {
-                display: grid;
+                .mat-button-wrapper {
+                    display: grid;
 
-                div {
-                    line-height: normal;
+                    div {
+                        line-height: normal;
+                    }
                 }
             }
+
+            .sale-total-loyalty-linked-icon {
+                display: grid;
+                grid-template-columns: 1fr auto;
+
+                .sale-total-loyalty-icon {
+                    max-width: 100%;
+                    max-height: 3em;
+                }
+            }
+
         }
 
-        .sale-total-employee-sale-name {
-            display: grid;
-            grid-template-columns: auto 1fr;
-            grid-gap: 0px 5px;
+        .sale-total-employee-sale-button {
+            button {
+                @extend %text-sm;
+                padding-top: 5px;
+                padding-bottom: 5px;
+                .mat-button-wrapper {
+                    display: grid;
+
+                        div {
+                            line-height: normal;
+                        }
+                    }
+            }
+
+            .sale-total-employee-sale-name {
+                display: grid;
+                grid-template-columns: auto 1fr;
+                grid-gap: 0 5px;
+            }
         }
     }
 }

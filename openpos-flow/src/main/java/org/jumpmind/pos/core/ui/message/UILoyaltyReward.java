@@ -1,13 +1,18 @@
 package org.jumpmind.pos.core.ui.message;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.jumpmind.pos.core.ui.ActionItem;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class UILoyaltyReward implements Serializable {
     private static final long serialVersionUID = 1L;
 

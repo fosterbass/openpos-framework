@@ -1,7 +1,7 @@
 import {IActionItem} from '../../../core/actions/action-item.interface';
 
 export interface Reward {
-    promotionId: string;
+    promotionId?: string;
     name: string;
     expirationDate: string;
     rewardType: string;
@@ -10,7 +10,6 @@ export interface Reward {
     actionIcon: string;
     statusText: string;
     barcode: string;
-
     selected: boolean;
     enabled: boolean;
 }

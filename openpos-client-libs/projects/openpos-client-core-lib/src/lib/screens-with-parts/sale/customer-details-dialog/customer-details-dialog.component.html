@@ -79,7 +79,7 @@
                     </ng-template>
                     <ng-template #noItemTemplate>
                         <div class="no-promotions" responsive-class>
-                            {{screen.noPromotionsText}}
+                            {{screen.noPromotionsLabel}}
                         </div>
                     </ng-template>
                 </app-infinite-scroll>
@@ -99,7 +99,7 @@
                     </ng-template>
                     <ng-template #noItemTemplate>
                         <div class="no-promotions" responsive-class>
-                            {{screen.noPromotionsText}}
+                            {{screen.noPromotionsLabel}}
                         </div>
                     </ng-template>
                 </app-infinite-scroll>
@@ -125,10 +125,10 @@
                         <input matInput [formControl]="itemsHistoryFilterController.textFilter" (keypress)="itemsHistoryFilterController.onFilterKeyPress($event)" (focus)="$event.target.select()" [placeholder]="screen.itemHistoryFilter.textPlaceholder">
                     </mat-form-field>
                 </div>
-                <app-infinite-scroll 
-                        [dataKey]="screen.itemsHistoryDataProviderKey" 
-                        [itemTemplate]="itemHistoryTemplate" 
-                        virtualScrollMinBufferPx="700" 
+                <app-infinite-scroll
+                        [dataKey]="screen.itemsHistoryDataProviderKey"
+                        [itemTemplate]="itemHistoryTemplate"
+                        virtualScrollMinBufferPx="700"
                         [itemHeightPx]="155">
                     <ng-template #itemHistoryTemplate let-item>
                         <div class="line">
@@ -162,6 +162,7 @@
                 </div>
             </div>
             <div class="memberships" *ngIf="screen.membershipEnabled">
+                <div class="details-row" *ngIf="screen.memberTierLabel">{{screen.memberTierLabel}} {{screen.customer.memberTier}}</div>
                 <div class="wrapper">
                     <div class="list">
                         <div class="details-label">
@@ -201,7 +202,7 @@
                         </ng-template>
                         <ng-template #noItemTemplate>
                             <div class="no-promotions" responsive-class>
-                                {{screen.noPromotionsText}}
+                                {{screen.noPromotionsLabel}}
                             </div>
                         </ng-template>
                     </app-infinite-scroll>
@@ -225,7 +226,7 @@
                         </ng-template>
                         <ng-template #noItemTemplate>
                             <div class="no-promotions" responsive-class>
-                                {{screen.noPromotionsText}}
+                                {{screen.noPromotionsLabel}}
                             </div>
                         </ng-template>
                     </app-infinite-scroll>
@@ -253,8 +254,8 @@
                             <input matInput [formControl]="itemsHistoryFilterController.textFilter" (keypress)="itemsHistoryFilterController.onFilterKeyPress($event)" (focus)="$event.target.select()" [placeholder]="screen.itemHistoryFilter.textPlaceholder">
                         </mat-form-field>
                     </div>
-                    <app-infinite-scroll 
-                            [dataKey]="screen.itemsHistoryDataProviderKey" 
+                    <app-infinite-scroll
+                            [dataKey]="screen.itemsHistoryDataProviderKey"
                             [itemTemplate]="itemHistoryTemplate"
                             virtualScrollMinBufferPx="400"
                             virtualScrollMaxBufferPx="800"

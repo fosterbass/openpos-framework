@@ -4,7 +4,8 @@
   display: grid;
   grid-template-columns: 1fr 8fr 2fr 2fr 4fr;
   grid-template-rows: 1fr;
-  gap: 0px 0px;
+  gap: 0 $text-sm/2;
+  align-items: center;
   grid-template-areas:
     "loyalty-icon details status-text reward apply";
   .loyalty-icon {
@@ -41,6 +42,7 @@
     @extend %text-md;
     grid-area: reward;
     align-self: center;
+    justify-self: end;
     .pctReward {
       font-weight: bold;
     }
@@ -62,7 +64,7 @@
   display: grid;
   grid-template-columns: 7fr 2fr 1fr;
   grid-template-rows: 1fr;
-  gap: 0px 0px;
+  gap: 0 $text-sm/2;
   grid-template-areas:
     "details reward apply";
   .loyalty-icon {
@@ -102,6 +104,7 @@
       @extend %text-md;
       grid-area: reward;
       align-self: center;
+      justify-self: end;
     }
     .expiration {
       @extend %text-md;
@@ -143,7 +146,7 @@
     a {
       @extend %text-md;
       padding: 0 .25em;
-      
+
       &.tablet-portrait {
         font-size: $text-sm;
       }

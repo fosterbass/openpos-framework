@@ -23,7 +23,7 @@ export interface CustomerDetailsDialogInterface extends IAbstractScreen {
     rewardHistoryLabel: string;
     rewardHistoryTabEnabled: boolean;
     memberTierLabel: string;
-    noPromotionsText: string;
+    noPromotionsLabel: string;
     noMembershipsFoundLabel: string;
     itemHistoryEnabled: boolean;
     itemHistoryLabel: string;

@@ -12,6 +12,7 @@ import { shakeTrigger } from '../../animations/shake.animation';
 import { throbTrigger } from '../../animations/throb.animation';
 import { swingTrigger } from '../../animations/swing.animation';
 import { gradientInnerGlowTrigger } from '../../animations/gradient-inner-glow.animation';
+import { Reward } from '../rewards-line-item/rewards-line-item.interface';
 
 @ScreenPart({
     name: 'SaleTotalPanel'
@@ -74,6 +75,14 @@ export class SaleTotalPanelComponent extends ScreenPartComponent<SaleTotalPanelI
 
     public doMenuItemAction(menuItem: IActionItem): void {
         this.doAction(menuItem);
+    }
+
+    public mapToSimpleReward(reward: Reward): any {
+        // Only show some values because screen space is limited
+        return {
+            name: reward.name,
+            reward: reward.reward
+        };
     }
 
     public isMissingCustomerInfo(): boolean {
