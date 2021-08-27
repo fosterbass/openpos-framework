@@ -15,4 +15,7 @@ public final class MessagePartConstants {
     public static final String ProgressBar = "progressBar";
     public static final String OptionsList = "optionsList";
     public static final String PromptButtonRow = "promptButtonRow";
+    public static final String BasicProductOption = "basicProductOption";
+    public static final String SwatchProductOption = "swatchProductOption";
+    public static final String ScreenGesture = "screenGesture";
 }

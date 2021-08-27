@@ -179,6 +179,7 @@ import { MutableListItemWithLabelComponent } from "./screen-parts/mutable-list-i
 import { RewardsHistoryLineItemComponent } from './screen-parts/rewards-history-line-item/rewards-history-line-item.component';
 import { MembershipPointsDisplayComponent } from "./screen-parts/membership-points-display/membership-points-display.component";
 import { StandbyComponent } from '../screens-with-parts/standby/standby.component';
+import { ScreenGestureComponent } from './screen-parts/screen-gesture/screen-gesture.component';
 
 const screenParts = [
     TenderPartComponent,
@@ -217,7 +218,8 @@ const screenParts = [
     DynamicBaconStripComponent,
     ImageTextPanelComponent,
     TransactionHistoryPartComponent,
-    PromptButtonRowComponent
+    PromptButtonRowComponent,
+    ScreenGestureComponent
 ];
 
 const components = [

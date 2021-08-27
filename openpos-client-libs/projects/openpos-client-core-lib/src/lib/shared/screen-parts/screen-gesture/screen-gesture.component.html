@@ -1,0 +1,4 @@
+<span class="gesture-watch" *ngIf="hasUnlockSwipes" (swipeup)="onSwipeUp()" (swipedown)="onSwipeDown()"
+    (swipeleft)="onSwipeLeft()" (swiperight)="onSwipeRight()"></span>
+<span class="gesture-watch" *ngIf="hasUnlockPans" (panstart)="onPanStart($event)" (panmove)="onPanMove($event)"
+    (panend)="onPanEnd($event)"></span>

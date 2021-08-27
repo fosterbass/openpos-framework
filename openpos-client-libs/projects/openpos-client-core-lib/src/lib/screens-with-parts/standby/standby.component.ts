@@ -1,6 +1,7 @@
 import { Component, Injector } from '@angular/core';
 import { ScreenComponent } from '../../shared/decorators/screen-component.decorator';
 import { PosScreen } from '../../screens-with-parts/pos-screen/pos-screen.component';
+import { StandByInterface } from './standby.interface';
 
 @ScreenComponent({
     name: 'Standby'
@@ -11,12 +12,13 @@ import { PosScreen } from '../../screens-with-parts/pos-screen/pos-screen.compon
     styleUrls: ['./standby.component.scss']
 
 })
-export class StandbyComponent extends PosScreen<any> {
+export class StandbyComponent extends PosScreen<StandByInterface> {
 
     constructor(injector: Injector) {
         super(injector);
     }
-    
+
     buildScreen() {
     }
+
 }
