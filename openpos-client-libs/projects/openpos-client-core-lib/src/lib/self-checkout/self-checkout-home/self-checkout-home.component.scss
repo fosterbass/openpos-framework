@@ -6,12 +6,12 @@
 
 .self-checkout-home-image {
     max-width: 50%;
-    margin: 64px;
+    margin-bottom: 100px;
 }
 
 .self-checkout-home-text-container {
     margin-top: auto;
-    margin-bottom: 2%;
+    margin-bottom: 10%;
 }
 
 .self-checkout-home-text {
@@ -22,7 +22,8 @@
 }
 
 .language-icons {
-    margin-bottom: 64px;
+    margin-top: 64px;
+    align-self: flex-end;
 }
 
 .language-icon-entry {

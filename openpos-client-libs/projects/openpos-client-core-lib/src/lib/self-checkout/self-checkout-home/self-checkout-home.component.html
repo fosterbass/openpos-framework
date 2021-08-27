@@ -1,5 +1,10 @@
 <div fxFlexFill fxLayout="column" fxLayoutAlign="start center" [ngStyle]="screen.backgroundImage | backgroundImageUrl"
     class="self-checkout-home">
+    <div fxLayout="row" class="language-icons">
+        <div class="language-icon-entry" fxFlex="50" *ngFor="let language of this.languages">
+            <app-secondary-button (click)="onLocaleSelected(language.locale)">{{getDisplayName(language.locale)}}</app-secondary-button>
+        </div>
+    </div>
     <img *ngIf="screen.imageUrl" [src]="screen.imageUrl | imageUrl" class="self-checkout-home-image">
     <div fxFlex="0 1 auto" fxLayoutAlign="center center" *ngIf="screen.prompt"
         class="self-checkout-home-text-container">
@@ -7,11 +12,6 @@
             {{screen.prompt}}
         </div>
     </div>
-    <div fxLayout="row" class="language-icons">
-        <div class="language-icon-entry" fxFlex="50" *ngFor="let language of this.languages">
-            <app-secondary-button (click)="onLocaleSelected(language.locale)">{{getDisplayName(language.locale)}}</app-secondary-button>
-        </div>
-      </div>
     <div></div>
     <app-scan-part></app-scan-part>
 </div>
