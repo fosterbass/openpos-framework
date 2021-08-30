@@ -31,6 +31,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import static java.lang.String.*;
+
+import org.apache.commons.collections4.map.UnmodifiableMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.jumpmind.pos.core.clientconfiguration.ClientConfigChangedMessage;
@@ -1190,7 +1192,15 @@ public class StateManager implements IStateManager {
     @Override
     public void registerPersonalizationProperties(Map<String, String> personalizationProperties) {
         log.info("Registering personalization properties " + personalizationProperties.toString());
+        if (personalizationProperties != null) {
+            personalizationProperties = UnmodifiableMap.unmodifiableMap(personalizationProperties);
+        }
         applicationState.getScope().setScopeValue(ScopeType.Device, "personalizationProperties", personalizationProperties);
+    }
+
+    @Override
+    public Map<String, String> getPersonalizationProperties() {
+        return (Map<String, String>) applicationState.getScopeValue(ScopeType.Device, "personalizationProperties");
     }
 
     protected void initDeviceClientContext() {
@@ -1213,7 +1223,7 @@ public class StateManager implements IStateManager {
         String appId = applicationState.getAppId();
         String deviceId = applicationState.getDeviceId();
 
-        Map<String, String> properties = applicationState.getScopeValue("personalizationProperties");
+        Map<String, String> properties = getPersonalizationProperties();
         List<String> additionalTags = applicationState.getScopeValue("additionalTagsForConfiguration");
 
         try {
