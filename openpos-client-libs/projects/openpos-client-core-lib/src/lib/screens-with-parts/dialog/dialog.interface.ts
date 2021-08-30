@@ -11,4 +11,5 @@ export interface DialogInterface extends IAbstractScreen {
     message: string[];
     messageLines: ILine[];
     additionalStyleName: string;
+    imageUrl: string;
 }
