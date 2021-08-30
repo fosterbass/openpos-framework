@@ -5,6 +5,7 @@ declare module '@capacitor/core' {
 }
 
 import { PluginListenerHandle } from '@capacitor/core';
+import { ScanDataType } from '../scanner';
 
 export type ScanditEvents = 'scan';
 
@@ -18,23 +19,25 @@ export interface ScanditPlugin {
 }
 
 export type ScanditSymbology =
-    'CODABAR' |
-    'CODE39' |
-    'CODE93' |
-    'CODE128' |
-    'CODE11' |
-    'EAN8' |
-    'GS1DATABAR' |
-    'MSI_PLESSEY' |
-    'PDF417' |
-    'MICROPDF417' |
-    'DATAMATRIX' |
-    'AZTEK' |
-    'QRCODE' |
-    'MAXICODE' |
-    'UPCE' |
-    'MATRIX_2OF5' |
-    'UPCA';
+    ScanDataType & (
+        'CODABAR' |
+        'CODE39' |
+        'CODE93' |
+        'CODE128' |
+        'CODE11' |
+        'EAN8' |
+        'GS1DATABAR' |
+        'MSI_PLESSEY' |
+        'PDF417' |
+        'MICROPDF417' |
+        'DATAMATRIX' |
+        'AZTEK' |
+        'QRCODE' |
+        'MAXICODE' |
+        'UPCE' |
+        'MATRIX_2OF5' |
+        'UPCA' |
+        'CODE25_I2OF5');
 
 export interface ScanditScanData {
     symbology: ScanditSymbology;
@@ -45,9 +48,9 @@ export interface InitializeArguments {
     apiKey: string
 }
 
-export interface AddViewArguments {}
+export interface AddViewArguments { }
 
-export interface RemoveViewArguments {}
+export interface RemoveViewArguments { }
 
 export interface ScanditViewConstraints {
     left: number;

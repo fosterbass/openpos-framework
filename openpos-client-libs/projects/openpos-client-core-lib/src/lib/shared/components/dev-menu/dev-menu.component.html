@@ -24,9 +24,19 @@
                     <ul [style.height.px]="'250'">
                         <li *ngIf="isAutoPersonalizationSupported | async">
                             <div fxFlexFill fxLayout="row" fxLayoutGap="20px" fxLayoutAlign="left center">
-                                <mat-slide-toggle [checked]="isAutoPersonalizationEnabled | async" (change)="onEnableAutoPersonalizationChanged($event)">Enable Auto Personalization</mat-slide-toggle>
-                                <p *ngIf="autoPersonalizationSettingTouched" style="color: red">Changes to auto personalization settings require reload.</p>
+                                <mat-slide-toggle [checked]="isAutoPersonalizationEnabled | async"
+                                    (change)="onEnableAutoPersonalizationChanged($event)">Enable Auto Personalization
+                                </mat-slide-toggle>
+                                <p *ngIf="autoPersonalizationSettingTouched" style="color: red">Changes to auto
+                                    personalization settings require reload.</p>
                             </div>
+                        </li>
+                        <li *ngIf="kioskMode.isKioskModeAvailable">
+                            <button *ngIf="!isInKioskMode; else exitKioskModeButton" mat-button
+                                (click)="kioskMode.enterKioskMode()">Enter Kiosk Mode</button>
+                            <ng-template #exitKioskModeButton>
+                                <button mat-button (click)="kioskMode.exitKioskMode()">Exit Kiosk Mode</button>
+                            </ng-template>
                         </li>
                         <li>
                             <button mat-button (click)="onPersonalize()">Personalize</button>
@@ -38,15 +48,23 @@
                             <button mat-button (click)="onDevClearLocalStorage()">Clear Local Storage</button>
                         </li>
                         <li>
-                            <div fxFlexFill fxLayout="row"  fxLayoutGap="20px" fxLayoutAlign="left center">
-                                <button mat-button [disabled]="!simAuthTokenAvailable" (click)="onOpenSimulator()">Open Simulator</button>
-                                <div *ngIf="!simAuthTokenAvailable"><p style="color:red">No device auth token found. Ensure SimDeviceStartupTask is enabled for pos devices.</p></div>
+                            <div fxFlexFill fxLayout="row" fxLayoutGap="20px" fxLayoutAlign="left center">
+                                <button mat-button [disabled]="!simAuthTokenAvailable" (click)="onOpenSimulator()">Open
+                                    Simulator</button>
+                                <div *ngIf="!simAuthTokenAvailable">
+                                    <p style="color:red">No device auth token found. Ensure SimDeviceStartupTask is
+                                        enabled for pos devices.</p>
+                                </div>
                             </div>
                         </li>
                         <li>
-                            <div fxFlexFill fxLayout="row"  fxLayoutGap="20px" fxLayoutAlign="left center">
-                                <button mat-button [disabled]="!customerDisplayAuthTokenAvailable" (click)="onOpenCustomerDisplay()">Open Customer Display</button>
-                                <div *ngIf="!customerDisplayAuthTokenAvailable"><p style="color:red">No device auth token found. Ensure Customer Display is enabled for pos devices.</p></div>
+                            <div fxFlexFill fxLayout="row" fxLayoutGap="20px" fxLayoutAlign="left center">
+                                <button mat-button [disabled]="!customerDisplayAuthTokenAvailable"
+                                    (click)="onOpenCustomerDisplay()">Open Customer Display</button>
+                                <div *ngIf="!customerDisplayAuthTokenAvailable">
+                                    <p style="color:red">No device auth token found. Ensure Customer Display is enabled
+                                        for pos devices.</p>
+                                </div>
                             </div>
                         </li>
                     </ul>
@@ -346,8 +364,9 @@
             <mat-tab *ngIf="isElectronEnabled()" label="Electron">
                 <h1>Options</h1>
                 <div class="prompt-buttons">
-                        <button mat-raised-button color="primary" (click)="toggleChromiumDevTools()">Toggle Dev Tools</button>
-                        <button mat-raised-button color="primary" (click)="exitElectronApp()">Exit App</button>
+                    <button mat-raised-button color="primary" (click)="toggleChromiumDevTools()">Toggle Dev
+                        Tools</button>
+                    <button mat-raised-button color="primary" (click)="exitElectronApp()">Exit App</button>
                 </div>
             </mat-tab>
             <mat-tab label="About">
@@ -379,7 +398,7 @@
                     <mat-card>
                         <mat-card-title>Audio Licenses</mat-card-title>
                         <app-audio-license class="audio-license" *ngFor="let audioLicense of audioLicenses"
-                                           [license]="audioLicense" [labels]="audioLicenseLabels">
+                            [license]="audioLicense" [labels]="audioLicenseLabels">
                         </app-audio-license>
                     </mat-card>
                 </div>

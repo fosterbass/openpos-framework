@@ -16,6 +16,15 @@ public class DialogUIMessage extends UIMessage {
     private static final long serialVersionUID = 1L;
     private String additionalStyleName;
     private List<String> message = new ArrayList<>();
+    private String imageUrl;
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 
     private List<Line> messageLines = new ArrayList<>();
 

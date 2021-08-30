@@ -12,16 +12,16 @@ import { SessionService } from "../../services/session.service";
 import { ConsoleScraper, LogLevel } from "../console-scraper.service";
 import { CapacitorService } from "../../services/capacitor.service";
 
-interface NewRelicMessageGroup {
+export interface NewRelicMessageGroup {
     common?: { [key: string]: any },
     logs: NewRelicLogMessage[],
 }
 
-interface NewRelicLogMessage {
+export interface NewRelicLogMessage {
     timestamp?: number,
     message: string,
     log_level?: LogLevel,
-    
+
     // attributes
     [key: string]: any,
 }
@@ -39,8 +39,8 @@ export class NewRelicLoggerConfig extends ConfigChangedMessage {
 export class NewRelicSink {
     constructor(
         consoleScraper: ConsoleScraper,
-        http: HttpClient, 
-        config: ConfigurationService, 
+        http: HttpClient,
+        config: ConfigurationService,
         personalization: PersonalizationService,
         sessionService: SessionService,
         capacitorService: CapacitorService
@@ -67,7 +67,7 @@ export class NewRelicSink {
                         of(undefined)
                     ),
                     consoleScraper.messages$.pipe(
-                        map(cm => <NewRelicLogMessage> {
+                        map(cm => <NewRelicLogMessage>{
                             log_level: cm.level,
                             message: cm.message,
                             timestamp: Math.round(Date.now())
@@ -76,8 +76,8 @@ export class NewRelicSink {
                         refCount()
                     )
                 ).pipe(
-                    map(c => (<NewRelicLogMessage> {
-                        timestamp: Math.round(Date.now()),
+                    map(c => (<NewRelicLogMessage>{
+                        timestamp: c[7].timestamp,
                         config: c[0],
                         app_id: c[1] || undefined,
                         device_id: c[2] || undefined,
@@ -85,14 +85,15 @@ export class NewRelicSink {
                         server_port: c[4] || undefined,
                         screen: c[5],
                         physical_device_name: c[6],
-                        message: c[7]
+                        message: c[7].message,
+                        log_level: c[7].log_level
                     })),
                     filter(g => !!g.config && g.config.enabled && !!g.config.apiKey),
                     bufferTime(1000),
                     filter(logs => logs.length > 0),
                     map(logs => ({
                         apiKey: logs[0].config.apiKey,
-                        groups: Array.of(<NewRelicMessageGroup> {
+                        groups: Array.of(<NewRelicMessageGroup>{
                             logs: logs.map(v => ({
                                 ...v,
                                 config: undefined,
@@ -100,8 +101,8 @@ export class NewRelicSink {
                         })
                     })),
                     mergeMap(request => http.post(
-                        'https://log-api.newrelic.com/log/v1', 
-                        request.groups, 
+                        'https://log-api.newrelic.com/log/v1',
+                        request.groups,
                         {
                             headers: {
                                 'Content-Type': 'application/json',
@@ -115,6 +116,6 @@ export class NewRelicSink {
 
                 of()
             )),
-        );
+        ).subscribe();
     }
 }

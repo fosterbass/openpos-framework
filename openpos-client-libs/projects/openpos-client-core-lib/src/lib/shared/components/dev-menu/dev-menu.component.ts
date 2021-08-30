@@ -22,10 +22,12 @@ import { IconService } from '../../../core/services/icon.service';
 import { OldPluginService } from '../../../core/services/old-plugin.service';
 import { FileUploadService } from '../../../core/services/file-upload.service';
 import { IVersion } from '../../../core/interfaces/version.interface';
-import { Observable } from 'rxjs';
+import { from, Observable, timer } from 'rxjs';
 import { DiscoveryService } from '../../../core/discovery/discovery.service';
 import { AudioLicense, AudioLicenseLabels } from '../audio-license/audio-license.interface';
 import { map } from 'rxjs/operators';
+import { KioskModeController } from '../../../core/platform-plugins/kiosk/kiosk-controller.service';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
     selector: 'app-dev-menu',
@@ -56,7 +58,7 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
 
     customerDisplayAuthToken: string;
 
-    customerDisplayPort : string;
+    customerDisplayPort: string;
 
     customerDisplayUrl: string;
 
@@ -136,6 +138,8 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
 
     private disableDevMenu = false;
 
+    isInKioskMode = false;
+
     @ViewChild('devMenuPanel') devMenuPanel: MatExpansionPanel;
 
     constructor(
@@ -149,7 +153,9 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
         private elRef: ElementRef, public renderer: Renderer2,
         private electron: ElectronService,
         private configurationService: ConfigurationService,
-        private discovery: DiscoveryService) {
+        private discovery: DiscoveryService,
+        public kioskMode: KioskModeController,
+    ) {
 
         if (Configuration.useTouchListener) {
             this.renderer.listen(elRef.nativeElement, 'touchstart', (event) => {
@@ -164,9 +170,13 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
         }
     }
 
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         const self = this;
         this.session.registerMessageHandler(this, 'DevTools');
+
+        if (this.kioskMode.isKioskModeAvailable) {
+            this.isInKioskMode = await this.kioskMode.isInKioskMode();
+        }
     }
 
     private populateDevTables(message: any) {
@@ -520,19 +530,19 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
         const serverPort = this.personalization.getServerPort$().getValue();
         const protocol = this.simProtocol ? this.simProtocol : window.location.protocol;
         const sslEnabled = this.simProtocol && this.simProtocol === 'https' ? 'true' : 'false';
-        const displayPort = location.port === '4200'? location.port : this.simPort;
+        const displayPort = location.port === '4200' ? location.port : this.simPort;
         const url = this.simUrl ? this.simUrl : window.location.hostname;
         const sim = protocol + '://' + url + ':'
             + displayPort + '/#/?serverName=' + serverName + '&serverPort=' + serverPort
             + '&deviceToken=' + this.simAuthToken + '&sslEnabled=' + sslEnabled;
-            window.open(sim);
+        window.open(sim);
     }
 
     public onOpenCustomerDisplay() {
         const serverName = this.personalization.getServerName$().getValue();
         const serverPort = this.personalization.getServerPort$().getValue();
         const protocol = this.customerDisplayProtocol ? this.customerDisplayProtocol : window.location.protocol;
-        const displayPort = location.port === '4200'? location.port : this.customerDisplayPort;
+        const displayPort = location.port === '4200' ? location.port : this.customerDisplayPort;
         const url = this.customerDisplayUrl ? this.customerDisplayUrl : window.location.hostname;
         const sslEnabled = this.customerDisplayProtocol && this.customerDisplayProtocol === 'https' ? 'true' : 'false';
 
@@ -712,7 +722,7 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
     }
 
     onEnableAutoPersonalizationChanged(event: MatSlideToggleChange) {
-        console.log('personalization touched', event);  
+        console.log('personalization touched', event);
         this.personalization.setSkipAutoPersonalization(!event.checked);
         this.autoPersonalizationSettingTouched = true;
     }
