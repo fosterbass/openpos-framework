@@ -84,6 +84,7 @@ import { DebugImageScanner } from './platform-plugins/barcode-scanners/debug-ima
 import { CommerceServerSinkModule } from './logging/commerce-server/commerce-server-sink.module';
 import { NewRelicSinkModule } from './logging/new-relic/new-relic-sink.module';
 import { ConfigProvidersModule } from './platforms/config-provider/config-providers.module';
+import { PowerModule } from './platform-plugins/power/power.module';
 
 registerLocaleData(locale_enCA, 'en-CA');
 registerLocaleData(locale_frCA, 'fr-CA');
@@ -115,7 +116,8 @@ registerLocaleData(locale_frCA, 'fr-CA');
         ToastrModule.forRoot(),
         CommerceServerSinkModule,
         NewRelicSinkModule,
-        ConfigProvidersModule
+        ConfigProvidersModule,
+        PowerModule
     ],
     exports: [
         BrowserModule,
@@ -134,43 +136,43 @@ registerLocaleData(locale_frCA, 'fr-CA');
         BarcodeScanner,
         { provide: ZEROCONF_TOKEN, useClass: MDnsZeroconf, multi: true, deps: [ElectronService] },
         { provide: ZEROCONF_TOKEN, useClass: CapacitorZeroconf, multi: true, deps: [CapacitorService] },
-        { provide: STARTUP_TASKS, useClass: PersonalizationStartupTask, multi: true, deps: [PersonalizationService, MatDialog, ZEROCONF_TOKEN]},
-        { provide: STARTUP_TASKS, useClass: SubscribeToSessionTask, multi: true, deps: [SessionService, Router]},
-        { provide: STARTUP_TASKS, useClass: DialogServiceStartupTask, multi: true, deps: [DialogService]},
-        { provide: STARTUP_TASKS, useClass: AudioStartupTask, multi: true, deps: [AudioRepositoryService, AudioService, AudioInteractionService]},
-        { provide: STARTUP_TASKS, useClass: FinalStartupTask, multi: true, deps: [SessionService]},
+        { provide: STARTUP_TASKS, useClass: PersonalizationStartupTask, multi: true, deps: [PersonalizationService, MatDialog, ZEROCONF_TOKEN] },
+        { provide: STARTUP_TASKS, useClass: SubscribeToSessionTask, multi: true, deps: [SessionService, Router] },
+        { provide: STARTUP_TASKS, useClass: DialogServiceStartupTask, multi: true, deps: [DialogService] },
+        { provide: STARTUP_TASKS, useClass: AudioStartupTask, multi: true, deps: [AudioRepositoryService, AudioService, AudioInteractionService] },
+        { provide: STARTUP_TASKS, useClass: FinalStartupTask, multi: true, deps: [SessionService] },
         { provide: STARTUP_TASKS, useClass: PlatformReadyStartupTask, multi: true },
         { provide: STARTUP_TASKS, useClass: PluginStartupTask, multi: true },
-        { provide: STARTUP_FAILED_COMPONENT, useValue: StartupFailedComponent},
+        { provide: STARTUP_FAILED_COMPONENT, useValue: StartupFailedComponent },
         AilaScannerCordovaPlugin,
         ScanditScannerCordovaPlugin,
         { provide: SCANNERS, useExisting: ConsoleScannerPlugin, multi: true },
-        { provide: SCANNERS, useExisting: AilaScannerCordovaPlugin, multi: true},
+        { provide: SCANNERS, useExisting: AilaScannerCordovaPlugin, multi: true },
         { provide: SCANNERS, useExisting: WedgeScannerPlugin, multi: true },
-        { provide: SCANNERS, useExisting: InfineaScannerCordovaPlugin, multi: true},
-        { provide: SCANNERS, useExisting: ServerScannerPlugin, multi: true, deps: [SessionService]},
-        { provide: IMAGE_SCANNERS, useExisting: ScanditScannerCordovaPlugin, multi: true},
+        { provide: SCANNERS, useExisting: InfineaScannerCordovaPlugin, multi: true },
+        { provide: SCANNERS, useExisting: ServerScannerPlugin, multi: true, deps: [SessionService] },
+        { provide: IMAGE_SCANNERS, useExisting: ScanditScannerCordovaPlugin, multi: true },
         { provide: IMAGE_SCANNERS, useExisting: ScanditCapacitorImageScanner, multi: true },
 
         // NOTE:    The following image scanner is just a placeholder making it easier to debug the feature
         //          without having to load the app up on device with the supporting feature. To enable it
         //          you must change your client configuration for a image scanner type to 'Debug'.
         { provide: IMAGE_SCANNERS, useClass: DebugImageScanner, multi: true },
-        { provide: PLUGINS, useExisting: AilaScannerCordovaPlugin, multi: true},
-        { provide: PLUGINS, useExisting: InfineaScannerCordovaPlugin, multi: true},
-        { provide: PLUGINS, useExisting: NCRPaymentPlugin, multi: true, deps: [SessionService]},
+        { provide: PLUGINS, useExisting: AilaScannerCordovaPlugin, multi: true },
+        { provide: PLUGINS, useExisting: InfineaScannerCordovaPlugin, multi: true },
+        { provide: PLUGINS, useExisting: NCRPaymentPlugin, multi: true, deps: [SessionService] },
         { provide: PLUGINS, useExisting: AndroidContentProviderPlugin, multi: true },
-        { provide: PLUGINS, useExisting: ScanditScannerCordovaPlugin, multi: true},
+        { provide: PLUGINS, useExisting: ScanditScannerCordovaPlugin, multi: true },
         { provide: PLUGINS, useExisting: CapacitorStatusBarPlatformPlugin, multi: true },
         { provide: PLUGINS, useExisting: ScanditCapacitorImageScanner, multi: true },
-        { provide: PLATFORMS, useExisting: CordovaPlatform, multi: true},
+        { provide: PLATFORMS, useExisting: CordovaPlatform, multi: true },
         { provide: PLATFORMS, useExisting: CapacitorIosPlatform, multi: true },
         { provide: PLATFORMS, useExisting: CapacitorAndroidPlatform, multi: true },
         { provide: STORAGE_CONTAINERS, useClass: CapacitorStorageService, multi: true },
         CapacitorPrinterPlugin,
-        { provide: PRINTERS, useExisting: CapacitorPrinterPlugin, multi: true},
+        { provide: PRINTERS, useExisting: CapacitorPrinterPlugin, multi: true },
         LocationService,
-        { provide: PROVIDERS, useExisting: LocationProviderDefault, multi: true},
+        { provide: PROVIDERS, useExisting: LocationProviderDefault, multi: true },
         TrainingOverlayService,
         ConfigurationService,
         KeyPressProvider,
@@ -181,7 +183,7 @@ registerLocaleData(locale_frCA, 'fr-CA');
         AudioService,
         AudioInteractionService,
         AudioRepositoryService,
-        { provide: PLUGINS, useExisting: AudioConsolePlugin, multi: true, deps: [AudioService]},
+        { provide: PLUGINS, useExisting: AudioConsolePlugin, multi: true, deps: [AudioService] },
         Storage,
         LoyaltySignupService
     ]
@@ -189,11 +191,11 @@ registerLocaleData(locale_frCA, 'fr-CA');
 export class CoreModule {
 
     constructor(@Optional() @SkipSelf() parentModule: CoreModule,
-                private injector: Injector,
-                toastService: ToastService,
-                uiDataService: UIDataMessageService,
-                clientExecutableService: ClientExecutableService,
-                keyProvider: KeyPressProvider) {
+        private injector: Injector,
+        toastService: ToastService,
+        uiDataService: UIDataMessageService,
+        clientExecutableService: ClientExecutableService,
+        keyProvider: KeyPressProvider) {
         throwIfAlreadyLoaded(parentModule, 'CoreModule');
         AppInjector.Instance = this.injector;
         keyProvider.registerKeyPressSource(fromEvent(document, 'keydown') as Observable<KeyboardEvent>);

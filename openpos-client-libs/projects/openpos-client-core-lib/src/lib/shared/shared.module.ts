@@ -179,6 +179,9 @@ import { MutableListItemWithLabelComponent } from "./screen-parts/mutable-list-i
 import { RewardsHistoryLineItemComponent } from './screen-parts/rewards-history-line-item/rewards-history-line-item.component';
 import { MembershipPointsDisplayComponent } from "./screen-parts/membership-points-display/membership-points-display.component";
 import { StandbyComponent } from '../screens-with-parts/standby/standby.component';
+import { KioskModeController } from '../core/platform-plugins/kiosk/kiosk-controller.service';
+import { KIOSK_MODE_PLATFORM } from '../core/platform-plugins/kiosk/kiosk-mode-platform';
+import { CapacitorKioskModePlatform } from '../core/platform-plugins/kiosk/capacitor-kiosk/capacitor-kiosk-platform.service';
 import { ScreenGestureComponent } from './screen-parts/screen-gesture/screen-gesture.component';
 
 const screenParts = [
@@ -416,7 +419,9 @@ const pipes = [
         ...pipes
     ],
     providers: [
-        { provide: OverlayContainer, useClass: ModalOverlayContainer }
+        { provide: OverlayContainer, useClass: ModalOverlayContainer },
+        KioskModeController,
+        { provide: KIOSK_MODE_PLATFORM, useClass: CapacitorKioskModePlatform, multi: true }
     ]
 })
 export class SharedModule { }

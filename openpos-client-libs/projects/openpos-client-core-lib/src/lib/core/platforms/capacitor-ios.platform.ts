@@ -18,6 +18,7 @@ export class CapacitorIosPlatform implements IPlatformInterface {
 
     platformReady(): Observable<string> {
         // the capacitor platform doesn't have "ready" phase, its just ready...
-        return of('capacitor for iOS loaded');
+        let plugins = Object.keys(Capacitor.Plugins).join(", ");
+        return of('capacitor for iOS loaded', 'capacitor plugins loaded: ' + plugins);
     }
 }
