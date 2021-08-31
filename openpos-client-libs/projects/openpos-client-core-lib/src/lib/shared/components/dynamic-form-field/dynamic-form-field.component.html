@@ -20,7 +20,7 @@
             </button>
                  
             <input class="poptart" *ngSwitchCase="'PopTart'" matInput [formControlName]="formField.id" [formControl]="formGroup.controls[formField.id]" [placeholder]="getPlaceholderText(formField)"
-                 [required]="isRequired()" (click)="openPopTart()" 
+                 [required]="isRequired()" (click)="openPopTart()"
                  readonly id="{{formField.id}}">
 
             <button *ngIf="formField.inputType==='PopTart'" type="button" mat-button matSuffix mat-icon-button (click)="openPopTart()">
@@ -50,11 +50,11 @@
         <app-dynamic-date-form-field *ngIf="formField.hideCalendar" [type]="formField.inputType" [(value)]="formField.value" [placeholder]="getPlaceholderText(formField)" 
         [hideCalendar]="formField.hideCalendar" [controlName]="formField.id" [hiddenControl]="formField.id+'Hidden'" [keyboardLayout]="keyboardLayout" [form]="formGroup" 
         [minDate]="formField.minDate" [maxDate]="formField.maxDate"
-        (valueChange)="onFormElementChanged(formField)"></app-dynamic-date-form-field>
+        (valueChange)="onFormElementChanged(formField)" [required]="isRequired()"></app-dynamic-date-form-field>
         <app-dynamic-date-form-field *ngIf="!formField.hideCalendar" [type]="formField.inputType" [(value)]="formField.value" [placeholder]="getPlaceholderText(formField)" 
         [controlName]="formField.id" [hiddenControl]="formField.id+'Hidden'" [keyboardLayout]="keyboardLayout" [form]="formGroup"
         [minDate]="formField.minDate" [maxDate]="formField.maxDate"
-        (valueChange)="onFormElementChanged(formField)"></app-dynamic-date-form-field>
+        (valueChange)="onFormElementChanged(formField)" [required]="isRequired()"></app-dynamic-date-form-field>
         <mat-error>
             <app-show-errors [control]="formGroup.controls[formField.id]" [additionalValidationMessages]="formField.validationMessages"></app-show-errors>
         </mat-error>

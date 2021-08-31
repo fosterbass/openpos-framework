@@ -41,6 +41,7 @@ import { DateUtils, DatePartPositions } from '../../utils/date.utils';
     @Input() minDate: Date;
     @Input() maxDate: Date;
     @Input() startAtDate: Date;
+    @Input() required: boolean;
 
     @Output() valueChange = new EventEmitter<any>();
 
