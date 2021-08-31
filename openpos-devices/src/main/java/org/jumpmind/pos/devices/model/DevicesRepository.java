@@ -30,10 +30,6 @@ public class DevicesRepository {
     @Autowired
     VirtualDeviceRepository virtualDeviceRepository;
 
-    @Autowired
-    @Lazy
-    CacheManager cacheManager;
-
     Query<DeviceStatusModel> connectedDevicesQuery = new Query<DeviceStatusModel>().named("connectedDevices").result(DeviceStatusModel.class);
 
     @Cacheable(value = CACHE_NAME, key = "'getDevice' + #deviceId")
@@ -84,6 +80,7 @@ public class DevicesRepository {
                 .collect(Collectors.toList());
     }
 
+    @CacheEvict(value = CACHE_NAME, allEntries = true)
     public void pairDevice(String deviceId, String pairedDeviceId) {
         DeviceModel device = getDevice(deviceId);
         DeviceModel pairedDevice = getDevice(pairedDeviceId);
@@ -100,11 +97,9 @@ public class DevicesRepository {
 
         pairedDevice.setPairedDeviceId(deviceId);
         saveDevice(pairedDevice);
-
-        clearCache(deviceId);
-        clearCache(pairedDeviceId);
     }
 
+    @CacheEvict(value = CACHE_NAME, allEntries = true)
     public void unpairDevice(String deviceId, String pairedDeviceId) {
         DeviceModel device = getDevice(deviceId);
         DeviceModel pairedDevice = getDevice(pairedDeviceId);
@@ -114,9 +109,6 @@ public class DevicesRepository {
 
         pairedDevice.setPairedDeviceId(null);
         saveDevice(pairedDevice);
-
-        clearCache(deviceId);
-        clearCache(pairedDeviceId);
     }
 
     @CacheEvict(value = CACHE_NAME, allEntries = true)
@@ -239,9 +231,4 @@ public class DevicesRepository {
         devSession.save(statusModel);
     }
 
-    private void clearCache(String deviceId) {
-        if (cacheManager != null) {
-            Objects.requireNonNull(cacheManager.getCache(CACHE_NAME)).clear();
-        }
-    }
 }
