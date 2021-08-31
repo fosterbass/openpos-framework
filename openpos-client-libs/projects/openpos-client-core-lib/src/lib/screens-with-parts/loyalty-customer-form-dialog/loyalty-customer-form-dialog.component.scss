@@ -327,16 +327,8 @@
     }
 }
 
-.extraFormFields {
-    grid-area: extraFormFields;
-    display: grid;
-    grid-template-columns: 30px 1fr;
-    column-gap: 1em;
-    grid-template-areas: '. extraField';
-}
-
-.extra-form-field {
-    grid-area: extraField;
+.extra-form-field >>> .mat-form-field-wrapper {
+    margin-left: calc(1em + 26px);
 }
 
 .mobile {
