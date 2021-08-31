@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 @Repository
 @Slf4j
 public class DevicesRepository {
+
     final static String CACHE_NAME = "/devices/device";
 
     @Autowired
@@ -118,7 +119,7 @@ public class DevicesRepository {
         clearCache(pairedDeviceId);
     }
 
-    @CacheEvict(value = CACHE_NAME)
+    @CacheEvict(value = CACHE_NAME, allEntries = true)
     public void setAppId(String deviceId, String newAppId) {
         String deviceAuth = getDeviceAuth(deviceId);
         DeviceModel device = getDeviceByAuth(deviceAuth);
@@ -184,7 +185,7 @@ public class DevicesRepository {
         return deviceModel;
     }
 
-    @CacheEvict(value = CACHE_NAME)
+    @CacheEvict(value = CACHE_NAME, allEntries = true)
     public void saveDevice(DeviceModel device) {
 
         devSession.save(device);
