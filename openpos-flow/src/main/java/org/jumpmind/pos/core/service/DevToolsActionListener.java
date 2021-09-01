@@ -66,23 +66,23 @@ public class DevToolsActionListener implements IActionListener {
 
     @Value("${openpos.peripheralSimulatorViewer.simUrl:#{null}}")
     String simUrl;
-    
+
     @Value("${openpos.peripheralSimulatorViewer.simProtocol:#{null}}")
     String simProtocol;
-    
+
     @Override
-    public Collection<String> getRegisteredTypes() {        
-        return Arrays.asList(new String[] { "DevTools" });
+    public Collection<String> getRegisteredTypes() {
+        return Arrays.asList(new String[]{"DevTools"});
     }
-    
+
     @Override
     public void actionOccurred(String deviceId, Action action) {
         IStateManager stateManager = stateManagerFactory.retrieve(deviceId, true);
-        
+
         if (action.getName().contains("DevTools::Scan")) {
             SimulatedScannerService service = SimulatedScannerService.instance;
             if (service != null) {
-                service.setScanData(((String)action.getData()).getBytes());
+                service.setScanData(((String) action.getData()).getBytes());
                 service.getCallbacks().fireDataEvent(new DataEvent(this, 1));
             } else {
                 ScanData scanData = new ScanData();
@@ -109,7 +109,7 @@ public class DevToolsActionListener implements IActionListener {
 
         messageService.sendMessage(deviceId, createMessage(stateManager, deviceId));
     }
-    
+
     private Message createMessage(IStateManager sm, String deviceId) {
         Message message = new Message();
         message.setType(MessageType.DevTools);
@@ -126,7 +126,7 @@ public class DevToolsActionListener implements IActionListener {
     private List<AudioLicense> getAudioLicenses() {
         try {
             return AudioLicenseUtil.getLicenses();
-        } catch(IOException e) {
+        } catch (IOException e) {
             logger.warn("Unable to load audio licenses", e);
         }
 
@@ -183,19 +183,22 @@ public class DevToolsActionListener implements IActionListener {
 
     private void setCustomerDisplayAuthData(String deviceId, Message message) {
         Map<String, String> customDeviceMap = new HashMap<>();
-        DeviceModel deviceModel = null;
+        DeviceModel currentDevice = null;
+        DeviceModel customerDisplayDevice = null;
         String authToken = null;
         String customerDisplayDeviceId = deviceId + "-customerdisplay";
         try {
-            deviceModel = devicesRepository.getDevice(customerDisplayDeviceId);
+            currentDevice = devicesRepository.getDevice(deviceId);
+            customerDisplayDevice = devicesRepository.getDevice(customerDisplayDeviceId);
         } catch (DeviceNotFoundException ex) {
         }
-        if (deviceModel == null) {
-            deviceModel = DeviceModel.builder().
+        if (customerDisplayDevice == null) {
+            customerDisplayDevice = DeviceModel.builder().
                     deviceId(customerDisplayDeviceId).
                     appId(customerDisplayAppId).
+                    deviceParamModels(currentDevice != null ? currentDevice.getDeviceParamModels() : null).
                     build();
-            devicesRepository.saveDevice(deviceModel);
+            devicesRepository.saveDevice(customerDisplayDevice);
             authToken = UUID.randomUUID().toString();
             devicesRepository.saveDeviceAuth(customerDisplayDeviceId, authToken);
         } else {
@@ -292,7 +295,6 @@ public class DevToolsActionListener implements IActionListener {
         }
         return res;
     }
-
 
 
 }
