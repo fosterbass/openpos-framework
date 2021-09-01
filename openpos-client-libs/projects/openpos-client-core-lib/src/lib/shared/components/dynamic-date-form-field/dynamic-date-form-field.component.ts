@@ -30,6 +30,7 @@ import { DateUtils, DatePartPositions } from '../../utils/date.utils';
 
     @Input() type: string;
     @Input() value: string;
+    @Input() required: boolean;
     @Input() placeholder: string;
     @Input() isPrompt = false;
     @Input() hideCalendar = false;
