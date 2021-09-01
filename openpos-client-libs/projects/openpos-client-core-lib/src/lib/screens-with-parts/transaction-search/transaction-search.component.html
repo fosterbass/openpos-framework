@@ -1,4 +1,4 @@
-<app-bacon-strip class="transaction-bacon-strip">
+<app-bacon-strip *ngIf="!(isMobile | async)" class="transaction-bacon-strip">
     <div class="transaction-search-outer">
         <div [ngSwitch]="screen.transactionSearchMode" class="transaction-search-top"
              [ngClass]="{'change-search-mode-disabled': this.changeSearchModeDisabled}" responsive-class>
@@ -49,3 +49,61 @@
         </app-infinite-scroll>
     </div>
 </app-bacon-strip>
+
+<div *ngIf="isMobile | async" class="mobile-container">
+    <app-dynamic-bacon-strip>
+        <div>{{screen.transSearchModeText}}</div>
+    </app-dynamic-bacon-strip>
+    <div class="content">
+        <div [ngSwitch]="screen.transactionSearchMode" class="search-section"
+             [ngClass]="{'change-search-mode-disabled': this.changeSearchModeDisabled}" responsive-class>
+
+            <button *ngIf="screen.changeSearchModeButton" (click)="doAction(screen.changeSearchModeButton)"
+                    class="transaction-change-search-mode-button" mat-button color="primary" responsive-class>
+                <app-icon *ngIf="screen.changeSearchModeButton.icon"
+                          [iconName]="screen.changeSearchModeButton.icon" iconClass="mat-24"></app-icon>
+                <span class="transaction-change-search-mode-button-text">{{screen.changeSearchModeButton.title}}</span>
+                <app-icon iconName="Forward" iconClass="mat-24"></app-icon>
+            </button>
+
+            <div *ngSwitchCase="TransactionSearchMode.SaleAndReturn" class="flex-column-spaced-between"
+                 [ngClass]="{'change-search-mode-disabled': this.changeSearchModeDisabled}">
+                <app-scan-or-search class="scan-or-search mat-elevation-z1" [focusInitial]="false"></app-scan-or-search>
+            </div>
+
+            <div *ngSwitchCase="TransactionSearchMode.SaleAndReturn" class="flex-column-spaced-between"
+                 [ngClass]="{'change-search-mode-disabled': this.changeSearchModeDisabled}">
+                <div class="flex-spaced-between-gap">
+                    <app-primary-button *ngIf="screen.searchButton" class="transaction-search-button flex-grow"
+                                        (click)="doAction(screen.searchButton)">
+                        <span>{{screen.searchButton.title}}</span>
+                        <app-icon *ngIf="screen.searchButton.icon" [iconName]="screen.searchButton.icon"></app-icon>
+                    </app-primary-button>
+                    <app-secondary-button *ngIf="screen.clearButton" inputType="submit" class="transaction-search-button flex-grow"
+                                          (click)="doAction(screen.clearButton)">
+                        <span>{{screen.clearButton.title}}</span>
+                        <app-icon *ngIf="screen.clearButton.icon" [iconName]="screen.clearButton.icon"></app-icon>
+                    </app-secondary-button>
+                </div>
+            </div>
+            <div *ngSwitchCase="TransactionSearchMode.All" [ngClass]="{'change-search-mode-disabled': this.changeSearchModeDisabled}"
+                 class="transaction-search-options transaction-search-options-search-all">
+                <app-dynamic-form-part class="transaction-search-all-params-form"
+                                       (formInit)="onSearchAllFormChanges($event)"
+                                       (formChanges)="onSearchAllFormChanges($event)"
+                                       formName="searchAllParamsForm"
+                                       [submitButton]="screen.searchAllButton"></app-dynamic-form-part>
+            </div>
+        </div>
+        <div class="transaction-search-outer">
+            <app-instructions *ngIf="resultsCount === 0" [instructions]="screen.noResultsMessage" class="no-results"></app-instructions>
+            <app-infinite-scroll *ngIf="resultsCount !== 0" [dataKey]="screen.providerKey" [itemTemplate]="itemTemplate"
+                                 virtualScrollMinBufferPx="200" virtualScrollMaxBufferPx="400" [itemHeightPx]="120">
+                <ng-template #itemTemplate let-item>
+                    <app-transaction-summary [transactionSummary]="item" class="transaction-summary" responsive-class>
+                    </app-transaction-summary>
+                </ng-template>
+            </app-infinite-scroll>
+        </div>
+    </div>
+</div>

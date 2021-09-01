@@ -1,0 +1,30 @@
+<div responsive-class class="container mat-elevation-z5 {{screenData.logo ? 'screen-logo' : ''}}">
+    <app-icon *ngIf="screenData.icon"
+          [iconName]="screenData.icon"
+          [iconClass]="(isMobile | async) ? 'mat-30': 'md'"
+          (click)="handleClick()"></app-icon>
+
+    <div>
+        <img *ngIf="screenData.logo" [src]="screenData.logo | imageUrl" class="dynamic-bs-logo">
+        <div *ngIf="!screenData.logo" class="content-container">
+            <ng-content class="content-container"></ng-content>
+        </div>
+    </div>
+
+    <div *ngIf="screenData?.operatorLine1" class="operator-section">
+        <p class="operator-name">{{screenData.operatorLine1}}</p>
+        <p class="operator-id">{{screenData.operatorLine2}}</p>
+        <app-kebab-button class="icon"
+                          *ngIf="screenData.operatorMenu"
+                          [iconName]="screenData.operatorIcon"
+                          iconClass="md"
+                          [menuItems]="screenData.operatorMenu"
+                          (menuItemClick)="doAction($event)">
+        </app-kebab-button>
+        <app-icon class="icon"
+                  *ngIf="!screenData.operatorMenu"
+                  [iconName]="screenData.operatorIcon"
+                  iconClass="md">
+        </app-icon>
+    </div>
+</div>

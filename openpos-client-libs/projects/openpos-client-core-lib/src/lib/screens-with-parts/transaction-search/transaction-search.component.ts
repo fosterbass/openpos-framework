@@ -7,7 +7,8 @@ import { IDynamicFormPartEventArg } from '../../shared/screen-parts/dynamic-form
 import { IForm } from '../../core/interfaces/form.interface';
 import { UIDataMessageService } from '../../core/ui-data-message/ui-data-message.service';
 import { takeUntil } from 'rxjs/operators';
-import { merge } from 'rxjs';
+import {merge, Observable} from 'rxjs';
+import {MediaBreakpoints, OpenposMediaService} from "../../core/media/openpos-media.service";
 
 @ScreenComponent({
   name: 'TransactionSearch'
@@ -23,8 +24,18 @@ export class TransactionSearchComponent extends PosScreen<TransactionSearchInter
   TransactionSearchMode = TransactionSearchMode;
   changeSearchModeDisabled: boolean;
 
-  constructor(injector: Injector, private dataMessageService: UIDataMessageService) {
+  isMobile: Observable<boolean>;
+
+  constructor(injector: Injector, protected dataMessageService: UIDataMessageService, media: OpenposMediaService) {
     super(injector);
+    this.isMobile = media.observe(new Map([
+      [MediaBreakpoints.MOBILE_PORTRAIT, true],
+      [MediaBreakpoints.MOBILE_LANDSCAPE, true],
+      [MediaBreakpoints.TABLET_PORTRAIT, true],
+      [MediaBreakpoints.TABLET_LANDSCAPE, true],
+      [MediaBreakpoints.DESKTOP_PORTRAIT, false],
+      [MediaBreakpoints.DESKTOP_LANDSCAPE, false]
+    ]));
   }
 
   buildScreen() {

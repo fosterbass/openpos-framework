@@ -1,0 +1,70 @@
+@import "../../../styles/variables/spacing";
+@import "../../../styles/mixins/typography";
+
+$max-height: 50px;
+
+:host {
+    display: grid;
+    grid-auto-flow: row;
+    grid-template-rows: auto 1fr;
+}
+
+.container {
+    @extend %text-md;
+    @extend %page-header;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    z-index: 100;
+    align-items: center;
+
+    &.screen-logo {
+        grid-template-columns: 1fr auto 1fr;
+    }
+
+    app-icon {
+        justify-self: start;
+    }
+
+    .content-container {
+        max-height: $max-height;
+        overflow: hidden;
+    }
+
+    .operator-section {
+        justify-self: end;
+        display:grid;
+        grid-template:  "name icon" auto
+                        "id icon" auto / auto auto;
+
+        .operator-name {
+            @extend %text-sm;
+            grid-area: name;
+
+            @at-root .container.mobile .rightside .operator-name {
+                font-size: .75rem;
+            }
+        }
+
+        .operator-id {
+            @extend %text-xs;
+            grid-area: id;
+        }
+
+        .icon {
+            grid-area: icon;
+        }
+
+        p {
+            margin-block-start: unset;
+            margin-block-end: unset;
+            margin-inline-start: unset;
+            margin-inline-end: unset;
+        }
+    }
+
+    img {
+        max-height: $max-height;
+        justify-self: center;
+    }
+
+}

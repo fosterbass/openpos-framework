@@ -22,6 +22,7 @@ export interface ITransactionSummary {
     statusIcon: string;
     username: string;
     actions: IActionItem[];
+    viewDetailsAction: IActionItem;
     labels: any;
     transactionTypeText: string;
     transactionType: TransTypeEnum;

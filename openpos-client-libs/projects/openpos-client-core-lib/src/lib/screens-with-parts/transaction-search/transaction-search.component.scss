@@ -127,6 +127,54 @@
     }
 }
 
+.mobile-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    app-dynamic-bacon-strip div {
+        @extend %text-sm;
+        display: flex;
+        text-align: left;
+        align-items: center;
+    }
+
+    .content {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        margin: 0.5rem;
+
+        .search-section {
+            display:flex;
+            flex-direction:column;
+            gap:0.5rem;
+            margin:.25rem;
+        }
+    }
+
+    .transaction-search-outer {
+        flex-grow:1;
+        height: 100%;
+        margin:0.25rem;
+
+        app-infinite-scroll { height: 100%; }
+    }
+
+    .transaction-change-search-mode-button { align-self: flex-start; }
+    .flex-column-spaced-between {
+        display:flex;
+        justify-content:space-between;
+        flex-direction:column;
+    }
+    .flex-spaced-between-gap {
+        display:flex;
+        justify-content:space-between;
+        gap:0.5rem;
+    }
+    .flex-grow { flex-grow: 1; }
+}
+
 :host ::ng-deep app-dynamic-form-part {
     form {
         height: auto;
