@@ -1,13 +1,19 @@
 <mat-chip-list class="membership-chips">
     <mat-chip (click)="clickEvent.emit(membership)"
-              [ngClass]="{'in': membership.member, 'not-in': !membership.member}"
+              [ngClass]="{'in': membership?.member, 'not-in': !membership?.member}"
               [selectable]="false"
               responsive-class>
-        <app-icon *ngIf="!membership.member && screenData.uncheckMarkIcon"
+        <app-icon *ngIf="!membership?.member && screenData?.checkMarkIcon"
                   [iconName]="screenData.uncheckMarkIcon"
                   [iconClass]="'material-icons mat-24'" responsive-class></app-icon>
-        <app-icon *ngIf="membership.member && screenData.checkMarkIcon"
+        <app-icon *ngIf="membership?.member && screenData.uncheckMarkIcon"
                   [iconName]="screenData.checkMarkIcon"
-                  [iconClass]="'material-icons mat-24'" responsive-class></app-icon> {{membership.name}}
+                  [iconClass]="'material-icons mat-24'" responsive-class></app-icon>
+        <div *ngIf="!membership?.member && membership?.nonMemberName" class="membership-name">
+            {{membership.nonMemberName}}
+        </div>
+        <div *ngIf="membership?.member" class="membership-name">
+            {{membership.name}}
+        </div>
     </mat-chip>
 </mat-chip-list>

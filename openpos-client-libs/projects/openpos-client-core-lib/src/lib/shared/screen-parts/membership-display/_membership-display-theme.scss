@@ -14,5 +14,10 @@
             color: $openpos-membership-in-color !important;
             background-color: $openpos-membership-in-background !important;
         }
+
+        .mat-standard-chip {
+            height: auto;
+            line-height: normal;
+        }
     }
 }

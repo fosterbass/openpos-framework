@@ -31,16 +31,12 @@
 
                 mat-chip {
                     font-size: $text-xs;
-                    padding: 2px .5rem 2px .5rem;
-                    min-height: 24px;
 
                     &.tablet {
                         font-size: $text-xs-mobile;
                     }
 
                     app-icon {
-                        margin: 0 .25rem 0 0;
-
                         &.tablet {
                             width: 16px;
                             height: 16px;
@@ -70,9 +66,9 @@
                 .loyalty-icon app-icon .material-icons {
                     display: block;
                     color: map_get($foreground, icon);
-                    font-size: 24px;
-                    width: 24px;
-                    height: 24px;
+                    font-size: 20px;
+                    width: 20px;
+                    height: 20px;
 
                     &.tablet,
                     &.mobile {
