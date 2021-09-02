@@ -30,7 +30,6 @@ $loyalty-signup-column-gap: 8px;
         border-width: 2px;
         padding: $text-md/2 $text-md*1.25;
         min-width: 150px;
-        max-height: 93.59px;
         white-space: break-spaces;
         width: 100%;
         max-width: 100%;
@@ -39,7 +38,7 @@ $loyalty-signup-column-gap: 8px;
             margin-top: -12px;
         }
         .sale-total-loyalty-button-icon {
-            max-height: 65px;
+            width: 100%;
             vertical-align: bottom;
         }
     }
@@ -143,6 +142,10 @@ $loyalty-signup-column-gap: 8px;
                         @extend %text-md;
                         overflow: hidden;
                         text-overflow: ellipsis;
+                        white-space: normal;
+                    }
+                    .customer-name {
+                        @extend %text-md;
                         line-height: 1.25em;
 
                         &.desktop-portrait {
