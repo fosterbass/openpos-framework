@@ -92,7 +92,7 @@
         font-size: $text-xs-mobile*1.25;
       }
     }
-    .expiration {
+    .expiration-redemption {
       @extend %text-md;
       &.tablet-portrait {
         font-size: $text-sm;

@@ -1,5 +1,5 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core'
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import {MatDialog} from '@angular/material';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {Observable, of, Subscription} from 'rxjs';
@@ -14,15 +14,15 @@ import {RewardHistory, RewardsHistoryLineItemComponentInterface} from './rewards
 import {validateDoesNotExist, validateExist, validateIcon, validateText} from '../../../utilites/test-utils';
 import {By} from '@angular/platform-browser';
 
-class MockActionService {};
-class MockMatDialog {};
+class MockActionService {}
+class MockMatDialog {}
 class MockKeyPressProvider {
     subscribe(): Subscription {
         return new Subscription();
     }
-};
-class MockElectronService {};
-class ClientContext {};
+}
+class MockElectronService {}
+class ClientContext {}
 
 describe('RewardsHistoryLineItemComponent', () => {
     let component: RewardsHistoryLineItemComponent;
@@ -31,13 +31,13 @@ describe('RewardsHistoryLineItemComponent', () => {
         observe(): Observable<boolean> {
             return of(false);
         }
-    };
+    }
 
     class MockOpenposMediaServiceMobileTrue {
         observe(): Observable<boolean> {
             return of(true);
         }
-    };
+    }
 
     describe('shared', () => {
         beforeEach( () => {
@@ -62,13 +62,15 @@ describe('RewardsHistoryLineItemComponent', () => {
             fixture = TestBed.createComponent(RewardsHistoryLineItemComponent);
             component = fixture.componentInstance;
             component.reward = {
-                expirationDate: '01/01/2000'
+                expirationDate: '01/01/2000',
+                redeemedDate: '12/01/1999'
             } as RewardHistory;
             component.screenData = {
                 expiredLabel: 'Expired',
                 redeemedLabel: 'Redeemed',
                 loyaltyIcon: 'loyalty',
-                expiredIcon: 'access_time'
+                expiredIcon: 'access_time',
+                redeemedIcon: 'check_decagram_outline'
             } as RewardsHistoryLineItemComponentInterface;
             fixture.detectChanges();
         });
@@ -112,30 +114,66 @@ describe('RewardsHistoryLineItemComponent', () => {
 
                     const nameElement = fixture.debugElement.query(By.css('.details .name'));
                     expect(nameElement.nativeElement.classList).toContain('expired');
-                })
+                });
 
-                describe('expiration', () => {
+                describe('expiration-redemption', () => {
                     describe('when there is an expiration date', () => {
+                        beforeEach(() => {
+                            component.reward.redeemedDate = undefined;
+                            fixture.detectChanges();
+                         });
+
                         it('renders the access_time icon', () => {
-                            validateIcon(fixture, '.details .expiration app-icon', 'access_time');
+                            validateIcon(fixture, '.details .expiration-redemption app-icon', 'access_time');
                         });
 
                         it('renders the expirationLabel', () => {
                             component.screenData.expiredLabel = 'a label';
                             fixture.detectChanges();
 
-                            validateText(fixture, '.details .expiration', component.screenData.expiredLabel);
+                            validateText(fixture, '.details .expiration-redemption', component.screenData.expiredLabel);
                         });
                     });
 
                     describe('when there is no expiration date', () => {
                         beforeEach(() => {
                            component.reward.expirationDate = undefined;
+                           component.reward.redeemedDate = undefined;
                            fixture.detectChanges();
                         });
 
                         it('does not display the expiration section', () => {
-                           validateDoesNotExist(fixture, '.expiration');
+                           validateDoesNotExist(fixture, '.expiration-redemption');
+                        });
+                    });
+
+                    describe('when there is a redeemed date', () => {
+                        beforeEach(() => {
+                            component.reward.expirationDate = undefined;
+                            fixture.detectChanges();
+                         });
+
+                        it('renders the check_decagram_outline icon', () => {
+                            validateIcon(fixture, '.details .expiration-redemption app-icon', 'check_decagram_outline');
+                        });
+
+                        it('renders the redeemedLabel', () => {
+                            component.screenData.redeemedLabel = 'a label';
+                            fixture.detectChanges();
+
+                            validateText(fixture, '.details .expiration-redemption', component.screenData.redeemedLabel);
+                        });
+                    });
+
+                    describe('when there is no redeemed date', () => {
+                        beforeEach(() => {
+                           component.reward.redeemedDate = undefined;
+                           component.reward.expirationDate = undefined;
+                           fixture.detectChanges();
+                        });
+
+                        it('does not display the redemption section', () => {
+                           validateDoesNotExist(fixture, '.expiration-redemption');
                         });
                     });
                 });
@@ -173,11 +211,11 @@ describe('RewardsHistoryLineItemComponent', () => {
                       fixture.detectChanges();
                     });
 
-                    it('does not render the app-currency-text', function () {
+                    it('does not render the app-currency-text', () => {
                         validateDoesNotExist(fixture, '.reward app-currency-text');
                     });
 
-                    it('does render a XX%', function () {
+                    it('does render a XX%', () => {
                         validateExist(fixture, '.reward .pctReward');
                         validateText(fixture, '.reward .pctReward', '50%');
                     });
@@ -187,12 +225,12 @@ describe('RewardsHistoryLineItemComponent', () => {
             describe('status', () => {
                it('shows the redeemedLabel when the reward is redeemed', () => {
                    component.screenData.redeemedLabel = 'redeemed label';
-                    component.reward.redeemed = true;
-                    fixture.detectChanges();
-                    validateText(fixture, '.status', component.screenData.redeemedLabel);
+                   component.reward.redeemed = true;
+                   fixture.detectChanges();
+                   validateText(fixture, '.status', component.screenData.redeemedLabel);
                });
 
-                it('shows the expiredLabel when the reward is not redeemed', () => {
+               it('shows the expiredLabel when the reward is not redeemed', () => {
                     component.screenData.expiredLabel = 'expired label';
                     component.reward.redeemed = false;
                     fixture.detectChanges();

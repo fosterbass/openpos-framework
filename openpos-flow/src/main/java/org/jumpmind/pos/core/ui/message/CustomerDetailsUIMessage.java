@@ -54,6 +54,7 @@ public class CustomerDetailsUIMessage extends UIMessage {
     private String memberIcon;
     private String nonMemberIcon;
     private String expiredIcon;
+    private String redeemedIcon;
     private String appliedIcon;
     private String applyIcon;
     private String backIcon;
