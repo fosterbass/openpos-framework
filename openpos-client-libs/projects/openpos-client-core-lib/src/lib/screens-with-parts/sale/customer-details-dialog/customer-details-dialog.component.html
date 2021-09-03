@@ -15,7 +15,7 @@
                     <span>{{screen.noMembershipsFoundLabel}}</span>
                 </div>
             </div>
-            <app-membership-points-display *ngIf="screen.membershipPointsEnabled" [isMobile]="isMobile | async"></app-membership-points-display>
+            <app-membership-points-display *ngIf="screen.membershipPointsEnabled" [isMobile]="isMobile | async" responsive-class></app-membership-points-display>
         </app-content-card>
 
         <app-content-card *ngIf="pagedContent === undefined">
@@ -207,7 +207,7 @@
                             </div>
                         </ng-template>
                     </app-infinite-scroll>
-                    <app-membership-points-display *ngIf="screen.membershipPointsEnabled" class="points"></app-membership-points-display>
+                    <app-membership-points-display *ngIf="screen.membershipPointsEnabled" class="points" responsive-class></app-membership-points-display>
                 </mat-card>
             </mat-tab>
             <mat-tab *ngIf="screen.rewardHistoryTabEnabled" class="rewardsHistoryTab" [label]="screen.rewardHistoryLabel">
@@ -231,7 +231,7 @@
                             </div>
                         </ng-template>
                     </app-infinite-scroll>
-                    <app-membership-points-display *ngIf="screen.membershipPointsEnabled" class="points"></app-membership-points-display>
+                    <app-membership-points-display *ngIf="screen.membershipPointsEnabled" class="points" responsive-class></app-membership-points-display>
                 </mat-card>
             </mat-tab>
             <mat-tab *ngIf="screen.itemHistoryEnabled" [label]="screen.itemHistoryLabel">

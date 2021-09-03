@@ -63,10 +63,10 @@ app-content-card {
       font-weight: bold;
     }
   }
-  .membership-icon {
-    .material-icons{
-      margin-top: -10px;
-      width: 80px;
+  .memberships {
+    padding-bottom: 10px;
+    .wrapper {
+      height: 100%;
     }
   }
   .memberships {
