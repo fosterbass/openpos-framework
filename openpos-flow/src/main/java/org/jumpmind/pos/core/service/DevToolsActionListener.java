@@ -15,6 +15,7 @@ import org.jumpmind.pos.core.model.OpenposBarcodeType;
 import org.jumpmind.pos.core.model.ScanData;
 import org.jumpmind.pos.devices.DeviceNotFoundException;
 import org.jumpmind.pos.devices.model.DeviceModel;
+import org.jumpmind.pos.devices.model.DeviceParamModel;
 import org.jumpmind.pos.devices.model.DevicesRepository;
 import org.jumpmind.pos.server.model.Action;
 import org.jumpmind.pos.server.service.IActionListener;
@@ -183,12 +184,15 @@ public class DevToolsActionListener implements IActionListener {
 
     private void setCustomerDisplayAuthData(String deviceId, Message message) {
         Map<String, String> customDeviceMap = new HashMap<>();
-        DeviceModel currentDevice = null;
         DeviceModel customerDisplayDevice = null;
-        String authToken = null;
+        String authToken;
         String customerDisplayDeviceId = deviceId + "-customerdisplay";
+        List<DeviceParamModel> deviceParams = null;
         try {
-            currentDevice = devicesRepository.getDevice(deviceId);
+            DeviceModel currentDevice = devicesRepository.getDevice(deviceId);
+            if (currentDevice != null) {
+                deviceParams = currentDevice.getDeviceParamModels();
+            }
             customerDisplayDevice = devicesRepository.getDevice(customerDisplayDeviceId);
         } catch (DeviceNotFoundException ex) {
         }
@@ -196,7 +200,7 @@ public class DevToolsActionListener implements IActionListener {
             customerDisplayDevice = DeviceModel.builder().
                     deviceId(customerDisplayDeviceId).
                     appId(customerDisplayAppId).
-                    deviceParamModels(currentDevice != null ? currentDevice.getDeviceParamModels() : null).
+                    deviceParamModels(deviceParams).
                     build();
             devicesRepository.saveDevice(customerDisplayDevice);
             authToken = UUID.randomUUID().toString();
@@ -209,11 +213,11 @@ public class DevToolsActionListener implements IActionListener {
                 devicesRepository.saveDeviceAuth(customerDisplayDeviceId, authToken);
             }
         }
-        devicesRepository.pairDevice(deviceId, customerDisplayDeviceId);
         customDeviceMap.put("customerDisplayAuthToken", authToken);
         customDeviceMap.put("customerDisplayPort", customerDisplayPort);
         customDeviceMap.put("customerDisplayUrl", customerDisplayUrl);
         customDeviceMap.put("customerDisplayProtocol", customerDisplayProtocol);
+        customDeviceMap.put("pairedDeviceId", deviceId);
         message.put("customerDisplay", customDeviceMap);
     }
 

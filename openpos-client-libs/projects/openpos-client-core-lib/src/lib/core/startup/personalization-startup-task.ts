@@ -1,4 +1,5 @@
-import {catchError,
+import {
+    catchError,
     filter,
     map,
     retryWhen,
@@ -9,9 +10,9 @@ import {catchError,
     flatMap,
     last
 } from 'rxjs/operators';
-import {IStartupTask} from './startup-task.interface';
-import {PersonalizationService} from '../personalization/personalization.service';
-import {concat, defer, iif, interval, Observable, of, throwError} from 'rxjs';
+import { IStartupTask } from './startup-task.interface';
+import { PersonalizationService } from '../personalization/personalization.service';
+import { concat, defer, iif, interval, Observable, of, throwError } from 'rxjs';
 import { MatDialog } from '@angular/material';
 import { StartupTaskNames } from './startup-task-names';
 import { Injectable } from '@angular/core';
@@ -34,10 +35,10 @@ export class PersonalizationStartupTask implements IStartupTask {
     order = 500;
 
     constructor(
-        protected personalization: PersonalizationService, 
+        protected personalization: PersonalizationService,
         protected matDialog: MatDialog,
         @Inject(ZEROCONF_TOKEN) @Optional() protected mdns: Array<Zeroconf>,
-    ) {}
+    ) { }
 
     execute(data: StartupTaskData): Observable<string> {
         return concat(
@@ -60,7 +61,7 @@ export class PersonalizationStartupTask implements IStartupTask {
     }
 
     private doStandardPersonalization(
-        data: StartupTaskData, 
+        data: StartupTaskData,
         defaultData?: { serverAddress?: string, serverPort?: string, appId?: string }
     ): Observable<string> {
         return iif(
@@ -98,7 +99,7 @@ export class PersonalizationStartupTask implements IStartupTask {
             )
         ).pipe(
             retryWhen(errors => errors.pipe(
-                switchMap(() => interval(1000), (error, time) => `${error} \n Retry in ${5-time}`),
+                switchMap(() => interval(1000), (error, time) => `${error} \n Retry in ${5 - time}`),
             ))
         );
     }
@@ -126,14 +127,14 @@ export class PersonalizationStartupTask implements IStartupTask {
                         switchMap(p => this.attemptAutoPersonalize(data, p.service, p.deviceName)),
                         catchError(e => {
                             console.error('failed to auto personalize', JSON.stringify(e));
-        
+
                             return concat(
                                 of('failed to auto personalize; fallback to standard personalization'),
                                 this.doStandardPersonalization(data)
-                            )
+                            );
                         })
                     )
-                );  
+                );
             })
         );
     }
@@ -143,14 +144,16 @@ export class PersonalizationStartupTask implements IStartupTask {
             .pipe(
                 flatMap(info => {
                     if (info) {
-                        let params = info.personalizationParams;
-                        let paramsMap: Map<string, string> = undefined;
+                        const params = info.personalizationParams;
+                        let paramsMap: Map<string, string>;
 
                         if (params) {
                             paramsMap = new Map<string, string>();
 
-                            for(let key in params) {
-                                paramsMap.set(key, params[key]);
+                            for (const key in params) {
+                                if (key) {
+                                    paramsMap.set(key, params[key]);
+                                }
                             }
                         }
 
@@ -164,19 +167,19 @@ export class PersonalizationStartupTask implements IStartupTask {
                                 paramsMap,
                                 info.sslEnabled
                             ).pipe(
-                                catchError(e => { 
+                                catchError(e => {
                                     console.error('failed to personalize from auto personalization data', e);
 
                                     return concat(
                                         of('failed to auto personalize; falling back to standard pesronalization'),
                                         this.doStandardPersonalization(
-                                            startupData, 
-                                            { 
-                                                serverAddress: info.serverAddress, 
-                                                serverPort: info.serverPort, 
-                                                appId: info.appId 
+                                            startupData,
+                                            {
+                                                serverAddress: info.serverAddress,
+                                                serverPort: info.serverPort,
+                                                appId: info.appId
                                             })
-                                        )
+                                    );
                                 }),
                             )
                         );
@@ -201,8 +204,9 @@ export class PersonalizationStartupTask implements IStartupTask {
         const appId = queryParams.appId;
         const serverName = queryParams.serverName;
         const deviceToken = queryParams.deviceToken;
+        const pairedDeviceId = queryParams.pairedDeviceId;
         let serverPort = queryParams.serverPort;
-        let sslEnabled = queryParams.sslEnabled == 'true';
+        let sslEnabled = queryParams.sslEnabled === 'true';
 
         const personalizationProperties = new Map<string, string>();
         const keys = Object.keys(queryParams);
@@ -218,7 +222,7 @@ export class PersonalizationStartupTask implements IStartupTask {
             serverPort = !serverPort ? 6140 : serverPort;
             sslEnabled = !sslEnabled ? false : sslEnabled;
 
-            return this.personalization.personalizeWithToken(serverName, serverPort, deviceToken, sslEnabled);
+            return this.personalization.personalizeWithToken(serverName, serverPort, deviceToken, sslEnabled, pairedDeviceId);
         }
 
         if (deviceId && serverName) {
@@ -234,10 +238,10 @@ export class PersonalizationStartupTask implements IStartupTask {
 
 function lastOrElse<T, R>(valueProject: (value: R) => Observable<T>, e: Observable<T>): (source: Observable<R>) => Observable<T> {
     return (source) => new Observable(observer => {
-        
+
         let path = e;
 
-        let sourceSubscription = source.pipe(
+        const sourceSubscription = source.pipe(
             last(),
         ).subscribe({
             next: value => {
