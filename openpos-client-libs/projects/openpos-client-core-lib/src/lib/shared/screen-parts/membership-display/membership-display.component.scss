@@ -9,11 +9,11 @@ mat-chip {
   }
 
   &.tablet {
-    font-size: $text-sm;
+    font-size: $text-sm-mobile;
   }
 
   &.mobile {
-    font-size: $text-xs-mobile*1.25;
+    font-size: $text-xs-mobile;
   }
   app-icon {
     margin: 0 .15em 0 -.5em;
