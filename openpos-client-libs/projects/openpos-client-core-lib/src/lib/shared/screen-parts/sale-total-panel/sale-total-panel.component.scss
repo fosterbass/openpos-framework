@@ -129,6 +129,7 @@ $loyalty-signup-column-gap: 8px;
                     }
                     .customer-name {
                         @extend %text-md;
+                        line-height: normal;
                     }
                     .membership-customer-email,
                     .membership-tier {
