@@ -25,8 +25,10 @@ export class AutoPersonalizationStartupTask implements IStartupTask {
     }
 
     execute(data: StartupTaskData): Observable<string> {
+        console.log('[AutoPersonalizationTask] started')
         if (this.personalization.shouldAutoPersonalize()) {
             if (this.personalization.hasSavedSession()) {
+                console.log('[AutoPersonalizationTask] saved session exists, personalizing with it')
                 return this.personalization.personalizeFromSavedSession().pipe(
                     catchError(e => {
                         this.logPersonalizationError(e);
@@ -62,14 +64,14 @@ export class AutoPersonalizationStartupTask implements IStartupTask {
 
         let serviceConfig: ZeroconfService = null;
 
-        console.log('Starting ZeroConf watch on device ', this.wrapperService.getDeviceName());
+        console.log('[AutoPersonalizationTask] Starting ZeroConf watch on device ', this.wrapperService.getDeviceName());
 
         return Zeroconf.watch(this.TYPE, this.DOMAIN).pipe(
             timeout(Configuration.autoPersonalizationRequestTimeoutMillis),
             first(conf => conf.action === 'resolved'),
             tap(conf => {
                 serviceConfig = conf.service;
-                console.log('service resolved', conf.service);
+                console.log('[AutoPersonalizationTask] service resolved', conf.service);
             }),
             flatMap(() => this.wrapperService.getDeviceName()),
             tap(deviceName => name = deviceName),
@@ -148,6 +150,6 @@ export class AutoPersonalizationStartupTask implements IStartupTask {
     }
 
     private logPersonalizationError(error: any): void {
-        console.log("Error during auto-personalization: " + JSON.stringify(error))
+        console.log("[AutoPersonalizationTask] Error during auto-personalization: " + JSON.stringify(error))
     }
 }
