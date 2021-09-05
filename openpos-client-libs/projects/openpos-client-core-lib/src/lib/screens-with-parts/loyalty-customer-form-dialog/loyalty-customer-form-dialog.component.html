@@ -61,8 +61,9 @@
                                 </div>
                             </div>
                             <div class="extraFormFields">
-                                <ng-container *ngFor="let formElement of screen.form.formElements">
-                                    <app-dynamic-form-field *ngIf="handledFormFields.indexOf(formElement.id) == -1"
+                                <ng-container *ngFor="let formElement of extraElements; let i = index">
+                                    <!--First half extra elements will be displayed on the left.-->
+                                    <app-dynamic-form-field *ngIf="(i < extraElements.length / 2 || extraElements.length == 1)"
                                                             class="extra-form-field"
                                                             [formGroup]="screen.formGroup"
                                                             [formField]="formElement"
@@ -81,6 +82,16 @@
                                 <ng-container *ngTemplateOutlet="loyaltySection"></ng-container>
                                 <ng-container *ngTemplateOutlet="locationSection"></ng-container>
                             </ng-template>
+                            <div class="extraFormFields">
+                                <ng-container *ngFor="let formElement of extraElements; let i = index">
+                                    <!--Second half of extra elements will be displayed on the right.-->
+                                    <app-dynamic-form-field *ngIf="(i >= extraElements.length / 2 && extraElements.length != 1)"
+                                                            class="extra-form-field"
+                                                            [formGroup]="screen.formGroup"
+                                                            [formField]="formElement"
+                                                            (onFieldChanged)="onFieldChanged($event)"></app-dynamic-form-field>
+                                </ng-container>
+                            </div>
                         </div>
                         <ng-template #locationSection>
                             <div class="location">
