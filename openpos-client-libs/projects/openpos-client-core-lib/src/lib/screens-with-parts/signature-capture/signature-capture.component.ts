@@ -1,6 +1,6 @@
 import { Component, AfterViewInit, HostListener, Injector } from '@angular/core';
 import 'signature_pad';
-import { MatSnackBar } from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Configuration } from '../../configuration/configuration';
 import { ScreenComponent } from '../../shared/decorators/screen-component.decorator';
 import { PosScreen } from '../pos-screen/pos-screen.component';

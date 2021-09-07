@@ -19,8 +19,8 @@ describe("PersonalizationService", () => {
         });
 
         // Inject the http service and test controller for each test
-        httpMock = TestBed.get(HttpTestingController);
-        personalizationService = TestBed.get(PersonalizationService);
+        httpMock = TestBed.inject(HttpTestingController);
+        personalizationService = TestBed.inject(PersonalizationService);
     }
 
     function cleanup(){

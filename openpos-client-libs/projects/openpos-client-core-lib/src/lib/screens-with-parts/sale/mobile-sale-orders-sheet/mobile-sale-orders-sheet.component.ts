@@ -1,7 +1,7 @@
 import { Component, Inject } from '@angular/core';
 import { IOrderSummary } from '../../../core/interfaces/order-summary.interface';
 import { IActionItem } from '../../../core/actions/action-item.interface';
-import { MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA } from '@angular/material';
+import { MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA } from '@angular/material/bottom-sheet';
 
 @Component({
     selector: 'app-mobile-sale-orders-sheet',

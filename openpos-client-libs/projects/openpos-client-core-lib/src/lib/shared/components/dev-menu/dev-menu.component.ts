@@ -2,12 +2,9 @@ import { ConfigurationService } from '../../../core/services/configuration.servi
 import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef, Renderer2, ElementRef } from '@angular/core';
 import { Component, ViewChild, HostListener, OnInit } from '@angular/core';
-import {
-    MatDialog,
-    MatSnackBar,
-    MatExpansionPanel,
-    MatSlideToggleChange
-} from '@angular/material';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatSlideToggleChange } from '@angular/material/slide-toggle';
+import { MatSnackBar, MatSnackBarRef, SimpleSnackBar } from '@angular/material/snack-bar';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { Configuration } from '../../../configuration/configuration';
 import { PersonalizationService } from '../../../core/personalization/personalization.service';
@@ -31,6 +28,8 @@ import { DiscoveryService } from '../../../core/discovery/discovery.service';
 import { AudioLicense, AudioLicenseLabels } from '../audio-license/audio-license.interface';
 import { map } from 'rxjs/operators';
 import { KioskModeController } from '../../../core/platform-plugins/kiosk/kiosk-controller.service';
+
+import type { MatExpansionPanel } from '@angular/material/expansion';
 
 @Component({
     selector: 'app-dev-menu',

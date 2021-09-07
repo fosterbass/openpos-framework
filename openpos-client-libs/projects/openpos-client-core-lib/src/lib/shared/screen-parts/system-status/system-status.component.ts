@@ -5,7 +5,7 @@ import { ScreenPart } from '../../decorators/screen-part.decorator';
 import { Configuration } from '../../../configuration/configuration';
 import { SystemStatusType } from '../../../core/interfaces/system-status-type.enum';
 import { SystemStatusDialogComponent } from '../../components/system-status/system-status-dialog.component';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 
 @ScreenPart({
     name: 'statusStrip.systemStatus'

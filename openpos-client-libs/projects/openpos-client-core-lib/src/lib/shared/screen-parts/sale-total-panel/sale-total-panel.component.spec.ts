@@ -4,7 +4,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { Subscription, Observable, of } from 'rxjs';
 import {SaleTotalPanelComponent} from "./sale-total-panel.component";
 import {SaleTotalPanelInterface} from "./sale-total-panel.interface";
-import {MatDialog} from "@angular/material";
+import { MatDialog } from "@angular/material/dialog";
 import {ElectronService} from "ngx-electron";
 import {TimeZoneContext} from "../../../core/client-context/time-zone-context";
 import {CLIENTCONTEXT} from "../../../core/client-context/client-context-provider.interface";
@@ -38,9 +38,10 @@ describe('SaleTotalPanelComponent', () => {
                 return of(false);
             }
         };
-        beforeEach( () => {
-            TestBed.configureTestingModule({
-                imports: [HttpClientTestingModule, ],
+
+        beforeEach(async () => {
+            await TestBed.configureTestingModule({
+                imports: [HttpClientTestingModule],
                 declarations: [
                     SaleTotalPanelComponent, ImageUrlPipe
                 ],
@@ -62,7 +63,7 @@ describe('SaleTotalPanelComponent', () => {
             component.screenData = {
                 profileIcon: 'account_circle'
             } as SaleTotalPanelInterface;
-            openposMediaSerivce = TestBed.get(OpenposMediaService);
+            openposMediaSerivce = TestBed.inject(OpenposMediaService);
             fixture.detectChanges();
         });
 

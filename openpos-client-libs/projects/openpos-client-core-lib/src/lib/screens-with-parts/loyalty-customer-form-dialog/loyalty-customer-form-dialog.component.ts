@@ -1,8 +1,8 @@
-import {Component, Injector, QueryList, ViewChild, ViewChildren} from '@angular/core';
+import {Component, Injector, ViewChild} from '@angular/core';
 import { DialogComponent } from '../../shared/decorators/dialog-component.decorator';
 import { PosScreen } from '../pos-screen/pos-screen.component';
 import {LoyaltyCustomerFormInterface} from "./loyalty-customer-form.interface";
-import {Observable} from "rxjs/internal/Observable";
+import {Observable} from "rxjs";
 import {MediaBreakpoints, OpenposMediaService} from "../../core/media/openpos-media.service";
 import {IFormElement} from "../../core/interfaces/form-field.interface";
 import {FormBuilder} from "../../core/services/form-builder.service";
@@ -19,7 +19,7 @@ import {ShowErrorsComponent} from "../../shared/components/show-errors/show-erro
 export class LoyaltyCustomerFormDialogComponent extends PosScreen<LoyaltyCustomerFormInterface> {
 
     isMobile: Observable<boolean>;
-    @ViewChild('formErrors') formErrors: ShowErrorsComponent;
+    @ViewChild('formErrors', { static: true }) formErrors: ShowErrorsComponent;
 
     firstNameField : any;
     lastNameField : IFormElement;

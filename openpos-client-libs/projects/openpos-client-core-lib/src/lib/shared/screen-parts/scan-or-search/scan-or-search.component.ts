@@ -19,7 +19,7 @@ import {OnBecomingActive} from '../../../core/life-cycle-interfaces/becoming-act
 import {OnLeavingActive} from '../../../core/life-cycle-interfaces/leaving-active.interface';
 import { BarcodeScanner } from '../../../core/platform-plugins/barcode-scanners/barcode-scanner.service';
 import { ScanData } from '../../../core/platform-plugins/barcode-scanners/scanner';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { LockScreenService } from '../../../core/lock-screen/lock-screen.service';
 
 @ScreenPart({

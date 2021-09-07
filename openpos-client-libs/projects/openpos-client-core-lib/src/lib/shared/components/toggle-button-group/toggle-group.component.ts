@@ -1,6 +1,8 @@
-import { Component, ContentChildren, QueryList, AfterViewInit, Input, Output, EventEmitter, DoCheck, OnDestroy, OnChanges, SimpleChange, SimpleChanges } from '@angular/core';
+import { Component, ContentChildren, AfterViewInit, Input, Output, EventEmitter, DoCheck, OnDestroy, OnChanges, SimpleChange, SimpleChanges } from '@angular/core';
 import { ToggleButtonComponent } from '../toggle-button/toggle-button.component';
 import { Subscription } from 'rxjs';
+
+import type { QueryList } from '@angular/core';
 
 @Component({
   selector: 'app-toggle-group',

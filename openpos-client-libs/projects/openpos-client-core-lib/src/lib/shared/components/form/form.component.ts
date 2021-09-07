@@ -1,7 +1,9 @@
-import { Component, Input, Output, EventEmitter, QueryList, ContentChild, ContentChildren } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ContentChild, ContentChildren } from '@angular/core';
 import { FormGroup, AbstractControl } from '@angular/forms';
 import { ShowErrorsComponent } from '../show-errors/show-errors.component';
 import { DynamicFormFieldComponent } from '../dynamic-form-field/dynamic-form-field.component';
+
+import type { QueryList } from '@angular/core';
 
 /**
  * This is a component that wraps the form element so we can handle forms

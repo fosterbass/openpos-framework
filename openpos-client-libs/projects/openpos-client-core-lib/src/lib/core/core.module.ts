@@ -25,7 +25,7 @@ import { StompRService } from '@stomp/ng2-stompjs';
 import { SubscribeToSessionTask } from './startup/subscribe-to-session-task';
 import { Router } from '@angular/router';
 import { StartupFailedComponent } from './startup/startup-failed.component';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { FinalStartupTask } from './startup/final-startup-task';
 import { DialogContentComponent } from './components/dialog-content/dialog-content.component';
 import { DialogServiceStartupTask } from './startup/dialog-service-startup-task';

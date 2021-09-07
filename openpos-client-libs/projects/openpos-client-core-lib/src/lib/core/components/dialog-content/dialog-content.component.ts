@@ -13,7 +13,7 @@ import { ScreenCreatorService } from '../../services/screen-creator.service';
 export class DialogContentComponent implements OnDestroy, IScreen {
 
 
-    @ViewChild(ScreenDirective) host: ScreenDirective;
+    @ViewChild(ScreenDirective, { static: true }) host: ScreenDirective;
 
     private currentScreenRef: ComponentRef<IScreen>;
 

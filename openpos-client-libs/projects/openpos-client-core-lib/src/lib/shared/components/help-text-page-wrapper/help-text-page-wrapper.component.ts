@@ -1,5 +1,5 @@
 import { Component, ViewChild, AfterViewInit, Renderer2, Input, OnDestroy, OnInit, ElementRef } from '@angular/core';
-import { MatSidenavContainer } from '@angular/material';
+import { MatSidenavContainer } from '@angular/material/sidenav';
 import { Subscription, Observable } from 'rxjs';
 import { HelpTextService } from '../../../core/help-text/help-text.service';
 import { ConfigurationService } from '../../../core/services/configuration.service';
@@ -12,10 +12,10 @@ import {OpenposMediaService} from "../../../core/media/openpos-media.service";
 })
 export class HelpTextPageWrapperComponent implements OnInit, AfterViewInit, OnDestroy {
 
-    @ViewChild(MatSidenavContainer)
+    @ViewChild(MatSidenavContainer, { static: true })
     sidenavContainer: MatSidenavContainer;
 
-    @ViewChild('helpPageWrapperContainer')
+    @ViewChild('helpPageWrapperContainer', { static: true })
     helpPageWrapperContainer: ElementRef;
 
     @Input()

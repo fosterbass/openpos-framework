@@ -1,7 +1,9 @@
-import { Directive, QueryList, OnDestroy, ContentChildren } from '@angular/core';
+import { Directive, OnDestroy, ContentChildren } from '@angular/core';
 import { ArrowTabItemDirective } from './arrow-tab-item.directive';
 import { Subscription } from 'rxjs';
 import { KeyPressProvider } from '../providers/keypress.provider';
+
+import type { QueryList } from '@angular/core';
 
 @Directive({
     selector: '[appArrowTab]'

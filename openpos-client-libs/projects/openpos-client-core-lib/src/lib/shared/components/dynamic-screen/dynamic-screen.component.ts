@@ -14,8 +14,8 @@ import { Observable } from 'rxjs';
     styleUrls: ['./dynamic-screen.component.scss'],
     providers: [MessageProvider, ActionService]
 })
-export class DynamicScreenComponent implements OnInit {
-    @ViewChild(ToastContainerDirective)
+export class DynamicScreenComponent implements OnInit{
+    @ViewChild(ToastContainerDirective, { static: true })
     toastContainer: ToastContainerDirective;
     showWatermark = false;
     watermarkMessage: string;

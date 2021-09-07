@@ -16,8 +16,8 @@ describe('Currency Text Component', () => {
           ]
         });
         // inject both the component and the dependent service.
-        sut = TestBed.get(CurrencyTextComponent);
-        localeService = TestBed.get(LocaleService);
+        sut = TestBed.inject(CurrencyTextComponent);
+        localeService = TestBed.inject(LocaleService) as jasmine.SpyObj<LocaleService>;
         localeService.getLocale.and.returnValue('en-US');
         localeService.getConstant.and.returnValue('$');
       });

@@ -1,6 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { ElectronService } from 'ngx-electron';
 import { ActionService } from '../../../core/actions/action.service';
 import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provider.interface';

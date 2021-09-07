@@ -41,7 +41,7 @@ describe('pos-screen', () => {
                 {provide: ActionService, useValue: actionServiceSpy}
             ]
         });
-        actionService = TestBed.get(ActionService);
+        actionService = TestBed.inject(ActionService) as jasmine.SpyObj<ActionService>;
         fixture = TestBed.createComponent(TestComponent);
         testComponent  = fixture.componentInstance;
     });

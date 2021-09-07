@@ -1,7 +1,7 @@
 import {map} from 'rxjs/operators';
 import { ScreenPartComponent } from '../screen-part';
 import { StatusStripInterface } from './status-strip.interface';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import {interval, of, timer} from 'rxjs';
 import { Component, Injector } from '@angular/core';
 import { ScreenPart } from '../../decorators/screen-part.decorator';

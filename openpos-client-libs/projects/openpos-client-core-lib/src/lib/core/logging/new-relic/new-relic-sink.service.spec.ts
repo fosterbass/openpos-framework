@@ -1,6 +1,6 @@
-import { fakeAsync, tick, flush, discardPeriodicTasks, TestBed } from '@angular/core/testing';
+import { fakeAsync, tick, discardPeriodicTasks, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, of, Subject } from 'rxjs';
 
 import { NewRelicLoggerConfig, NewRelicMessageGroup, NewRelicSink } from './new-relic-sink.service';
 import { ConsoleMessage, ConsoleScraper } from '../console-scraper.service';
@@ -74,8 +74,8 @@ describe('NewRelic Sink', () => {
             ]
         }).compileComponents();
 
-        fixture = TestBed.get(NewRelicSink);
-        httpController = TestBed.get(HttpTestingController);
+        fixture = TestBed.inject(NewRelicSink);
+        httpController = TestBed.inject(HttpTestingController);
     });
 
     it('creates', fakeAsync(() => {
@@ -86,7 +86,7 @@ describe('NewRelic Sink', () => {
         configuration.next(config);
 
         capacitorService.isRunningInCapacitor.and.returnValue(true);
-        capacitorService.getDeviceName.and.returnValue('TestDevice');
+        capacitorService.getDeviceName.and.returnValue(of('TestDevice'));
 
         deviceId.next('00001-001');
         appId.next('test');

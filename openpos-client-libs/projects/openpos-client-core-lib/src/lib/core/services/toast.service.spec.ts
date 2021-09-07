@@ -5,7 +5,7 @@ import { of } from 'rxjs';
 import { Injector } from '@angular/core';
 import {CloseToastMessage, IToastScreen, ToastType} from '../interfaces/toast-screen.interface';
 import { AppInjector } from '../app-injector';
-import {ToastrService} from 'ngx-toastr';
+import {ActiveToast, ToastrService} from 'ngx-toastr';
 import {ToastComponent} from "../../shared/components/toast/toast.component";
 
 
@@ -52,14 +52,14 @@ describe('ToastService', () => {
             ]
         });
 
-        AppInjector.Instance = TestBed.get(Injector);
-        sessionServiceSpy = TestBed.get(SessionService);
+        AppInjector.Instance = TestBed.inject(Injector);
+        sessionServiceSpy = TestBed.inject(SessionService) as jasmine.SpyObj<SessionService>;
         sessionServiceSpy.getMessages.and.returnValue(of(testToast));
 
-        toastrServiceSpy = TestBed.get(ToastrService);
-        toastrServiceSpy.show.and.returnValue({ toastRef: { componentInstance: {}}})
+        toastrServiceSpy = TestBed.inject(ToastrService) as jasmine.SpyObj<ToastrService>;
+        toastrServiceSpy.show.and.returnValue({ toastRef: { componentInstance: {}}} as ActiveToast<{}>)
 
-        toastService = TestBed.get(ToastService);
+        toastService = TestBed.inject(ToastService);
 
     });
 

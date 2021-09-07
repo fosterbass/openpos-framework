@@ -1,18 +1,14 @@
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal, PortalInjector } from '@angular/cdk/portal';
-import { Injectable, InjectionToken, Injector } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import {BehaviorSubject, Observable, ReplaySubject} from 'rxjs';
+import { Injectable, Injector } from '@angular/core';
+import { BehaviorSubject, ReplaySubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { MessageProvider } from '../../shared/providers/message.provider';
-import { ActionService } from '../actions/action.service';
 import { FocusService } from '../focus/focus.service';
 import { LockScreenMessage } from '../messages/lock-screen-message';
 import { MessageTypes } from '../messages/message-types';
 import { SessionService } from '../services/session.service';
 import { LockScreenComponent } from './lock-screen.component';
-
-export const LOCK_SCREEN_DATA = new InjectionToken<Observable<LockScreenMessage>>('LOCK_SCREEN_DATA');
+import { LOCK_SCREEN_DATA } from './lock-screen-data';
 
 @Injectable({
     providedIn: 'root'

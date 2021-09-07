@@ -1,13 +1,11 @@
 import { Injectable } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material';
 import { Observable, ReplaySubject } from 'rxjs';
-import { filter, map, mergeMap, take, tap } from 'rxjs/operators';
+import { filter, tap } from 'rxjs/operators';
 
 import { ConfigChangedMessage } from '../../core/messages/config-changed-message';
 import { MessageTypes } from '../../core/messages/message-types';
 import { StatusMessage } from './status.message';
 import { SessionService } from '../../core/services/session.service';
-import { StatusDetailsComponent } from './status-details/status-details.component';
 import { StatusDetailsService } from './status-details/status-details.service';
 import { Power } from '../../core/platform-plugins/power/power.service';
 import { PowerStatus } from '../../core/platform-plugins/power/power-supplier';
@@ -21,11 +19,8 @@ export class StatusService {
     private latestStatus = new Map<string, StatusMessage>();
     private latestStatus$ = new ReplaySubject<Map<string, StatusMessage>>(1);
 
-    private detailsDialog?: MatDialogRef<StatusDetailsComponent>;
-
     constructor(
         private sessionService: SessionService,
-        private dialog: MatDialog,
         public statusDetailsService: StatusDetailsService,
         private powerService: Power
     ) {
@@ -36,39 +31,9 @@ export class StatusService {
             filter(message => (message as ConfigChangedMessage).configType === 'SystemInfo'),
             tap(message => console.log('SystemInfo Updated ', message))
         ).subscribe(message => this.configUpdated(message));
-        this.sessionService.getMessages(MessageTypes.CLOSE_STATUS_DETAILS).subscribe(() => { this.closeDetails(); });
         this.powerService.observePowerStatus().subscribe((status: PowerStatus) => {
             this.sessionService.sendPowerStatus(status);
         });
-    }
-
-    public openDetails() {
-        if (this.detailsDialog) {
-            return;
-        }
-
-        this.statusDetailsService.isDetailsNotEmpty().pipe(
-            take(1),
-            filter(isDetailsNotEmpty => isDetailsNotEmpty),
-            map(() => {
-                this.detailsDialog = this.dialog.open(StatusDetailsComponent, { minWidth: '75%' })
-                return this.detailsDialog;
-            }),
-            mergeMap(dialog => dialog.afterClosed())
-        ).subscribe({
-            // don't need to worry about the subscription because the
-            // observable will be automatically completed by the
-            // source
-            complete: () => {
-                this.detailsDialog = undefined;
-            }
-        });
-    }
-
-    public closeDetails() {
-        if (this.detailsDialog) {
-            this.detailsDialog.close();
-        }
     }
 
     public getStatus(): Observable<Map<string, StatusMessage>> {

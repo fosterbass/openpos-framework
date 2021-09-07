@@ -3,7 +3,7 @@ import {Observable, Subject} from 'rxjs';
 import {takeUntil, tap} from 'rxjs/operators';
 import {ActionService} from '../actions/action.service';
 import {LockScreenMessage} from '../messages/lock-screen-message';
-import {LOCK_SCREEN_DATA} from './lock-screen.service';
+import {LOCK_SCREEN_DATA} from './lock-screen-data';
 
 @Component({
   selector: 'app-lock-screen',

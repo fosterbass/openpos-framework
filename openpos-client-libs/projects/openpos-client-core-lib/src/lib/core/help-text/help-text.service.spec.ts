@@ -17,8 +17,8 @@ describe('HelpTextService', () => {
                 HelpTextService
             ]
         });
-        helpTextService = TestBed.get(HelpTextService);
-        sessionServiceSpy = TestBed.get(SessionService);
+        helpTextService = TestBed.inject(HelpTextService);
+        sessionServiceSpy = TestBed.inject(SessionService) as jasmine.SpyObj<SessionService>;
     });
 
     describe('initialize', () => {

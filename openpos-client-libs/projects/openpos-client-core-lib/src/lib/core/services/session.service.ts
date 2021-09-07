@@ -10,7 +10,7 @@ import { map, filter, takeWhile, publishReplay, take } from 'rxjs/operators';
 import { Message } from '@stomp/stompjs';
 import { Injectable, NgZone, Inject, } from '@angular/core';
 import { StompState, StompRService } from '@stomp/ng2-stompjs';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 // Importing the ../components barrel causes a circular reference since dynamic-screen references back to here,
 // so we will import those files directly
 import { LoaderState } from '../../shared/components/loader/loader-state';

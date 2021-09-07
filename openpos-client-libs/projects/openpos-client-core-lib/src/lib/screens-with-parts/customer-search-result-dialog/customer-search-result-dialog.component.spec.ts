@@ -9,7 +9,7 @@ import {SelectionListInterface} from '../selection-list/selection-list.interface
 import {ElectronService} from 'ngx-electron';
 import {CLIENTCONTEXT} from '../../core/client-context/client-context-provider.interface';
 import {TimeZoneContext} from '../../core/client-context/time-zone-context';
-import {MatDialog} from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {SelectableItemListComponentConfiguration} from '../../shared/components/selectable-item-list/selectable-item-list.component';
 import {SelectionMode} from '../../core/interfaces/selection-mode.enum';

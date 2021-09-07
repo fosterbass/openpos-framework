@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { from, Observable, of } from 'rxjs';
+import { from, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { IPrinter } from './printer.interface';
 
@@ -26,6 +27,6 @@ export class CapacitorPrinterPlugin implements IPrinter {
     }
 
     print(html: string): Observable<void> {
-        return from(CapacitorPlugins.Print.print({ html }));
+        return from(CapacitorPlugins.Print.print({ html })) as Observable<void>;
     }
 }

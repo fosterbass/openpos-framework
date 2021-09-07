@@ -1,4 +1,4 @@
-import { MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA } from '@angular/material';
+import { MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA } from '@angular/material/bottom-sheet';
 import { Inject, Component } from '@angular/core';
 import { IActionItem } from '../../../core/actions/action-item.interface';
 import { ITransactionReceipt } from '../../../shared/components/receipt-card/transaction-receipt.interface';

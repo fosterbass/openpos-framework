@@ -13,7 +13,7 @@ import {
 import { IStartupTask } from './startup-task.interface';
 import { PersonalizationService } from '../personalization/personalization.service';
 import { concat, defer, iif, interval, Observable, of, throwError } from 'rxjs';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { StartupTaskNames } from './startup-task-names';
 import { Injectable } from '@angular/core';
 import { StartupTaskData } from './startup-task-data';
@@ -246,7 +246,8 @@ function lastOrElse<T, R>(valueProject: (value: R) => Observable<T>, e: Observab
         ).subscribe({
             next: value => {
                 path = valueProject(value);
-            }
+            },
+            error: () => {}
         });
 
         const pathSubscription = path.subscribe({

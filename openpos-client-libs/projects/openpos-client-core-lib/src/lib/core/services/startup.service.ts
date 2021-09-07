@@ -1,9 +1,9 @@
-import { concat, throwError, Observable, Subject, ReplaySubject, of } from 'rxjs';
+import { concat, throwError, Observable, ReplaySubject, of, iif } from 'rxjs';
 import { Injectable, InjectionToken, Inject, Optional } from '@angular/core';
 import { IStartupTask } from '../startup/startup-task.interface';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { map, catchError } from 'rxjs/operators';
-import { MatDialog, MatDialogRef } from '@angular/material';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ComponentType } from '@angular/cdk/overlay/index';
 
 export const STARTUP_TASKS = new InjectionToken<IStartupTask[]>('Startup Tasks');
@@ -82,7 +82,10 @@ export class StartupService implements CanActivate {
 
         // Run all tasks in order
         return new Observable<boolean>(observer => {
-            const sub = concat(...tasks).subscribe({
+            const sub = iif(() => !!tasks && tasks.length > 0,
+                concat(...tasks),
+                of()
+            ).subscribe({
                 next: (message) => { this.handleMessage(message); },
                 error: (error) => {
                     observer.next(false);

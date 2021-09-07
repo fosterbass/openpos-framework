@@ -1,13 +1,14 @@
 import { OnDestroy, Component, Input, Output, EventEmitter, ContentChild, TemplateRef, ElementRef, OnInit,
-    ViewChildren, QueryList, AfterViewInit, AfterContentInit, AfterViewChecked } from '@angular/core';
-import { Subscription } from 'rxjs/internal/Subscription';
-import { Observable } from 'rxjs';
+    ViewChildren, AfterViewInit } from '@angular/core';
+import { Observable, Subscription } from 'rxjs';
 import { ISelectableListData } from './selectable-list-data.interface';
 import { KeyPressProvider } from '../../providers/keypress.provider';
 import { Configuration } from '../../../configuration/configuration';
 import { SelectionMode } from '../../../core/interfaces/selection-mode.enum';
 import { SessionService } from '../../../core/services/session.service';
 import { ActionService } from '../../../core/actions/action.service';
+
+import type { QueryList } from '@angular/core';
 
 export class SelectableItemListComponentConfiguration {
     numItemsPerPage: number;

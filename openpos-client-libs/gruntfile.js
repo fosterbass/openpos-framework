@@ -79,6 +79,6 @@ module.exports = function(grunt) {
     });
     grunt.registerTask('npm-link', ['wait', 'exec:link'])
     grunt.registerTask('create-package', 'Creates an empty package.json', function() {
-        grunt.file.write('dist/openpos-client-core-lib/package.json', '');
+        grunt.file.copy('./projects/openpos-client-core-lib/package.json', './dist/openpos-client-core-lib/package.json');
      });
   };

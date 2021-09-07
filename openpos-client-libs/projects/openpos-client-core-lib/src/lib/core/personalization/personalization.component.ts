@@ -7,7 +7,7 @@ import { IScreen } from '../../shared/components/dynamic-screen/screen.interface
 import { PersonalizationService } from './personalization.service';
 import { PersonalizationConfigResponse } from './personalization-config-response.interface';
 import { ClientUrlService } from './client-url.service';
-import { MatDialog, MAT_DIALOG_DATA } from '@angular/material';
+import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DiscoveryService } from '../discovery/discovery.service';
 import { DiscoveryStatus } from '../discovery/discovery-status.enum';
 import { DiscoveryResponse } from '../discovery/discovery-response.interface';
@@ -18,7 +18,6 @@ import { DiscoveryResponse } from '../discovery/discovery-response.interface';
     styleUrls: ['./personalization.component.scss']
 })
 export class PersonalizationComponent implements IScreen, OnInit {
-
     navigateExternal = false;
     manualPersonalization = false;
     openposMgmtServerPresent = false;
@@ -70,16 +69,16 @@ export class PersonalizationComponent implements IScreen, OnInit {
         } else {
             this.firstFormGroup = this.formBuilder.group({
                 clientName: ['', [Validators.required]],
-                clientPort: ['', [Validators.required, , Validators.pattern('^[0-9]+$')]],
+                clientPort: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
                 appName: ['', [Validators.required]],
                 sslEnabled: ['']
-            }, { asyncValidator: this.clientValidator });
+            }, { asyncValidators: this.clientValidator });
 
             this.secondFormGroup = this.formBuilder.group({
                 serverName: [this.appServerAddress, [Validators.required]],
-                serverPort: [this.appServerPort, [Validators.required, , Validators.pattern('^[0-9]+$')]],
+                serverPort: [this.appServerPort, [Validators.required, Validators.pattern('^[0-9]+$')]],
                 sslEnabled: [this.serverIsSSL]
-            }, { asyncValidator: this.serverValidator });
+            }, { asyncValidators: this.serverValidator });
 
             this.updateThirdFormGroup();
             this.updateLastFormGroup();

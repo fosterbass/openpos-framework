@@ -1,11 +1,11 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { Component, Input, NO_ERRORS_SCHEMA } from '@angular/core';
 import { DisplayCustomerLookupComponent } from "./display-customer-lookup.component";
 import { ICustomerDetails } from "../../../screens-with-parts/customer-search-result-dialog/customer-search-result-dialog.interface";
 import { validateText } from "../../../utilites/test-utils";
-import { Observable } from "rxjs/internal/Observable";
+import { Observable } from "rxjs";
 import { PhonePipe } from "../../pipes/phone.pipe";
-import { MatDialog } from "@angular/material";
+import { MatDialog } from "@angular/material/dialog";
 import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { ElectronService } from "ngx-electron";
 import { CLIENTCONTEXT } from "../../../core/client-context/client-context-provider.interface";
@@ -16,6 +16,15 @@ import { Membership } from "../membership-display/memebership-display.interface"
 class MockMatDialog {};
 class MockElectronService {};
 class ClientContext {};
+
+@Component({
+    selector: 'app-membership-display',
+    template: ''
+})
+export class MockMembershipDisplayComponent {
+    @Input()
+    membership: Membership;
+}
 
 describe('DisplayCustomerLookupComponent', () => {
     let component: DisplayCustomerLookupComponent;
@@ -36,12 +45,13 @@ describe('DisplayCustomerLookupComponent', () => {
     } as ICustomerDetails;
 
     describe('non mobile', () => {
-        beforeEach( () => {
-            TestBed.configureTestingModule({
+        beforeEach(async () => {
+            await TestBed.configureTestingModule({
                 imports: [ HttpClientTestingModule ],
                 declarations: [
                     DisplayCustomerLookupComponent,
-                    PhonePipe
+                    PhonePipe,
+                    MockMembershipDisplayComponent
                 ],
                 providers: [
                     { provide: MatDialog, useClass: MockMatDialog },
@@ -53,18 +63,24 @@ describe('DisplayCustomerLookupComponent', () => {
                     NO_ERRORS_SCHEMA,
                 ]
             }).compileComponents();
+
             fixture = TestBed.createComponent(DisplayCustomerLookupComponent);
             component = fixture.componentInstance;
             component.customer = testCustomer;
             fixture.detectChanges();
+
+            await fixture.whenStable();
         });
         it('renders', () => {
             expect(component).toBeDefined();
         });
 
         describe('template', () => {
-            beforeEach(() => {
+            beforeEach(async () => {
                 testCustomer.privacyRestrictedMessage = null;
+                fixture.detectChanges();
+
+                await fixture.whenStable();
             });
             it('should display customer name', function () {
                 validateText(fixture, '.customer-name', testCustomer.name);
@@ -89,7 +105,7 @@ describe('DisplayCustomerLookupComponent', () => {
                 validateText(fixture, '.customer-cityStateZip', expected);
             });
             it('should display all memberships as badges', function () {
-                const membershipDisplayComponents = fixture.debugElement.queryAll(By.css('app-membership-display'));
+                const membershipDisplayComponents = fixture.debugElement.queryAll(By.directive(MockMembershipDisplayComponent));
                 expect(membershipDisplayComponents.length).toBe(testCustomer.memberships.length);
             });
             it('should display privacy message when privacy is restricted.', function () {
@@ -103,12 +119,13 @@ describe('DisplayCustomerLookupComponent', () => {
     });
 
     describe('mobile', () => {
-        beforeEach( () => {
-            TestBed.configureTestingModule({
+        beforeEach(async () => {
+            await TestBed.configureTestingModule({
                 imports: [ HttpClientTestingModule ],
                 declarations: [
                     DisplayCustomerLookupComponent,
-                    PhonePipe
+                    PhonePipe,
+                    MockMembershipDisplayComponent
                 ],
                 providers: [
                     { provide: MatDialog, useClass: MockMatDialog },
@@ -120,6 +137,7 @@ describe('DisplayCustomerLookupComponent', () => {
                     NO_ERRORS_SCHEMA,
                 ]
             }).compileComponents();
+
             fixture = TestBed.createComponent(DisplayCustomerLookupComponent);
             component = fixture.componentInstance;
             component.customer = testCustomer;
@@ -133,9 +151,13 @@ describe('DisplayCustomerLookupComponent', () => {
         });
 
         describe('template', () => {
-            beforeEach(() => {
+            beforeEach(async () => {
                 testCustomer.privacyRestrictedMessage = null;
+
+                fixture.detectChanges();
+                await fixture.whenStable();
             });
+
             it('should display customer name', function () {
                 validateText(fixture, '.customer-name', testCustomer.name);
             });
@@ -149,7 +171,7 @@ describe('DisplayCustomerLookupComponent', () => {
                 validateText(fixture, '.customer-phoneNumber', "(614) 234-5678");
             });
             it('should display all memberships as badges', function () {
-                const membershipDisplayComponents = fixture.debugElement.queryAll(By.css('app-membership-display'));
+                const membershipDisplayComponents = fixture.debugElement.queryAll(By.directive(MockMembershipDisplayComponent));
                 expect(membershipDisplayComponents.length).toBe(testCustomer.memberships.length);
             });
             it('should display privacy message when privacy is restricted.', function () {

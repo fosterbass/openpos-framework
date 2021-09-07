@@ -68,8 +68,8 @@ import { InjectionToken } from '@angular/core';
 import { KeyboardClassKey } from '../enums/keyboard-class-key.enum';
 import { IKeyboardLayouts } from '../interfaces/keyboard-layouts.interface';
 
-const MAT_KEYBOARD_LAYOUTS = new InjectionToken<IKeyboardLayouts>('keyboard-layouts.config');
-const keyboardLayouts: IKeyboardLayouts = {
+export const MAT_KEYBOARD_LAYOUTS = new InjectionToken<IKeyboardLayouts>('keyboard-layouts.config');
+export const keyboardLayouts: IKeyboardLayouts = {
   'US Standard': {
     'name': 'US Standard',
     'keys': [
@@ -152,5 +152,3 @@ const keyboardLayouts: IKeyboardLayouts = {
     'lang': ['numeric']
   }
 };
-
-export { keyboardLayouts, MAT_KEYBOARD_LAYOUTS };

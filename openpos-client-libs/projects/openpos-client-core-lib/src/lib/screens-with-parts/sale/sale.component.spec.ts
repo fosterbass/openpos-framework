@@ -1,6 +1,7 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { SaleComponent } from './sale.component';
-import { MatDialog, MatBottomSheet } from '@angular/material';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { MatDialog } from '@angular/material/dialog';
 import { OpenposMediaService } from '../../core/media/openpos-media.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { KeyPressProvider } from '../../shared/providers/keypress.provider';
@@ -36,9 +37,9 @@ describe('SaleComponent', () => {
                 return of(false);
             }
         };
-        beforeEach( () => {
-            TestBed.configureTestingModule({
-                imports: [HttpClientTestingModule, ],
+        beforeEach(async () => {
+            await TestBed.configureTestingModule({
+                imports: [HttpClientTestingModule],
                 declarations: [
                     SaleComponent, BaconStripComponent,
                     ImageUrlPipe
@@ -61,7 +62,7 @@ describe('SaleComponent', () => {
             component = fixture.componentInstance;
             component.screen = {} as SaleInterface;
             component.screen.orders = [];
-            openposMediaSerivce = TestBed.get(OpenposMediaService);
+            openposMediaSerivce = TestBed.inject(OpenposMediaService);
             fixture.detectChanges();
         });
 

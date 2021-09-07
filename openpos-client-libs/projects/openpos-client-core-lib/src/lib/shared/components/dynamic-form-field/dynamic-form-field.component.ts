@@ -2,7 +2,8 @@ import {
   Component, ViewChild, AfterViewInit, OnInit, OnDestroy,
   Output, Input, EventEmitter
 } from '@angular/core';
-import { MatInput, MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
+import { MatInput } from '@angular/material/input';
 import { FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { ITextMask, TextMask } from '../../textmask';

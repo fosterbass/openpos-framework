@@ -4,7 +4,7 @@ import { Component, Injector } from '@angular/core';
 import { ScreenPartComponent } from '../../../shared/screen-parts/screen-part';
 import { ScreenPart } from '../../../shared/decorators/screen-part.decorator';
 import { IActionItem } from '../../../core/actions/action-item.interface';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 
 @ScreenPart({
     name: 'selfCheckoutMenu'

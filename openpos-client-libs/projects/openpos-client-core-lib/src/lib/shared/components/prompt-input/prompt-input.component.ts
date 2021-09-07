@@ -1,6 +1,6 @@
 import { FormGroup, FormControl, FormGroupDirective, NgForm } from '@angular/forms';
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
-import { ErrorStateMatcher } from '@angular/material';
+import { ErrorStateMatcher } from '@angular/material/core';
 
 import { BarcodeScanner } from '../../../core/platform-plugins/barcode-scanners/barcode-scanner.service';
 import { ScanData } from '../../../core/platform-plugins/barcode-scanners/scanner';

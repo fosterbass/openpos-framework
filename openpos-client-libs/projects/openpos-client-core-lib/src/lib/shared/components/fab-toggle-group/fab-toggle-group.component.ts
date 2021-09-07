@@ -1,6 +1,8 @@
-import { Component, ContentChildren, QueryList, AfterViewInit, Input, Output, EventEmitter, DoCheck } from '@angular/core';
+import { Component, ContentChildren, AfterViewInit, Input, Output, EventEmitter, DoCheck } from '@angular/core';
 import { FabToggleButtonComponent } from '../fab-toggle-button/fab-toggle-button.component';
 import { Subscription } from 'rxjs';
+
+import type { QueryList } from '@angular/core';
 
 @Component({
   selector: 'app-fab-toggle-group',

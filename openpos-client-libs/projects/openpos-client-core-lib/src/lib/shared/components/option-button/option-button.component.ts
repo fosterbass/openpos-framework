@@ -19,7 +19,7 @@ export class OptionButtonComponent implements OnDestroy{
     @Input() additionalIcon: string;
     @Output() buttonClick = new EventEmitter();
 
-    @ViewChild('button') button;
+    @ViewChild('button', { static: true }) button;
 
     private subscription: Subscription;
 

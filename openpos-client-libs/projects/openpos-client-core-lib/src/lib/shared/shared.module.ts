@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpModule } from '@angular/http';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { HttpClientModule } from '@angular/common/http';
 import { TextMaskModule } from 'angular2-text-mask';
@@ -389,7 +388,6 @@ const pipes = [
         FormsModule,
         ReactiveFormsModule,
         RouterModule,
-        HttpModule,
         HttpClientModule,
         FlexLayoutModule,
         CommonModule,
@@ -405,7 +403,6 @@ const pipes = [
     exports: [
         FormsModule,
         ReactiveFormsModule,
-        HttpModule,
         HttpClientModule,
         FlexLayoutModule,
         CommonModule,
