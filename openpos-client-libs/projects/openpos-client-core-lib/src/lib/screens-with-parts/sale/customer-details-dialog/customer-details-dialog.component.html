@@ -27,7 +27,7 @@
                             {{screen.membershipLabel}}
                         </div>
                         <div *ngIf="screen.customer.memberships && screen.customer.memberships.length">
-                            <span *ngFor="let membership of screen.customer.memberships" class="item">
+                            <span *ngFor="let membership of screen.customer.memberships" class="item" responsive-class>
                                 <app-membership-display [membership]="membership"></app-membership-display>
                             </span>
                         </div>
@@ -40,7 +40,7 @@
                 </div>
             </div>
         </div>
-        <app-membership-points-display *ngIf="(isMobile | async) && screen.membershipPointsEnabled" class="points"></app-membership-points-display>
+        <app-membership-points-display *ngIf="(isMobile | async) && screen.membershipPointsEnabled" class="points" responsive-class></app-membership-points-display>
     </app-content-card>
     <div *ngIf="(isMobile | async) || (!(isMobile | async) && (screen.rewardTabEnabled || screen.rewardHistoryTabEnabled || screen.itemHistoryEnabled))"
          class="tabs" [ngClass]="{'tabs': true, 'mobile': (isMobile | async)}" responsive-class>
@@ -58,7 +58,7 @@
                             <app-rewards-line-item [reward]="reward"></app-rewards-line-item>
                         </div>
                     </div>
-                    <app-membership-points-display *ngIf="!(isMobile | async) && screen.membershipPointsEnabled" class="points"></app-membership-points-display>
+                    <app-membership-points-display *ngIf="!(isMobile | async) && screen.membershipPointsEnabled" class="points" responsive-class></app-membership-points-display>
                     <div *ngIf="!(screen.customer.rewards && screen.customer.rewards.length)" class="no-items" responsive-class>
                         {{screen.noPromotionsLabel}}
                     </div>
@@ -87,7 +87,7 @@
                 </div>
                 <app-infinite-scroll [dataKey]="screen.itemsHistoryDataProviderKey" [itemTemplate]="itemHistoryTemplate" virtualScrollMinBufferPx="400" virtualScrollMaxBufferPx="800" [itemHeightPx]="155">
                     <ng-template #itemHistoryTemplate let-item>
-                        <div class="item">
+                        <div class="item" responsive-class>
                             <div class="image-container">
                                 <img [src]="item.imageUrl | imageUrl">
                             </div>
@@ -137,7 +137,7 @@
                     <div *ngIf="!(screen.customer.rewardHistory && screen.customer.rewardHistory.length)" class="no-items" responsive-class>
                         {{screen.noPromotionsLabel}}
                     </div>
-                    <app-membership-points-display *ngIf="!(isMobile | async) && screen.membershipPointsEnabled"></app-membership-points-display>
+                    <app-membership-points-display *ngIf="!(isMobile | async) && screen.membershipPointsEnabled" responsive-class></app-membership-points-display>
                 </mat-card>
             </mat-tab>
         </mat-tab-group>

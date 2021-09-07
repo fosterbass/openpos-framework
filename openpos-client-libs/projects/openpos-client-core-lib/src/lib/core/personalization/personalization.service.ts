@@ -1,13 +1,13 @@
 import { Injectable, Inject, Optional } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { PersonalizationConfigResponse } from './personalization-config-response.interface';
-import { BehaviorSubject, Observable,throwError, Subject, zip, merge } from 'rxjs';
-import { catchError, filter, last, map, take, tap , timeout} from 'rxjs/operators';
-import {PersonalizationRequest} from './personalization-request';
-import {PersonalizationResponse} from './personalization-response.interface';
-import {AutoPersonalizationParametersResponse} from "./device-personalization.interface";
-import {ZeroconfService} from "@ionic-native/zeroconf";
-import {Configuration} from "../../configuration/configuration";
+import { BehaviorSubject, Observable, throwError, zip, merge } from 'rxjs';
+import { catchError, filter, map, take, tap, timeout } from 'rxjs/operators';
+import { PersonalizationRequest } from './personalization-request';
+import { PersonalizationResponse } from './personalization-response.interface';
+import { AutoPersonalizationParametersResponse } from './device-personalization.interface';
+import { ZeroconfService } from '@ionic-native/zeroconf';
+import { Configuration } from '../../configuration/configuration';
 
 import { Storage } from '../storage/storage.service';
 import { Zeroconf, ZEROCONF_TOKEN } from '../startup/zeroconf/zeroconf';
@@ -75,18 +75,19 @@ export class PersonalizationService {
     }
 
     public getAutoPersonalizationProvider$(): Observable<Zeroconf> {
-        return merge(...this.mdns.map(m => m.isAvailable().pipe(
+        return merge(...this.mdns.map(mdn => mdn.isAvailable().pipe(
             take(1),
-            map(avail => ({ provider: m, avail })),
+            map(avail => ({ provider: mdn, avail })),
             filter(m => m.avail),
             map(m => m.provider)
         )));
     }
 
-    public getAutoPersonalizationParameters(deviceName: string, config: ZeroconfService): Observable<AutoPersonalizationParametersResponse> {
+    public getAutoPersonalizationParameters(deviceName: string, config: ZeroconfService):
+        Observable<AutoPersonalizationParametersResponse> {
         let url = this.sslEnabled$.getValue() ? 'https://' : 'http://';
         url += `${config.ipv4Addresses[0]}:${config.port}/${config.txtRecord.path}`;
-        return this.http.get<AutoPersonalizationParametersResponse>(url, { params: { deviceName: deviceName }})
+        return this.http.get<AutoPersonalizationParametersResponse>(url, { params: { deviceName } })
             .pipe(
                 timeout(Configuration.autoPersonalizationRequestTimeoutMillis),
                 tap(response => {
@@ -98,7 +99,13 @@ export class PersonalizationService {
 
     public personalizeFromSavedSession(): Observable<string> {
         const request = new PersonalizationRequest(this.deviceToken$.getValue(), null, null, null);
-        return this.sendPersonalizationRequest(this.sslEnabled$.getValue(), this.serverName$.getValue(), this.serverPort$.getValue(), request, null);
+        return this.sendPersonalizationRequest(
+            this.sslEnabled$.getValue(),
+            this.serverName$.getValue(),
+            this.serverPort$.getValue(),
+            request,
+            null
+        );
     }
 
     public hasSavedSession(): boolean {
@@ -111,9 +118,10 @@ export class PersonalizationService {
         deviceId: string,
         appId: string,
         personalizationProperties?: Map<string, string>,
-        sslEnabled?: boolean): Observable<string> {
+        sslEnabled?: boolean
+    ): Observable<string> {
 
-        let request = new PersonalizationRequest(this.deviceToken$.getValue(), deviceId, appId, null);
+        const request = new PersonalizationRequest(this.deviceToken$.getValue(), deviceId, appId, null);
         return this.sendPersonalizationRequest(sslEnabled, serverName, serverPort, request, personalizationProperties);
     }
 
@@ -121,18 +129,25 @@ export class PersonalizationService {
         serverName: string,
         serverPort: string,
         deviceToken: string,
-        sslEnabled?: boolean
-    ){
-        let request = new PersonalizationRequest(deviceToken, null, null, null);
-        return this.sendPersonalizationRequest( sslEnabled, serverName, serverPort, request, null);
+        sslEnabled?: boolean,
+        pairedDeviceId?: string
+    ): Observable<string> {
+        const request = new PersonalizationRequest(deviceToken, null, null, null, pairedDeviceId);
+        return this.sendPersonalizationRequest(sslEnabled, serverName, serverPort, request, null);
     }
 
-    private sendPersonalizationRequest(sslEnabled: boolean, serverName: string, serverPort: string, request: PersonalizationRequest, personalizationParameters: Map<string, string>): Observable<string> {
+    private sendPersonalizationRequest(
+        sslEnabled: boolean,
+        serverName: string,
+        serverPort: string,
+        request: PersonalizationRequest,
+        personalizationParameters: Map<string, string>
+    ): Observable<string> {
         let url = sslEnabled ? 'https://' : 'http://';
         url += serverName + ':' + serverPort + '/devices/personalize';
 
         if (personalizationParameters) {
-            console.log("personalizationParams", personalizationParameters);
+            console.log('personalizationParams', personalizationParameters);
             personalizationParameters.forEach((value, key) => request.personalizationParameters[key] = value);
         }
 
@@ -148,7 +163,9 @@ export class PersonalizationService {
                     personalizationParameters = new Map<string, string>();
                 }
                 if (response.deviceModel.deviceParamModels) {
-                    response.deviceModel.deviceParamModels.forEach(value => personalizationParameters.set(value.paramName, value.paramValue));
+                    response.deviceModel.deviceParamModels.forEach(value => {
+                        personalizationParameters.set(value.paramName, value.paramValue);
+                    });
                 }
 
                 this.setPersonalizationProperties(personalizationParameters);
@@ -164,17 +181,17 @@ export class PersonalizationService {
             }),
             catchError(error => {
                 this.personalizationSuccessFul$.next(false);
-                if (error.status == 401) {
+                if (error.status === 401) {
                     return throwError(`Device saved token does not match server`);
                 }
 
-                if (error.status == 0) {
+                if (error.status === 0) {
                     return throwError(`Unable to connect to ${serverName}:${serverPort}`);
                 }
 
                 return throwError(`${error.statusText}`);
             })
-        )
+        );
     }
 
     public dePersonalize() {
@@ -189,7 +206,11 @@ export class PersonalizationService {
     }
 
 
-    public requestPersonalizationConfig(serverName: string, serverPort: string, sslEnabled: boolean): Observable<PersonalizationConfigResponse> {
+    public requestPersonalizationConfig(
+        serverName: string,
+        serverPort: string,
+        sslEnabled: boolean
+    ): Observable<PersonalizationConfigResponse> {
         let url = sslEnabled ? 'https://' : 'http://';
         url += serverName + ':' + serverPort + '/devices/personalizationConfig';
 

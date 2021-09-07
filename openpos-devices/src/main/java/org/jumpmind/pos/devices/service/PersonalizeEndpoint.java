@@ -39,7 +39,7 @@ public class PersonalizeEndpoint {
         DeviceModel deviceModel;
 
         if (isNotBlank(deviceId) && isNotBlank(appId)) {
-            // TODO add a configuration map of appIds that are allowed to share deviceIds. IE probably shouldn't allow a self-checkout share with pos
+
             try {
                 log.info("Validating auth request of {} as {}", deviceId, appId);
                 String auth = devicesRepository.getDeviceAuth(request.getDeviceId());
@@ -69,9 +69,11 @@ public class PersonalizeEndpoint {
         } else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "DeviceId and AppId or AuthToken are required for personalization");
         }
-
+        if (deviceModel.getPairedDeviceId() == null && request.getPairedDeviceId() != null) {
+            devicesRepository.pairDevice(deviceModel.getDeviceId(), request.getPairedDeviceId());
+            deviceModel = devicesRepository.getDevice(deviceModel.getDeviceId());
+        }
         deviceUpdater.updateDevice(deviceModel);
-
         return PersonalizationResponse.builder()
                 .authToken(authToken)
                 .deviceModel(deviceModel)
