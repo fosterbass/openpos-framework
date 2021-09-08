@@ -12,7 +12,7 @@
         <div *ngIf="!membership?.member && membership?.nonMemberName" class="membership-name">
             {{membership.nonMemberName}}
         </div>
-        <div *ngIf="membership?.member" class="membership-name">
+        <div *ngIf="membership?.member || !membership?.nonMemberName" class="membership-name">
             {{membership.name}}
         </div>
     </mat-chip>
