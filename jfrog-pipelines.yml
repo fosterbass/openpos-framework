@@ -5,7 +5,7 @@ resources:
       # SCM integration where the repository is located
       gitProvider: JumpMindGitHub
       # Repository path, including org name/repo name
-      path: openpos-framework
+      path: JumpMind/openpos-framework
       branches:
         # Specifies which branches will trigger dependent steps
         include: master
