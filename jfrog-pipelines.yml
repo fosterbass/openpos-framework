@@ -31,6 +31,8 @@ pipelines:
           sourceLocation: openpos-assemble
           deployerRepo: default-maven-local
           useWrapper: true
+          inputSteps:
+            - name: installChrome
           inputResources:
             - name: openposFrameworkGit
           integrations:
