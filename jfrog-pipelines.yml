@@ -1,12 +1,14 @@
 pipelines:
-  - name: openpos_framework_build
+  - name: gradleBuildPipeline
     steps:
-      - name: gradle_build
-        type: Bash
+      - name: gradleBuildStep
+        type: GradleBuild
         configuration:
-          runtime:
-            type: host
-        execution:
-          onExecute:
-            - cd openpos-assemble
-            - ./gradlew build
+          gradleCommand: "build"
+          sourceLocation: openpos-assemble
+          deployerRepo: default-maven-local
+          useWrapper: true
+          inputResources:
+            - name: JumpMindGitHub
+          integrations:
+            - name: JumpMindArtifactory
