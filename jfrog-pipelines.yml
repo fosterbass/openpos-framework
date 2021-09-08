@@ -13,6 +13,17 @@ resources:
 pipelines:
   - name: gradleBuildPipeline
     steps:
+      - name: installChrome
+        type: Bash
+        configuration:
+          inputResources:
+            - name: openposFrameworkGit
+        execution:
+            onExecute:
+              - wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+              - echo "deb http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list
+              - apt-get update
+              - apt-get install -y google-chrome-stable xvfb
       - name: gradleBuildStep
         type: GradleBuild
         configuration:
