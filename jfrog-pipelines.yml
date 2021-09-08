@@ -1,0 +1,12 @@
+pipelines:
+  - name: openpos_framework_build
+    steps:
+      - name: gradle_build
+        type: Bash
+        configuration:
+          runtime:
+            type: host
+        execution:
+          onExecute:
+            - cd openpos-assemble
+            - ./gradlew build
