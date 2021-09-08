@@ -3,8 +3,7 @@ import { MessageTypes } from '../messages/message-types';
 import { takeUntil } from 'rxjs/operators';
 import { LoyaltySignupMessage } from '../messages/loyalty-signup-message';
 import { SessionService } from './session.service';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { Observable } from 'rxjs/internal/Observable';
+import { BehaviorSubject, Subject, Observable } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',

@@ -7,6 +7,7 @@ import { StatusMessage } from '../status.message';
 import { StatusService } from '../status.service';
 import { PeripheralCategory, PeripheralSelectionService } from '../../../core/peripherals/peripheral-selection.service';
 import { LocaleService } from '../../../core/services/locale.service';
+import { StatusDetailsDialog } from '../status-details/status-details-dialog.service';
 
 type CategoryWithName = PeripheralCategory & { displayName: string };
 
@@ -26,6 +27,7 @@ export class StatusBarComponent {
 
   constructor(
     private statusService: StatusService,
+    private statusDetailsDialog: StatusDetailsDialog,
     peripheralSelectionService: PeripheralSelectionService,
     render2: Renderer2,
     elementRef: ElementRef,
@@ -85,7 +87,7 @@ export class StatusBarComponent {
 
   @HostListener('click')
   onClick() {
-    this.statusService.openDetails();
+    this.statusDetailsDialog.openDetails();
   }
 }
 

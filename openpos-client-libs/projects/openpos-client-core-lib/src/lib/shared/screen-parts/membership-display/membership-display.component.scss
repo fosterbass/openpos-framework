@@ -2,24 +2,32 @@
 
 mat-chip {
   text-transform: uppercase;
-  padding-right: 2em;
-  padding-left: 2em;
-  &.tablet{
-    font-size: $text-sm;
+  min-height: 2em;
+
+  &.mat-standard-chip {
+    padding: .1em 1.25em;
+  }
+
+  &.tablet {
+    font-size: $text-sm-mobile;
   }
 
   &.mobile {
     font-size: $text-xs-mobile;
-    padding: 0.25em 6px;
-    border-radius: 16px;
-    align-items: center;
-    min-height: 1.25rem;
   }
-  app-icon{
-    margin-right: .25em;
+  app-icon {
+    margin: 0 .15em 0 -.5em;
+    font-size: 1.25em;
+    width: 1.25em;
+    height: 1.25em;
   }
 }
 
 .mat-chip-list-wrapper {
   margin: 0;
+}
+
+.membership-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
 }

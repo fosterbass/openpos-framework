@@ -40,22 +40,12 @@ public class DevicesRepositoryTest {
     @Mock
     VirtualDeviceRepository virtualDeviceRepository;
 
-    @Mock
-    CacheManager cacheManager;
-
     String mockDeviceId = "00100-001";
     String mockPairedDeviceId = "00100-002";
     String mockBusinessUnitId = "00100";
     String mockAppId = "pos";
     String mockSecondaryAppId = "customerdisplay";
     String mockAuthToken = "830311d5-9550-4eaf-94ff-c661ed761067";
-    Cache mockCache;
-
-    @Before
-    public void setup() {
-        mockCache = spy(new ConcurrentMapCache(DevicesRepository.CACHE_NAME));
-        when(cacheManager.getCache(DevicesRepository.CACHE_NAME)).thenReturn(mockCache);
-    }
 
     @Test
     public void testFindDevice() {
@@ -167,7 +157,6 @@ public class DevicesRepositoryTest {
         devicesRepository.pairDevice(mockDeviceId, mockPairedDeviceId);
         verify(devSession).save(getMockDevice(mockDeviceId, mockPairedDeviceId));
         verify(devSession).save(getMockDevice(mockPairedDeviceId, mockDeviceId));
-        verify(mockCache, times(2)).clear();
     }
 
     @Test
@@ -190,8 +179,6 @@ public class DevicesRepositoryTest {
         verify(devSession).save(getMockDevice(device4Id));
         verify(devSession).save(getMockDevice(mockDeviceId, mockPairedDeviceId));
         verify(devSession).save(getMockDevice(mockPairedDeviceId, mockDeviceId));
-
-        verify(mockCache, times(6)).clear();
     }
 
     @Test
@@ -202,7 +189,6 @@ public class DevicesRepositoryTest {
         devicesRepository.unpairDevice(mockDeviceId, mockPairedDeviceId);
         verify(devSession).save(getMockDevice());
         verify(devSession).save(getMockDevice(mockPairedDeviceId));
-        verify(mockCache, times(2)).clear();
     }
 
     @Test

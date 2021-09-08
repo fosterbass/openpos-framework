@@ -26,7 +26,8 @@ export class AndroidContentProviderPlugin implements IPlatformPlugin {
     }
 
     query( queryRequest: AndroidContentQuery ){
-        let response = new Subject();
+        let response = new Subject<any>();
+
         window['plugins'].contentproviderplugin.query({
             contentUri: queryRequest.contentUri,
             projection: queryRequest.projection,

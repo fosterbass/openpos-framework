@@ -1,18 +1,16 @@
-import {map, tap} from 'rxjs/operators';
-import {Scanner} from '../../core/platform-plugins/barcode-scanners/scanner';
+import {map} from 'rxjs/operators';
 import {UIDataMessageService} from '../../core/ui-data-message/ui-data-message.service';
 import {BuddyStoreInterface} from './buddy-store.interface';
 import { ItemDetailInterface } from './item-detail.interface';
 import { ScreenComponent } from '../../shared/decorators/screen-component.decorator';
-import {Component, InjectionToken, Injector, Optional} from '@angular/core';
+import {Component, Injector, Optional} from '@angular/core';
 import { PosScreen } from '../pos-screen/pos-screen.component';
 import {MediaBreakpoints, OpenposMediaService} from "../../core/media/openpos-media.service";
 import {Observable} from "rxjs";
 import {BasicProductOptionPart} from './option-components/basic-product-option-part/basic-product-option-part';
 import {SwatchProductOptionPart} from './option-components/swatch-product-option-part/swatch-product-option-part.component';
 import {ProductOptionInterface} from './product-option.interface';
-
-export const OPTION_NAME = new InjectionToken<string>('OptionName');
+import { OPTION_NAME } from './item-detail-option';
 
 @ScreenComponent({
     name: 'ItemDetail'

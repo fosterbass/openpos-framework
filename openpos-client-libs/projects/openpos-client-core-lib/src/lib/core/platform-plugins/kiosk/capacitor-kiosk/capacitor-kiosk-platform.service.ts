@@ -1,8 +1,14 @@
 import { Injectable } from '@angular/core';
-import { Capacitor, Plugins } from '@capacitor/core';
-import { KioskModeHandle, KioskModePlatform } from '../kiosk-mode-platform';
+import { Capacitor, registerPlugin } from '@capacitor/core';
+import { KioskModePlatform } from '../kiosk-mode-platform';
 
-const { KioskMode } = Plugins;
+const KioskMode = registerPlugin<CapKioskMode>('KioskMode');
+
+interface CapKioskMode {
+    isInKioskMode(): Promise<{ enabled: boolean }>;
+    enter(): Promise<{ success: boolean }>;
+    exit(): Promise<{ success: boolean }>;
+}
 
 @Injectable()
 export class CapacitorKioskModePlatform implements KioskModePlatform {

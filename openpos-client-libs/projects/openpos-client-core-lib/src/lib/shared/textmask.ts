@@ -1,4 +1,3 @@
-import { IGenericMaskSpec } from './textmask';
 import createNumberMask from 'text-mask-addons/dist/createNumberMask';
 
 /** Used by a GenericMaskSpec for building an array of mask elements to pass to text-mask.

@@ -1,12 +1,13 @@
-import { Component, AfterViewInit, ViewChildren, QueryList, Injector } from '@angular/core';
+import { Component, AfterViewInit, ViewChildren, Injector } from '@angular/core';
 import { ScreenPart } from '../../decorators/screen-part.decorator';
 import { ScreenPartComponent } from '../screen-part';
-import { MessageProvider } from '../../providers/message.provider';
 import { FormGroup } from '@angular/forms';
 import { FormBuilder } from '../../../core/services/form-builder.service';
 import { IFormElement } from '../../../core/interfaces/form-field.interface';
 import { DynamicFormFieldComponent } from '../../components/dynamic-form-field/dynamic-form-field.component';
 import { IFormOptionItem } from './form-option-item.interface';
+
+import type { QueryList } from '@angular/core';
 
 @ScreenPart({
     name: 'options'

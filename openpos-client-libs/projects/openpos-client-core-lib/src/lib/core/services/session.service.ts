@@ -10,7 +10,7 @@ import { map, filter, takeWhile, publishReplay, take } from 'rxjs/operators';
 import { Message } from '@stomp/stompjs';
 import { Injectable, NgZone, Inject, } from '@angular/core';
 import { StompState, StompRService } from '@stomp/ng2-stompjs';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 // Importing the ../components barrel causes a circular reference since dynamic-screen references back to here,
 // so we will import those files directly
 import { LoaderState } from '../../shared/components/loader/loader-state';
@@ -26,6 +26,7 @@ import { CLIENTCONTEXT, IClientContext } from '../client-context/client-context-
 import { DiscoveryService } from '../discovery/discovery.service';
 import { UnlockScreenMessage } from '../messages/unlock-screen-message';
 import { SplashScreen } from '../messages/splash-screen-message';
+import { PowerStatus } from '../platform-plugins/power/power-supplier';
 
 declare var window: any;
 export class QueueLoadingMessage implements ILoading {
@@ -67,10 +68,10 @@ export class ConnectedMessage {
 // as outlined here: https://github.com/stomp-js/ng2-stompjs/issues/58
 export class OpenposStompService extends StompRService {
     disconnect() {
-      if (this.client) {
-        this.client.reconnect_delay = 0;
-      }
-      super.disconnect();
+        if (this.client) {
+            this.client.reconnect_delay = 0;
+        }
+        super.disconnect();
     }
 }
 
@@ -110,6 +111,7 @@ export class SessionService implements IMessageHandler<any> {
 
     public screenMessage$: Observable<any>;
 
+    private powerStatus: PowerStatus;
 
     constructor(
         public dialogService: MatDialog,
@@ -122,9 +124,9 @@ export class SessionService implements IMessageHandler<any> {
         @Inject(CLIENTCONTEXT) private clientContexts: Array<IClientContext>
     ) {
         this.zone.onError.subscribe((e) => {
-            if (typeof(e) === 'string') {
+            if (typeof (e) === 'string') {
                 console.error(`[OpenPOS] ${e}`);
-            } else if(e.message) {
+            } else if (e.message) {
                 console.error(`[OpenPOS] ${e.message}`, e);
             } else {
                 console.error(`[OpenPOS] unexpected zone error`, e);
@@ -145,13 +147,13 @@ export class SessionService implements IMessageHandler<any> {
         screenMessagesBehavior.connect();
     }
 
-    public sendMessage<T extends OpenposMessage>(message: T) {
-        if ( message.type === MessageTypes.ACTION && message instanceof ActionMessage ) {
+    public sendMessage<T extends OpenposMessage>(message: T): boolean {
+        if (message.type === MessageTypes.ACTION && message instanceof ActionMessage) {
             const actionMessage = message as ActionMessage;
-            this.publish(actionMessage.actionName, MessageTypes.SCREEN, actionMessage.payload, actionMessage.doNotBlockForResponse);
+            return this.publish(actionMessage.actionName, MessageTypes.SCREEN, actionMessage.payload, actionMessage.doNotBlockForResponse);
         } else if (message.type === MessageTypes.PROXY && message instanceof ActionMessage) {
             const actionMessage = message as ActionMessage;
-            this.publish(actionMessage.actionName, actionMessage.type, actionMessage.payload, actionMessage.doNotBlockForResponse);
+            return this.publish(actionMessage.actionName, actionMessage.type, actionMessage.payload, actionMessage.doNotBlockForResponse);
         }
         this.sessionMessages$.next(message);
     }
@@ -227,12 +229,13 @@ export class SessionService implements IMessageHandler<any> {
             appId: this.personalization.getAppId$().getValue(),
             deviceId: this.personalization.getDeviceId$().getValue(),
             queryParams: JSON.stringify(this.queryParams),
-            version: JSON.stringify(VERSIONS)
+            version: JSON.stringify(VERSIONS),
+            powerStatus: this.powerStatus
         };
         this.appendPersonalizationProperties(headers);
-        this.clientContexts.forEach( context => {
+        this.clientContexts.forEach(context => {
             const contextsToAdd = context.getContextProperties();
-            contextsToAdd.forEach( (value, key ) => {
+            contextsToAdd.forEach((value, key) => {
                 headers[key] = value;
             });
         });
@@ -333,9 +336,9 @@ export class SessionService implements IMessageHandler<any> {
 
     private async negotiateWebsocketUrl(): Promise<string> {
         if (this.personalization.getIsManagedServer$().getValue()) {
-            if (! this.discovery.getWebsocketUrl()) {
+            if (!this.discovery.getWebsocketUrl()) {
                 const discoverResp = await this.discovery.discoverDeviceProcess();
-                if (!discoverResp || ! discoverResp.success) {
+                if (!discoverResp || !discoverResp.success) {
                     console.error(`Failed to get websocket url from OpenPOS Management Server. Reason: ` +
                         `${!!discoverResp ? discoverResp.message : 'unknown'}`);
                     return null;
@@ -446,7 +449,7 @@ export class SessionService implements IMessageHandler<any> {
                 } else {
                     console.debug(`Management server is not alive`);
                 }
-            } );
+            });
         }
     }
 
@@ -527,5 +530,10 @@ export class SessionService implements IMessageHandler<any> {
 
     public getCurrencyDenomination(): string {
         return 'USD';
+    }
+
+    public sendPowerStatus(status: PowerStatus) {
+        this.powerStatus = status;
+        this.sendMessage(new ActionMessage('PowerStatusChanged', true, status));
     }
 }

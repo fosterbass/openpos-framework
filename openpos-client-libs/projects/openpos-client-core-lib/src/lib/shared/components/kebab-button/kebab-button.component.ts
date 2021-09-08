@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnDestroy, Output} from '@angular/core';
-import {MatDialog, MatDialogRef} from '@angular/material';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import {Subscription} from 'rxjs';
 import {finalize} from 'rxjs/operators';
 import {ActionService} from '../../../core/actions/action.service';

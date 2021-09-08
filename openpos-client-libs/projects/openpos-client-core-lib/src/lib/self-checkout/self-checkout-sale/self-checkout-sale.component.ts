@@ -16,8 +16,8 @@ import { map } from 'rxjs/operators';
     styleUrls: ['./self-checkout-sale.component.scss']
 })
 export class SelfCheckoutSaleComponent extends PosScreen<any> implements AfterViewChecked {
-    @ViewChild('scrollList', { read: ElementRef }) private scrollList: ElementRef;
-    @ViewChild('scrollList') private saleItemCardList: SaleItemCardListComponent;
+    @ViewChild('scrollList', { read: ElementRef, static: true }) private scrollList: ElementRef;
+    @ViewChild('scrollList', { static: true }) private saleItemCardList: SaleItemCardListComponent;
 
     initialized = false;
 

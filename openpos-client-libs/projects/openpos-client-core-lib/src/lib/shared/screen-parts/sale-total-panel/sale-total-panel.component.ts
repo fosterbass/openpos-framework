@@ -6,7 +6,7 @@ import { IActionItem } from '../../../core/actions/action-item.interface';
 import { Configuration } from '../../../configuration/configuration';
 import { MediaBreakpoints, OpenposMediaService } from '../../../core/media/openpos-media.service';
 import { LoyaltySignupService } from '../../../core/services/loyalty-signup.service';
-import { Observable } from 'rxjs/internal/Observable';
+import { Observable } from 'rxjs';
 import { glowContractTrigger, glowPulseTrigger } from '../../animations/glow.animation';
 import { shakeTrigger } from '../../animations/shake.animation';
 import { throbTrigger } from '../../animations/throb.animation';

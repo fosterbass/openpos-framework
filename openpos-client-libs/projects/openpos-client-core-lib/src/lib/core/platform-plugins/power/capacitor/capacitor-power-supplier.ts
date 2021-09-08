@@ -1,13 +1,10 @@
 import { Injectable } from "@angular/core";
-import { Capacitor } from "@capacitor/core";
-import { Observable, of } from "rxjs";
+import { Capacitor, registerPlugin } from "@capacitor/core";
+import { Observable } from "rxjs";
 import { PowerStatus, PowerSupplier } from "../power-supplier";
 
-declare module '@capacitor/core' {
-    interface PluginRegistry {
-        Power: PowerPlugin;
-    }
-}
+const Power = registerPlugin<PowerPlugin>('Power');
+
 
 interface PowerPlugin {
     subscribe(): Promise<PowerDetails>;
@@ -37,16 +34,16 @@ export class CapacitorPowerSupplier implements PowerSupplier {
                 return;
             }
 
-            Capacitor.Plugins.Power.subscribe().then(result => {
+            Power.subscribe().then(result => {
                 observer.next(result.state);
             });
 
-            Capacitor.Plugins.Power.addListener('batteryStatusChanged', details => {
+            Power.addListener('batteryStatusChanged', details => {
                 observer.next(details.state);
             });
 
             return () => {
-                Capacitor.Plugins.Power.unsubscribe();
+                Power.unsubscribe();
             };
         });
     }

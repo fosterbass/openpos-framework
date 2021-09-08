@@ -22,7 +22,7 @@ describe('FocusService', () => {
         });
 
         focusTrapFactory.create.and.returnValue(focusTrap);
-        focusService = TestBed.get(FocusService);
+        focusService = TestBed.inject(FocusService);
     });
 
     describe('createInitialFocus', () => {

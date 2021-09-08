@@ -17,7 +17,7 @@ import { UIDataMessageService } from '../../../core/ui-data-message/ui-data-mess
 })
 export class MobileSaleItemListComponent extends ScreenPartComponent<MobileSaleItemListInterface> implements OnInit {
 
-    @ViewChild('scrollList', { read: ElementRef }) private scrollList: ElementRef;
+    @ViewChild('scrollList', { read: ElementRef, static: true }) private scrollList: ElementRef;
     size = -1;
     items: Observable<ISellItem[]>;
     expandedIndex = 0;

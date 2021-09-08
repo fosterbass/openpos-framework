@@ -11,8 +11,8 @@
 import { InjectionToken } from '@angular/core';
 import { IKeyboardDeadkeys } from '../interfaces/keyboard-deadkeys.interface';
 
-const MAT_KEYBOARD_DEADKEYS = new InjectionToken<IKeyboardDeadkeys>('keyboard-deadkey.config');
-const keyboardDeadkeys: IKeyboardDeadkeys = {
+export const MAT_KEYBOARD_DEADKEYS = new InjectionToken<IKeyboardDeadkeys>('keyboard-deadkey.config');
+export const keyboardDeadkeys: IKeyboardDeadkeys = {
   '"': {
     'a': '\u00e4',
     'e': '\u00eb',
@@ -208,5 +208,3 @@ keyboardDeadkeys['\u00b4'] = keyboardDeadkeys['\u0384'] = keyboardDeadkeys['\'']
 // Ring
 keyboardDeadkeys['\u00ba'] = keyboardDeadkeys['\u00b0'];
 keyboardDeadkeys['\u201a'] = keyboardDeadkeys['\u00B8'];
-
-export { IKeyboardDeadkeys, MAT_KEYBOARD_DEADKEYS, keyboardDeadkeys };

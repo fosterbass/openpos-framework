@@ -8,12 +8,13 @@ import {ElectronService} from "ngx-electron";
 import {CLIENTCONTEXT} from "../../core/client-context/client-context-provider.interface";
 import {TimeZoneContext} from "../../core/client-context/time-zone-context";
 import {NO_ERRORS_SCHEMA} from "@angular/core";
-import {MatDialog} from "@angular/material";
+import {MatDialog} from "@angular/material/dialog";
 import {LoyaltyCustomerFormInterface} from "./loyalty-customer-form.interface";
 import {IForm} from "../../core/interfaces/form.interface";
 import {IFormElement} from "../../core/interfaces/form-field.interface";
 import {By} from "@angular/platform-browser";
 import {Membership} from "../../shared/screen-parts/membership-display/memebership-display.interface";
+import { DynamicFormFieldComponent } from "projects/openpos-client-core-lib/src/public-api";
 
 class ClientContext {};
 class MockActionService {};
@@ -473,12 +474,15 @@ describe('LoyaltyCustomerFormDialog', () => {
             });
 
             describe("extra non-structured form fields", () => {
-                it("unhandled/unexpected form fields are rendered", () => {
+                it("unhandled/unexpected form fields are rendered", async () => {
                     let element = {id: "Something else"} as IFormElement;
                     component.screen.form.formElements = [element];
 
+                    component.buildScreen();
                     fixture.detectChanges();
+
                     let test = fixture.debugElement.queryAll(By.css('.extraFormFields app-dynamic-form-field'));
+                    
                     expect(test.length).toBe(1);
                     expect(test[0].properties.formField.id).toEqual(component.screen.form.formElements[0].id);
                 });

@@ -3,6 +3,21 @@
   "dest": "../../dist/openpos-client-core-lib",
   "deleteDestPath": false,
   "lib": {
-    "entryFile": "src/public-api.ts"
+    "entryFile": "src/public-api.ts",
+    "umdModuleIds": {
+      "@stomp/ng2-stompjs": "@stomp/ng2-stompjs",
+      "ngx-electron": "ngx-electron",
+      "ngx-toastr": "ngx-toastr",
+      "angular2-text-mask": "angular2-text-mask",
+      "showdown": "showdown",
+      "text-mask-addons/dist/createAutoCorrectedDatePipe": "text-mask-addons/dist/createAutoCorrectedDatePipe",
+      "text-mask-addons/dist/createNumberMask": "text-mask-addons/dist/createNumberMask",
+      "@capacitor/core": "@capacitor/core",
+      "@capacitor/status-bar": "@capacitor/status-bar",
+      "@capacitor/storage": "@capacitor/storage",
+      "@capacitor/device": "@capacitor/device",
+      "lodash": "lodash",
+      "@ionic-native/zeroconf": "@ionic-native/zeroconf"
+    }
   }
 }

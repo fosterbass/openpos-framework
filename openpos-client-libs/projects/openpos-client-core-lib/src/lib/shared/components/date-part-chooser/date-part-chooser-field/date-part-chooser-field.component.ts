@@ -1,6 +1,6 @@
 import { Input, Component, OnInit, Output, EventEmitter, AfterViewInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { DatePartChooserDialogComponent } from '../date-part-chooser-dialog/date-part-chooser-dialog.component';
 import { IDatePartChooserField } from '../../../../core/interfaces/date-part-chooser-field.interface';
 import { FormattersService } from '../../../../core/services/formatters.service';

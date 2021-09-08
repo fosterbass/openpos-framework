@@ -41,8 +41,8 @@ def updateGradlePropertiesVersion = { newVersion ->
 
 
 node {
-    version = '10.5.0'
-    npmVersion = '6.1.0'
+    version = '14.17.5'
+    npmVersion = '6.14.14'
     download = downloadNode.toBoolean()
     if (project.hasProperty('nodeDistUrl')) {
       distBaseUrl = nodeDistUrl

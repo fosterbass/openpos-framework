@@ -1,6 +1,6 @@
 import { TestBed, ComponentFixture, tick, fakeAsync } from '@angular/core/testing';
 import { PagerComponent } from './pager.component';
-import { Component, Input, QueryList, ViewChild } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 
 describe('PagerComponent', () => {
 
@@ -163,7 +163,7 @@ class MockIconComponent {
     </app-pager>`
 })
 class TestPagerWrapperComponent {
-    @ViewChild(PagerComponent) myPager;
+    @ViewChild(PagerComponent, { static: true }) myPager;
     numbers = Array(17).fill(0).map((x,i) => i);
     public index = 2;
 }

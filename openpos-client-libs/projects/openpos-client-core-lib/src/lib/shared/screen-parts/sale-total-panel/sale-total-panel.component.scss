@@ -147,6 +147,17 @@ $loyalty-signup-column-gap: 8px;
 
                         &.desktop-portrait {
                             font-size: $text-sm;
+                            line-height: normal;
+                        }
+                    }
+                    .membership-customer-email,
+                    .membership-tier {
+                        @extend %text-xs;
+                        line-height: 1.3rem;
+
+                        &.tablet,
+                        &.mobile {
+                            line-height: 1rem;
                         }
                     }
                     .loyalty-keybind {

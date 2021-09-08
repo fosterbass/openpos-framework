@@ -1,4 +1,4 @@
-import { MatDialogConfig } from '@angular/material';
+import { MatDialogConfig } from '@angular/material/dialog';
 
 export interface OpenPOSDialogConfig extends MatDialogConfig {
     /** If true, will cause the dialog action chosen by the user to be invoked before

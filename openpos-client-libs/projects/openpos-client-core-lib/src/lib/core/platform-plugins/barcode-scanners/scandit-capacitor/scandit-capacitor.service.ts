@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Plugins as CapacitorPlugins, Capacitor } from '@capacitor/core';
+import { Capacitor } from '@capacitor/core';
 
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, map, mergeMap, switchMap, take, timeout } from 'rxjs/operators';
@@ -8,6 +8,8 @@ import { ConfigurationService } from '../../../services/configuration.service';
 import { IPlatformPlugin } from '../../platform-plugin.interface';
 
 import { ImageScanner, ScannerViewRef, ScanData } from '../scanner';
+
+import { Scandit } from './scandit-plugin.capacitor';
 
 @Injectable({
     providedIn: 'root'
@@ -31,7 +33,7 @@ export class ScanditCapacitorImageScanner implements ImageScanner, IPlatformPlug
             timeout(10000),
             switchMap((config: ConfigChangedMessage & any) => {
                 if (config.licenseKey) {
-                    return of(CapacitorPlugins.ScanditNative.initialize({
+                    return of(Scandit.initialize({
                         apiKey: config.licenseKey
                     }));
                 }
@@ -56,13 +58,13 @@ export class ScanditCapacitorImageScanner implements ImageScanner, IPlatformPlug
         }
 
         return new Observable(observer => {
-            CapacitorPlugins.ScanditNative.addView();
+            Scandit.addView();
 
             const updateViewSub = view.viewChanges().pipe(
-                mergeMap(d => CapacitorPlugins.ScanditNative.updateView(d))
+                mergeMap(d => Scandit.updateView(d))
             ).subscribe();
 
-            const handle = CapacitorPlugins.ScanditNative.addListener('scan', (e) => {
+            const handle = Scandit.addListener('scan', (e) => {
                 observer.next({
                     type: e.symbology,
                     data: e.data
@@ -72,7 +74,7 @@ export class ScanditCapacitorImageScanner implements ImageScanner, IPlatformPlug
             return () => {
                 handle.remove();
                 updateViewSub.unsubscribe();
-                CapacitorPlugins.ScanditNative.removeView();
+                Scandit.removeView();
             };
         });
     }

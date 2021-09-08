@@ -1,19 +1,15 @@
 import { Injectable } from '@angular/core';
-import { from, Observable, of } from 'rxjs';
+import { Capacitor, registerPlugin } from '@capacitor/core';
+import { from, Observable } from 'rxjs';
 
 import { IPrinter } from './printer.interface';
 
-declare module '@capacitor/core' {
-    interface PluginRegistry {
-        Print: PrintPlugin;
-    }
-}
+const Print = registerPlugin<PrintPlugin>('Print');
 
 interface PrintPlugin {
     print(args: { html: string }): Promise<void>;
 }
 
-import { Capacitor, Plugins as CapacitorPlugins } from '@capacitor/core';
 
 @Injectable()
 export class CapacitorPrinterPlugin implements IPrinter {
@@ -26,6 +22,6 @@ export class CapacitorPrinterPlugin implements IPrinter {
     }
 
     print(html: string): Observable<void> {
-        return from(CapacitorPlugins.Print.print({ html }));
+        return from(Print.print({ html })) as Observable<void>;
     }
 }

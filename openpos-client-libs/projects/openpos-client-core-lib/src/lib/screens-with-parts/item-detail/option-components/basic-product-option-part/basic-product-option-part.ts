@@ -1,7 +1,7 @@
 import {Component, Inject, Injector, OnInit, Optional} from '@angular/core';
 import {MatSelectChange} from '@angular/material/select';
 import {ScreenPartComponent} from '../../../../shared/screen-parts/screen-part';
-import {OPTION_NAME} from '../../item-detail.component';
+import {OPTION_NAME} from '../../item-detail-option';
 import {BasicProductOptionPartInterface} from './basic-product-option-part.interface';
 
 @Component({

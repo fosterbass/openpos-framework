@@ -5,7 +5,6 @@ import {
     Injector,
     Input, OnInit,
     Output,
-    QueryList,
     ViewChild,
     ViewChildren
 } from '@angular/core';
@@ -19,6 +18,8 @@ import {IFormElement} from '../../../core/interfaces/form-field.interface';
 import {IActionItem} from '../../../core/actions/action-item.interface';
 import {IDynamicFormPartEventArg} from './dynamic-form-part-event-arg.interface';
 import { takeUntil, tap } from 'rxjs/operators';
+
+import type { QueryList } from '@angular/core';
 
 @Component({
     selector: 'app-dynamic-form-part',

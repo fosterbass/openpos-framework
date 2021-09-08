@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, HostBinding, HostListener, QueryList, ViewChildren } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, HostBinding, HostListener, ViewChildren } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
 
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -9,6 +9,8 @@ import { KeyboardModifier } from '../../enums/keyboard-modifier.enum';
 import { IKeyboardLayout } from '../../interfaces/keyboard-layout.interface';
 // import { MatKeyboardService } from '../../services/keyboard.service';
 import { MatKeyboardKeyComponent } from '../keyboard-key/keyboard-key.component';
+
+import type { QueryList } from '@angular/core';
 
 /**
  * A component used to open as the default keyboard, matching material spec.

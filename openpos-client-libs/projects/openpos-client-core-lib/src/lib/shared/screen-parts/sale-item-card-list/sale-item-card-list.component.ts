@@ -3,7 +3,6 @@ import {
   Injector,
   ElementRef,
   ViewChildren,
-  QueryList,
   AfterViewInit,
   Output,
   EventEmitter
@@ -19,6 +18,7 @@ import { Configuration } from '../../../configuration/configuration';
 import {filter, takeUntil} from 'rxjs/operators';
 import {IActionItem} from "../../../core/actions/action-item.interface";
 
+import type { QueryList } from '@angular/core';
 
 @ScreenPart({
   name: 'SaleItemCardList'

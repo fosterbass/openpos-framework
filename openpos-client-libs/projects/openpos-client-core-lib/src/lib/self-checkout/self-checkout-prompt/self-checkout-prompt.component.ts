@@ -17,7 +17,7 @@ import { PromptFormPartComponent } from '../../shared/screen-parts/prompt-form-p
 })
 export class SelfCheckoutPromptComponent extends PosScreen<SelfCheckoutPromptInterface> {
 
-    @ViewChild(PromptFormPartComponent) private promptForm: PromptFormPartComponent;
+    @ViewChild(PromptFormPartComponent, { static: true }) private promptForm: PromptFormPartComponent;
     public optionItems: IOptionItem[];
 
     buildScreen() {

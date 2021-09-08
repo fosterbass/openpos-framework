@@ -3,8 +3,9 @@ export class PersonalizationRequest {
         public deviceToken: string,
         public deviceId: string,
         public appId: string,
-        public deviceType: string) {
-    }
+        public deviceType: string,
+        public pairedDeviceId?: string
+    ) { }
 
     public personalizationParameters = {};
 }

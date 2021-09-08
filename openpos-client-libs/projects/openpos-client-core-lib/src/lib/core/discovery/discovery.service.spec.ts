@@ -46,8 +46,8 @@ describe('DiscoveryService', () => {
         isManagedServerMock = new BehaviorSubject(false);
         personalizatioPropertiesMock = new BehaviorSubject(null);
 
-        AppInjector.Instance = TestBed.get(Injector);
-        personalizationServiceSpy = TestBed.get(PersonalizationService);
+        AppInjector.Instance = TestBed.inject(Injector);
+        personalizationServiceSpy = TestBed.inject(PersonalizationService) as jasmine.SpyObj<PersonalizationService>;
         personalizationServiceSpy.getServerName$.and.returnValue(serverNameMock);
         personalizationServiceSpy.getServerPort$.and.returnValue(serverPortMock);
         personalizationServiceSpy.getAppId$.and.returnValue(appIdMock);
@@ -56,8 +56,8 @@ describe('DiscoveryService', () => {
         personalizationServiceSpy.getPersonalizationProperties$.and.returnValue(personalizatioPropertiesMock);
         personalizationServiceSpy.getDeviceId$.and.returnValue(deviceIdMock);
 
-        httpClientSpy = TestBed.get(HttpClient);
-        discoveryService = TestBed.get(DiscoveryService);
+        httpClientSpy = TestBed.inject(HttpClient) as jasmine.SpyObj<HttpClient>;
+        discoveryService = TestBed.inject(DiscoveryService);
 
 
     });

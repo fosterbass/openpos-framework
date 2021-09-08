@@ -1,9 +1,11 @@
-import { Observable } from "rxjs";
-import { ImageScanner, ScanData, ScannerViewRef } from "../scanner";
+import { Observable } from 'rxjs';
+import { ImageScanner, ScanData, ScannerViewRef } from '../scanner';
+import { Injectable } from '@angular/core';
 
+@Injectable()
 export class DebugImageScanner implements ImageScanner {
     name(): string {
-        return "Debug";
+        return 'Debug';
     }
 
     beginScanning(view: ScannerViewRef): Observable<ScanData> {

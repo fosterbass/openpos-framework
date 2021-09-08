@@ -14,7 +14,7 @@ import { WebcamViewerInterface } from './webcam-viewer.interface';
 })
 export class WebcamViewerComponent extends ScreenPartComponent<WebcamViewerInterface> implements AfterViewInit, OnDestroy {
 
-    @ViewChild('videoElement') video: ElementRef;
+    @ViewChild('videoElement', { static: true }) video: ElementRef;
     private mediaStream: MediaStream;
 
     screenDataUpdated() {

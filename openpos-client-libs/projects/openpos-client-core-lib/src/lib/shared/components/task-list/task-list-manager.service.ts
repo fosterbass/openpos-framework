@@ -7,7 +7,7 @@ import {TaskCheckBoxComponent} from '../task-check-box/task-check-box.component'
 @Injectable()
 export class TaskListManagerService implements OnDestroy {
 
-    private checkBoxes = new Set();
+    private checkBoxes = new Set<TaskCheckBoxComponent>();
     private checkAllBox: TaskCheckAllBoxComponent;
 
     private subscriptions = new Map<TaskCheckBoxComponent, Subscription>();

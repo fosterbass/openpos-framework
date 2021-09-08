@@ -1,6 +1,6 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import {MatDialog} from '@angular/material';
+import {MatDialog} from '@angular/material/dialog';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {Subscription} from 'rxjs';
 import {ElectronService} from 'ngx-electron';

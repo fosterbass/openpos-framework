@@ -9,7 +9,7 @@ import {IActionItem} from '../../../core/actions/action-item.interface';
 import {Configuration} from '../../../configuration/configuration';
 import {KeyPressProvider} from '../../../shared/providers/keypress.provider';
 import {ActionService} from '../../../core/actions/action.service';
-import { MatTabChangeEvent } from '@angular/material';
+import { MatTabChangeEvent } from '@angular/material/tabs';
 
 @DialogComponent({
   name: 'CustomerDetailsDialog'

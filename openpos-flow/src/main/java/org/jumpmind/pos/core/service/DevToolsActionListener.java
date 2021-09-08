@@ -15,6 +15,7 @@ import org.jumpmind.pos.core.model.OpenposBarcodeType;
 import org.jumpmind.pos.core.model.ScanData;
 import org.jumpmind.pos.devices.DeviceNotFoundException;
 import org.jumpmind.pos.devices.model.DeviceModel;
+import org.jumpmind.pos.devices.model.DeviceParamModel;
 import org.jumpmind.pos.devices.model.DevicesRepository;
 import org.jumpmind.pos.server.model.Action;
 import org.jumpmind.pos.server.service.IActionListener;
@@ -66,23 +67,23 @@ public class DevToolsActionListener implements IActionListener {
 
     @Value("${openpos.peripheralSimulatorViewer.simUrl:#{null}}")
     String simUrl;
-    
+
     @Value("${openpos.peripheralSimulatorViewer.simProtocol:#{null}}")
     String simProtocol;
-    
+
     @Override
-    public Collection<String> getRegisteredTypes() {        
-        return Arrays.asList(new String[] { "DevTools" });
+    public Collection<String> getRegisteredTypes() {
+        return Arrays.asList(new String[]{"DevTools"});
     }
-    
+
     @Override
     public void actionOccurred(String deviceId, Action action) {
         IStateManager stateManager = stateManagerFactory.retrieve(deviceId, true);
-        
+
         if (action.getName().contains("DevTools::Scan")) {
             SimulatedScannerService service = SimulatedScannerService.instance;
             if (service != null) {
-                service.setScanData(((String)action.getData()).getBytes());
+                service.setScanData(((String) action.getData()).getBytes());
                 service.getCallbacks().fireDataEvent(new DataEvent(this, 1));
             } else {
                 ScanData scanData = new ScanData();
@@ -109,7 +110,7 @@ public class DevToolsActionListener implements IActionListener {
 
         messageService.sendMessage(deviceId, createMessage(stateManager, deviceId));
     }
-    
+
     private Message createMessage(IStateManager sm, String deviceId) {
         Message message = new Message();
         message.setType(MessageType.DevTools);
@@ -126,7 +127,7 @@ public class DevToolsActionListener implements IActionListener {
     private List<AudioLicense> getAudioLicenses() {
         try {
             return AudioLicenseUtil.getLicenses();
-        } catch(IOException e) {
+        } catch (IOException e) {
             logger.warn("Unable to load audio licenses", e);
         }
 
@@ -183,19 +184,25 @@ public class DevToolsActionListener implements IActionListener {
 
     private void setCustomerDisplayAuthData(String deviceId, Message message) {
         Map<String, String> customDeviceMap = new HashMap<>();
-        DeviceModel deviceModel = null;
-        String authToken = null;
+        DeviceModel customerDisplayDevice = null;
+        String authToken;
         String customerDisplayDeviceId = deviceId + "-customerdisplay";
+        List<DeviceParamModel> deviceParams = null;
         try {
-            deviceModel = devicesRepository.getDevice(customerDisplayDeviceId);
+            DeviceModel currentDevice = devicesRepository.getDevice(deviceId);
+            if (currentDevice != null) {
+                deviceParams = currentDevice.getDeviceParamModels();
+            }
+            customerDisplayDevice = devicesRepository.getDevice(customerDisplayDeviceId);
         } catch (DeviceNotFoundException ex) {
         }
-        if (deviceModel == null) {
-            deviceModel = DeviceModel.builder().
+        if (customerDisplayDevice == null) {
+            customerDisplayDevice = DeviceModel.builder().
                     deviceId(customerDisplayDeviceId).
                     appId(customerDisplayAppId).
+                    deviceParamModels(deviceParams).
                     build();
-            devicesRepository.saveDevice(deviceModel);
+            devicesRepository.saveDevice(customerDisplayDevice);
             authToken = UUID.randomUUID().toString();
             devicesRepository.saveDeviceAuth(customerDisplayDeviceId, authToken);
         } else {
@@ -206,11 +213,11 @@ public class DevToolsActionListener implements IActionListener {
                 devicesRepository.saveDeviceAuth(customerDisplayDeviceId, authToken);
             }
         }
-        devicesRepository.pairDevice(deviceId, customerDisplayDeviceId);
         customDeviceMap.put("customerDisplayAuthToken", authToken);
         customDeviceMap.put("customerDisplayPort", customerDisplayPort);
         customDeviceMap.put("customerDisplayUrl", customerDisplayUrl);
         customDeviceMap.put("customerDisplayProtocol", customerDisplayProtocol);
+        customDeviceMap.put("pairedDeviceId", deviceId);
         message.put("customerDisplay", customDeviceMap);
     }
 
@@ -292,7 +299,6 @@ public class DevToolsActionListener implements IActionListener {
         }
         return res;
     }
-
 
 
 }

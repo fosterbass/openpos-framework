@@ -1,9 +1,8 @@
 import {Component, Inject, Injector, OnInit, Optional} from '@angular/core';
 import {ScreenPart} from '../../../../shared/decorators/screen-part.decorator';
 import {ScreenPartComponent} from '../../../../shared/screen-parts/screen-part';
-import {OPTION_NAME} from '../../item-detail.component';
+import {OPTION_NAME} from '../../item-detail-option';
 import {SwatchProductOptionPartInterface} from './swatch-product-option-part.interface';
-import {SwatchInterface} from './swatch.interface';
 
 @ScreenPart( {
     name: 'swatchProductOption'

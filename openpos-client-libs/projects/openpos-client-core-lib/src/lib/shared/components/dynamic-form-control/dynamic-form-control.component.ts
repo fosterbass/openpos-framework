@@ -1,4 +1,4 @@
-import { Component, ViewChildren, AfterViewInit, Input, QueryList, ViewChild } from '@angular/core';
+import { Component, ViewChildren, AfterViewInit, Input, ViewChild } from '@angular/core';
 import { FormGroup, AbstractControl } from '@angular/forms';
 import { DynamicFormFieldComponent } from '../dynamic-form-field/dynamic-form-field.component';
 import { ShowErrorsComponent } from '../show-errors/show-errors.component';
@@ -9,6 +9,8 @@ import { ScreenService } from '../../../core/services/screen.service';
 import { FormBuilder } from '../../../core/services/form-builder.service';
 import { ActionService } from '../../../core/actions/action.service';
 
+import type { QueryList } from '@angular/core';
+
 @Component({
   selector: 'app-dynamic-form-control',
   templateUrl: './dynamic-form-control.component.html',
@@ -17,7 +19,7 @@ import { ActionService } from '../../../core/actions/action.service';
 export class DynamicFormControlComponent implements AfterViewInit {
 
   @ViewChildren(DynamicFormFieldComponent) children: QueryList<DynamicFormFieldComponent>;
-  @ViewChild('formErrors') formErrors: ShowErrorsComponent;
+  @ViewChild('formErrors', { static: true }) formErrors: ShowErrorsComponent;
   form: FormGroup;
 
   buttons: IFormElement[];

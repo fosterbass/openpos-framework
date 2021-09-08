@@ -71,12 +71,12 @@ describe('WedgeScanner', () => {
             ]
         });
 
-        sessionService = TestBed.get(SessionService);
-        domEventManager = TestBed.get(DomEventManager);
+        sessionService = TestBed.inject(SessionService) as jasmine.SpyObj<SessionService>;
+        domEventManager = TestBed.inject(DomEventManager) as jasmine.SpyObj<DomEventManager>;
 
         sessionService.getMessages.and.callFake(getConfig);
 
-        wedgeScannerPlugin = TestBed.get(WedgeScannerPlugin);
+        wedgeScannerPlugin = TestBed.inject(WedgeScannerPlugin);
     }
 
     function setupSync() {
@@ -86,7 +86,7 @@ describe('WedgeScanner', () => {
         subscription = wedgeScannerPlugin.beginScanning().subscribe( s => scanResults.push(s));
     }
 
-    const fakeEventSubject = new Subject();
+    const fakeEventSubject = new Subject<Event>();
 
     function dispatchEvent( key: string, ctrlKey: boolean, altKey: boolean ) {
         const event = new KeyboardEvent('keydown', {
@@ -100,7 +100,7 @@ describe('WedgeScanner', () => {
 
     function setupAsync() {
         setup();
-        domEventManager.createEventObserver.and.callFake(() => fakeEventSubject);
+        domEventManager.createEventObserver.and.callFake(() => fakeEventSubject.asObservable());
 
         subscription = wedgeScannerPlugin.beginScanning().subscribe( s => scanResults.push(s));
     }

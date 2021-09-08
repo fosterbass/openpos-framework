@@ -1,4 +1,4 @@
-import {Injector, OnDestroy, OnInit, Optional} from '@angular/core';
+import { Injector, OnDestroy, OnInit, Optional, Directive } from '@angular/core';
 import {Observable, Subject, Subscription} from 'rxjs';
 import {filter} from 'rxjs/operators';
 import {MessageProvider} from '../providers/message.provider';
@@ -15,6 +15,7 @@ import {MessageTypes} from '../../core/messages/message-types';
 import {ActionService} from '../../core/actions/action.service';
 import {KeyPressProvider} from '../providers/keypress.provider';
 
+@Directive()
 export abstract class ScreenPartComponent<T> implements OnDestroy, OnInit {
     destroyed$ = new Subject();
     beforeScreenDataUpdated$ = new Subject<T>();

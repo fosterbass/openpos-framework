@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Injector, Input} from '@angular/core';
 import {CustomerDetails, CustomerInformationComponentInterface} from './customer-information.interface';
 import {ScreenPartComponent} from '../screen-part';
 @Component({
@@ -6,7 +6,10 @@ import {ScreenPartComponent} from '../screen-part';
     templateUrl: './customer-information.component.html',
     styleUrls: ['./customer-information.component.scss']})
 export class CustomerInformationComponent  extends ScreenPartComponent<CustomerInformationComponentInterface> {
-
+    constructor(injector: Injector) {
+        super(injector);
+    }
+    
     @Input()
     customer: CustomerDetails;
 

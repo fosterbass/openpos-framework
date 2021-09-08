@@ -3,7 +3,7 @@
 	<div *ngIf="screen.title">
 		<h2 mat-card-title>{{screen.title}}</h2>
 	</div>
-	<mat-card ngStyle.xl="width:50%" ngStyle.lg="width:60%" ngStyle.md="width:90%" ngStyle.sm="width:90%" ngStyle.xs="width:90%">
+	<mat-card>
 		<mat-card-content>
 			<div style="margin-bottom:10px" fxLayout="row" fxLayoutAlign=" center">
 				<app-icon *ngIf="screen.textIcon" color="primary" style="margin-right:5px" [iconClass]="'material-icons'"[iconName]="screen.textIcon"></app-icon>

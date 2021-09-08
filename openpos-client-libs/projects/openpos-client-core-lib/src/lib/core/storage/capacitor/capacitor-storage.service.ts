@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
 
-import { Capacitor, Plugins as CapacitorPlugins } from '@capacitor/core';
+import { Capacitor } from '@capacitor/core';
+import { Storage } from '@capacitor/storage';
 
 import { from, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { StorageContainer } from '../storage-container';
-
-const { Storage } = CapacitorPlugins;
 
 @Injectable({
     providedIn: 'root'

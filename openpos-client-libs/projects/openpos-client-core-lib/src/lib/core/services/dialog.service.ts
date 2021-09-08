@@ -1,5 +1,5 @@
 import {ComponentFactory, ComponentFactoryResolver, Injectable, Type} from '@angular/core';
-import {MatDialog, MatDialogRef} from '@angular/material';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { filter, tap } from 'rxjs/operators';
 import {IScreen} from '../../shared/components/dynamic-screen/screen.interface';
 import {MessageProvider} from '../../shared/providers/message.provider';
