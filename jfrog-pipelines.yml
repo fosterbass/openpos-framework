@@ -16,7 +16,7 @@ pipelines:
       - name: gradleBuildStep
         type: GradleBuild
         configuration:
-          gradleCommand: "build"
+          gradleCommand: "build -PdownloadNode=true"
           sourceLocation: openpos-assemble
           deployerRepo: default-maven-local
           useWrapper: true
