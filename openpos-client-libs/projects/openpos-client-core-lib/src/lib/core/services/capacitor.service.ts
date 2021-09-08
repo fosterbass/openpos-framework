@@ -1,9 +1,8 @@
 import {Injectable} from '@angular/core';
-import {Capacitor, DeviceInfo, Plugins} from "@capacitor/core";
+import {Capacitor} from "@capacitor/core";
+import {Device, DeviceInfo} from '@capacitor/device';
 import {from, Observable} from "rxjs";
 import {map} from "rxjs/operators";
-
-const {Device} = Plugins;
 
 @Injectable({
     providedIn: 'root',

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 
-import { Capacitor, Plugins as CapacitorPlugins } from '@capacitor/core';
+import { Capacitor } from '@capacitor/core';
+import { StatusBar } from '@capacitor/status-bar';
 
 import { Observable, from } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -19,7 +20,7 @@ export class CapacitorStatusBarPlatformPlugin implements IPlatformPlugin {
     }
 
     initialize(): Observable<string> {
-        return from(CapacitorPlugins.StatusBar.hide()).pipe(
+        return from(StatusBar.hide()).pipe(
             map(() => 'capacitor status bar hide requested')
         );
     }

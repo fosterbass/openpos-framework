@@ -13,6 +13,9 @@
       "text-mask-addons/dist/createAutoCorrectedDatePipe": "text-mask-addons/dist/createAutoCorrectedDatePipe",
       "text-mask-addons/dist/createNumberMask": "text-mask-addons/dist/createNumberMask",
       "@capacitor/core": "@capacitor/core",
+      "@capacitor/status-bar": "@capacitor/status-bar",
+      "@capacitor/storage": "@capacitor/storage",
+      "@capacitor/device": "@capacitor/device",
       "lodash": "lodash",
       "@ionic-native/zeroconf": "@ionic-native/zeroconf"
     }

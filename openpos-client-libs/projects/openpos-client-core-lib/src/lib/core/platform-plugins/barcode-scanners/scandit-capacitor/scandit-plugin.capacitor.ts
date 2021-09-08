@@ -1,11 +1,7 @@
-declare module '@capacitor/core' {
-    interface PluginRegistry {
-        ScanditNative: ScanditPlugin;
-    }
-}
-
-import { PluginListenerHandle } from '@capacitor/core';
+import { registerPlugin, PluginListenerHandle } from '@capacitor/core';
 import { ScanDataType } from '../scanner';
+
+export const Scandit = registerPlugin<ScanditPlugin>('ScanditNative');
 
 export type ScanditEvents = 'scan';
 

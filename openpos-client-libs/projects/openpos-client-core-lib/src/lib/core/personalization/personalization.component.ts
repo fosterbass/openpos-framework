@@ -139,7 +139,7 @@ export class PersonalizationComponent implements IScreen, OnInit {
         const formGroup = {
         };
         if (this.serverResponse) {
-            const validator = [Validators.required, , Validators.pattern('[a-zA-Z0-9]+')];
+            const validator = [Validators.required, Validators.pattern('[a-zA-Z0-9]+')];
             if (this.serverResponse.parameters) {
                 for (const prop of this.serverResponse.parameters) {
                     formGroup[prop.property] = [prop.defaultValue, validator];

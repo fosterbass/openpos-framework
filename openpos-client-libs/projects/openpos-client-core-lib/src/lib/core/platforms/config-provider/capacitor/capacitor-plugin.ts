@@ -1,9 +1,6 @@
+import { registerPlugin } from "@capacitor/core";
 
-declare module '@capacitor/core' {
-    interface PluginRegistry {
-        ConfigProvider: CapacitorConfigProvider;
-    }
-}
+export const ConfigProvider = registerPlugin<CapacitorConfigProvider>('ConfigProvider');
 
 export interface CapacitorConfigProvider {
     getConfig(): Promise<any>;
