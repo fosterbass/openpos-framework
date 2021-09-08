@@ -1,3 +1,15 @@
+resources:
+  - name: openposFrameworkGit
+    type: GitRepo
+    configuration:
+      # SCM integration where the repository is located
+      gitProvider: JumpMindGitHub
+      # Repository path, including org name/repo name
+      path: openpos-framework
+      branches:
+        # Specifies which branches will trigger dependent steps
+        include: master
+
 pipelines:
   - name: gradleBuildPipeline
     steps:
@@ -9,6 +21,6 @@ pipelines:
           deployerRepo: default-maven-local
           useWrapper: true
           inputResources:
-            - name: JumpMindGitHub
+            - name: openposFrameworkGit
           integrations:
             - name: JumpMindArtifactory
