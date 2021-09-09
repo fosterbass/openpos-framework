@@ -2,6 +2,7 @@ import { UIGraph } from './graph.interface';
 
 export interface UIDataTile {
     tileId: string;
+    title: string;
     description: string;
     size: DataTileSize;
     graph: UIGraph;
