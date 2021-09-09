@@ -9,7 +9,6 @@ public class UIGraph implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String graphType;
-    private String title;
     private String xAxisLabel;
     private String yAxisLabel;
     private boolean legendEnabled;

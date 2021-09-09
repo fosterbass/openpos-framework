@@ -14,6 +14,7 @@ public class UIDataTile implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String tileId;
+    private String title;
     private String description;
     private String size;
     private UIGraph graph;
