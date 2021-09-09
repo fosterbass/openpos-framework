@@ -33,6 +33,7 @@
     "@ionic-native/zeroconf": "^5.32.1",
     "@stomp/ng2-stompjs": "^6.0.0",
     "@stomp/stompjs": "^4.0.6",
+    "@swimlane/ngx-charts": "^11.2.0",
     "@types/electron": "^1.6.10",
     "@types/mdns": "0.0.33",
     "@types/showdown": "^1.9.2",

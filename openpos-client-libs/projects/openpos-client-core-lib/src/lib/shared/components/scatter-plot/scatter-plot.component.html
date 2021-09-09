@@ -1,0 +1,15 @@
+<ngx-charts-bubble-chart
+    [scheme]="colorScheme"
+    [legend]="showLegend"
+    [view]="[width, height]"
+    [xAxis]="true"
+    [xAxisLabel]="xAxisLabel"
+    [showXAxisLabel]="!!xAxisLabel"
+    [yAxis]="true"
+    [yAxisLabel]="yAxisLabel"
+    [showYAxisLabel]="!!yAxisLabel"
+    [results]="data"
+    (select)="onSelect($event)"
+    (activate)="onActivate($event)"
+    (deactivate)="onDeactivate($event)">
+</ngx-charts-bubble-chart>

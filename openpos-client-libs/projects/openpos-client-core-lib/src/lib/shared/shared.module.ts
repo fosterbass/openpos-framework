@@ -185,6 +185,12 @@ import { KioskModeController } from '../core/platform-plugins/kiosk/kiosk-contro
 import { KIOSK_MODE_PLATFORM } from '../core/platform-plugins/kiosk/kiosk-mode-platform';
 import { CapacitorKioskModePlatform } from '../core/platform-plugins/kiosk/capacitor-kiosk/capacitor-kiosk-platform.service';
 import { ScreenGestureComponent } from './screen-parts/screen-gesture/screen-gesture.component';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { LineGraphComponent } from './components/line-graph/line-graph.component';
+import { PieGraphComponent } from './components/pie-graph/pie-graph.component';
+import { VerticalBarGraphComponent } from './components/vertical-bar-graph/vertical-bar-graph.component';
+import { DataTileComponent } from './components/data-tile/data-tile.component';
+import { ScatterPlotComponent } from './components/scatter-plot/scatter-plot.component';
 
 const screenParts = [
     TenderPartComponent,
@@ -311,7 +317,12 @@ const components = [
     ImageScannerComponent,
     DisplayCustomerLookupComponent,
     WatermarkComponent,
-    StandbyComponent
+    StandbyComponent,
+    DataTileComponent,
+    LineGraphComponent,
+    PieGraphComponent,
+    ScatterPlotComponent,
+    VerticalBarGraphComponent
 ];
 
 const directives = [
@@ -372,7 +383,7 @@ const pipes = [
         PeripheralSelectorComponent,
         PeripheralSelectorConfirmationComponent,
         LocalizePipe,
-        ModalOverlayContainerDirective,
+        ModalOverlayContainerDirective
     ],
     entryComponents: [
         KebabMenuComponent,
@@ -404,7 +415,8 @@ const pipes = [
         ToastrModule.forRoot({
             toastComponent: ToastComponent
         }),
-        ToastContainerModule
+        ToastContainerModule,
+        NgxChartsModule
     ],
     exports: [
         FormsModule,
@@ -417,6 +429,7 @@ const pipes = [
         MatKeyboardModule,
         TextMaskModule,
         LocalizePipe,
+        BaconStripComponent,
         ...directives,
         ...components,
         ...screenParts,

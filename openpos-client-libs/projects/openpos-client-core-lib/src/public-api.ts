@@ -259,6 +259,8 @@ export * from './lib/shared/components/help-text-page-wrapper/help-text-page-wra
 export * from './lib/shared/components/toggle-button-group/toggle-group.component';
 export * from './lib/shared/components/toggle-button/toggle-button.component';
 export * from './lib/shared/components/button-action-timer/button-action-timer.component';
+export * from './lib/shared/components/data-tile/data-tile.interface';
+export * from './lib/shared/components/data-tile/graph.interface';
 
 export * from './lib/shared/decorators/screen-component.decorator';
 export * from './lib/shared/decorators/dialog-component.decorator';
