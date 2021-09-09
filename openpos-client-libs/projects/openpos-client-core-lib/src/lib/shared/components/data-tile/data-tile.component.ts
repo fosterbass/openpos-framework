@@ -18,15 +18,15 @@ export class DataTileComponent {
     getSizeWidthPercent(size: DataTileSize): string {
         switch (size) {
             case DataTileSizes.SMALL:
-                return '25%';
+                return '20%';
             case DataTileSizes.MEDIUM:
-                return '33%';
+                return '30%';
             case DataTileSizes.LARGE:
-                return '50%';
+                return '45%';
             case DataTileSizes.EXTRA_LARGE:
-                return '75%';
+                return '70%';
             default:
-                return '33%';
+                return '30%';
         }
     }
 
@@ -36,6 +36,6 @@ export class DataTileComponent {
     }
 
     getSizeHeight(size: DataTileSize): number {
-        return 400;
+        return 200;
     }
 }

@@ -1,4 +1,5 @@
 <app-content-card [style]="getSizeStyles(tile.size)" class="graph">
+    <app-instructions [instructions]="tile.description"></app-instructions>
     <app-vertical-bar-graph *ngIf="tile.graph && tile.graph.graphType === 'Bar'" [graph]="tile.graph"
         [width]="getSizeWidthPixels(tile.size)" [height]="getSizeHeight(tile.size)"></app-vertical-bar-graph>
     <app-line-graph *ngIf="tile.graph && tile.graph.graphType === 'Line'" [graph]="tile.graph"
