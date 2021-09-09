@@ -19,23 +19,13 @@ export class LineGraphComponent implements OnInit {
   height: number;
 
   data: LineGraphData[];
-  showLegend = true;
-  legendPosition: string;
-  xAxisLabel: string;
-  yAxisLabel: string;
-  view: number[];
 
   constructor() { }
 
   ngOnInit() {
     if (this.graph) {
-      this.showLegend = this.graph.legendEnabled;
-      this.legendPosition = this.graph.legendPosition;
-      this.xAxisLabel = this.graph.xaxisLabel;
-      this.yAxisLabel = this.graph.yaxisLabel;
       this.data = this.convertDataToNGXFormat(this.graph.graphData);
     }
-    console.log(`Initializing a line graph: data size ${this.data.length}, xAxisLabel ${this.xAxisLabel}, yAxisLabel ${this.yAxisLabel}`);
   }
 
   screenDataUpdated() { }

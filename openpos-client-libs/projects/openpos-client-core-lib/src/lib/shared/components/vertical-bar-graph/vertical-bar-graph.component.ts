@@ -18,19 +18,11 @@ export class VerticalBarGraphComponent implements OnInit {
   height: number;
 
   data: NgxChartSingleDataPoint[];
-  showLegend = true;
-  legendPosition: string;
-  xAxisLabel: string;
-  yAxisLabel: string;
 
   constructor() { }
 
   ngOnInit() {
     if (this.graph) {
-      this.showLegend = this.graph.legendEnabled;
-      this.legendPosition = this.graph.legendPosition;
-      this.xAxisLabel = this.graph.xaxisLabel;
-      this.yAxisLabel = this.graph.yaxisLabel;
       this.data = this.convertDataToNGXFormat(this.graph.graphData);
     }
   }

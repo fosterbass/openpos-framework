@@ -1,15 +1,15 @@
 <ngx-charts-bar-vertical
-    [legend]="showLegend"
-    [legendPosition]="legendPosition"
+    [legend]="graph.legendEnabled"
+    [legendPosition]="graph.legendPosition"
     [results]="data"
     [scheme]="colorScheme"
     [view]="[width, height]"
     [xAxis]="true"
-    [xAxisLabel]="xAxisLabel"
-    [showXAxisLabel]="!!xAxisLabel"
+    [xAxisLabel]="graph.xaxisLabel"
+    [showXAxisLabel]="!!graph.xaxisLabel"
     [yAxis]="true"
-    [yAxisLabel]="yAxisLabel"
-    [showYAxisLabel]="!!yAxisLabel"
+    [yAxisLabel]="graph.yaxisLabel"
+    [showYAxisLabel]="!!graph.yaxisLabel"
     (select)="onSelect($event)"
     class="vertical-bar-chart">
 </ngx-charts-bar-vertical>
