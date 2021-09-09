@@ -17,6 +17,7 @@ public class UIDataTile implements Serializable {
     private String description;
     private String size;
     private UIGraph graph;
+    private UIDataTable table;
 
     public UIDataTile() {
         this.setSize(UIDataTileSize.MEDIUM);
