@@ -19,11 +19,17 @@
     }
 
     .prompt-buttons {
-        display: grid;
-        grid-auto-flow: column;
-        justify-content: end;
-        grid-column-gap: 8px;
-        &.mobile {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 8px;
+        &.tablet-portrait,
+        &.tablet-landscape,
+        &.mobile-landscape,
+        &.mobile-portrait,
+        &.desktop-portrait {
+            display: grid;
             grid-auto-flow: row;
             justify-content: center;
             grid-row-gap: 8px;
