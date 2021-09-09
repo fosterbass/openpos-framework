@@ -11,7 +11,7 @@ public class UIPieChart extends UIGraph {
     private String pieChartType;
 
     public UIPieChart() {
-        this.setGraphType(UIGraphType.PIE);
+        this.setGraphType(UIGraphType.PIE_CHART);
         this.setPieChartType(UIPieChartType.CLASSIC);
     }
 }
