@@ -99,22 +99,10 @@ describe("PersonalizationService", () => {
 
         });
 
-        it( 'should throw error if there is no cached token',() => {
-            cleanup();
-           setup();
-
-           personalizationService.personalizeFromSavedSession().subscribe({
-               error: error => expect(error).toEqual('No saved session')
-           });
-
-           httpMock.expectNone('http://server:6140/devices/personalize');
-
-        });
-
     });
 
     describe( 'personalize', () => {
-       it('should send personalization request to server and save response', () => {
+       it('should send personalization request to server and save response', done => {
             cleanup();
             setup();
 
@@ -131,8 +119,9 @@ describe("PersonalizationService", () => {
                 expect(localStorage.getItem('deviceToken')).toBe('MY_TOKEN');
                 expect(localStorage.getItem('serverName')).toBe('server');
                 expect(localStorage.getItem('serverPort')).toBe('6140');
+                done();
             });
-
+                        
             let req = httpMock.expectOne('http://server:6140/devices/personalize');
 
             let resp = {
@@ -142,9 +131,7 @@ describe("PersonalizationService", () => {
                    appId: 'pos'
                }
             } as PersonalizationResponse;
-
             req.flush(resp);
-
             httpMock.verify();
        });
 

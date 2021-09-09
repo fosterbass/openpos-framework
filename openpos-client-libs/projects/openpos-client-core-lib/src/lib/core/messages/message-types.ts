@@ -8,6 +8,7 @@ export class MessageTypes {
     static CONFIG_CHANGED = 'ConfigChanged';
     static DATA = 'UIData';
     static CONNECTED = 'Connected'
+    static DISCONNECTED = 'Disconnected'
     static SINGLE_SIGN_ON_REQUEST = 'SingleSignOnRequest';
     static STATUS = 'Status';
     static LOCK_SCREEN = 'LockScreen';

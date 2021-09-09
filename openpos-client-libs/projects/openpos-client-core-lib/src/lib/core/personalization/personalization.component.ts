@@ -190,6 +190,7 @@ export class PersonalizationComponent implements IScreen, OnInit {
         }
 
         if( this.manualPersonalization ){
+            console.log(`DeviceID:${this.thirdFormGroup.get('deviceId').value}`)
             return  this.personalizationService.personalize(
                 server,
                 port,

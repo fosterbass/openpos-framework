@@ -1,3 +1,5 @@
+import {ServerLocation} from './server-location';
+
 export interface AutoPersonalizationParametersResponse {
     deviceName: string;
     serverAddress: string;
@@ -6,4 +8,5 @@ export interface AutoPersonalizationParametersResponse {
     appId: string;
     personalizationParams?: any;
     sslEnabled?: boolean;
+    failovers?: ServerLocation[];
 }

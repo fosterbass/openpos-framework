@@ -133,6 +133,7 @@ export * from './lib/core/help-text/help-text.service';
 export * from './lib/core/lock-screen/lock-screen.service';
 export * from './lib/core/services/simulated-peripheral-service';
 export * from './lib/core/platform-plugins/platform-plugin.interface';
+export * from './lib/core/services/fallover.service';
 
 export * from './lib/core/audio/audio-request.interface';
 export * from './lib/core/audio/audio.service';
