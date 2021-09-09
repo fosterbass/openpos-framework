@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { PeripheralSelectionService } from "../../../core/peripherals/peripheral-selection.service";
 import { map, take } from "rxjs/operators";
-import { Observable } from "rxjs/internal/Observable";
+import { Observable } from "rxjs";
 
 @Injectable({
   providedIn: 'root'

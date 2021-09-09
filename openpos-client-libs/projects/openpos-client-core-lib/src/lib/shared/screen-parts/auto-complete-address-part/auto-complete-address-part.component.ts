@@ -1,4 +1,4 @@
-import { ViewChildren, Input, QueryList, ViewChild, Component, Injector } from '@angular/core';
+import { ViewChildren, Input, ViewChild, Component, Injector } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { ScreenPartComponent } from '../screen-part';
 import { ScreenPart } from '../../decorators/screen-part.decorator';
@@ -9,7 +9,7 @@ import { IForm } from '../../../core/interfaces/form.interface';
 import { IFormElement } from '../../../core/interfaces/form-field.interface';
 import { IActionItem } from '../../../core/actions/action-item.interface';
 
-
+import type { QueryList } from '@angular/core';
 
 @ScreenPart({
     name: 'AutoCompleteAddressPart'

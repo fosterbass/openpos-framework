@@ -20,14 +20,15 @@ describe('UIDataMessageService', () => {
                 {provide: SessionService, useValue: sessionSpy},
             ]
         });
-        TestBed.get(SessionService).getMessages.and.callFake( type => type === MessageTypes.DATA ? input : subscribe );
+        
+        (TestBed.inject(SessionService) as jasmine.SpyObj<SessionService>).getMessages.and.callFake( type => type === MessageTypes.DATA ? input : subscribe );
         subscribe = cold( 's');
         results = [];
 
     });
 
     function subscribeToSut() {
-        let sut = TestBed.get(UIDataMessageService);
+        let sut = TestBed.inject(UIDataMessageService);
 
         getTestScheduler().flush();
 

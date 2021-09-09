@@ -29,10 +29,10 @@ describe('ConfigurationService', () => {
                 { provide: SessionService, useValue: sessionSpy },
             ]
         });
-        sessionServiceSpy = TestBed.get(SessionService);
+        sessionServiceSpy = TestBed.inject(SessionService) as jasmine.SpyObj<SessionService>;
         sessionServiceSpy.getMessages.and.callFake(getUiConfigMessage);
 
-        configService = TestBed.get(ConfigurationService);
+        configService = TestBed.inject(ConfigurationService);
 
     });
 

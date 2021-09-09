@@ -1,6 +1,6 @@
 import {SelectionListInterface} from "./selection-list.interface";
 import {PosScreen} from "../pos-screen/pos-screen.component";
-import {AfterViewInit, ElementRef, Injector, QueryList, ViewChildren} from "@angular/core";
+import { AfterViewInit, ElementRef, Injector, ViewChildren, Directive } from "@angular/core";
 import {BehaviorSubject, merge, Observable} from "rxjs";
 import {ISelectableListData} from "../../shared/components/selectable-item-list/selectable-list-data.interface";
 import {SelectableItemListComponentConfiguration} from "../../shared/components/selectable-item-list/selectable-item-list.component";
@@ -11,6 +11,9 @@ import {IActionItem} from "../../core/actions/action-item.interface";
 import {Configuration} from "../../configuration/configuration";
 import {SelectableItemInterface} from "./selectable-item.interface";
 
+import type { QueryList } from '@angular/core';
+
+@Directive()
 export class GenericSelectionListScreen<T extends SelectableItemInterface> extends PosScreen<SelectionListInterface<T>> implements AfterViewInit {
     @ViewChildren('items') private items: QueryList<ElementRef>;
 

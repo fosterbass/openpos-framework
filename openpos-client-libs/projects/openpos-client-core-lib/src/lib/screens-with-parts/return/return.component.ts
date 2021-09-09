@@ -1,4 +1,5 @@
-import { MatDialog, MatBottomSheet } from '@angular/material';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { MatDialog } from '@angular/material/dialog';
 import { Component, Injector } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { PosScreen } from '../pos-screen/pos-screen.component';

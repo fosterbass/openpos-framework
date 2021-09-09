@@ -1,5 +1,5 @@
 import { IStartupTask } from './startup-task.interface';
-import { InjectionToken, Optional, Inject } from '@angular/core';
+import { InjectionToken, Optional, Inject, Injectable } from '@angular/core';
 import { StartupTaskData } from './startup-task-data';
 import { Observable, merge, of, concat, iif } from 'rxjs';
 import { IPlatformInterface } from '../platforms/platform.interface';
@@ -10,6 +10,7 @@ export const PLATFORMS = new InjectionToken<IPlatformInterface[]>('Platforms');
 /**
  * This startup task checks for any loaded platforms and waits for them to be ready before preceeding
  */
+@Injectable()
 export class PlatformReadyStartupTask implements IStartupTask {
 
     name =  StartupTaskNames.PLATFORM_READY;

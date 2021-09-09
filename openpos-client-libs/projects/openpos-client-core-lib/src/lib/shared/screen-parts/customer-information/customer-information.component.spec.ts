@@ -6,7 +6,7 @@ import {validateDoesNotExist, validateIcon, validateText} from '../../../utilite
 import {PhonePipe} from '../../pipes/phone.pipe';
 import {FormattersService} from '../../../core/services/formatters.service';
 import {CustomerDetails} from './customer-information.interface';
-import {MatDialog} from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {ElectronService} from 'ngx-electron';
 import {CLIENTCONTEXT} from '../../../core/client-context/client-context-provider.interface';
@@ -94,7 +94,7 @@ describe('CustomerInformationComponent', () => {
         });
 
         it('displays the customer phone number and icon', () => {
-            const phonePipe: PhonePipe = new PhonePipe(TestBed.get(FormattersService));
+            const phonePipe: PhonePipe = new PhonePipe(TestBed.inject(FormattersService));
             validateText(fixture, '.phone-number', phonePipe.transform(component.customer.phoneNumber));
             validateIcon(fixture, '.phone-number app-icon', 'phone');
         });

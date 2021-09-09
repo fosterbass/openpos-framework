@@ -1,11 +1,12 @@
 import { ConfigurationService } from '../../../core/services/configuration.service';
 import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef, Renderer2, ElementRef } from '@angular/core';
-import { Component, ViewChild, HostListener, ComponentRef, OnInit } from '@angular/core';
-import { MatDialog, MatDialogRef, MatSnackBar, MatSnackBarRef, SimpleSnackBar, MatExpansionPanel, MatSlideToggleChange } from '@angular/material';
+import { Component, ViewChild, HostListener, OnInit } from '@angular/core';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatSlideToggleChange } from '@angular/material/slide-toggle';
+import { MatSnackBar, MatSnackBarRef, SimpleSnackBar } from '@angular/material/snack-bar';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { Configuration } from '../../../configuration/configuration';
-import { IScreen } from '../dynamic-screen/screen.interface';
 import { PersonalizationService } from '../../../core/personalization/personalization.service';
 import { PersonalizationComponent } from '../../../core/personalization/personalization.component';
 import { FileViewerComponent } from '../file-viewer/file-viewer.component';
@@ -22,12 +23,13 @@ import { IconService } from '../../../core/services/icon.service';
 import { OldPluginService } from '../../../core/services/old-plugin.service';
 import { FileUploadService } from '../../../core/services/file-upload.service';
 import { IVersion } from '../../../core/interfaces/version.interface';
-import { from, Observable, timer } from 'rxjs';
+import { Observable } from 'rxjs';
 import { DiscoveryService } from '../../../core/discovery/discovery.service';
 import { AudioLicense, AudioLicenseLabels } from '../audio-license/audio-license.interface';
 import { map } from 'rxjs/operators';
 import { KioskModeController } from '../../../core/platform-plugins/kiosk/kiosk-controller.service';
-import { switchMap } from 'rxjs/operators';
+
+import type { MatExpansionPanel } from '@angular/material/expansion';
 
 @Component({
     selector: 'app-dev-menu',
@@ -38,32 +40,25 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
 
     static MSG_TYPE = 'DevTools';
 
-    DeviceElements: Element[];
-    SessElements: Element[];
-    ConvElements: Element[];
-    ConfElements: Element[];
-    FlowElements: Element[];
+    deviceElements: Element[];
+    sessionElements: Element[];
+    conversationElements: Element[];
+    configElements: Element[];
+    flowElements: Element[];
 
     savePoints: string[];
 
     simAuthToken: string;
-
     simPort: string;
-
     simUrl: string;
-
     simProtocol: string;
-
     simAuthTokenAvailable = false;
 
     customerDisplayAuthToken: string;
-
     customerDisplayPort: string;
-
     customerDisplayUrl: string;
-
     customerDisplayProtocol: string;
-
+    customerDisplayPairedDeviceId: string;
     customerDisplayAuthTokenAvailable = false;
 
     firstClickTime = Date.now();
@@ -116,24 +111,6 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
 
     public displayStackTrace = false;
 
-    private dialogRef: MatDialogRef<IScreen>;
-
-    private previousScreenType: string;
-
-    private dialogOpening: boolean;
-
-    private previousScreenName: string;
-
-    private snackBarRef: MatSnackBarRef<SimpleSnackBar>;
-
-    private registered: boolean;
-
-    private installedScreen: IScreen;
-
-    private currentTemplateRef: ComponentRef<IScreen>;
-
-    private lastDialogType: string;
-
     public classes = '';
 
     private disableDevMenu = false;
@@ -144,13 +121,20 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
 
     constructor(
         private personalization: PersonalizationService,
-        public screenService: ScreenService, public dialogService: DialogService, public session: SessionService,
-        public deviceService: DeviceService, public dialog: MatDialog,
-        public iconService: IconService, public snackBar: MatSnackBar, public overlayContainer: OverlayContainer,
+        public screenService: ScreenService,
+        public dialogService: DialogService,
+        public session: SessionService,
+        public deviceService: DeviceService,
+        public dialog: MatDialog,
+        public iconService: IconService,
+        public snackBar: MatSnackBar,
+        public overlayContainer: OverlayContainer,
         private pluginService: OldPluginService,
         private fileUploadService: FileUploadService,
-        private httpClient: HttpClient, private cd: ChangeDetectorRef,
-        private elRef: ElementRef, public renderer: Renderer2,
+        private httpClient: HttpClient,
+        private cd: ChangeDetectorRef,
+        private elRef: ElementRef,
+        public renderer: Renderer2,
         private electron: ElectronService,
         private configurationService: ConfigurationService,
         private discovery: DiscoveryService,
@@ -158,7 +142,7 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
     ) {
 
         if (Configuration.useTouchListener) {
-            this.renderer.listen(elRef.nativeElement, 'touchstart', (event) => {
+            this.renderer.listen(this.elRef.nativeElement, 'touchstart', (event) => {
                 this.documentClick(event);
             });
         }
@@ -199,10 +183,10 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
         if (message.scopes) {
             if (message.scopes.ConversationScope) {
                 console.info('Pulling Conversation Scope Elements...');
-                this.ConvElements = [];
+                this.conversationElements = [];
                 message.scopes.ConversationScope.forEach(element => {
-                    if (!this.ConvElements.includes(element, 0)) {
-                        this.ConvElements.push({
+                    if (!this.conversationElements.includes(element, 0)) {
+                        this.conversationElements.push({
                             ID: element.name,
                             Time: element.date,
                             StackTrace: element.stackTrace,
@@ -213,10 +197,10 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
             }
             if (message.scopes.SessionScope) {
                 console.info('Pulling Session Scope Elements...');
-                this.SessElements = [];
+                this.sessionElements = [];
                 message.scopes.SessionScope.forEach(element => {
-                    if (!this.SessElements.includes(element, 0)) {
-                        this.SessElements.push({
+                    if (!this.sessionElements.includes(element, 0)) {
+                        this.sessionElements.push({
                             ID: element.name,
                             Time: element.date,
                             StackTrace: element.stackTrace,
@@ -227,10 +211,10 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
             }
             if (message.scopes.DeviceScope) {
                 console.info('Pulling Device Scope Elements...');
-                this.DeviceElements = [];
+                this.deviceElements = [];
                 message.scopes.DeviceScope.forEach(element => {
-                    if (!this.DeviceElements.includes(element, 0)) {
-                        this.DeviceElements.push({
+                    if (!this.deviceElements.includes(element, 0)) {
+                        this.deviceElements.push({
                             ID: element.name,
                             Time: element.date,
                             StackTrace: element.stackTrace,
@@ -241,10 +225,10 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
             }
             if (message.scopes.FlowScope) {
                 console.info('Pulling Flow Scope Elements...');
-                this.FlowElements = [];
+                this.flowElements = [];
                 message.scopes.FlowScope.forEach(element => {
-                    if (!this.FlowElements.includes(element, 0)) {
-                        this.FlowElements.push({
+                    if (!this.flowElements.includes(element, 0)) {
+                        this.flowElements.push({
                             ID: element.name,
                             Time: element.date,
                             StackTrace: element.stackTrace,
@@ -252,15 +236,15 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
                         });
                     }
                 });
-                console.info(this.FlowElements);
+                console.info(this.flowElements);
             }
 
             if (message.scopes.ConfigScope) {
                 console.info('Pulling Config Scope Elements...');
-                this.ConfElements = [];
+                this.configElements = [];
                 message.scopes.ConfigScope.forEach(element => {
-                    if (!this.ConfElements.includes(element, 0)) {
-                        this.ConfElements.push({
+                    if (!this.configElements.includes(element, 0)) {
+                        this.configElements.push({
                             ID: element.name,
                             Time: element.date,
                             StackTrace: element.stackTrace,
@@ -268,7 +252,7 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
                         });
                     }
                 });
-                console.info(this.ConfElements);
+                console.info(this.configElements);
             }
         }
 
@@ -301,7 +285,10 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
             this.customerDisplayPort = message.customerDisplay.customerDisplayPort;
             this.customerDisplayUrl = message.customerDisplay.customerDisplayUrl;
             this.customerDisplayProtocol = message.customerDisplay.customerDisplayProtocol;
-            if (message.customerDisplay.customerDisplayPort && message.customerDisplay.customerDisplayAuthToken && message.customerDisplay.customerDisplayAuthToken.length > 0) {
+            this.customerDisplayPairedDeviceId = message.customerDisplay.pairedDeviceId;
+            if (message.customerDisplay.customerDisplayPort &&
+                message.customerDisplay.customerDisplayAuthToken &&
+                message.customerDisplay.customerDisplayAuthToken.length > 0) {
                 this.customerDisplayAuthTokenAvailable = true;
             } else {
                 this.customerDisplayAuthTokenAvailable = false;
@@ -430,11 +417,11 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
         this.currentStateClass = 'Updating State...';
         this.showUpdating = true;
         this.currentStateActions = [];
-        this.DeviceElements = [];
-        this.ConvElements = [];
-        this.SessElements = [];
-        this.ConfElements = [];
-        this.FlowElements = [];
+        this.deviceElements = [];
+        this.conversationElements = [];
+        this.sessionElements = [];
+        this.configElements = [];
+        this.flowElements = [];
         setTimeout(() => {
             this.session.publish('DevTools::Get', DevMenuComponent.MSG_TYPE);
             this.showUpdating = false;
@@ -548,7 +535,8 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
 
         const customerDisplay = protocol + '://' + url + ':'
             + displayPort + '/#/?serverName=' + serverName + '&serverPort=' + serverPort
-            + '&deviceToken=' + this.customerDisplayAuthToken + '&sslEnabled=' + sslEnabled;
+            + '&deviceToken=' + this.customerDisplayAuthToken + '&sslEnabled=' + sslEnabled
+            + '&pairedDeviceId=' + this.customerDisplayPairedDeviceId;
         window.open(customerDisplay);
     }
 
@@ -677,14 +665,14 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
 
     protected removeNodeElement(element: Element) {
         console.info('Attempting to remove \'' + element.Value + '\'...');
-        const index = this.DeviceElements.findIndex(item => {
+        const index = this.deviceElements.findIndex(item => {
             return element.Value === item.Value;
         });
         if (index !== -1) {
             this.session.publish('DevTools::Remove::Node', DevMenuComponent.MSG_TYPE, element);
-            this.DeviceElements.splice(index, 1);
+            this.deviceElements.splice(index, 1);
             console.info('Node Scope updated: ');
-            console.info(this.DeviceElements);
+            console.info(this.deviceElements);
         }
     }
 
@@ -710,14 +698,14 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
 
     public removeSessionElement(element: Element) {
         console.info('Attempting to remove \'' + element.Value + '\'...');
-        const index = this.SessElements.findIndex(item => {
+        const index = this.sessionElements.findIndex(item => {
             return element.Value === item.Value;
         });
         if (index !== -1) {
             this.session.publish('DevTools::Remove::Session', DevMenuComponent.MSG_TYPE, element);
-            this.SessElements.splice(index, 1);
+            this.sessionElements.splice(index, 1);
             console.info('Session Scope updated: ');
-            console.info(this.DeviceElements);
+            console.info(this.deviceElements);
         }
     }
 
@@ -729,40 +717,40 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
 
     protected removeConversationElement(element: Element) {
         console.info('Attempting to remove \'' + element.Value + '\'...');
-        const index = this.ConvElements.findIndex(item => {
+        const index = this.conversationElements.findIndex(item => {
             return element.Value === item.Value;
         });
         if (index !== -1) {
             this.session.publish('DevTools::Remove::Conversation', DevMenuComponent.MSG_TYPE, element);
-            this.ConvElements.splice(index, 1);
+            this.conversationElements.splice(index, 1);
             console.info('Conversation Scope updated: ');
-            console.info(this.ConvElements);
+            console.info(this.conversationElements);
         }
     }
 
     protected removeConfigElement(element: Element) {
         console.info('Attempting to remove \'' + element.Value + '\'...');
-        const index = this.ConfElements.findIndex(item => {
+        const index = this.configElements.findIndex(item => {
             return element.Value === item.Value;
         });
         if (index !== -1) {
             this.session.publish('DevTools::Remove::Config', DevMenuComponent.MSG_TYPE, element);
-            this.ConfElements.splice(index, 1);
+            this.configElements.splice(index, 1);
             console.info('Config Scope updated: ');
-            console.info(this.ConfElements);
+            console.info(this.configElements);
         }
     }
 
     protected removeFlowElement(element: Element) {
         console.info('Attempting to remove \'' + element.Value + '\'...');
-        const index = this.FlowElements.findIndex(item => {
+        const index = this.flowElements.findIndex(item => {
             return element.Value === item.Value;
         });
         if (index !== -1) {
             this.session.publish('DevTools::Remove::Flow', DevMenuComponent.MSG_TYPE, element);
-            this.FlowElements.splice(index, 1);
+            this.flowElements.splice(index, 1);
             console.info('Flow Scope updated: ');
-            console.info(this.FlowElements);
+            console.info(this.flowElements);
         }
     }
 }

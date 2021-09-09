@@ -1,5 +1,5 @@
 import { Input, Component, OnInit, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { DatePartChooserMode, IDateParts } from '../../../../core/interfaces/date-part-chooser-field.interface';
 
 @Component({

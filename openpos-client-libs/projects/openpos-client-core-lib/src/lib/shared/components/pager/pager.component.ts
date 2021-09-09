@@ -1,5 +1,7 @@
-import { Component, TemplateRef, QueryList, ContentChildren, Input, AfterContentInit, OnDestroy, Output, EventEmitter } from '@angular/core';
+import { Component, TemplateRef, ContentChildren, Input, AfterContentInit, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { Subscription } from 'rxjs';
+
+import type { QueryList } from '@angular/core';
 
 @Component({
     selector: 'app-pager',

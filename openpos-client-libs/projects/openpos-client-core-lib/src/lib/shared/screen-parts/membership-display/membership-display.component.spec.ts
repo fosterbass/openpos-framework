@@ -5,13 +5,13 @@ import {MembershipDisplayComponent} from './membership-display.component';
 import {validateDoesNotExist, validateIcon, validateText} from '../../../utilites/test-utils';
 import {By} from '@angular/platform-browser';
 import {Membership} from './memebership-display.interface';
-import {MatDialog} from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {ElectronService} from 'ngx-electron';
 import {TimeZoneContext} from '../../../core/client-context/time-zone-context';
 import {CLIENTCONTEXT} from '../../../core/client-context/client-context-provider.interface';
 import {KeyPressProvider} from '../../providers/keypress.provider';
-import {Subscription} from 'rxjs/internal/Subscription';
+import {Subscription} from 'rxjs';
 
 class MockActionService {}
 class MockMatDialog {}

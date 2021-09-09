@@ -7,7 +7,7 @@ import { IActionItem } from '../../../core/actions/action-item.interface';
 import { Observable } from 'rxjs';
 import { OpenposMediaService, MediaBreakpoints } from '../../../core/media/openpos-media.service';
 import { FocusService } from '../../../core/focus/focus.service';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { KebabMenuComponent } from '../../components/kebab-menu/kebab-menu.component';
 
 @ScreenPart({

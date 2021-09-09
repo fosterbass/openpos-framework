@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { IActionItem } from '../../../core/actions/action-item.interface';
 import { ActionService } from '../../../core/actions/action.service';
 

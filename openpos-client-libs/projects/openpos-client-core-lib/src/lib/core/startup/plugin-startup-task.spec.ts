@@ -56,7 +56,7 @@ describe('PluginStartupTask', () => {
     }
 
     function runTask(): string[] {
-        const pluginStartupTask: IStartupTask = TestBed.get(PluginStartupTask);
+        const pluginStartupTask: IStartupTask = TestBed.inject(PluginStartupTask);
         const messages = [];
         pluginStartupTask.execute().subscribe( m => {
             messages.push(m);
@@ -81,9 +81,9 @@ describe('PluginStartupTask', () => {
 
         setup();
 
-        const testPlugin1Mock = TestBed.get(TestPlugin1);
+        const testPlugin1Mock = TestBed.inject(TestPlugin1);
         spyOn(testPlugin1Mock, 'initialize').and.callThrough();
-        const testPlugin3Mock = TestBed.get(TestPlugin3);
+        const testPlugin3Mock = TestBed.inject(TestPlugin3);
         spyOn(testPlugin3Mock, 'initialize').and.callThrough();
 
         runTask();
@@ -99,7 +99,7 @@ describe('PluginStartupTask', () => {
 
         setup();
 
-        const testPlugin2Mock = TestBed.get(TestPlugin2);
+        const testPlugin2Mock = TestBed.inject(TestPlugin2);
         spyOn(testPlugin2Mock, 'initialize');
 
         runTask();

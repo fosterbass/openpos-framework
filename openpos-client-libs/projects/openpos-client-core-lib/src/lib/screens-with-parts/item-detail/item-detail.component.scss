@@ -39,7 +39,7 @@ app-bacon-strip{
                     "image properties price" auto
                     "image options options" auto
                     "image summary summary" auto
-                    "image actions actions" auto/min-content;
+                    "image notify actions" auto/min-content;
 
     .name{
         grid-area: title;
@@ -85,7 +85,7 @@ app-bacon-strip{
     }
 
     .notify {
-        grid-area: actions;
+        grid-area: notify;
         display: grid;
         grid-auto-flow: column;
         justify-content: center;

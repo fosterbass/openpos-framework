@@ -1,6 +1,6 @@
 import {Component, HostListener} from '@angular/core';
 import {IConfirmationDialog} from '../../actions/confirmation-dialog.interface';
-import {MatDialogRef} from '@angular/material';
+import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
     selector: 'app-confirmation-dialog',

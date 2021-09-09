@@ -7,7 +7,7 @@ import {validateDoesNotExist, validateExist, validateText} from '../../../utilit
 import {By} from '@angular/platform-browser';
 import {IActionItem} from '../../../core/actions/action-item.interface';
 import {PhonePipe} from '../../../shared/pipes/phone.pipe';
-import {MatDialog} from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {ElectronService} from 'ngx-electron';
 import {CLIENTCONTEXT} from '../../../core/client-context/client-context-provider.interface';
@@ -95,7 +95,7 @@ describe('CustomerDetailsDialog', () => {
     describe('component', () => {
       describe('initIsMobile', () => {
         it('sets the values for isMobile', () => {
-          const media: OpenposMediaService = TestBed.get(OpenposMediaService);
+          const media: OpenposMediaService = TestBed.inject(OpenposMediaService);
           spyOn(media, 'observe');
 
           component.initIsMobile();

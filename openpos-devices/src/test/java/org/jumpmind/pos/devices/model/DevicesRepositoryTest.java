@@ -47,10 +47,6 @@ public class DevicesRepositoryTest {
     String mockSecondaryAppId = "customerdisplay";
     String mockAuthToken = "830311d5-9550-4eaf-94ff-c661ed761067";
 
-    @Before
-    public void setup() {
-    }
-
     @Test
     public void testFindDevice() {
         when(devSession.findByNaturalId(any(), (ModelId) any())).thenReturn(getMockDevice());

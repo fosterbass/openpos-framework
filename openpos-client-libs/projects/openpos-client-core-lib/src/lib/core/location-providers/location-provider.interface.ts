@@ -1,5 +1,5 @@
 import { ILocationData } from './location-data.interface';
-import { Observable } from 'rxjs/internal/Observable';
+import { Observable } from 'rxjs';
 
 export interface ILocationProvider {
     getProviderName(): string;

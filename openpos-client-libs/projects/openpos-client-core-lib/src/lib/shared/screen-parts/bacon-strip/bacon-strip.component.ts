@@ -21,7 +21,7 @@ export class BaconStripComponent extends ScreenPartComponent<BaconStripInterface
 
     iconButtonName: string;
 
-    @ViewChild(MatSidenav)
+    @ViewChild(MatSidenav, { static: true })
     baconDrawer: MatSidenav;
 
     get sidenavOpened(): boolean {

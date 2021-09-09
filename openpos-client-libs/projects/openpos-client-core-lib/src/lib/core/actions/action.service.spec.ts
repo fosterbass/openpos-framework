@@ -1,5 +1,5 @@
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { MatDialog, MatDialogRef } from '@angular/material';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { IActionItem } from './action-item.interface';
 import { IConfirmationDialog } from './confirmation-dialog.interface';
 import { ActionService } from './action.service';
@@ -43,9 +43,9 @@ describe('ActionService', () => {
 
         messageProviderSpy.getScopedMessages$.and.returnValue(scopedMessages$);
         messageProviderSpy.getAllMessages$.and.returnValue(allMessages$);
-        messageProvider = TestBed.get(MessageProvider);
-        actionService = TestBed.get(ActionService);
-        matDialog = TestBed.get(MatDialog);
+        messageProvider = TestBed.inject(MessageProvider) as jasmine.SpyObj<MessageProvider>;
+        actionService = TestBed.inject(ActionService);
+        matDialog = TestBed.inject(MatDialog) as jasmine.SpyObj<MatDialog>;
         matDialog.open.and.returnValue(matDialogRefSpy);
     }
 

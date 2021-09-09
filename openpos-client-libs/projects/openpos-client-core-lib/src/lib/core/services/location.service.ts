@@ -2,9 +2,8 @@ import { SessionService } from './session.service';
 import { filter, map } from 'rxjs/operators';
 import { Optional, Inject, InjectionToken, OnDestroy, Injectable } from '@angular/core';
 import { ILocationProvider } from '../location-providers/location-provider.interface';
-import { Subscription } from 'rxjs/internal/Subscription';
 import { ILocationData } from '../location-providers/location-data.interface';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { ActionMessage } from '../messages/action-message';
 
 export const PROVIDERS = new InjectionToken<ILocationProvider[]>('LocationProviders');

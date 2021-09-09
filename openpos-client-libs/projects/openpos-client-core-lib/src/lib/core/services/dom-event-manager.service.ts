@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, fromEvent, merge } from 'rxjs';
-import { FromEventTarget } from 'rxjs/internal/observable/fromEvent';
+
+import type { FromEventTarget } from 'rxjs/internal/observable/fromEvent';
 
 @Injectable({
     providedIn: 'root'

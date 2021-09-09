@@ -2,7 +2,7 @@ import {Component, Input, OnDestroy} from '@angular/core';
 import {Subscription} from 'rxjs';
 import { SessionService } from '../../../core/services/session.service';
 import { LocationService } from '../../../core/services/location.service';
-import { MatDialogRef, MatDialog } from '@angular/material';
+import { MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { LocationOverrideDialogComponent } from './location-override-dialog/location-override-dialog.component';
 
 @Component({

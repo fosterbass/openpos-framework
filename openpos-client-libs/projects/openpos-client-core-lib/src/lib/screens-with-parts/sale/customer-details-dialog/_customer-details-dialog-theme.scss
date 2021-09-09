@@ -25,6 +25,7 @@
 
         .filter-bar {
             background: white;
+            padding: 1rem;
         }
 
         .mat-tab-body-wrapper {
@@ -59,17 +60,8 @@
         }
 
         app-membership-points-display {
-            .grid-container {
-                border: 1px solid mat-color($foreground, secondary-text);
-                padding: 2em;
-                border-radius: 3px;
-
-                .details {
-                    align-self: center;
-                }
-            }
+            border-color: mat-color($foreground, secondary-text);
         }
-
 
         .mat-ink-bar {
             display: none !important;
@@ -98,15 +90,6 @@
 
             .content {
                 overflow-y: inherit;
-            }
-
-            app-membership-points-display {
-                .grid-container {
-                    margin-top: 5px;
-                    border: 1px solid mat-color($foreground, secondary-text);
-                    padding: 1em;
-                    border-radius: 3px;
-                }
             }
         }
 

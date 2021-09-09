@@ -1,6 +1,6 @@
 import { KeyPressProvider } from './../../providers/keypress.provider';
 import { Component, Inject, OnDestroy } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 import { Configuration } from '../../../configuration/configuration';
 

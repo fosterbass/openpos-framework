@@ -1,5 +1,5 @@
 import {Injectable, OnDestroy} from '@angular/core';
-import {MatDialog} from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import {BehaviorSubject, Observable, Subscription} from 'rxjs';
 import {LoaderState} from '../../shared/components/loader/loader-state';
 import {MessageProvider} from '../../shared/providers/message.provider';

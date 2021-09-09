@@ -1,7 +1,8 @@
-import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import {Component, ElementRef, Input, OnChanges, OnInit, Renderer2, TemplateRef, ViewChild} from '@angular/core';
 import {UIDataMessageService} from '../../../core/ui-data-message/ui-data-message.service';
 import {InfiniteScrollDatasource} from './infinite-scroll-datasource';
+
+import type { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 
 /**
  * This component uses the UIDataMessageService to implement 'Infinite Scroll'. When the viewable area gets close to the

@@ -1,7 +1,7 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {ActionService} from '../../../core/actions/action.service';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { ActionService } from '../../../core/actions/action.service';
 import { MessageProvider } from '../../providers/message.provider';
-import {ToastContainerDirective, ToastrService} from "ngx-toastr";
+import { ToastContainerDirective, ToastrService } from 'ngx-toastr';
 import { SessionService } from '../../../core/services/session.service';
 import { WatermarkMessage } from '../../../core/messages/watermark-message';
 import { MessageTypes } from '../../../core/messages/message-types';
@@ -15,16 +15,17 @@ import { Observable } from 'rxjs';
     providers: [MessageProvider, ActionService]
 })
 export class DynamicScreenComponent implements OnInit{
-    @ViewChild(ToastContainerDirective)
+    @ViewChild(ToastContainerDirective, { static: true })
     toastContainer: ToastContainerDirective;
     showWatermark = false;
     watermarkMessage: string;
     showStatusBar = true;
     constructor(
         private configuration: ConfigurationService,
-                messageProvider: MessageProvider,
-                private toastrService: ToastrService,
-                private sessionService: SessionService) {
+        messageProvider: MessageProvider,
+        private toastrService: ToastrService,
+        private sessionService: SessionService
+    ) {
         messageProvider.setMessageType('Screen');
         this.sessionService.getMessages(MessageTypes.WATERMARK).subscribe((message: WatermarkMessage) => {
             this.showWatermark = true;
@@ -34,8 +35,8 @@ export class DynamicScreenComponent implements OnInit{
             this.showWatermark = false;
             this.watermarkMessage = '';
         });
-        this.sessionService.getMessages(MessageTypes.STATUS_BAR).subscribe(() => this.showStatusBar = true);
-        this.sessionService.getMessages(MessageTypes.HIDE_STATUS_BAR).subscribe(() => this.showStatusBar = false);
+        this.sessionService.getMessages(MessageTypes.STATUS_BAR).subscribe(() => { this.showStatusBar = true; });
+        this.sessionService.getMessages(MessageTypes.HIDE_STATUS_BAR).subscribe(() => { this.showStatusBar = false; });
     }
 
     ngOnInit() {

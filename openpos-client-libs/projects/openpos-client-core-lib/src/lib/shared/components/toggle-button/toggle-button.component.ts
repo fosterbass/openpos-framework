@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter, ContentChild, HostListener, Renderer2 } from '@angular/core';
-import { MatButton } from '@angular/material';
+import { MatButton } from '@angular/material/button';
 
 @Component({
     selector: 'app-toggle-button',

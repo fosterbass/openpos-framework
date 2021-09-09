@@ -45,6 +45,8 @@ public class SessionConnectListener implements ApplicationListener<SessionConnec
 
     Map<String, DeviceModel> deviceModelMap = Collections.synchronizedMap(new HashMap<>());
 
+    Map<String, String> sessionPowerStatusMap = Collections.synchronizedMap(new HashMap<>());
+
     @Value("${openpos.general.authToken:#{null}}")
     String serverAuthToken;
 
@@ -69,6 +71,7 @@ public class SessionConnectListener implements ApplicationListener<SessionConnec
         log.info(BoxLogging.box("Session Connected " + sessionId) + "\n" + clientVersions + "\n");
         String compatibilityVersion = getHeader(event.getMessage(), COMPATIBILITY_VERSION_HEADER);
         String queryParams = getHeader(event.getMessage(), QUERY_PARAMS_HEADER);
+        String powerStatus = getHeader(event.getMessage(), POWER_STATUS_HEADER);
 
         List<Version> deviceVersions = new ArrayList<>();
         if (clientVersions != null) {
@@ -78,6 +81,7 @@ public class SessionConnectListener implements ApplicationListener<SessionConnec
 
         sessionAppIdMap.put(sessionId, getHeader(event.getMessage(), APPID_HEADER));
         sessionQueryParamsMap.put(sessionId, toQueryParams(queryParams, deviceVersions));
+        sessionPowerStatusMap.put(sessionId, powerStatus);
 
         DeviceModel deviceModel = devicesService.authenticateDevice(
                 AuthenticateDeviceRequest.builder()
@@ -158,6 +162,10 @@ public class SessionConnectListener implements ApplicationListener<SessionConnec
 
     public Map<String, Object> getQueryParams(String sessionId) {
         return sessionQueryParamsMap.get(sessionId);
+    }
+
+    public String getPowerStatus(String sessionId) {
+        return sessionPowerStatusMap.get(sessionId);
     }
 
     public void removeSession(String sessionId) {

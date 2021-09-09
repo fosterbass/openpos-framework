@@ -1,4 +1,4 @@
-import {ListRange} from '@angular/cdk/collections/typings/collection-viewer';
+import {ListRange} from '@angular/cdk/collections';
 import {cold, getTestScheduler} from 'jasmine-marbles';
 import {InfiniteScrollDatasource} from './infinite-scroll-datasource';
 

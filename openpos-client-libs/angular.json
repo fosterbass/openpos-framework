@@ -10,10 +10,15 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-ng-packagr:build",
+          "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
             "tsConfig": "projects/openpos-client-core-lib/tsconfig.lib.json",
             "project": "projects/openpos-client-core-lib/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/openpos-client-core-lib/tsconfig.lib.prod.json"
+            }
           }
         },
         "test": {

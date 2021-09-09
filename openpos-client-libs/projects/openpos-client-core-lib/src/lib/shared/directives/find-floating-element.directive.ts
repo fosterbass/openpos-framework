@@ -1,5 +1,5 @@
 import { Directive, Host, Self, OnDestroy } from '@angular/core';
-import { MatMenuTrigger } from '@angular/material';
+import { MatMenuTrigger } from '@angular/material/menu';
 import {BehaviorSubject, Subscription} from 'rxjs';
 import { FloaterService } from '../../core/services/floater.service';
 
