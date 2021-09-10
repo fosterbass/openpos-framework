@@ -9,9 +9,29 @@ export interface UIGraph {
     graphData: any[];
 }
 
+export interface UILineGraph extends UIGraph {
+    graphType: 'Line';
+    graphData: UIGraphMultiDataPoint[];
+}
+
+export interface UIBarGraph extends UIGraph {
+    graphType: 'Bar';
+    graphData: UIGraphSingleDataPoint[];
+}
+
+export interface UIPieChart extends UIGraph {
+    graphType: 'PieChart';
+    graphData: UIGraphSingleDataPoint[];
+}
+
+export interface UIScatterPlot extends UIGraph {
+    graphType: 'ScatterPlot';
+    graphData: UIGraphMultiDataPoint[];
+}
+
 export interface UIGraphSingleDataPoint {
-    xvalue;
-    yvalue;
+    xvalue: number | string;
+    yvalue: number;
 }
 
 export interface UIGraphMultiDataPoint {
@@ -21,17 +41,24 @@ export interface UIGraphMultiDataPoint {
 
 export type LegendPosition = 'left' | 'right' | 'below';
 
-export interface LineGraphData {
+export interface NgxChartMultiDataPoint {
     name: string;
-    series: LineDataPoint[];
-}
-
-export interface LineDataPoint {
-    name: string | number;
-    value: number;
+    series: NgxChartSingleDataPoint[];
 }
 
 export interface NgxChartSingleDataPoint {
-    name: string;
+    name: number | string;
     value: number;
+}
+
+export interface NgxBubbleChartMultiDataPoint {
+    name: string;
+    series: NgxBubbleChartSingleDataPoint[];
+}
+
+export interface NgxBubbleChartSingleDataPoint {
+    name: string;
+    x: number | string;
+    y: number;
+    r: number;
 }

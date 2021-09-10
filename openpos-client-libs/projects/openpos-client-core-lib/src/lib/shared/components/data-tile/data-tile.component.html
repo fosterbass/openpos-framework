@@ -5,8 +5,8 @@
         [width]="getSizeWidthPixels(tile.size)" [height]="getSizeHeight(tile.size)"></app-vertical-bar-graph>
     <app-line-graph *ngIf="tile.graph && tile.graph.graphType === 'Line'" [graph]="tile.graph"
         [width]="getSizeWidthPixels(tile.size)" [height]="getSizeHeight(tile.size)"></app-line-graph>
-    <app-pie-graph *ngIf="tile.graph && tile.graph.graphType === 'PieChart'" [graph]="tile.graph"
-        [width]="getSizeWidthPixels(tile.size)" [height]="getSizeHeight(tile.size)"></app-pie-graph>
+    <app-pie-chart *ngIf="tile.graph && tile.graph.graphType === 'PieChart'" [graph]="tile.graph"
+        [width]="getSizeWidthPixels(tile.size)" [height]="getSizeHeight(tile.size)"></app-pie-chart>
     <app-scatter-plot *ngIf="tile.graph && tile.graph.graphType === 'ScatterPlot'" [graph]="tile.graph"
         [width]="getSizeWidthPixels(tile.size)" [height]="getSizeHeight(tile.size)"></app-scatter-plot>
 </app-content-card>

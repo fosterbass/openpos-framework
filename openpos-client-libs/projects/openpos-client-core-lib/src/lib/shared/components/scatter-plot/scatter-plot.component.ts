@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { LineGraphData, UIGraph, UIGraphMultiDataPoint } from '../data-tile/graph.interface';
+import { UIScatterPlot, UIGraphMultiDataPoint, NgxBubbleChartMultiDataPoint } from '../data-tile/graph.interface';
 
 @Component({
     selector: 'app-scatter-plot',
@@ -12,13 +12,13 @@ export class ScatterPlotComponent implements OnInit {
         domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA']
     };
     @Input()
-    graph: UIGraph;
+    graph: UIScatterPlot;
     @Input()
     width: number;
     @Input()
     height: number;
 
-    data: LineGraphData[];
+    data: NgxBubbleChartMultiDataPoint[];
 
     constructor() { }
 
@@ -33,10 +33,10 @@ export class ScatterPlotComponent implements OnInit {
     onActivate(event): void { }
     onDeactivate(event): void { }
 
-    private convertDataToNGXFormat(graphData: UIGraphMultiDataPoint[]): LineGraphData[] {
-        const convertedData: LineGraphData[] = [];
+    private convertDataToNGXFormat(graphData: UIGraphMultiDataPoint[]): NgxBubbleChartMultiDataPoint[] {
+        const convertedData: NgxBubbleChartMultiDataPoint[] = [];
         for (const graphValue of graphData) {
-            const series: any[] = [];
+            const series = [];
             if (graphValue.dataSeries) {
                 for (const seriesValue of graphValue.dataSeries) {
                     series.push({

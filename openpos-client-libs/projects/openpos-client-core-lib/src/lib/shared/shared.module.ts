@@ -187,7 +187,7 @@ import { CapacitorKioskModePlatform } from '../core/platform-plugins/kiosk/capac
 import { ScreenGestureComponent } from './screen-parts/screen-gesture/screen-gesture.component';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { LineGraphComponent } from './components/line-graph/line-graph.component';
-import { PieGraphComponent } from './components/pie-graph/pie-graph.component';
+import { PieChartComponent } from './components/pie-chart/pie-chart.component';
 import { VerticalBarGraphComponent } from './components/vertical-bar-graph/vertical-bar-graph.component';
 import { DataTileComponent } from './components/data-tile/data-tile.component';
 import { ScatterPlotComponent } from './components/scatter-plot/scatter-plot.component';
@@ -320,7 +320,7 @@ const components = [
     StandbyComponent,
     DataTileComponent,
     LineGraphComponent,
-    PieGraphComponent,
+    PieChartComponent,
     ScatterPlotComponent,
     VerticalBarGraphComponent
 ];

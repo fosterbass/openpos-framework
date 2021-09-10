@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { NgxChartSingleDataPoint, UIGraph, UIGraphSingleDataPoint } from '../data-tile/graph.interface';
+import { NgxChartSingleDataPoint, UIBarGraph, UIGraphSingleDataPoint } from '../data-tile/graph.interface';
 
 @Component({
   selector: 'app-vertical-bar-graph',
@@ -11,7 +11,7 @@ export class VerticalBarGraphComponent implements OnInit {
     domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA']
   };
   @Input()
-  graph: UIGraph;
+  graph: UIBarGraph;
   @Input()
   width: number;
   @Input()

@@ -1,17 +1,17 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { NgxChartSingleDataPoint, UIGraph, UIGraphSingleDataPoint } from '../data-tile/graph.interface';
+import { NgxChartSingleDataPoint, UIPieChart, UIGraphSingleDataPoint } from '../data-tile/graph.interface';
 
 @Component({
-    selector: 'app-pie-graph',
-    templateUrl: './pie-graph.component.html',
-    styleUrls: ['./pie-graph.component.scss']
+    selector: 'app-pie-chart',
+    templateUrl: './pie-chart.component.html',
+    styleUrls: ['./pie-chart.component.scss']
 })
-export class PieGraphComponent implements OnInit {
+export class PieChartComponent implements OnInit {
     colorScheme = {
         domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA']
     };
     @Input()
-    graph: UIGraph;
+    graph: UIPieChart;
     @Input()
     width: number;
     @Input()

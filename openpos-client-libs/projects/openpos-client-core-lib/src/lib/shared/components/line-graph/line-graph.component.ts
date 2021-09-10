@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { LineGraphData, NgxChartSingleDataPoint, UIGraph, UIGraphMultiDataPoint } from '../data-tile/graph.interface';
+import { NgxChartMultiDataPoint, NgxChartSingleDataPoint, UIGraph, UIGraphMultiDataPoint } from '../data-tile/graph.interface';
 
 @Component({
   selector: 'app-line-graph',
@@ -18,7 +18,7 @@ export class LineGraphComponent implements OnInit {
   @Input()
   height: number;
 
-  data: LineGraphData[];
+  data: NgxChartMultiDataPoint[];
 
   constructor() { }
 
@@ -33,8 +33,8 @@ export class LineGraphComponent implements OnInit {
   onActivate(event): void { }
   onDeactivate(event): void { }
 
-  private convertDataToNGXFormat(graphData: UIGraphMultiDataPoint[]): LineGraphData[] {
-    const convertedData: LineGraphData[] = [];
+  private convertDataToNGXFormat(graphData: UIGraphMultiDataPoint[]): NgxChartMultiDataPoint[] {
+    const convertedData: NgxChartMultiDataPoint[] = [];
     for (const graphValue of graphData) {
       const series: NgxChartSingleDataPoint[] = [];
       if (graphValue.dataSeries) {
