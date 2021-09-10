@@ -2,13 +2,12 @@ package org.jumpmind.pos.update.provider;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.jumpmind.pos.update.provider.SemanticVersion;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 @RunWith(Theories.class)
 public class SemanticVersionComparisonTests {
@@ -66,6 +65,17 @@ public class SemanticVersionComparisonTests {
                 compare;
 
         assertEquals(message, datapoint.getExpectedCompareResult(), compare);
+    }
+
+    @Theory
+    public void ensureNewerAndOlderThanMethodsWorkWithComparison(SemanticVersionComparisonTestsDatapoint datapoint) {
+        if (datapoint.getExpectedCompareResult() > 0) {
+            assertTrue(datapoint.getLeft().isNewerThan(datapoint.getRight()));
+            assertFalse(datapoint.getLeft().isOlderThan(datapoint.getRight()));
+        } else if (datapoint.getExpectedCompareResult() < 0) {
+            assertTrue(datapoint.getLeft().isOlderThan(datapoint.getRight()));
+            assertFalse(datapoint.getLeft().isNewerThan(datapoint.getRight()));
+        }
     }
 
     private static SemanticVersionComparisonTestDatapointBuilder expect(SemanticVersion version) {
