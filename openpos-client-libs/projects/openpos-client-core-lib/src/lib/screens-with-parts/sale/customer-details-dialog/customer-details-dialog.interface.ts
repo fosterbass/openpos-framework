@@ -27,7 +27,7 @@ export interface CustomerDetailsDialogInterface extends IAbstractScreen {
     noMembershipsFoundLabel: string;
     itemHistoryEnabled: boolean;
     itemHistoryLabel: string;
-
+    itemHistoryFilterLabel: string;
     appliedIcon: string;
     applyIcon: string;
     backIcon: string;

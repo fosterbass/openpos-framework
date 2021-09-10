@@ -63,7 +63,7 @@ public class CustomerDetailsUIMessage extends UIMessage {
     private String memberTierLabel;
     private String itemHistoryLabel;
     private String itemHistoryIcon;
-
+    private String itemHistoryFilterLabel;
     private UICustomerItemHistoryFilter itemHistoryFilter;
 
     public CustomerDetailsUIMessage() {

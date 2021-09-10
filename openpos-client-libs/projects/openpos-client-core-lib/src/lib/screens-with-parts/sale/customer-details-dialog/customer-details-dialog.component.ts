@@ -114,9 +114,14 @@ class ItemsHistoryFilterController {
     if (event.key === 'Enter') {
       if (event.target instanceof HTMLInputElement) {
         event.target.blur();
-        this.doItemHistoryFilterAction({...this.serverState, text: event.target.value});
+        this.filterItemHistory(event.target.value);
       }
     }
+  }
+
+  filterItemHistory(value?: string): void {
+    value = value || this.textFilter.value;
+    this.doItemHistoryFilterAction({...this.serverState, text: value});
   }
 
   build() {
