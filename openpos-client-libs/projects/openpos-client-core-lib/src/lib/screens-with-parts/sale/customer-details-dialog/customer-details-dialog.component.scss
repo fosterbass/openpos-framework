@@ -252,6 +252,14 @@ app-infinite-scroll {
       margin: 20px 12px 0px 12px;
     }
   }
+
+  .filter-button {
+    margin-left: 1rem;
+    border-width: 2px;
+    border-style: solid;
+    padding: .5rem 2rem;
+    line-height: normal;
+  }
 }
 
 app-membership-points-display {
@@ -266,4 +274,8 @@ app-membership-points-display {
   &.mobile {
     padding: .5rem;
   }
+}
+
+.item-history {
+  padding: 0 1rem;
 }

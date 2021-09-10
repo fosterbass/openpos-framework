@@ -49,6 +49,7 @@ public class CustomerDetailsUIMessage extends UIMessage {
     private String memberTierLabel;
 
     private String itemHistoryLabel;
+    private String itemHistoryFilterLabel;
     private String itemsHistoryDataProviderKey;
 
     private UICustomerItemHistoryFilter itemHistoryFilter;

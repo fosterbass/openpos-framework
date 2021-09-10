@@ -22,12 +22,10 @@ export interface CustomerDetailsDialogInterface extends IAbstractScreen {
     noMembershipsFoundLabel: string;
     itemHistoryEnabled: boolean;
     itemHistoryLabel: string;
-
+    itemHistoryFilterLabel: string;
     profileIcon: string;
     membershipCardIcon: string;
-
     itemsHistoryDataProviderKey: string;
-    
     itemHistoryFilter: CustomerItemHistoryFilter;
 }
 
