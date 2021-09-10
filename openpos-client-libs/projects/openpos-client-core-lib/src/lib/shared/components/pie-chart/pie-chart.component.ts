@@ -36,10 +36,12 @@ export class PieChartComponent implements OnInit {
     private convertDataToNGXFormat(graphData: UIGraphSingleDataPoint[]): NgxChartSingleDataPoint[] {
         const convertedData = [];
         for (const graphValue of graphData) {
-            convertedData.push({
-                name: graphValue.xvalue,
-                value: graphValue.yvalue
-            });
+            if (graphValue.yvalue > 0) {
+                convertedData.push({
+                    name: graphValue.xvalue,
+                    value: graphValue.yvalue
+                });
+            }
         }
         return convertedData;
     }
