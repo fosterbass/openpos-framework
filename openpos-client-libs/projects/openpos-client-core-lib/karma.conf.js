@@ -7,7 +7,7 @@ module.exports = function (config) {
     frameworks: ['jasmine', '@angular-devkit/build-angular'],
     plugins: [
       require('karma-jasmine'),
-      require('karma-chrome-launcher'),
+      require('karma-jsdom-launcher'),
       require('karma-jasmine-html-reporter'),
       require('karma-coverage-istanbul-reporter'),
       require('karma-junit-reporter'),
@@ -23,7 +23,7 @@ module.exports = function (config) {
       skipFilesWithNoCoverage: false
     },
     junitReporter: {
-      outputDir: 'dist', // results will be saved as $outputDir/$browserName.xml
+      outputDir: '../../build/reports', // results will be saved as $outputDir/$browserName.xml
       outputFile: undefined, // if included, results will be saved as $outputDir/$browserName/$outputFile
       suite: '', // suite will become the package name attribute in xml testsuite element
       useBrowserName: false, // add browser name to report and classes names
@@ -37,7 +37,7 @@ module.exports = function (config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-    browsers: ['ChromeHeadless'],
+    browsers: ['jsdom'],
     singleRun: true,
     restartOnFileChange: true
   });

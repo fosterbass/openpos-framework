@@ -40,6 +40,7 @@ task npm_install(type: NpmTask){
 
 task ng_test(type: NpmTask){
     dependsOn npm_install
+    ignoreExitValue = project.hasProperty('ignoreFailures') && project.property('ignoreFailures').toBoolean()
     args = [
             'run', 
             'test'
@@ -73,7 +74,7 @@ task npm_pack(type: NpmTask){
 task ng_deploy {
     dependsOn npm_pack
     doLast {
-        if (!gitBranch.equals('merge')) {
+        if (!gitBranch.equals('merge') && !gitBranch.startsWith('PR-')) {
             ant.taskdef(name: 'scp', classname: 'org.apache.tools.ant.taskdefs.optional.ssh.Scp', classpath: configurations.sshAntTask.asPath)
             def toDir = "$deployUser:$deployPassword@maven.jumpmind.com:~/www/npm"
 

@@ -6,7 +6,6 @@ apply plugin: 'eclipse'
 apply plugin: 'java-library'
 apply plugin: 'idea'
 apply plugin: 'maven-publish'
-apply plugin: 'ru.vyarus.quality'
 
 def removeSnapshot = { v ->
     if (v.endsWith('-SNAPSHOT')) {
@@ -17,11 +16,6 @@ def removeSnapshot = { v ->
 
 sourceCompatibility=1.8
 targetCompatibility=1.8
-
-quality {
-   strict = false
-   consoleReporting = false
-}
 
 tasks.withType(JavaCompile) {
     options.compilerArgs = ['-Xlint:none']
@@ -236,7 +230,7 @@ publishing {
 
 task deploy {
     description 'Shortcut for Maven users'
-    if (!gitBranch.equals('merge')) {
+    if (!gitBranch.equals('merge') && !gitBranch.startsWith('PR-')) {
         dependsOn tasks.publish
     }
 }

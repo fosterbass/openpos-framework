@@ -1,0 +1,22 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Gradle Build') {
+            steps {
+                echo 'gitBranch=${BRANCH_NAME}'
+                dir('openpos-assemble') {sh './gradlew -PdownloadNode=true -PignoreFailures=true -PbuildNumber=${BUILD_NUMBER} -PbuildName="${JOB_NAME}" -PgitBranch="${BRANCH_NAME}" -PgitHash=${GIT_COMMIT} -PdeployUser=${MAVEN_JM_USER} -PdeployPassword=${MAVEN_JM_PW} -PdeployUploadUrl=${MAVEN_JM_URL} clean build deploy'}
+            }
+        }
+    }
+    
+    post {
+        always {
+            junit '**/build/reports/**/*.xml'
+            // Send an email to the person that broke the build
+            step([$class                  : 'Mailer',
+                  notifyEveryUnstableBuild: true,
+                  recipients              : [emailextrecipients([[$class: 'CulpritsRecipientProvider'], [$class: 'RequesterRecipientProvider']])].join(' ')])
+        }
+    }
+}
