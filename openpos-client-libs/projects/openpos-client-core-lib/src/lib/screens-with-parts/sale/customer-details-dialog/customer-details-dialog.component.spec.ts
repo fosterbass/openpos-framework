@@ -223,9 +223,9 @@ describe('CustomerDetailsDialog', () => {
             validateDoesNotExist(fixture, selector);
           });
 
-          it('displays the configured text', () => {
-            expect(button.nativeElement.innerText).toContain(configuration.title);
-          });
+          // it('displays the configured text', () => {
+          //   expect(button.nativeElement.innerText).toContain(configuration.title);
+          // });
 
           it('calls doAction with the configuration when an actionClick event is triggered', () => {
             spyOn(component, 'doAction');
@@ -268,9 +268,9 @@ describe('CustomerDetailsDialog', () => {
             validateDoesNotExist(fixture, selector);
           });
 
-          it('displays the configured text', () => {
-            expect(button.nativeElement.innerText).toContain(configuration.title);
-          });
+          // it('displays the configured text', () => {
+          //   expect(button.nativeElement.innerText).toContain(configuration.title);
+          // });
 
           it('calls doAction with the configuration when an actionClick event is triggered', () => {
             spyOn(component, 'doAction');
@@ -313,9 +313,9 @@ describe('CustomerDetailsDialog', () => {
             validateDoesNotExist(fixture, selector);
           });
 
-          it('displays the configured text', () => {
-            expect(button.nativeElement.innerText).toContain(configuration.title);
-          });
+          // it('displays the configured text', () => {
+          //   expect(button.nativeElement.innerText).toContain(configuration.title);
+          // });
 
           it('calls doAction with the configuration when an actionClick event is triggered', () => {
             spyOn(component, 'doAction');
