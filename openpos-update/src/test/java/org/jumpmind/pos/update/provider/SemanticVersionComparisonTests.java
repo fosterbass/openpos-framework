@@ -82,27 +82,6 @@ public class SemanticVersionComparisonTests {
         return new SemanticVersionComparisonTestDatapointBuilder(version);
     }
 
-    private static SemanticVersionComparisonTestsDatapoint expectLeft(
-            SemanticVersion left,
-            SemanticVersion right
-    ) {
-        return new SemanticVersionComparisonTestsDatapoint(left, right, 1);
-    }
-
-    private static SemanticVersionComparisonTestsDatapoint expectRight(
-            SemanticVersion left,
-            SemanticVersion right
-    ) {
-        return new SemanticVersionComparisonTestsDatapoint(left, right, -1);
-    }
-
-    private static SemanticVersionComparisonTestsDatapoint expectCenter(
-            SemanticVersion left,
-            SemanticVersion right
-    ) {
-        return new SemanticVersionComparisonTestsDatapoint(left, right, 0);
-    }
-
     @AllArgsConstructor
     static class SemanticVersionComparisonTestDatapointBuilder {
         SemanticVersion expected;
