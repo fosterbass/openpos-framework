@@ -1,6 +1,6 @@
 <app-content-card [style]="getSizeStyles(tile.size)" class="graph">
     <div class="mat-card-title">{{tile.title}}</div>
-    <div>{{tile.description}}</div>
+    <p>{{tile.description}}</p>
     <app-vertical-bar-graph *ngIf="tile.graph && tile.graph.graphType === 'Bar'" [graph]="tile.graph"
         [width]="getSizeWidthPixels(tile.size)" [height]="getSizeHeight(tile.size)"></app-vertical-bar-graph>
     <app-line-graph *ngIf="tile.graph && tile.graph.graphType === 'Line'" [graph]="tile.graph"
@@ -9,4 +9,5 @@
         [width]="getSizeWidthPixels(tile.size)" [height]="getSizeHeight(tile.size)"></app-pie-chart>
     <app-scatter-plot *ngIf="tile.graph && tile.graph.graphType === 'ScatterPlot'" [graph]="tile.graph"
         [width]="getSizeWidthPixels(tile.size)" [height]="getSizeHeight(tile.size)"></app-scatter-plot>
+    <app-grid-table *ngIf="!tile.graph && tile.table" [rows]="tile.table.rows" [columnHeaders]="tile.table.columnHeaders"></app-grid-table>
 </app-content-card>

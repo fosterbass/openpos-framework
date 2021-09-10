@@ -1,16 +1,16 @@
 package org.jumpmind.pos.core.ui.data;
 
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+@NoArgsConstructor
 public class DataTableRow implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private List<List<Object>> columns = new ArrayList<>();
-
-    public DataTableRow() {
-    }
 
     public DataTableRow(Object... columns) {
         for (Object column : columns) {

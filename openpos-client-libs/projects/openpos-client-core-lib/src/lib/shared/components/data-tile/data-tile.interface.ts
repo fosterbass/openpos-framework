@@ -6,6 +6,7 @@ export interface UIDataTile {
     description: string;
     size: DataTileSize;
     graph: UIGraph;
+    table;
 }
 
 export class DataTileSizes {

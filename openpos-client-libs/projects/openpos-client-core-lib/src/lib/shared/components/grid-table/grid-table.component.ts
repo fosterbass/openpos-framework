@@ -26,7 +26,7 @@ export class GridTableComponent implements OnInit {
 
         this.outerStyle = {
             'grid-template-rows':
-                `repeat(${numberRows}, min-content)`,
+                `repeat(${numberRows + 1}, min-content)`,
             'grid-template-columns':
                 `repeat(${numberCols}, minmax(min-content, auto))`,
         };
