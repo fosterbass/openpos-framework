@@ -9,7 +9,7 @@ import { UIScatterPlot, UIGraphMultiDataPoint, NgxBubbleChartMultiDataPoint } fr
 export class ScatterPlotComponent implements OnInit {
 
     colorScheme = {
-        domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA']
+        domain: ['#34a4eb', '#5AA454', '#A10A28', '#C7B42C', '#AAAAAA', '#10537D', '#941589', '#8327C4']
     };
     @Input()
     graph: UIScatterPlot;
