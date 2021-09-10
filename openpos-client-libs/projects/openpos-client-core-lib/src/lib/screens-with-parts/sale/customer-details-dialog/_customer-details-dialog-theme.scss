@@ -28,6 +28,10 @@
             padding: 1rem;
         }
 
+        .filter-button {
+            border-color: mat-color($foreground, border, .35);
+        }
+
         .mat-tab-body-wrapper {
             border: 2px solid map-get($foreground, border);
         }

@@ -64,8 +64,7 @@
                     </div>
                 </mat-card>
             </mat-tab>
-            <mat-tab *ngIf="screen.itemHistoryEnabled"
-                    [label]="screen.itemHistoryLabel">
+            <mat-tab *ngIf="screen.itemHistoryEnabled" [label]="screen.itemHistoryLabel">
                 <div class="filter-bar">
                     <div class="date-range">
                         <mat-form-field>
@@ -80,12 +79,16 @@
                             <mat-datepicker #dateTo></mat-datepicker>
                         </mat-form-field>
                     </div>
-
-                    <mat-form-field>
-                        <input matInput [formControl]="itemsHistoryFilterController.textFilter" (keypress)="itemsHistoryFilterController.onFilterKeyPress($event)" (focus)="$event.target.select()" [placeholder]="screen.itemHistoryFilter.textPlaceholder">
-                    </mat-form-field>
+                    <div class="filter">
+                        <mat-form-field>
+                            <input matInput [formControl]="itemsHistoryFilterController.textFilter" (keypress)="itemsHistoryFilterController.onFilterKeyPress($event)" (focus)="$event.target.select()" [placeholder]="screen.itemHistoryFilter.textPlaceholder">
+                        </mat-form-field>
+                        <button mat-flat-button mat-primary-inverse (click)="itemsHistoryFilterController.filterItemHistory()" class="filter-button">
+                            {{screen.itemHistoryFilterLabel}}
+                        </button>
+                    </div>
                 </div>
-                <app-infinite-scroll [dataKey]="screen.itemsHistoryDataProviderKey" [itemTemplate]="itemHistoryTemplate" virtualScrollMinBufferPx="400" virtualScrollMaxBufferPx="800" [itemHeightPx]="155">
+                <app-infinite-scroll class="item-history" [dataKey]="screen.itemsHistoryDataProviderKey" [itemTemplate]="itemHistoryTemplate" virtualScrollMinBufferPx="400" virtualScrollMaxBufferPx="800" [itemHeightPx]="155">
                     <ng-template #itemHistoryTemplate let-item>
                         <div class="item" responsive-class>
                             <div class="image-container">
