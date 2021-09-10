@@ -13,9 +13,26 @@ buildscript {
     }
 }
 
+plugins {
+  id "org.sonarqube" version "3.3"
+}
+
 apply plugin: 'se.bjurr.gitchangelog.git-changelog-gradle-plugin'
 apply from: '../openpos-gradle/src/main/resources/java.gradle'
 apply from: '../openpos-gradle/src/main/resources/release.gradle'
+
+sonarqube {
+  properties {
+    property "sonar.projectKey", "openpos-framework"
+    property "sonar.organization", "jumpmind"
+    property "sonar.host.url", "https://quality.jumpmind.com"
+    property "sonar.sources", "src/main/java,../openpos-client-libs/projects/openpos-client-core-lib/src"
+    property "sonar.tests", "src/test/java,../openpos-client-libs/projects/openpos-client-core-lib/src"
+    property "sonar.junit.reportPaths","../openpos-client-libs/projects/openpos-client-core-lib/dist,build/test-results/test"
+    property "sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
+    property "sonar.flex.cobertura.reportPaths", "../openpos-client-libs/coverage/openpos-client-core-lib/cobertura-coverage.xml"
+  }
+}
 
 idea {
     project {
