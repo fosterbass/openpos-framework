@@ -1,6 +1,7 @@
 package org.jumpmind.pos.core.ui;
 
 public interface IconType {
+    public static final String About = "About"; //about
     public static final String Account = "Account"; //account_balance
     public static final String Add = "Add"; //add
     public static final String AddCustomer = "AddCustomer"; //person_add
