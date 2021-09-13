@@ -2,12 +2,13 @@ package org.jumpmind.pos.update.provider;
 
 import lombok.Getter;
 
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Getter
-public class SemanticVersion extends Version<SemanticVersion> {
+public class SemanticVersion extends Version {
     private final int major;
     private final int minor;
     private final int patch;
@@ -86,6 +87,23 @@ public class SemanticVersion extends Version<SemanticVersion> {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof SemanticVersion)) return false;
+
+        return equals((SemanticVersion) o);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = major;
+        result = 31 * result + minor;
+        result = 31 * result + patch;
+        result = 31 * result + Arrays.hashCode(buildMetadata);
+        result = 31 * result + Arrays.hashCode(preReleaseTags);
+        return result;
+    }
+
     public boolean equals(SemanticVersion other) {
         if (preReleaseTags.length != other.preReleaseTags.length) {
             return false;
@@ -154,6 +172,14 @@ public class SemanticVersion extends Version<SemanticVersion> {
     }
 
     @Override
+    public boolean equals(Version other) {
+        if (other instanceof SemanticVersion) {
+            return equals((SemanticVersion) other);
+        }
+
+        return false;
+    }
+
     public int compareTo(SemanticVersion o) {
         // compare base version
         int result = symCompare(
@@ -235,6 +261,15 @@ public class SemanticVersion extends Version<SemanticVersion> {
         }
 
         return value;
+    }
+
+    @Override
+    public int compareTo(Version o) {
+        if (!(o instanceof SemanticVersion)) {
+            throw new IllegalArgumentException("cannot compare against non-SemanticVersion types");
+        }
+
+        return this.compareTo((SemanticVersion) o);
     }
 
     private interface CompareFn {

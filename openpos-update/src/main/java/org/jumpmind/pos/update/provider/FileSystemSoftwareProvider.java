@@ -1,19 +1,26 @@
 package org.jumpmind.pos.update.provider;
 
-import bsh.commands.dir;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 import org.jumpmind.pos.update.UpdateModule;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
-import static org.apache.commons.lang3.StringUtils.*;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static java.util.Comparator.naturalOrder;
 
 @Profile(UpdateModule.NAME)
 @Component
@@ -25,55 +32,98 @@ public class FileSystemSoftwareProvider implements ISoftwareProvider {
     @Value("${openpos.update.fileSystemSoftwareProvider.baseDir}")
     String baseDir;
 
+    @Value("${openpos.update.fileSystemSoftwareProvider.namePattern}")
+    String fileNamePattern;
+
+    @Value("${openpos.update.fileSystemSoftwareProvider.namePatternIgnoreCase:false}")
+    boolean fileNamePatternIgnoresCase;
+
+    @Autowired
+    IVersionFactory<?> versionFactory;
+
+    private Pattern compiledFileNamePattern;
+
     @Override
-    public List<String> getAvailableVersions() {
-        List<String> versions = new ArrayList<>();
-        File[] files = getFiles();
-        for (File file : files) {
-            String version = parseVersion(file.getName());
-            if (isNotBlank(version)) {
-                versions.add(version);
-            }
-        }
-        Collections.sort(versions);
-        return versions;
+    public List<Version> getAvailableVersions() {
+        return getFiles()
+                .map(FileVersionPair::getVersion)
+                .sorted()
+                .collect(Collectors.toList());
     }
 
     @Override
-    public String getLatestVersion() {
-        List<String> versions = getAvailableVersions();
-        if (versions.size() > 0) {
-            return versions.get(versions.size()-1);
+    public Version getLatestVersion() {
+        return getFiles()
+                .map(FileVersionPair::getVersion)
+                .max(naturalOrder())
+                .orElse(null);
+    }
+
+    @Override
+    public Path getSoftwareVersion(Version version) {
+        return getFiles()
+                .filter(f -> f.getVersion().equals(version))
+                .findFirst()
+                .map(f -> Paths.get(f.getFile().toURI()))
+                .orElse(null);
+    }
+
+    @AllArgsConstructor
+    @Data
+    private static class FileVersionPair {
+        private final File file;
+        private final Version version;
+    }
+
+    Stream<FileVersionPair> getFiles() {
+        final Stream<File> files = Arrays.stream(Objects.requireNonNull(
+                new File(baseDir).listFiles((dir, name) -> name.endsWith("." + artifactExtension))
+        ));
+
+        Stream<FileVersionPair> result;
+
+        if (StringUtils.isNotEmpty(fileNamePattern)) {
+            if (compiledFileNamePattern == null) {
+                int flags = 0;
+
+                if (fileNamePatternIgnoresCase) {
+                    flags |= Pattern.CASE_INSENSITIVE;
+                }
+
+                compiledFileNamePattern = Pattern.compile(fileNamePattern, flags);
+            }
+
+            result = files.map(f -> {
+                Version resultingVersion = null;
+
+                final Matcher matcher = compiledFileNamePattern.matcher(f.getName());
+                if (matcher.find()) {
+                    final String versionString = matcher.group("version");
+
+                    if (versionString != null) {
+                        try {
+                            resultingVersion = versionFactory.fromString(versionString);
+                        } catch (IllegalArgumentException ignored) {
+                        }
+                    }
+                }
+
+                return new FileVersionPair(f, resultingVersion);
+            });
         } else {
-            return null;
+            // assume the file name is named after the version number.
+            result = files.map(f -> {
+               Version resultingVersion = null;
+
+               try {
+                   resultingVersion = versionFactory.fromString(f.getName());
+               } catch (IllegalArgumentException ignored) {
+               }
+
+               return new FileVersionPair(f, resultingVersion);
+            });
         }
-    }
 
-    @Override
-    public Path getSoftwareVersion(String version) {
-        Path path = null;
-        File[] files = getFiles();
-        for (File file : files) {
-            String currentVersion = parseVersion(file.getName());
-            if (isNotBlank(currentVersion) && currentVersion.equals(version)) {
-                path = Paths.get(file.toURI());
-                break;
-            }
-        }
-        return path;
+        return result.filter(f -> f.getVersion() != null);
     }
-
-    String parseVersion(String fileName) {
-        return fileName.replaceAll(".*?((?<!\\w)\\d+([.-]\\d+)*).*", "$1");
-    }
-
-    File[] getFiles() {
-        return new File(baseDir).listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith("." + artifactExtension);
-            }
-        });
-    }
-
 }

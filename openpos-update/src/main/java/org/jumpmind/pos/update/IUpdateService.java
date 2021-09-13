@@ -12,13 +12,17 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping("/update")
 public interface IUpdateService {
 
-
     @RequestMapping(path = "/installation/{installationId}", method = RequestMethod.GET)
-    public void update(@PathVariable("installationId") String installationId,
-                       HttpServletResponse response);
+    public void update(
+            @PathVariable("installationId") String installationId,
+            HttpServletResponse response
+    );
 
     @RequestMapping(path = "/download/{version}/**", method = RequestMethod.GET)
-    public void download(@PathVariable("version") String version,
-                         HttpServletRequest request, HttpServletResponse response);
+    public void download(
+            @PathVariable("version") String version,
+            HttpServletRequest request,
+            HttpServletResponse response
+    );
 
 }

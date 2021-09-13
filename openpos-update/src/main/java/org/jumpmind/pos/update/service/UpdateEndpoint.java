@@ -5,6 +5,8 @@ import org.jumpmind.pos.update.UpdateModule;
 import org.jumpmind.pos.update.model.InstallGroupModel;
 import org.jumpmind.pos.update.model.InstallRepository;
 import org.jumpmind.pos.update.provider.ISoftwareProvider;
+import org.jumpmind.pos.update.provider.IVersionFactory;
+import org.jumpmind.pos.update.provider.Version;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
@@ -40,19 +42,32 @@ public class UpdateEndpoint {
     @Value("${openpos.update.installBasePath}")
     String installBasePath;
 
-    Map<String, String> versionToConfigXml = new ConcurrentHashMap<>();
+    Map<Version, String> versionToConfigXml = new ConcurrentHashMap<>();
 
-    public void update(String installationId,
-                       HttpServletResponse response) throws Exception {
+    @Autowired
+    IVersionFactory<?> versionFactory;
+
+    public void update(
+            String installationId,
+            HttpServletResponse response
+    ) throws Exception {
         ISoftwareProvider provider = softwareProviders.get(softwareProvider);
 
-        String version = null;
+        Version version = null;
         InstallGroupModel installGroupModel = installRepository.findInstallGroup(installationId);
-        if (installGroupModel != null) {
-            version = installGroupModel.getTargetVersion();
-        }
 
-        if (version == null || "*".equals(version)) {
+        if (installGroupModel != null) {
+            if ("*".equals(installGroupModel.getTargetVersion())) {
+                version = provider.getLatestVersion();
+            } else {
+                try {
+                    version = versionFactory.fromString(installGroupModel.getTargetVersion());
+                } catch (IllegalArgumentException ignored) {
+                    response.sendError(HttpServletResponse.SC_CONFLICT, "server has invalid version for target group");
+                    return;
+                }
+            }
+        } else {
             version = provider.getLatestVersion();
         }
 
@@ -66,6 +81,7 @@ public class UpdateEndpoint {
                 versionToConfigXml.put(version, writer.getBuffer().toString());
             } else {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
+                return;
             }
         }
 
@@ -73,9 +89,9 @@ public class UpdateEndpoint {
         response.flushBuffer();
     }
 
-    Configuration buildConfiguration(String version, Path fromZip) throws IOException {
+    Configuration buildConfiguration(Version version, Path fromZip) throws IOException {
         Configuration.Builder configBuilder = Configuration.builder()
-                .baseUri(installUrl + "/update/download/" + version +"/")
+                .baseUri(installUrl + "/update/download/" + version.getVersionString() +"/")
                 .basePath(installBasePath)
                 .property("default.launcher.main.class", "org.jumpmind.pos.app.Commerce");
 

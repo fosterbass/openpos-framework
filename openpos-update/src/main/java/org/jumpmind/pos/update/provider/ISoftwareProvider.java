@@ -4,9 +4,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 public interface ISoftwareProvider {
-
-    List<String> getAvailableVersions();
-    String getLatestVersion();
-    Path getSoftwareVersion(String version);
-
+    List<Version> getAvailableVersions();
+    Version getLatestVersion();
+    Path getSoftwareVersion(Version version);
 }
