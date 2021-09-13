@@ -62,13 +62,15 @@ describe('RewardsHistoryLineItemComponent', () => {
             fixture = TestBed.createComponent(RewardsHistoryLineItemComponent);
             component = fixture.componentInstance;
             component.reward = {
-                expirationDate: '01/01/2000'
+                expirationDate: '01/01/2000',
+                redeemedDate: '12/01/1999'
             } as RewardHistory;
             component.screenData = {
                 expiredLabel: 'Expired',
                 redeemedLabel: 'Redeemed',
                 loyaltyIcon: 'loyalty',
-                expiredIcon: 'access_time'
+                expiredIcon: 'access_time',
+                redeemedIcon: 'check_decagram_outline'
             } as RewardsHistoryLineItemComponentInterface;
             fixture.detectChanges();
         });
@@ -114,28 +116,64 @@ describe('RewardsHistoryLineItemComponent', () => {
                     expect(nameElement.nativeElement.classList).toContain('expired');
                 });
 
-                describe('expiration', () => {
+                describe('expiration-redemption', () => {
                     describe('when there is an expiration date', () => {
+                        beforeEach(() => {
+                            component.reward.redeemedDate = undefined;
+                            fixture.detectChanges();
+                         });
+
                         it('renders the access_time icon', () => {
-                            validateIcon(fixture, '.details .expiration app-icon', 'access_time');
+                            validateIcon(fixture, '.details .expiration-redemption app-icon', 'access_time');
                         });
 
                         it('renders the expirationLabel', () => {
                             component.screenData.expiredLabel = 'a label';
                             fixture.detectChanges();
 
-                            validateText(fixture, '.details .expiration', component.screenData.expiredLabel);
+                            validateText(fixture, '.details .expiration-redemption', component.screenData.expiredLabel);
                         });
                     });
 
                     describe('when there is no expiration date', () => {
                         beforeEach(() => {
                            component.reward.expirationDate = undefined;
+                           component.reward.redeemedDate = undefined;
                            fixture.detectChanges();
                         });
 
                         it('does not display the expiration section', () => {
-                           validateDoesNotExist(fixture, '.expiration');
+                           validateDoesNotExist(fixture, '.expiration-redemption');
+                        });
+                    });
+
+                    describe('when there is a redeemed date', () => {
+                        beforeEach(() => {
+                            component.reward.expirationDate = undefined;
+                            fixture.detectChanges();
+                         });
+
+                        it('renders the check_decagram_outline icon', () => {
+                            validateIcon(fixture, '.details .expiration-redemption app-icon', 'check_decagram_outline');
+                        });
+
+                        it('renders the redeemedLabel', () => {
+                            component.screenData.redeemedLabel = 'a label';
+                            fixture.detectChanges();
+
+                            validateText(fixture, '.details .expiration-redemption', component.screenData.redeemedLabel);
+                        });
+                    });
+
+                    describe('when there is no redeemed date', () => {
+                        beforeEach(() => {
+                           component.reward.redeemedDate = undefined;
+                           component.reward.expirationDate = undefined;
+                           fixture.detectChanges();
+                        });
+
+                        it('does not display the redemption section', () => {
+                           validateDoesNotExist(fixture, '.expiration-redemption');
                         });
                     });
                 });
