@@ -20,6 +20,7 @@ export class IconService {
         private imageService: ImageService,
         private iconRegistry: MatIconRegistry) {
 
+        this.icons.set('About', ['about.svg', this.defaultIconProvider]);
         this.icons.set('Account', ['account_balance.svg', this.defaultIconProvider]);
         this.icons.set('Add', ['add_circle.svg', this.defaultIconProvider]);
         this.icons.set('AddCustomer', ['person_add.svg', this.defaultIconProvider]);
