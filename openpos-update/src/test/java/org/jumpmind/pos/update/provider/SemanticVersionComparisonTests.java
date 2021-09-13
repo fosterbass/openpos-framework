@@ -75,6 +75,9 @@ public class SemanticVersionComparisonTests {
         } else if (datapoint.getExpectedCompareResult() < 0) {
             assertTrue(datapoint.getLeft().isOlderThan(datapoint.getRight()));
             assertFalse(datapoint.getLeft().isNewerThan(datapoint.getRight()));
+        } else if (datapoint.getExpectedCompareResult() == 0) {
+            assertFalse(datapoint.getLeft().isNewerThan(datapoint.getRight()));
+            assertFalse(datapoint.getLeft().isOlderThan(datapoint.getRight()));
         }
     }
 
