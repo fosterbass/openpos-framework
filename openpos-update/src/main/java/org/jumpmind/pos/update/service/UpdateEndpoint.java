@@ -5,8 +5,8 @@ import org.jumpmind.pos.update.UpdateModule;
 import org.jumpmind.pos.update.model.InstallGroupModel;
 import org.jumpmind.pos.update.model.InstallRepository;
 import org.jumpmind.pos.update.provider.ISoftwareProvider;
-import org.jumpmind.pos.update.provider.IVersionFactory;
-import org.jumpmind.pos.update.provider.Version;
+import org.jumpmind.pos.update.versioning.IVersionFactory;
+import org.jumpmind.pos.update.versioning.Version;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
@@ -14,12 +14,10 @@ import org.update4j.Configuration;
 import org.update4j.FileMetadata;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 

@@ -1,5 +1,7 @@
 package org.jumpmind.pos.update.provider;
 
+import org.jumpmind.pos.update.versioning.Version;
+
 import java.nio.file.Path;
 import java.util.List;
 

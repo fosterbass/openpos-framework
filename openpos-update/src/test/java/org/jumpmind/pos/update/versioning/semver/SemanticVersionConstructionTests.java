@@ -1,8 +1,8 @@
-package org.jumpmind.pos.update.provider;
+package org.jumpmind.pos.update.versioning.semver;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class SemanticVersionConstructionTests {
     @Test

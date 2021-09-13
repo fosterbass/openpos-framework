@@ -1,4 +1,4 @@
-package org.jumpmind.pos.update.provider;
+package org.jumpmind.pos.update.versioning;
 
 public abstract class Version implements Comparable<Version> {
     public abstract String getVersionString();

@@ -1,4 +1,4 @@
-package org.jumpmind.pos.update.provider;
+package org.jumpmind.pos.update.versioning.semver;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,6 +1,7 @@
-package org.jumpmind.pos.update.provider;
+package org.jumpmind.pos.update.versioning.semver;
 
 import lombok.Getter;
+import org.jumpmind.pos.update.versioning.Version;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -15,8 +16,8 @@ public class SemanticVersion extends Version {
     private final String[] buildMetadata;
     private final String[] preReleaseTags;
 
-    private static final Pattern SEMANTIC_VERSION_PATTERN = Pattern.compile("^(?<major>\\d+)(\\.(?<minor>\\d+)(\\.(?<patch>\\d+))?)?(-+(?<pre>\\w+[\\w.]+))?(\\+(?<build>\\w+[\\w.]+))?$");
-    private static final Pattern SIMPLE_DOT_SEPARATED_IDENTIFIER = Pattern.compile("^\\w+[\\w.]*$");
+    private static final Pattern SEMANTIC_VERSION_PATTERN = Pattern.compile("^(?<major>\\d+)(\\.(?<minor>\\d+)(\\.(?<patch>\\d+))?)?(-+(?<pre>[\\w-]+[\\w-.]+))?(\\+(?<build>[\\w-]+[\\w-.]+))?$");
+    private static final Pattern SIMPLE_DOT_SEPARATED_IDENTIFIER = Pattern.compile("^[\\w-]+[\\w-.]*$");
 
     public static Optional<SemanticVersion> tryParse(String version) {
         final Matcher match = SEMANTIC_VERSION_PATTERN.matcher(version);

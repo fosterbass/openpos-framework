@@ -1,5 +1,6 @@
-package org.jumpmind.pos.update.provider;
+package org.jumpmind.pos.update.versioning.semver;
 
+import org.jumpmind.pos.update.versioning.IVersionFactory;
 import org.springframework.stereotype.Component;
 
 @Component

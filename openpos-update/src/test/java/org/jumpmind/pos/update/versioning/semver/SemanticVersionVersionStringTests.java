@@ -1,8 +1,7 @@
-package org.jumpmind.pos.update.provider;
+package org.jumpmind.pos.update.versioning.semver;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.jumpmind.pos.update.provider.SemanticVersion;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
@@ -12,13 +11,6 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(Theories.class)
 public class SemanticVersionVersionStringTests {
-    // todo:
-    // - test ctor arguments
-    // - test toString, base, with preRelease, with build meta, combo
-    // - test comparison, base, with preRelease, with build meta, combo
-    // - test equals, base, with prerelease, with build meta, combo
-    // - test isNewerThan isOlderThan
-
     @DataPoints
     public static SemanticTheoryExpectedStringDataPoint[] stringTestDataPoints() {
         return new SemanticTheoryExpectedStringDataPoint[] {
