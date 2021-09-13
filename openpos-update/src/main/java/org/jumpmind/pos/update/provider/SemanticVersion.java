@@ -1,8 +1,12 @@
 package org.jumpmind.pos.update.provider;
 
+import lombok.Getter;
+
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Getter
 public class SemanticVersion extends Version<SemanticVersion> {
     private final int major;
     private final int minor;
@@ -10,7 +14,40 @@ public class SemanticVersion extends Version<SemanticVersion> {
     private final String[] buildMetadata;
     private final String[] preReleaseTags;
 
-    private static final Pattern SIMPLE_DOT_SEPARATED_IDENTIFIER = Pattern.compile("^[a-zA-Z0-9-]+[a-zA-Z0-9-.]*$");
+    private static final Pattern SEMANTIC_VERSION_PATTERN = Pattern.compile("^(?<major>\\d+)(\\.(?<minor>\\d+)(\\.(?<patch>\\d+))?)?(-+(?<pre>\\w+[\\w.]+))?(\\+(?<build>\\w+[\\w.]+))?$");
+    private static final Pattern SIMPLE_DOT_SEPARATED_IDENTIFIER = Pattern.compile("^\\w+[\\w.]*$");
+
+    public static Optional<SemanticVersion> tryParse(String version) {
+        final Matcher match = SEMANTIC_VERSION_PATTERN.matcher(version);
+
+        if (match.find()) {
+            final String parsedMajor = match.group("major");
+            final String parsedMinor = match.group("minor");
+            final String parsedPatch = match.group("patch");
+            final String preRelease = match.group("pre");
+            final String buildMeta = match.group("build");
+
+            final int major = Integer.parseInt(parsedMajor);
+            final int minor;
+            final int patch;
+
+            if (parsedMinor != null) {
+                minor = Integer.parseInt(parsedMinor);
+            } else {
+                minor = 0;
+            }
+
+            if (parsedPatch != null) {
+                patch = Integer.parseInt(parsedPatch);
+            } else {
+                patch = 0;
+            }
+
+            return Optional.of(new SemanticVersion(major, minor, patch, preRelease, buildMeta));
+        }
+
+        return Optional.empty();
+    }
 
     public SemanticVersion(int major)
             throws IllegalArgumentException {
