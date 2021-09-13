@@ -5,8 +5,8 @@ import org.jumpmind.pos.update.UpdateModule;
 import org.jumpmind.pos.update.model.InstallGroupModel;
 import org.jumpmind.pos.update.model.InstallRepository;
 import org.jumpmind.pos.update.provider.ISoftwareProvider;
-import org.jumpmind.pos.update.versioning.IVersionFactory;
 import org.jumpmind.pos.update.versioning.Version;
+import org.jumpmind.pos.update.versioning.Versioning;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
@@ -43,7 +43,7 @@ public class UpdateEndpoint {
     Map<Version, String> versionToConfigXml = new ConcurrentHashMap<>();
 
     @Autowired
-    IVersionFactory<?> versionFactory;
+    Versioning versionFactory;
 
     public void update(
             String installationId,

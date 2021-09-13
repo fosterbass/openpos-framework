@@ -4,8 +4,8 @@ import org.apache.commons.io.IOUtils;
 import org.jumpmind.pos.service.Endpoint;
 import org.jumpmind.pos.update.UpdateModule;
 import org.jumpmind.pos.update.provider.ISoftwareProvider;
-import org.jumpmind.pos.update.versioning.IVersionFactory;
 import org.jumpmind.pos.update.versioning.Version;
+import org.jumpmind.pos.update.versioning.Versioning;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
@@ -31,7 +31,7 @@ public class DownloadEndpoint {
     String softwareProvider;
 
     @Autowired
-    IVersionFactory<?> versionFactory;
+    Versioning versionFactory;
 
     public void download(
             String version,

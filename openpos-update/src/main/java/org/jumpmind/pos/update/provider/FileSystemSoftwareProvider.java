@@ -4,8 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.jumpmind.pos.update.UpdateModule;
-import org.jumpmind.pos.update.versioning.IVersionFactory;
 import org.jumpmind.pos.update.versioning.Version;
+import org.jumpmind.pos.update.versioning.Versioning;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
@@ -41,7 +41,7 @@ public class FileSystemSoftwareProvider implements ISoftwareProvider {
     boolean fileNamePatternIgnoresCase;
 
     @Autowired
-    IVersionFactory<?> versionFactory;
+    Versioning versionFactory;
 
     private Pattern compiledFileNamePattern;
 
