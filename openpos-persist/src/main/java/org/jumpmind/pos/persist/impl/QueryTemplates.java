@@ -22,7 +22,9 @@ public class QueryTemplates extends AbstractSqlTemplates {
     }
 
     public void addQueries(String deviceMode, List<QueryTemplate> queries) {
-        queriesByDeviceMode.put(deviceMode, buildQueryTemplatesByNameMap(queries));
+        Map<String, QueryTemplate> deviceModeTemplates = queriesByDeviceMode.getOrDefault(deviceMode, new HashMap<>());
+        queries.forEach(it -> deviceModeTemplates.put(it.getName(), it.copy()));
+        queriesByDeviceMode.put(deviceMode, deviceModeTemplates);
     }
 
     //  For backward compatibility...
