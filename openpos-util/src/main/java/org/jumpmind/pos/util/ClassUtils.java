@@ -146,8 +146,8 @@ public class ClassUtils {
         for (BeanDefinition bd : scanner.findCandidateComponents(packageName)) {
             try {
                 classes.add(Class.forName(bd.getBeanClassName()));
-            } catch (ClassNotFoundException ex) {
-                logger.error(ex.getMessage(), ex);
+            } catch (ClassNotFoundException | NoClassDefFoundError ex) {
+                logger.error("Could not load class " + bd.getBeanClassName(), ex);
             }
         }
         return classes;
