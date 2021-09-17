@@ -37,9 +37,15 @@ public class SearchCriteria {
         this.criteria = criteria;
     }
 
+    public void addIfAbsent(String field, Object value) {
+        if (this.criteria == null || ! this.criteria.containsKey(field)) {
+            addCriteria(field, value);
+        }
+    }
+
     public SearchCriteria addCriteria(String field, Object value) {
         if (this.criteria == null) {
-            this.criteria = new HashMap<String, Object>();
+            this.criteria = new HashMap<>();
         }
 
         if (value instanceof ITypeCode) {
