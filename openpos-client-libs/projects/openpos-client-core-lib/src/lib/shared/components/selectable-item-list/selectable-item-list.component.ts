@@ -261,7 +261,9 @@ export class SelectableItemListComponent<ItemType> implements OnDestroy, OnInit,
 
     onItemClick(item: ItemType, event: any) {
         // look for block-selection attribute and don't do the selection if we find it in our path
-        if ( event.path.find(element => element.attributes && element.attributes.getNamedItem('block-selection')) ||
+        const eventpath = event.path || (event.composedPath && event.composedPath());
+
+        if ( (eventpath && eventpath.find(element => element.attributes && element.attributes.getNamedItem('block-selection'))) ||
             Array.from(this.disabledItems.values()).includes(item)) {
             return;
         }
