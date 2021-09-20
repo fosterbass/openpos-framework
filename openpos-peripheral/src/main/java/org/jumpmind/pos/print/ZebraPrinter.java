@@ -177,7 +177,15 @@ public class ZebraPrinter implements IOpenposPrinter {
 
     @Override
     public int getPrintWidth() {
-        Integer printWidth = (Integer) settings.get("printWidth");
+        Object printWidthObject = settings.get("printWidth");
+        Integer printWidth = null;
+        if(printWidthObject != null) {
+            if(printWidthObject instanceof String) {
+                printWidth = Integer.parseInt((String) printWidthObject);
+            } else {
+                printWidth = (Integer) printWidthObject;
+            }
+        }
         if (printWidth == null) {
             printWidth = 46;
         }
