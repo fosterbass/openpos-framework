@@ -1,5 +1,6 @@
 <app-dialog-header></app-dialog-header>
 <app-instructions *ngIf="screen.instructions" [instructions]="screen.instructions" [instructionsSize]="'text-sm'"></app-instructions>
+<app-scan-part></app-scan-part>
 <mat-dialog-content>
     <app-form (submitFormEvent)="submitForm()" [form]="screen.formGroup">
         <div responsive-class class="form-part-body loyalty-customer-form form-content">
