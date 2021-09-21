@@ -93,7 +93,14 @@ public abstract class AbstractMessagePropertyCrawlerInterceptor<T extends Messag
             for (int i = 0; i < list.size(); i++) {
                 Object fieldObj = list.get(i);
                 if (fieldObj != null) {
-                    list.set(i, doStrategies(appId, deviceId, fieldObj, fieldObj.getClass(), message, messageContext));
+                    try {
+                        list.set(i, doStrategies(appId, deviceId, fieldObj, fieldObj.getClass(), message, messageContext));
+                    } catch (UnsupportedOperationException ex) {
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("Can't modify list " + list, ex);
+                        }
+                    }
+
                     if (!processCollections(appId, deviceId, fieldObj, message, messageContext) && shouldProcess(fieldObj.getClass())) {
                         processFields(appId, deviceId, fieldObj, message, messageContext);
                     }

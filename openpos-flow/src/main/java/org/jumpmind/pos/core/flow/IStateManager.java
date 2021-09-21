@@ -78,4 +78,5 @@ public interface IStateManager {
     public long getLastActionTimeInMs();
     public void sendStartupCompleteMessage();
     public void sendPrintMessage(PrintMessage message);
+    public int getActionQueueSize();
 }
