@@ -33,7 +33,12 @@
 }
 
 .sale-body-mobile {
-    display: grid;
-    grid-template-rows: auto auto 1fr;
-    row-gap: 16px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.5rem;
+
+    app-mobile-sale-item-list {
+        height: 0;
+        flex-grow: 1;
+    }
 }

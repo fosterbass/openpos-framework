@@ -1,44 +1,44 @@
-<div class="transaction-history-outer" [ngClass]="{'mobile': isMobile$ | async}">
-    <div class="transaction-history-title">
-        <div class="detail-field">
+<div class="transaction-history-outer" responsive-class>
+    <div class="transaction-history-title" responsive-class>
+        <div class="detail-field" responsive-class>
             <span *ngIf="screenData.labels" class="detail-label">{{screenData.labels.customerName}}</span>
             <span class="detail-value">{{screenData.customerName}}</span>
         </div>
-        <div class="detail-field">
+        <div class="detail-field" responsive-class>
             <span *ngIf="screenData.labels" class="detail-label">{{screenData.labels.status}}</span>
             <span class="detail-value">{{screenData.statusText}}</span>
         </div>
     </div>
-    <div class="transaction-history-details">
-        <div class="detail-field">
+    <div class="transaction-history-details" responsive-class>
+        <div class="detail-field" responsive-class>
             <span *ngIf="screenData.labels" class="detail-label">{{screenData.labels.transactionDate}}:</span>
-            <span class="detail-value">{{screenData.transactionDate | date: 'M/d/yyyy h:mm a'}}</span>
+            <span class="detail-value" responsive-class>{{screenData.transactionDate | date: 'M/d/yyyy h:mm a'}}</span>
         </div>
-        <div class="detail-field">
+        <div class="detail-field" responsive-class>
             <span *ngIf="screenData.labels" class="detail-label">{{screenData.labels.deviceId}}:</span>
-            <span class="detail-value">{{screenData.deviceId}}</span>
+            <span class="detail-value" responsive-class>{{screenData.deviceId}}</span>
         </div>
-        <div class="detail-field">
+        <div class="detail-field" responsive-class>
             <span *ngIf="screenData.labels" class="detail-label">{{screenData.labels.storeId}}:</span>
-            <span class="detail-value">{{screenData.storeId}}</span>
+            <span class="detail-value" responsive-class>{{screenData.storeId}}</span>
         </div>
-        <div class="detail-field">
+        <div class="detail-field" responsive-class>
             <span *ngIf="screenData.labels" class="detail-label">{{screenData.labels.username}}:</span>
-            <span class="detail-value">{{screenData.username}}</span>
+            <span class="detail-value" responsive-class>{{screenData.username}}</span>
         </div>
-        <div class="detail-field">
+        <div class="detail-field" responsive-class>
             <span *ngIf="screenData.labels" class="detail-label">{{screenData.labels.tillId}}:</span>
-            <span class="detail-value">{{screenData.tillId}}</span>
+            <span class="detail-value" responsive-class>{{screenData.tillId}}</span>
         </div>
-        <div class="detail-field">
+        <div class="detail-field" responsive-class>
             <span *ngIf="screenData.labels" class="detail-label">{{screenData.labels.barcode}}:</span>
-            <span class="detail-value">{{screenData.barcode}}</span>
+            <span class="detail-value" responsive-class>{{screenData.barcode}}</span>
         </div>
     </div>
 
-    <div class="transaction-history-actions">
+    <div class="transaction-history-actions" responsive-class>
         <button *ngFor="let button of screenData.actions" mat-raised-button color="primary-inverse"
-            class="transaction-button" (click)="onClick(button)" [disabled]="! button.enabled">
+                class="transaction-button" (click)="onClick(button)" [disabled]="! button.enabled" responsive-class>
             <span class="transaction-button-text">{{button.title}}</span>
             <app-icon [iconName]="button.icon" iconClass="mat-24"></app-icon>
         </button>

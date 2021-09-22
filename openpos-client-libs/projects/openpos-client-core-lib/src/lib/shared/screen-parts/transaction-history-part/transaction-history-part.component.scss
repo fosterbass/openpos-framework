@@ -9,6 +9,7 @@
 
     &.mobile {
         padding: 0 16px;
+        row-gap: 0.5rem;
     }
 }
 
@@ -27,6 +28,8 @@
 
 .detail-value {
     font-weight: bold;
+
+    &.mobile { overflow-wrap: break-word; }
 }
 
 .transaction-history-details {
@@ -36,18 +39,27 @@
     grid-template-rows: auto auto;
     column-gap: 16px;
     overflow: hidden;
+
+    &.mobile { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 .transaction-history-actions {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 16px;
+
+    &.mobile {
+        display: flex;
+        flex-wrap: wrap;
+    }
 }
 
 .transaction-button {
     @extend %text-sm;
     padding: 16px;
     border: 2px solid;
+
+    &.mobile { padding: revert; }
 
     .transaction-button-text {
         margin-right: 8px;
