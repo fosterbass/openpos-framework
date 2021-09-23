@@ -8,17 +8,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Consumer;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -118,14 +108,19 @@ public class ObjectFinder<T extends Object> {
 
                     if (value != null) {
                         if (targetType.isAssignableFrom(type)) {
+                            addToResults((T) value);
                             if (visitor != null) {
                                 visitor.visit(obj, value, field);
                             }
-                            addToResults((T) value);
                         }
 
-                        if (!searchCollections(value) && shouldSearch(field) && shouldSearch(type)) {
-                            searchRecursive(value);
+                        if (searchCollections(value, visitor)) {
+                            /* already added to results */
+                            if (visitor != null) {
+                                visitor.visit(obj, value, field);
+                            }
+                        } else if (shouldSearch(field) && shouldSearch(type)) {
+                            searchRecursive(value, visitor);
                         }
                     }
                 } catch (Exception e) {
@@ -164,7 +159,7 @@ public class ObjectFinder<T extends Object> {
                 && clazz.getPackage() != null && !clazz.getPackage().getName().startsWith("sun");
     }
 
-    protected boolean searchCollections(Object value) {
+    protected boolean searchCollections(Object value, ObjectSearchVisitor visitor) {
         if (value instanceof List<?>) {
             @SuppressWarnings("unchecked")
             List<Object> list = (List<Object>) value;
@@ -175,8 +170,8 @@ public class ObjectFinder<T extends Object> {
                         addToResults((T) fieldObj);
                     }
 
-                    if (! searchCollections(fieldObj) && shouldSearch(fieldObj.getClass())) {
-                        searchRecursive(fieldObj);
+                    if (! searchCollections(fieldObj, visitor) && shouldSearch(fieldObj.getClass())) {
+                        searchRecursive(fieldObj, visitor);
                     }
                 }
             }
@@ -191,8 +186,8 @@ public class ObjectFinder<T extends Object> {
                     if (targetType.isAssignableFrom(fieldObj.getClass())) {
                         addToResults((T) fieldObj);
                     }
-                    if ( !searchCollections(fieldObj) && shouldSearch(fieldObj.getClass())) {
-                        searchRecursive(fieldObj);
+                    if ( !searchCollections(fieldObj, visitor) && shouldSearch(fieldObj.getClass())) {
+                        searchRecursive(fieldObj, visitor);
                     }
                 }
             }
@@ -218,8 +213,8 @@ public class ObjectFinder<T extends Object> {
                         addToResults((T) entryValue);
                     }
 
-                    if (! searchCollections(entryValue) && shouldSearch(entryValue.getClass())) {
-                        searchRecursive(entryValue);
+                    if (! searchCollections(entryValue, visitor) && shouldSearch(entryValue.getClass())) {
+                        searchRecursive(entryValue, visitor);
                     }
                 }
             }
