@@ -1,5 +1,6 @@
 package org.jumpmind.pos.core.ui.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,6 +21,7 @@ public class BillingAddress implements Serializable {
     private String state;
     private String postalCode;
 
+    @JsonIgnore
     public String getNameOnCard() {
         return String.format("%s %s", firstName, lastName);
     }
