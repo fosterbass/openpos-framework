@@ -19,6 +19,7 @@ pipeline {
                   -PdeployPassword=${MAVEN_JM_PW} \
                   -PdeploySftpUrl=${MAVEN_JM_URL} \
                   -Dsonar.login=${SONAR_TOKEN} \
+                  -Dsonar.branch.name="${BRANCH_NAME}" \
                    clean build deploy sonarqube"""}
             }
         }
