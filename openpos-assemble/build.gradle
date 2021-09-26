@@ -23,14 +23,14 @@ apply from: '../openpos-gradle/src/main/resources/release.gradle'
 
 sonarqube {
   properties {
-    property "sonar.projectKey", "openpos-framework"
+    property "sonar.projectKey", "JumpMind_openpos-framework"
     property "sonar.organization", "jumpmind"
-    property "sonar.host.url", "https://quality.jumpmind.com"
-    property "sonar.sources", "src/main/java,../openpos-client-libs/projects/openpos-client-core-lib/src"
-    property "sonar.tests", "src/test/java,../openpos-client-libs/projects/openpos-client-core-lib/src"
-    property "sonar.junit.reportPaths","../openpos-client-libs/projects/openpos-client-core-lib/dist,build/test-results/test"
+    property "sonar.host.url", "https://sonarcloud.io"
+    property "sonar.sources", "src/main/java,projects/openpos-client-core-lib/src"
+    property "sonar.tests", "src/test/java,projects/openpos-client-core-lib/src"
+    property "sonar.junit.reportPaths","projects/openpos-client-core-lib/dist,build/test-results/test"
     property "sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
-    property "sonar.flex.cobertura.reportPaths", "../openpos-client-libs/coverage/openpos-client-core-lib/cobertura-coverage.xml"
+    property "sonar.flex.cobertura.reportPaths", "coverage/openpos-client-core-lib/cobertura-coverage.xml"
   }
 }
 

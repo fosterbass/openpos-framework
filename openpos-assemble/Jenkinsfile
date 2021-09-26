@@ -2,7 +2,7 @@ pipeline {
     agent { label 'commerce' }
     environment {
         MAVEN_JM_PW = credentials('mavenJumpMindPassword')
-        SONAR_TOKEN = credentials('sonarTokenOpenPOS')
+        SONAR_TOKEN = credentials('sonarcloudToken')
     }
     stages {
         stage('Gradle Build') {
