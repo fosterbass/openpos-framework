@@ -70,5 +70,17 @@ pipeline {
         always {
             junit '**/build/reports/**/*.xml'
         }
+        success {
+            slackSend (color: '#00FF00',
+                       tokenCredentialId: 'slackToken',
+                       channel: 'jenkins',
+                       message: "SUCCESSFUL: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+        }
+        failure {
+            slackSend (color: '#FF0000',
+                       tokenCredentialId: 'slackToken',
+                       channel: 'jenkins',
+                       message: "FAILURE: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+        }
     }
 }
