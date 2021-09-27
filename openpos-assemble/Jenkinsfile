@@ -2,10 +2,17 @@ pipeline {
     agent { label 'commerce' }
     environment {
         MAVEN_JM_PW = credentials('mavenJumpMindPassword')
-        SONAR_TOKEN = credentials('sonarcloudToken')
     }
     stages {
-        stage('Gradle Build') {
+        stage('Clean') {
+            steps {
+                echo 'gitBranch=${BRANCH_NAME}'
+                dir('openpos-assemble') {sh """./gradlew \
+                  -PdownloadNode=true \
+                   clean"""}
+            }
+        }
+        stage('Build & Test') {
             steps {
                 echo 'gitBranch=${BRANCH_NAME}'
                 dir('openpos-assemble') {sh """./gradlew \
@@ -15,12 +22,45 @@ pipeline {
                   -PbuildName="${JOB_NAME}" \
                   -PgitBranch="${BRANCH_NAME}" \
                   -PgitHash=${GIT_COMMIT} \
+                   build"""}
+            }
+        }
+        stage('Sonar Analysis - Branch') {
+            when { branch pattern: "master|releases.*", comparator: "REGEXP"}
+            steps {
+                withSonarQubeEnv('JumpMindCloud') {
+                    dir('openpos-assemble') { sh """./gradlew \
+                      -Dsonar.branch.name="${BRANCH_NAME}" \
+                       sonarqube"""}
+                }
+            }
+        }
+        stage('Sonar Analysis - PR') {
+            when { branch pattern: "PR-.*", comparator: "REGEXP"}
+            steps {
+                script {
+                    def urlcomponents = env.CHANGE_URL.split("/")
+                    env.GITHIB_ORG = urlcomponents[3]
+                    env.GITHUB_REPO = urlcomponents[4]
+                }
+                withSonarQubeEnv('JumpMindCloud') {
+                    dir('openpos-assemble') { sh """./gradlew \
+                      -Dsonar.pullrequest.provider=GitHub \
+                      -Dsonar.pullrequest.github.repository=${GITHIB_ORG}/${GITHUB_REPO} \
+                      -Dsonar.pullrequest.key=${env.CHANGE_ID} \
+                      -Dsonar.pullrequest.branch=${env.CHANGE_BRANCH} \
+                       sonarqube"""}
+                }
+            }
+        }
+        stage('Deploy') {
+            when { branch pattern: "master|releases.*", comparator: "REGEXP"}
+            steps {
+                dir('openpos-assemble') {sh """./gradlew \
                   -PdeployUser=${MAVEN_JM_USER} \
                   -PdeployPassword=${MAVEN_JM_PW} \
                   -PdeploySftpUrl=${MAVEN_JM_URL} \
-                  -Dsonar.login=${SONAR_TOKEN} \
-                  -Dsonar.branch.name="${BRANCH_NAME}" \
-                   clean build deploy sonarqube"""}
+                   -x build deploy"""}
             }
         }
     }
@@ -28,10 +68,6 @@ pipeline {
     post {
         always {
             junit '**/build/reports/**/*.xml'
-            // Send an email to the person that broke the build
-            step([$class                  : 'Mailer',
-                  notifyEveryUnstableBuild: true,
-                  recipients              : [emailextrecipients([[$class: 'CulpritsRecipientProvider'], [$class: 'RequesterRecipientProvider']])].join(' ')])
         }
     }
 }
