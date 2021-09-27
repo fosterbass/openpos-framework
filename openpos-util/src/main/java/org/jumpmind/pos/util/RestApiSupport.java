@@ -11,6 +11,7 @@ import org.springframework.core.type.filter.TypeFilter;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
@@ -126,6 +127,29 @@ public final class RestApiSupport {
         String legacyRequestMapping = restApiRequestMapping.substring(REST_API_CONTEXT_PATH.length());
         int contextSlash = legacyRequestMapping.indexOf('/', 1);
         return contextSlash == -1 ? legacyRequestMapping : legacyRequestMapping.substring(0, contextSlash);
+    }
+
+    public static boolean isLegacyClient(final HttpServletRequest request) {
+        String jmcVersion = request.getHeader("ClientContext-version.nu-commerce");
+        if (jmcVersion == null || jmcVersion.isEmpty()) {
+            log.warn("request is missing ClientContext-version.nu-commerce header");
+            return false;
+        }
+        String[] parts = jmcVersion.split("\\.");
+        try {
+            int major = Integer.parseInt(parts[0]);
+            int minor = Integer.parseInt(parts[1]);
+            if (major < 1) {
+                return true;
+            } else if (major == 1) {
+                return minor < 12;
+            } else {
+                return false;
+            }
+        } catch (ArrayIndexOutOfBoundsException | NumberFormatException ex) {
+            log.warn("unexpected ClientContext-version.nu-commerce header format ({})", ex.toString());
+            return false;
+        }
     }
 
     private static Class<?> classForName(final String className) {
