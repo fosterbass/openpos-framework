@@ -20,10 +20,11 @@ public abstract class AbstractSqlTemplates {
 
     protected void scanSqlTextForLiteralTableName(String sqlText, String textType, String templateName, String regularTableName, String shadowTableName, String modulePrefix, String modelClassName)  {
         if (sqlText != null) {
-            boolean textContainsRegularName = sqlText.matches(".*\\b" + regularTableName + "\\b.*");
+            String lowerCaseSqlText = sqlText.toLowerCase();
+            boolean textContainsRegularName = lowerCaseSqlText.matches(".*\\b" + regularTableName.toLowerCase() + "\\b.*");
             boolean textContainsShadowName = false;
             if (!regularTableName.equals(shadowTableName)) {
-                textContainsShadowName = sqlText.matches(".*\\b" + shadowTableName + "\\b.*");
+                textContainsShadowName = lowerCaseSqlText.matches(".*\\b" + shadowTableName.toLowerCase() + "\\b.*");
             }
 
             if (textContainsRegularName || textContainsShadowName) {
