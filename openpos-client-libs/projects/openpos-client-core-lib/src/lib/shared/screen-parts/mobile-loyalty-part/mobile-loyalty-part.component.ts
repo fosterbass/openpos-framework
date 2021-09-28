@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { MobileLoyaltyPartInterface } from './mobile-loyalty-part.interface';
 import { ScreenPart } from '../../decorators/screen-part.decorator';
 import { ScreenPartComponent } from '../screen-part';
+import {Membership} from "../membership-display/memebership-display.interface";
 
 
 @ScreenPart({
@@ -15,6 +16,10 @@ import { ScreenPartComponent } from '../screen-part';
 export class MobileLoyaltyPartComponent extends ScreenPartComponent<MobileLoyaltyPartInterface> {
 
     screenDataUpdated() {
+    }
+
+    getHideLogoShowMembershipsClass(): string {
+        return this.screenData.mobileLoyaltySaleShowMembershipsHideLogo ? ' hide-logo-show-memberships' : '';
     }
 
 }

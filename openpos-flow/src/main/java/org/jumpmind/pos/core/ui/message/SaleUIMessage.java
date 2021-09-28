@@ -25,6 +25,8 @@ public class SaleUIMessage extends TransactionUIMessage {
 
     private AdditionalLabel taxExemptCertificateDetail;
 
+    private boolean mobileLoyaltySaleShowMembershipsHideLogo;
+
     public SaleUIMessage() {
         this.setScreenType(UIMessageType.SALE);
         this.setId("sale");
