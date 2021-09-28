@@ -30,6 +30,7 @@ import org.jumpmind.symmetric.web.SymmetricEngineHolder;
 import org.jumpmind.symmetric.web.SymmetricServlet;
 import org.jumpmind.symmetric.web.WebConstants;
 import org.jumpmind.util.AppUtils;
+import org.jumpmind.util.LinkedCaseInsensitiveMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -76,25 +77,8 @@ public class SymDSModule extends AbstractRDBMSModule {
             Properties properties = new Properties();
 
             configurators.forEach(c -> c.beforeCreate(properties));
-
             serverEngine = new ServerSymmetricEngine(getDataSource(), applicationContext, properties, false, holder);
-            serverEngine.getExtensionService().addExtensionPoint(new DatabaseWriterFilterAdapter() {
-                @Override
-                public void batchCommitted(DataContext context) {
-                    Batch batch = context.getBatch();
-                    if (CHANNEL_RELOAD.equals(batch.getChannelId())) {
-                        Collection<String> names = cacheManager.getCacheNames();
-                        for (String name : names) {
-                            cacheManager.getCache(name).clear();
-                        }
-                    }
-                }
-
-                @Override
-                public void afterWrite(DataContext context, Table table, CsvData data) {
-                    processDataSyncListeners(context, table, data);
-                }
-            });
+            addConfiguredCacheEviction();
             holder.getEngines().put(properties.getProperty(ParameterConstants.EXTERNAL_ID), serverEngine);
             holder.setAutoStart(false);
             context.setAttribute(WebConstants.ATTR_ENGINE_HOLDER, holder);
@@ -109,6 +93,35 @@ public class SymDSModule extends AbstractRDBMSModule {
 
         super.initialize();
 
+    }
+
+    private void addConfiguredCacheEviction() {
+        serverEngine.getExtensionService().addExtensionPoint(new DatabaseWriterFilterAdapter() {
+            @Override
+            public void batchCommitted(DataContext context) {
+                Batch batch = context.getBatch();
+                if (CHANNEL_RELOAD.equals(batch.getChannelId())) {
+                    Collection<String> names = cacheManager.getCacheNames();
+                    for (String name : names) {
+                        cacheManager.getCache(name).clear();
+                    }
+                } else {
+                    Map<String, String> evictionConfig = env.getProperty("openpos.symmetric.cacheEvictionConfig.tables", LinkedCaseInsensitiveMap.class);
+                    Map<String, Table> batchTables = context.getParsedTables();
+                    for (Map.Entry<String, Table> entry : batchTables.entrySet()) {
+                        String evictionCacheName = evictionConfig.get(entry.getValue().getName());
+                        if (evictionCacheName != null) {
+                            cacheManager.getCache(evictionConfig.get(evictionCacheName)).clear();
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void afterWrite(DataContext context, Table table, CsvData data) {
+                processDataSyncListeners(context, table, data);
+            }
+        });
     }
 
     protected void processDataSyncListeners(DataContext context, Table table, CsvData data) {
