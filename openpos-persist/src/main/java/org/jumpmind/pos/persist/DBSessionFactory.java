@@ -97,9 +97,18 @@ public class DBSessionFactory {
         this.dmlTemplates.replaceModelClassNamesWithTableNames(this.databaseSchema, this.modelClasses, (shadowTablesConfig != null) && shadowTablesConfig.validateTablesInQueries());
     }
 
-    public void createAndUpgrade() {
+    public void refreshModels() {
+        processTagsAndAugmentModels();
+        databaseSchema.refreshModelMetaData();
+    }
+
+    protected void processTagsAndAugmentModels() {
         enhanceTaggedModels();
         augmentModels();
+    }
+
+    public void createAndUpgrade() {
+        processTagsAndAugmentModels();
         databaseSchema.createAndUpgrade();
     }
 

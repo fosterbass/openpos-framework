@@ -175,6 +175,20 @@ public class DatabaseSchema {
         }
     }
 
+    public void refreshModelMetaData() {
+        log.info("Refreshing model metadata to match actual db tables");
+
+        try {
+            platform.resetCachedTableModel();
+            Database actualModel = platform.readFromDatabase(desiredModel.getTables());
+            refreshMetaData(actualModel);
+        } catch (RuntimeException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
     public boolean createAndUpgrade() {
         try {
             log.info("Checking if database tables need created or altered");
