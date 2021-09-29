@@ -107,11 +107,17 @@ public class SymDSModule extends AbstractRDBMSModule {
                     }
                 } else {
                     Map<String, String> evictionConfig = env.getProperty("openpos.symmetric.cacheEvictionConfig.tables", LinkedCaseInsensitiveMap.class);
-                    Map<String, Table> batchTables = context.getParsedTables();
-                    for (Map.Entry<String, Table> entry : batchTables.entrySet()) {
-                        String evictionCacheName = evictionConfig.get(entry.getValue().getName());
-                        if (evictionCacheName != null) {
-                            cacheManager.getCache(evictionConfig.get(evictionCacheName)).clear();
+                    if (evictionConfig != null) {
+                        log.info("Processing cache eviction from openpos.symmetric.cacheEvictionConfig.tables and the current batch");
+                        Map<String, Table> batchTables = context.getParsedTables();
+                        for (Map.Entry<String, Table> entry : batchTables.entrySet()) {
+                            if (entry.getValue() != null) {
+                                String evictionCacheName = evictionConfig.get(entry.getValue().getName());
+                                if (evictionCacheName != null) {
+                                    log.info(String.format("Clearing cache %s", evictionCacheName));
+                                    cacheManager.getCache(evictionConfig.get(evictionCacheName)).clear();
+                                }
+                            }
                         }
                     }
                 }
