@@ -370,7 +370,8 @@ abstract public class AbstractRDBMSModule extends AbstractServiceFactory impleme
 
     public void updateDataModel(DBSession session) {
         if (!isDatabaseUpgradeable()) {
-            log.info("Module {} database configured as non-upgradeable", getName());
+            log.info("Module {} database configured as non-upgradeable, will only refresh data models", getName());
+            sessionFactory.refreshModels();
             return;
         }
 
