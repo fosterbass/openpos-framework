@@ -13,18 +13,18 @@ import org.jumpmind.pos.persist.TableDef;
 @NoArgsConstructor
 @AllArgsConstructor
 @TableDef(name="script_version", description="This table is used to track runtime information about scripts that have been applied",
-        primaryKey={"installationId","fileName"})
+        primaryKey={"fileName"})
 public class ScriptVersionModel extends AbstractModel {
 
     private static final long serialVersionUID = 1L;
-
-    @ColumnDef
-    String installationId;
 
     @ColumnDef
     String fileName;
 
     @ColumnDef
     String checkSum;
+
+    @ColumnDef
+    String inUseId;
 
 }

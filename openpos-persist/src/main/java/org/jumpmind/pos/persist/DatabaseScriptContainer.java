@@ -1,6 +1,7 @@
 package org.jumpmind.pos.persist;
 
 import lombok.extern.slf4j.Slf4j;
+import org.jumpmind.db.model.Table;
 import org.jumpmind.db.platform.IDatabasePlatform;
 import org.jumpmind.db.platform.h2.H2DatabasePlatform;
 import org.jumpmind.db.platform.oracle.OracleDatabasePlatform;
@@ -8,6 +9,7 @@ import org.jumpmind.db.sql.ISqlTemplate;
 import org.jumpmind.db.sql.SqlScript;
 import org.jumpmind.exception.IoException;
 import org.jumpmind.pos.persist.model.ScriptVersionModel;
+import org.jumpmind.pos.util.AppUtils;
 import org.jumpmind.symmetric.io.data.Batch;
 import org.jumpmind.symmetric.io.data.DataProcessor;
 import org.jumpmind.symmetric.io.data.DbImport;
@@ -32,28 +34,23 @@ import java.util.*;
 
 @Slf4j
 public class DatabaseScriptContainer {
-    final static String IMPORT_PREFIX = "-- import:";
+    static final String IMPORT_PREFIX = "-- import:";
 
-    private List<DatabaseScript> preInstallScripts = new ArrayList<DatabaseScript>();
-    private List<DatabaseScript> postInstallScripts = new ArrayList<DatabaseScript>();
+    private List<DatabaseScript> preInstallScripts = new ArrayList<>();
+    private List<DatabaseScript> postInstallScripts = new ArrayList<>();
 
     private JdbcTemplate jdbcTemplate;
     private IDatabasePlatform platform;
     private DBSession dbSession;
-    private String installationId;
     private Map<String, String> replacementTokens;
 
-    private List<String> scriptLocations;
-
-    public DatabaseScriptContainer(List<String> scriptLocations, DBSession dbSession, String installationId) {
+    public DatabaseScriptContainer(List<String> scriptLocations, DBSession dbSession) {
         try {
-            this.installationId = installationId;
             this.dbSession = dbSession;
-            this.scriptLocations = scriptLocations;
             this.platform = dbSession.getDatabasePlatform();
             this.jdbcTemplate = new JdbcTemplate(platform.getDataSource());
 
-            replacementTokens = new HashMap<String, String>();
+            replacementTokens = new HashMap<>();
             // Add any replacement tokens
 
             for (String scriptLocation : scriptLocations) {
@@ -85,49 +82,80 @@ public class DatabaseScriptContainer {
         if (scripts != null) {
             Collections.sort(scripts);
             for (DatabaseScript s : scripts) {
-                try {
-                    boolean executeScript = false;
-                    ScriptVersionModel version = dbSession.findByNaturalId(ScriptVersionModel.class, new ModelId("installationId", installationId, "fileName", s.getResource().getFilename()));
-                    String md5Hash = null;
-                    try (InputStream is = s.getResource().getInputStream()) {
-                        md5Hash = DigestUtils.md5DigestAsHex(is);
-                    } catch (IOException ex) {
-                        throw new IoException(ex);
-                    }
-                    if (version == null) {
-                        log.info("Running {} for the first time", s.getResource().getFilename());
-                        executeScript = true;
-                    } else if (!md5Hash.equals(version.getCheckSum())) {
-                        log.info("Running {} again because the content changed", s.getResource().getFilename());
-                        executeScript = true;
-
-                    }
-                    if (isDatabaseMatch(s) && executeScript) {
-                        try {
-                            executeImports(s, s.getResource(), failOnError);
-                            execute(s, s.getResource(), failOnError);
-                            if (version == null) {
-                                version = ScriptVersionModel.builder().
-                                        installationId(installationId).
-                                        fileName(s.getResource().getFilename()).
-                                        checkSum(md5Hash).build();
-                            } else {
-                                version.setCheckSum(md5Hash);
-                            }
-                            dbSession.save(version);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                } catch (RuntimeException ex) {
-                    if (!failOnError) {
-                        log.warn("Failed to run script {}.  Ignoring because failOnError is false. {}", s.getResource().getFilename(), ex.getMessage());
-                    } else {
-                        throw ex;
-                    }
-                }
+                executeScript(s, failOnError);
             }
         }
+    }
+
+    void executeScript(DatabaseScript s, boolean failOnError) {
+        try {
+            boolean executeScript = false;
+            ScriptVersionModel version = dbSession.findByNaturalId(ScriptVersionModel.class, new ModelId("fileName", s.getResource().getFilename()));
+            String md5Hash = md5Hash(s);
+            if (version == null) {
+                log.info("Running {} for the first time", s.getResource().getFilename());
+                executeScript = true;
+            } else if (!md5Hash.equals(version.getCheckSum())) {
+                log.info("Running {} again because the content changed", s.getResource().getFilename());
+                executeScript = true;
+
+            }
+            if (isDatabaseMatch(s) && executeScript) {
+                Table table = dbSession.getValidatedTables(ScriptVersionModel.class).get(0);
+                String inUseId = AppUtils.getHostName();
+                // add a lock, so we are the only app trying to update data
+                if (version == null ||
+                        dbSession.executeSql(String.format(
+                                "update %s set in_use_id=? where in_use_id is null and file_name=?", table.getName()), inUseId, version.getFileName()) > 0) {
+                    execute(s, version, md5Hash, failOnError);
+                } else {
+                    log.info("Not updating {} because it is already in use", table.getName());
+                }
+            }
+        } catch (RuntimeException ex) {
+            if (!failOnError) {
+                log.warn("Failed to run script {}.  Ignoring because failOnError is false. {}", s.getResource().getFilename(), ex.getMessage());
+            } else {
+                throw ex;
+            }
+        }
+    }
+
+    String md5Hash(DatabaseScript s) {
+        try (InputStream is = s.getResource().getInputStream()) {
+            return DigestUtils.md5DigestAsHex(is);
+        } catch (IOException ex) {
+            throw new IoException(ex);
+        }
+    }
+
+    ScriptVersionModel execute(DatabaseScript s, ScriptVersionModel version, String md5Hash, boolean failOnError) {
+        try {
+            executeImports(s, s.getResource(), failOnError);
+            execute(s, s.getResource(), failOnError);
+            if (version == null) {
+                version = ScriptVersionModel.builder().
+                        fileName(s.getResource().getFilename()).
+                        checkSum(md5Hash).build();
+            } else {
+                version.setInUseId(null);
+                version.setCheckSum(md5Hash);
+                version.setLastUpdateTime(new Date());
+            }
+            dbSession.save(version);
+        } catch (Exception e) {
+            if (version != null) {
+                version.setLastUpdateTime(new Date());
+                version.setInUseId(null);
+                dbSession.save(version);
+            }
+            if (e instanceof RuntimeException) {
+                throw (RuntimeException)e;
+            } else {
+                throw new PersistException(e);
+            }
+        }
+        return version;
     }
 
     void executeImports(DatabaseScript databaseScript, Resource resource, boolean failOnError) throws IOException {
@@ -149,17 +177,18 @@ public class DatabaseScriptContainer {
     }
 
     void execute(DatabaseScript databaseScript, final Resource resource, boolean failOnError) throws IOException {
-        String compareString = resource.getFilename().toLowerCase();
+        String fileName = databaseScript.getResource().getFilename();
+        String compareString = fileName != null ? fileName.toLowerCase() : "";
         if (compareString.endsWith(".sql")) {
             loadSql(resource.getURL(), failOnError);
         } else if (compareString.endsWith(".csv")) {
             loadCsv(databaseScript, resource, failOnError);
         } else if (compareString.endsWith(".batch")) {
-            loadFromBatchCsv(databaseScript, resource, failOnError);
+            loadFromBatchCsv(databaseScript, failOnError);
         }
     }
 
-    void loadFromBatchCsv(DatabaseScript script, Resource resource, boolean failOnError) throws IOException {
+    void loadFromBatchCsv(DatabaseScript script, boolean failOnError) throws IOException {
         DefaultDatabaseWriter writer = new DefaultDatabaseWriter(platform, buildDatabaseWriterSettings(failOnError));
         try (InputStream is = script.getResource().getInputStream()) {
             ProtocolDataReader reader = new ProtocolDataReader(Batch.BatchType.LOAD, "localhost", is);
@@ -177,7 +206,7 @@ public class DatabaseScriptContainer {
         settings.setAlterTable(false);
         settings.setCreateTableDropFirst(false);
         settings.setCreateTableFailOnError(false);
-        settings.setDatabaseWriterFilters(new ArrayList<IDatabaseWriterFilter>(0));
+        settings.setDatabaseWriterFilters(new ArrayList<>(0));
         settings.setIgnoreMissingTables(true);
         settings.setCreateTableAlterCaseToMatchDatabaseDefault(true);
         if (!failOnError) {
@@ -218,7 +247,7 @@ public class DatabaseScriptContainer {
 
     void loadCsv(DatabaseScript script, Resource resource, boolean failOnError) throws IOException {
         try (InputStream is = resource.getInputStream()) {
-            String tableName = script.getDescription().replaceAll("-", "_");
+            String tableName = script.getDescription().replace("-", "_");
             // delete versus truncate so symds syncs deletes
             jdbcTemplate.execute(String.format("delete from %s", tableName));
             DbImport importer = new DbImport(platform);

@@ -472,7 +472,7 @@ abstract public class AbstractRDBMSModule extends AbstractServiceFactory impleme
 
         List<String> scriptLocations = profiles.stream().map(p->String.format("%s/sql/%s", getName(), p)).collect(Collectors.toList());
         DatabaseScriptContainer scripts = new DatabaseScriptContainer(scriptLocations,
-                getDBSession(), installationId);
+                getDBSession());
         IDBSchemaListener schemaListener = getDbSchemaListener();
 
         scripts.executePreInstallScripts(failStartupOnModuleLoadFailure);
