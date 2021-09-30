@@ -5,4 +5,6 @@ apply from: '../openpos-gradle/src/main/resources/spring.gradle'
 dependencies {
     api project(':openpos-service')
     api group: 'org.update4j', name: 'update4j', version: '1.5.7'
+    implementation platform('com.google.cloud:libraries-bom:23.0.0')
+    implementation 'com.google.cloud:google-cloud-storage'
 }
