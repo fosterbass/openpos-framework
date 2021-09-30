@@ -125,7 +125,7 @@ public class TestPersistCarsConfig {
     }
     
     public void updateDataModel(DBSession session) {
-        DatabaseScriptContainer scripts = new DatabaseScriptContainer(Arrays.asList("persist-test/sql"), session, "test");
+        DatabaseScriptContainer scripts = new DatabaseScriptContainer(Arrays.asList("persist-test/sql"), session);
         scripts.executePreInstallScripts(true);
         sessionFactory.createAndUpgrade();
         scripts.executePostInstallScripts(true);
