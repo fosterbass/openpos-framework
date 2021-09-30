@@ -26,9 +26,9 @@ public class Form implements Serializable {
     
     private static final long serialVersionUID = 1L;
 
-    private List<IFormElement> formElements = new ArrayList<IFormElement>();
+    private List<IFormElement> formElements = new ArrayList<>();
     
-    private List<String> formErrors = new ArrayList<String>();
+    private List<String> formErrors = new ArrayList<>();
     
     private boolean requiresAtLeastOneValue = false;
     
@@ -46,6 +46,10 @@ public class Form implements Serializable {
 
     public List<IFormElement> getFormElements() {
         return formElements;
+    }
+
+    public List<FormField> getFormFields() {
+        return formElements.stream().filter(elem -> elem instanceof FormField).map(elem -> (FormField) elem).collect(Collectors.toList());
     }
 
     public void setFormElements(List<IFormElement> formElements) {
@@ -417,7 +421,7 @@ public class Form implements Serializable {
 
     public FormField getTextField(String fieldId) {
         IFormElement formElement = this.getFormElement(fieldId);
-        if (formElement != null && formElement instanceof FormField) {
+        if (formElement instanceof FormField) {
             return (FormField) formElement;
         }
         
@@ -426,7 +430,7 @@ public class Form implements Serializable {
 
     public ComboField getComboField(String fieldId) {
         IFormElement formElement = this.getFormElement(fieldId);
-        if (formElement != null && formElement instanceof ComboField) {
+        if (formElement instanceof ComboField) {
             return (ComboField) formElement;
         }
         
@@ -435,7 +439,7 @@ public class Form implements Serializable {
     
     public FormListField getListField(String fieldId) {
         IFormElement formElement = this.getFormElement(fieldId);
-        if (formElement != null && formElement instanceof FormListField) {
+        if (formElement instanceof FormListField) {
             return (FormListField) formElement;
         }
         
@@ -468,7 +472,7 @@ public class Form implements Serializable {
     public String getFormElementValue(String elementId) {
         String returnValue = null;
         IFormElement formElement = this.getFormElement(elementId);
-        if (formElement != null && formElement instanceof FormField) {
+        if (formElement instanceof FormField) {
             returnValue = ((FormField) formElement).getValue();
         }
         
