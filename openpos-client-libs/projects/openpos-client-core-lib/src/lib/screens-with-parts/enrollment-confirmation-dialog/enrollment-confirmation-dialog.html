@@ -14,12 +14,12 @@
     </div>
 
     <div class="button-row">
-        <app-secondary-button *ngIf="screen.signUpMorePets" class="button" [disabled]="!screen.signUpMorePets.enabled"
-                              (buttonClick)="doAction(screen.signUpMorePets)">
-            <app-icon *ngIf="screen.signUpMorePets.icon"
-                      [iconName]="screen.signUpMorePets.icon"
+        <app-secondary-button *ngIf="screen.signUpAnother" class="button" [disabled]="!screen.signUpAnother.enabled"
+                              (buttonClick)="doAction(screen.signUpAnother)">
+            <app-icon *ngIf="screen.signUpAnother.icon"
+                      [iconName]="screen.signUpAnother.icon"
                       [iconClass]="'material-icons mat-24'"></app-icon>
-            <span>{{screen.signUpMorePets.title}}</span>
+            <span>{{screen.signUpAnother.title}}</span>
         </app-secondary-button>
         <app-primary-button responsive-class
                             class="continue"

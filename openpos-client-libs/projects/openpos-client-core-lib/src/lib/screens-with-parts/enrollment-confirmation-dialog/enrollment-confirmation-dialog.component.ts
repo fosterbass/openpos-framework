@@ -4,10 +4,10 @@ import {
   EnrollmentConfirmationDialogInterface
 } from './enrollment-confirmation-dialog.interface';
 import { DialogComponent } from '../../shared/decorators/dialog-component.decorator';
-import {SafeHtml} from "@angular/platform-browser/src/security/dom_sanitization_service";
-import {DomSanitizer} from "@angular/platform-browser";
-import {IActionItem} from "../../core/actions/action-item.interface";
-import {Configuration} from "../../configuration/configuration";
+import {SafeHtml} from '@angular/platform-browser/src/security/dom_sanitization_service';
+import {DomSanitizer} from '@angular/platform-browser';
+import {IActionItem} from '../../core/actions/action-item.interface';
+import {Configuration} from '../../configuration/configuration';
 
 @DialogComponent({
     name: 'EnrollmentConfirmationDialog'
@@ -21,7 +21,7 @@ export class EnrollmentConfirmationDialogComponent extends PosScreen<EnrollmentC
 
   safeProgramCopy: SafeHtml;
 
-  constructor(injector: Injector, private sanitizer: DomSanitizer){
+  constructor(injector: Injector, private sanitizer: DomSanitizer) {
     super(injector);
   }
 

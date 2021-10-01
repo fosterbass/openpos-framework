@@ -12,7 +12,7 @@ public class EnrollmentConfirmationDialogUIMessage extends UIMessage {
     private String programCopy;
     private String benefactorName;
     private ActionItem continueAction;
-    private ActionItem signUpMorePets;
+    private ActionItem signUpAnother;
     private String message;
     private String checkIcon;
 

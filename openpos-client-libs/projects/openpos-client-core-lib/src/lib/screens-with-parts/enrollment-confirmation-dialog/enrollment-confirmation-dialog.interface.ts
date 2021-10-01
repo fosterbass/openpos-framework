@@ -5,7 +5,7 @@ export interface EnrollmentConfirmationDialogInterface extends IAbstractScreen {
     programCopy: string;
     benefactorName: string;
     continueAction: IActionItem;
-    signUpMorePets: IActionItem;
+    signUpAnother: IActionItem;
     message: string;
     checkIcon: string;
 
