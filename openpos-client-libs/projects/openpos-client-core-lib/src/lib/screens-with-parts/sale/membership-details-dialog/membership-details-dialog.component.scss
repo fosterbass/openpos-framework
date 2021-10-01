@@ -1,6 +1,7 @@
 @import "../../../styles/mixins/typography";
 
 .membership-details-dialog {
+  
 
   .tabs {
     margin-top: 8px;
@@ -11,6 +12,7 @@
     mat-card {
       overflow: auto;
       margin: 0;
+      border-radius: 0px;
       .no-items {
         @extend %text-lg;
         text-align: center;
@@ -18,10 +20,10 @@
           @extend %text-md;
           padding-top: 10px;
         }
-      }
+      }  
     }
     &.mobile {
-      height: 55vmin;
+      height: 80vmin;
     }
 
     .tab-title {
@@ -30,14 +32,18 @@
     }
 
     .sign-up {
-      width: 25%;
+      width: 30%;
       float: right;
-      position: fixed;
-      bottom: 1em;
-      right: 1em;
+      margin-top: 1em;
       app-icon {
         width: 1em;
         margin-right: .25em;
+      }
+      &.mobile {
+        width: 100%;
+      }
+      &.tablet{
+        width:40%
       }
     }
   }
