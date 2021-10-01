@@ -183,6 +183,7 @@ import { KioskModeController } from '../core/platform-plugins/kiosk/kiosk-contro
 import { KIOSK_MODE_PLATFORM } from '../core/platform-plugins/kiosk/kiosk-mode-platform';
 import { CapacitorKioskModePlatform } from '../core/platform-plugins/kiosk/capacitor-kiosk/capacitor-kiosk-platform.service';
 import { ScreenGestureComponent } from './screen-parts/screen-gesture/screen-gesture.component';
+import { DisableAutoCompleteDirective } from './directives/disable-auto-complete.directive';
 
 const screenParts = [
     TenderPartComponent,
@@ -337,7 +338,8 @@ const directives = [
     ResponsiveClassDirective,
     ResponsiveGridDirective,
     FitTextDirective,
-    StayFocusedDirective
+    StayFocusedDirective,
+    DisableAutoCompleteDirective
 ];
 
 const pipes = [
