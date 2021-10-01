@@ -74,13 +74,13 @@ pipeline {
             slackSend (color: '#00FF00',
                        tokenCredentialId: 'slackToken',
                        channel: 'jenkins',
-                       message: "SUCCESSFUL: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+                       message: "SUCCESS: ${env.JOB_NAME} for ${env.CHANGE_BRANCH} by ${env.CHANGE_AUTHOR} ${env.BUILD_URL}")
         }
         failure {
             slackSend (color: '#FF0000',
                        tokenCredentialId: 'slackToken',
                        channel: 'jenkins',
-                       message: "FAILURE: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+                       message: "FAILURE: ${env.JOB_NAME} for ${env.CHANGE_BRANCH} by ${env.CHANGE_AUTHOR} ${env.BUILD_URL}")
         }
     }
 }
