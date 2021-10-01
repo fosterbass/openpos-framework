@@ -15,7 +15,7 @@ import static java.lang.Integer.MAX_VALUE;
 @Order(MAX_VALUE-100)
 public class SwaggerStartupTask extends AbstractStartupTask {
 
-    @Autowired
+    @Autowired(required = false)
     DocumentationPluginsBootstrapper bootstrapper;
 
     @Value("${springfox.documentation.auto-startup:true}")
@@ -23,7 +23,7 @@ public class SwaggerStartupTask extends AbstractStartupTask {
 
     @Override
     protected void doTask() throws Exception {
-        if (!swaggerAutoStart) {
+        if (!swaggerAutoStart && bootstrapper != null) {
             new Thread(() -> {
                 log.info("Reading in swagger service definitions");
                 bootstrapper.start();
