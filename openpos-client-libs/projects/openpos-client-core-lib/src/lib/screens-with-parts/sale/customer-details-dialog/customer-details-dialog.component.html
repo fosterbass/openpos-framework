@@ -14,6 +14,7 @@
                 <span *ngIf="!(screen.customer.memberships && screen.customer.memberships.length)" class="no-memberships-mobile" responsive-class>
                     {{screen.noMembershipsFoundLabel}}
                 </span>
+
                 <div *ngIf="screen.customer.membershipSignUpAction">
                     <app-secondary-button responsive-class
                                           class="membership-sign-up"
@@ -27,6 +28,22 @@
                         <span>{{screen.customer.membershipSignUpAction.title}}</span>
                         <span *ngIf="keybindsEnabled(screen.customer.membershipSignUpAction)" class="muted-color keybinding" >
                             {{screen.customer.membershipSignUpAction.keybindDisplayName}}
+                        </span>
+                    </app-secondary-button>
+                </div>
+                <div *ngIf="screen.customer.enrolledMembershipAction" class="enrolled-membership-sign-up">
+                    <app-secondary-button responsive-class
+                                          class="membership-sign-up"
+                                          [disabled]="!screen.customer.enrolledMembershipAction.enabled"
+                                          [actionItem]="screen.customer.enrolledMembershipAction"
+                                          (actionClick)="doAction(screen.customer.enrolledMembershipAction)"
+                                          (click)="doAction(screen.customer.enrolledMembershipAction)">
+                        <app-icon *ngIf="screen.customer.enrolledMembershipAction.icon"
+                                  [iconName]="screen.customer.enrolledMembershipAction.icon"
+                                  [iconClass]="'sm'"></app-icon>
+                        <span>{{screen.customer.enrolledMembershipAction.title}}</span>
+                        <span *ngIf="keybindsEnabled(screen.customer.enrolledMembershipAction)" class="muted-color keybinding" >
+                            {{screen.customer.enrolledMembershipAction.keybindDisplayName}}
                         </span>
                     </app-secondary-button>
                 </div>
@@ -151,6 +168,7 @@
                                 {{screen.noMembershipsFoundLabel}}
                             </span>
                         </div>
+
                         <div *ngIf="screen.customer.membershipSignUpAction">
                             <app-secondary-button responsive-class
                                                   class="membership-sign-up"
@@ -164,6 +182,22 @@
                                 <span>{{screen.customer.membershipSignUpAction.title}}</span>
                                 <span *ngIf="keybindsEnabled(screen.customer.membershipSignUpAction)" class="muted-color keybinding" >
                                     {{screen.customer.membershipSignUpAction.keybindDisplayName}}
+                                </span>
+                            </app-secondary-button>
+                        </div>
+                        <div *ngIf="screen.customer.enrolledMembershipAction">
+                            <app-secondary-button responsive-class
+                                                  class="enrolled-membership-sign-up"
+                                                  [disabled]="!screen.customer.enrolledMembershipAction.enabled"
+                                                  [actionItem]="screen.customer.enrolledMembershipAction"
+                                                  (actionClick)="doAction(screen.customer.enrolledMembershipAction)"
+                                                  (click)="doAction(screen.customer.enrolledMembershipAction)">
+                                <app-icon *ngIf="screen.customer.enrolledMembershipAction.icon"
+                                          [iconName]="screen.customer.enrolledMembershipAction.icon"
+                                          [iconClass]="'material-icons' + ((isMobile | async) ? ' mat-64' : '')"></app-icon>
+                                <span>{{screen.customer.enrolledMembershipAction.title}}</span>
+                                <span *ngIf="keybindsEnabled(screen.customer.enrolledMembershipAction)" class="muted-color keybinding" >
+                                    {{screen.customer.enrolledMembershipAction.keybindDisplayName}}
                                 </span>
                             </app-secondary-button>
                         </div>
@@ -191,7 +225,7 @@
                         </ng-template>
                         <ng-template #noItemTemplate>
                             <div class="no-promotions" responsive-class>
-                                {{screen.noPromotionsText}}
+{{screen.noPromotionsText}}
                             </div>
                         </ng-template>
                     </app-infinite-scroll>

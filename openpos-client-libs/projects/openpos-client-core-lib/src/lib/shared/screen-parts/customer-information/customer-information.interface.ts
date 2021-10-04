@@ -22,6 +22,7 @@ export interface CustomerDetails {
     membershipSignUpAction: IActionItem;
     numberOfActiveRewards: number;
     numberOfHistoricRewards: number;
+    enrolledMembershipAction: IActionItem;
 }
 
 export interface CustomerInformationComponentInterface {
