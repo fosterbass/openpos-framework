@@ -11,7 +11,7 @@ import java.util.Map;
 @Component
 @Slf4j
 public class Versioning {
-    @Value("${openpos.update.versioning.provider}")
+    @Value("${openpos.update.versioning}")
     String versioningProvider;
 
     @Autowired
