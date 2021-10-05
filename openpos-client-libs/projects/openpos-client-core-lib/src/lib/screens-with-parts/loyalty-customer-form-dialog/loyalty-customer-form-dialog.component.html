@@ -99,6 +99,10 @@
                                     <app-icon matPrefix [iconName]="screen.loyaltyNumberIcon" iconClass="material-icons sm"></app-icon>
                                     <app-dynamic-form-field [formGroup]="screen.formGroup" [formField]="loyaltyNumberField" (onFieldChanged)="onFieldChanged($event)"></app-dynamic-form-field>
                                 </div>
+                                <div class="loyalty-number" *ngIf="extensionAttribute1Field">
+                                    <app-icon matPrefix [iconName]="screen.loyaltyNumberIcon" iconClass="material-icons sm"></app-icon>
+                                    <app-dynamic-form-field [formGroup]="screen.formGroup" [formField]="extensionAttribute1Field" (onFieldChanged)="onFieldChanged($event)"></app-dynamic-form-field>
+                                </div>
                                 <div *ngIf="screen.membershipEnabled && screen.isStructuredForm" class="memberships">
                                     <div *ngIf="screen.memberships && screen.memberships.length">
                                         <div class="title">
