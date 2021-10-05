@@ -24,8 +24,6 @@ public final class MessageType {
     public static final String SimulatedPeripheral = "SimulatedPeripheral";
     public static final String Watermark = "Watermark";
     public static final String HideWatermark = "HideWatermark";
-    public static final String StatusBar = "StatusBar";
-    public static final String HideStatusBar = "HideStatusBar";
     public static final String ClientExecutable = "ClientExecutable";
     public static final String DevicePairingChanged = "DevicePairingChanged";
     public static final String LoyaltySignup = "LoyaltySignup";
