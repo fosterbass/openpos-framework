@@ -58,6 +58,14 @@ task ng_build(type: NpmTask){
     outputs.dir file('dist/openpos-client-core-lib')
 }
 
+task ng_sonar(type: NpmTask){
+    dependsOn npm_install
+    args = [
+          'run',
+          'sonar'
+    ]
+}
+
 task ng_clean {
     delete ng_build.outputs
     delete npm_install.outputs
