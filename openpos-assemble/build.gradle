@@ -26,11 +26,10 @@ sonarqube {
     property "sonar.projectKey", "JumpMind_openpos-framework"
     property "sonar.organization", "jumpmind"
     property "sonar.host.url", "https://sonarcloud.io"
-    property "sonar.sources", "src/main/java,projects/openpos-client-core-lib/src"
-    property "sonar.tests", "src/test/java,projects/openpos-client-core-lib/src"
-    property "sonar.junit.reportPaths","projects/openpos-client-core-lib/dist,build/test-results/test"
-    property "sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
-    property "sonar.flex.cobertura.reportPaths", "coverage/openpos-client-core-lib/cobertura-coverage.xml"
+    property "sonar.sources", "src/main/java"
+    property "sonar.tests", "src/test/java"
+    property "sonar.junit.reportPaths","dist"
+    property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml"
   }
 }
 

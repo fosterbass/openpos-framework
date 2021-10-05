@@ -7,20 +7,33 @@ module.exports = function (config) {
     frameworks: ['jasmine', '@angular-devkit/build-angular'],
     plugins: [
       require('karma-jasmine'),
+      require('karma-coverage'),
       require('karma-jsdom-launcher'),
       require('karma-jasmine-html-reporter'),
-      require('karma-coverage-istanbul-reporter'),
       require('karma-junit-reporter'),
       require('@angular-devkit/build-angular/plugins/karma')
     ],
     client: {
       clearContext: false // leave Jasmine Spec Runner output visible in browser
     },
-    coverageIstanbulReporter: {
-      dir: require('path').join(__dirname, '../../coverage/openpos-client-core-lib'),
-      reports: ['html', 'lcovonly', 'cobertura'],
-      fixWebpackSourcePaths: true,
-      skipFilesWithNoCoverage: false
+    preprocessors: {
+      'src/**/*.js': ['coverage']
+    },
+    coverageReporter: {
+      // specify a common output directory
+      dir: 'build/reports/coverage',
+      reporters: [
+        // reporters not supporting the `file` property
+        { type: 'html', subdir: 'report-html' },
+        { type: 'lcov', subdir: 'report-lcov' },
+        // reporters supporting the `file` property, use `subdir` to directly
+        // output them in the `dir` directory
+        { type: 'cobertura', subdir: '.', file: 'cobertura.txt' },
+        { type: 'lcovonly', subdir: '.', file: 'report-lcovonly.txt' },
+        { type: 'teamcity', subdir: '.', file: 'teamcity.txt' },
+        { type: 'text', subdir: '.', file: 'text.txt' },
+        { type: 'text-summary', subdir: '.', file: 'text-summary.txt' },
+      ]
     },
     junitReporter: {
       outputDir: '../../build/reports', // results will be saved as $outputDir/$browserName.xml
@@ -32,7 +45,7 @@ module.exports = function (config) {
       properties: {}, // key value pair of properties to add to the <properties> section of the report
       xmlVersion: null // use '1' if reporting to be per SonarQube 6.2 XML format
     },
-    reporters: ['progress', 'kjhtml', 'junit'],
+    reporters: ['progress', 'kjhtml', 'junit','coverage'],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,

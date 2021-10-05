@@ -30,8 +30,12 @@ pipeline {
             steps {
                 withSonarQubeEnv('JumpMindCloud') {
                     dir('openpos-assemble') { sh """./gradlew \
-                      -Dsonar.branch.name="${BRANCH_NAME}" \
-                       sonarqube"""}
+                        -Dsonar.branch.name="${BRANCH_NAME}" \
+                        sonarqube"""}
+
+                    dir('openpos-client-libs') { sh """./gradlew -b sonar.gradle \
+                        -Dsonar.branch.name="${BRANCH_NAME}" \
+                        sonarqube"""}
                 }
             }
         }
@@ -50,6 +54,13 @@ pipeline {
                       -Dsonar.pullrequest.key=${env.CHANGE_ID} \
                       -Dsonar.pullrequest.branch=${env.CHANGE_BRANCH} \
                        sonarqube"""}
+
+                    dir('openpos-client-libs') { sh """./gradlew -b sonar.gradle \
+                        -Dsonar.pullrequest.provider=GitHub \
+                        -Dsonar.pullrequest.github.repository=${GITHIB_ORG}/${GITHUB_REPO} \
+                        -Dsonar.pullrequest.key=${env.CHANGE_ID} \
+                        -Dsonar.pullrequest.branch=${env.CHANGE_BRANCH} \
+                        sonarqube"""}
                 }
             }
         }
