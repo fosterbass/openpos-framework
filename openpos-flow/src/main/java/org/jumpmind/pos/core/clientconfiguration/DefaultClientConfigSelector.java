@@ -46,8 +46,6 @@ public class DefaultClientConfigSelector implements IClientConfigSelector {
             }
         });
 
-        tagsForSpecificity.sort(String::compareTo);
-
         // Start with default
         tagGroups.add(Arrays.asList("default"));
 

@@ -7,6 +7,7 @@ import { WatermarkMessage } from '../../../core/messages/watermark-message';
 import { MessageTypes } from '../../../core/messages/message-types';
 import { ConfigurationService } from '../../../core/services/configuration.service';
 import { Observable } from 'rxjs';
+import { UIConfigMessage } from '../../../core/messages/ui-config-message';
 
 @Component({
     selector: 'app-dynamic-screen',
@@ -14,7 +15,7 @@ import { Observable } from 'rxjs';
     styleUrls: ['./dynamic-screen.component.scss'],
     providers: [MessageProvider, ActionService]
 })
-export class DynamicScreenComponent implements OnInit{
+export class DynamicScreenComponent implements OnInit {
     @ViewChild(ToastContainerDirective, { static: true })
     toastContainer: ToastContainerDirective;
     showWatermark = false;
@@ -35,8 +36,9 @@ export class DynamicScreenComponent implements OnInit{
             this.showWatermark = false;
             this.watermarkMessage = '';
         });
-        this.sessionService.getMessages(MessageTypes.STATUS_BAR).subscribe(() => { this.showStatusBar = true; });
-        this.sessionService.getMessages(MessageTypes.HIDE_STATUS_BAR).subscribe(() => { this.showStatusBar = false; });
+        this.configuration.getConfiguration<UIConfigMessage>('uiConfig').subscribe(uiConf => {
+            this.showStatusBar = uiConf.showStatusBar === 'true';
+        });
     }
 
     ngOnInit() {

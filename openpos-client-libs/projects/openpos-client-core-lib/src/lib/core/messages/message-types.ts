@@ -25,8 +25,6 @@ export class MessageTypes {
     static DEVICE_PAIRING_CHANGED = 'DevicePairingChanged';
     static WATERMARK = 'Watermark';
     static HIDE_WATERMARK = 'HideWatermark';
-    static STATUS_BAR = 'StatusBar';
-    static HIDE_STATUS_BAR = 'HideStatusBar';
     static CLIENT_EXECUTABLE = 'ClientExecutable';
     static CLOSE_STATUS_DETAILS = 'CloseStatusDetails';
     static DATA_CLEAR = 'DataClear';

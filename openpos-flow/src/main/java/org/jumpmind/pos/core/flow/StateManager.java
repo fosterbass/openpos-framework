@@ -1212,6 +1212,10 @@ public class StateManager implements IStateManager {
         String deviceId = applicationState.getDeviceId();
 
         Map<String, String> properties = applicationState.getScopeValue("personalizationProperties");
+        if (properties == null) {
+            properties = new HashMap<>();
+        }
+        properties.put("appId", applicationState.getAppId());
         List<String> additionalTags = applicationState.getScopeValue("additionalTagsForConfiguration");
 
         try {
