@@ -146,6 +146,9 @@
             </app-content-card>
 
             <mat-card-actions mat-dialog-actions class="buttons">
+                <app-secondary-button *ngIf="screen.secondaryButton" (buttonClick)="secondaryButtonClicked()">
+                    <span>{{screen.secondaryButton.title}}</span>
+                </app-secondary-button>
                 <app-primary-button *ngIf="screen.submitButton" type="submit" [disabled]="!screen.formGroup.valid || screen.formGroup.pending">
                     <span>{{screen.submitButton.title}}</span>
                 </app-primary-button>
