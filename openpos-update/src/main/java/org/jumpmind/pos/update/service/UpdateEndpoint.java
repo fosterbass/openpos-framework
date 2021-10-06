@@ -69,6 +69,11 @@ public class UpdateEndpoint {
             version = provider.getLatestVersion();
         }
 
+        if (version == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+
         if (!versionToConfigXml.containsKey(version)) {
             Path fromZip = provider.getSoftwareVersion(version);
 

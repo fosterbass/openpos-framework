@@ -31,11 +31,11 @@ import java.util.regex.Pattern;
 public class GoogleCloudStorageSoftwareProvider implements ISoftwareProvider {
 
     Storage storageClient;
-    
-    @Value("${openpos.update.googleCloudStorageSoftwareProvider.bucketName}")
+
+    @Value("${openpos.update.googleCloudStorageSoftwareProvider.bucketName:null}")
     String bucketName;
 
-    @Value("${openpos.update.googleCloudStorageSoftwareProvider.namePattern}")
+    @Value("${openpos.update.googleCloudStorageSoftwareProvider.namePattern:null}")
     String fileNamePattern;
 
     @Value("${openpos.update.googleCloudStorageSoftwareProvider.namePatternIgnoreCase:false}")
@@ -119,7 +119,7 @@ public class GoogleCloudStorageSoftwareProvider implements ISoftwareProvider {
             }
         } else {
             // assume the file name is named after the version number.
-            resultingVersion = versionFactory.fromString(blob.getName()));
+            resultingVersion = versionFactory.fromString(blob.getName());
         }
         
         return resultingVersion;

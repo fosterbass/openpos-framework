@@ -1,9 +1,23 @@
 dollar: $
 openpos:
+  jobs:
+    schedule:
+      selfUpdate:
+        beanName: updateDownloaderJob
+        enabled: true
+        type: periodic
+
+        # every 15m
+        #expression: 900000
+        #initialDelay: 900000
+        expression: 20000
+        initialDelay: 10000
+
   update:
     softwareProvider: fileSystemSoftwareProvider
     installUrl: http://localhost:6142
     installBasePath: ${dollar}{user.dir}
     fileSystemSoftwareProvider:
       artifactExtension: zip
-      baseDir: /Users/cshenso/Downloads/artifacts
+      baseDir: ./work/update
+      namePattern: '^\w+-(?<version>(\d+)(\.(\d+)(\.(\d+))?)?(-+([\w-]+[\w\-.]+))?(\+([\w-]+[\w\-.]+))?)$'

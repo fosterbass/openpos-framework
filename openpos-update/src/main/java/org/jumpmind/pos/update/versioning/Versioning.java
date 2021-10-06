@@ -2,16 +2,19 @@ package org.jumpmind.pos.update.versioning;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.jumpmind.pos.update.UpdateModule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+@Profile(UpdateModule.NAME)
 @Component
 @Slf4j
 public class Versioning {
-    @Value("${openpos.update.versioning}")
+    @Value("${openpos.update.versioning:semver}")
     String versioningProvider;
 
     @Autowired
