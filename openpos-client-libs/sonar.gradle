@@ -19,8 +19,8 @@ sonarqube {
     property "sonar.sourceEncoding", "UTF-8"
     property "sonar.tests", "projects/openpos-client-core-lib/src"
     property "sonar.test.inclusions", "**/*.spec.ts"
-    property "sonar.junit.reportPaths","build/test-results/test"
-    property "sonar.typescript.lcov.reportPaths", "coverage/openpos-client-core-lib/lcov.info"
-    property "sonar.javascript.lcov.reportPaths", "coverage/openpos-client-core-lib/lcov.info"
+    property "sonar.junit.reportPaths","build/reports/TESTS.xml"
+    property "sonar.typescript.lcov.reportPaths", "projects/openpos-client-core-lib/build/reports/coverage/report-lcov/lcov.info"
+    property "sonar.javascript.lcov.reportPaths", "projects/openpos-client-core-lib/build/reports/coverage/report-lcov/lcov.info"
   }
 }
