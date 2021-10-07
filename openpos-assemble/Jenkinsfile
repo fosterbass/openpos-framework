@@ -109,8 +109,10 @@ pipeline {
                        tokenCredentialId: 'slackToken',
                        channel: 'jenkins',
                        message: "SUCCESS: ${env.BUILD_DESCRIPTION} ${env.BUILD_URL}")
-            if (env.BRANCH_NAME.startsWith("master") || env.BRANCH_NAME.startsWith("releases")) {
-                build "../commerce/${env.BRANCH_NAME}"
+            script {
+                if (env.BRANCH_NAME.startsWith("master") || env.BRANCH_NAME.startsWith("releases")) {
+                    build "../commerce/${env.BRANCH_NAME}"
+                }
             }
         }
         failure {
