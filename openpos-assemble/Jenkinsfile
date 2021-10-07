@@ -111,7 +111,7 @@ pipeline {
                        message: "SUCCESS: ${env.BUILD_DESCRIPTION} ${env.BUILD_URL}")
             script {
                 if (env.BRANCH_NAME.startsWith("master") || env.BRANCH_NAME.startsWith("releases")) {
-                    build "../commerce/${env.BRANCH_NAME}"
+                    build "commerce/${env.BRANCH_NAME.replace('/','%2F')}"
                 }
             }
         }
