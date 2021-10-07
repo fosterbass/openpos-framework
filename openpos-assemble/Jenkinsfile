@@ -6,7 +6,13 @@ pipeline {
     stages {
         stage('Clean') {
             steps {
-                echo 'gitBranch=${BRANCH_NAME}'
+                script {
+                    def author = sh (script: 'git log -1 --pretty=%cn ${GIT_COMMIT}', returnStdout: true).trim()
+                    env.BUILD_DESCRIPTION = env.BRANCH_NAME.startsWith("master") || env.BRANCH_NAME.startsWith("releases") ?
+                       "${env.BRANCH_NAME} by ${author} on ${env.NODE_NAME}" :
+                       "${env.JOB_NAME} for ${env.CHANGE_BRANCH} by ${author} on ${env.NODE_NAME}"
+                    currentBuild.description = "${env.BUILD_DESCRIPTION}"
+                }
                 dir('openpos-assemble') {sh """./gradlew \
                   -PdownloadNode=true \
                    clean"""}
@@ -32,7 +38,13 @@ pipeline {
                     dir('openpos-assemble') { sh """./gradlew \
                         -Dsonar.branch.name="${BRANCH_NAME}" \
                         sonarqube"""}
-
+                }
+            }
+        }
+        stage('Sonar Analysis Client - Branch') {
+            when { branch pattern: "master|releases.*", comparator: "REGEXP"}
+            steps {
+                withSonarQubeEnv('JumpMindCloud') {
                     dir('openpos-client-libs') { sh """./gradlew -b sonar.gradle \
                         -Dsonar.branch.name="${BRANCH_NAME}" \
                         sonarqube"""}
@@ -54,7 +66,18 @@ pipeline {
                       -Dsonar.pullrequest.key=${env.CHANGE_ID} \
                       -Dsonar.pullrequest.branch=${env.CHANGE_BRANCH} \
                        sonarqube"""}
-
+                }
+            }
+        }
+        stage('Sonar Analysis Client - PR') {
+            when { branch pattern: "PR-.*", comparator: "REGEXP"}
+            steps {
+                script {
+                    def urlcomponents = env.CHANGE_URL.split("/")
+                    env.GITHIB_ORG = urlcomponents[3]
+                    env.GITHUB_REPO = urlcomponents[4]
+                }
+                withSonarQubeEnv('JumpMindCloud') {
                     dir('openpos-client-libs') { sh """./gradlew -b sonar.gradle \
                         -Dsonar.pullrequest.provider=GitHub \
                         -Dsonar.pullrequest.github.repository=${GITHIB_ORG}/${GITHUB_REPO} \
@@ -85,13 +108,16 @@ pipeline {
             slackSend (color: '#00FF00',
                        tokenCredentialId: 'slackToken',
                        channel: 'jenkins',
-                       message: "SUCCESS: ${env.JOB_NAME} for ${env.CHANGE_BRANCH} by ${env.CHANGE_AUTHOR} ${env.BUILD_URL}")
+                       message: "SUCCESS: ${env.BUILD_DESCRIPTION} ${env.BUILD_URL}")
+            if (env.BRANCH_NAME.startsWith("master") || env.BRANCH_NAME.startsWith("releases")) {
+                build "../commerce/${env.BRANCH_NAME}"
+            }
         }
         failure {
             slackSend (color: '#FF0000',
                        tokenCredentialId: 'slackToken',
                        channel: 'jenkins',
-                       message: "FAILURE: ${env.JOB_NAME} for ${env.CHANGE_BRANCH} by ${env.CHANGE_AUTHOR} ${env.BUILD_URL}")
+                       message: "FAILURE: ${env.BUILD_DESCRIPTION} ${env.BUILD_URL}")
         }
     }
 }
