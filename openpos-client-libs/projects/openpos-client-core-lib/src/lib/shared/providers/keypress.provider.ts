@@ -32,9 +32,17 @@ export class KeyPressProvider implements OnDestroy {
     // Matches a single key
     // p
     // ctrl+p
-    keyRegex = new RegExp(/(?<key>(\\\+|[^+])+)/, 'g');
+    keyRegex;
 
     constructor(private lockScreenService: LockScreenService) {
+        try {
+            this.keyRegex = new RegExp(/(?<key>(\\\+|[^+])+)/, 'g'); 
+        } catch (e) {
+            // This was observed on Android emulator:
+            // Invalid regular expression: /(?<key>(\\\+|[^+])+)/: Invalid group 
+            console.log("keyRegex failed to load " + e.message);
+        }
+        
         merge(
             this.keypressSourceRegistered$,
             this.keypressSourceUnregistered$

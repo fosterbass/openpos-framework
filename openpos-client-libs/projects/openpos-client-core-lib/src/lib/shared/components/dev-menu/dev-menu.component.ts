@@ -446,8 +446,11 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
     }
 
     public onDevClearLocalStorage() {
-        localStorage.clear();
-        this.personalization.refreshApp();
+        this.personalization.clearStorage().subscribe( {
+            next: () => this.personalization.refreshApp(),
+            error: (error) => console.error(error),
+            complete: () => this.personalization.refreshApp()
+        });
     }
 
     public onDevRestartNode(): Promise<{ success: boolean, message: string }> {

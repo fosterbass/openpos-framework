@@ -45,6 +45,7 @@ import { SCANNERS, ScannerService } from './platform-plugins/scanners/scanner.se
 import { PlatformReadyStartupTask, PLATFORMS } from './startup/platform-ready-startup-task';
 import { WedgeScannerPlugin } from './platform-plugins/scanners/wedge-scanner/wedge-scanner.plugin';
 import { CordovaPlatform } from './platforms/cordova.platform';
+import { CordovaService } from './services/cordova.service';
 import { InfineaScannerCordovaPlugin } from './platform-plugins/scanners/infinea-scanner/infinea-scanner-cordova/infinea-scanner-cordova.plugin';
 import { NCRPaymentPlugin } from './platform-plugins/cordova-plugins/ncr-payment-plugin';
 import { SplashScreenComponent } from './components/splash-screen/splash-screen.component';
@@ -77,6 +78,10 @@ import {Dpp255CapacitorPlugin} from "./platform-plugins/printers/dpp-255-capacit
 import {AutoPersonalizationStartupTask} from "./startup/auto-personalization-startup-task";
 import {WrapperService} from "./services/wrapper.service";
 import {InfineaSdkPlugin} from "./platform-plugins/capacitor-plugins/infinea-sdk.plugin";
+import { CapacitorStorageService } from './storage/capacitor/capacitor-storage.service';
+import { CordovaStorageService } from './storage/cordova/cordova-storage.service';
+import { Storage } from './storage/storage.service';
+import { STORAGE_CONTAINERS } from './storage/storage-container';
 
 registerLocaleData(locale_enCA, 'en-CA');
 registerLocaleData(locale_frCA, 'fr-CA');
@@ -151,6 +156,8 @@ registerLocaleData(locale_frCA, 'fr-CA');
         { provide: PLUGINS, useExisting: Dpp255CapacitorPlugin, multi: true },
         { provide: SCANNERS, useExisting: ServerScannerPlugin, multi: true, deps: [SessionService]},
         { provide: PLATFORMS, useExisting: CordovaPlatform, multi: true},
+        { provide: STORAGE_CONTAINERS, useClass: CapacitorStorageService, multi: true },
+        { provide: STORAGE_CONTAINERS, useClass: CordovaStorageService, multi: true },
         BrowserPrinterPlugin,
         { provide: PRINTERS, useExisting: BrowserPrinterPlugin, multi: true},
         { provide: PRINTERS, useExisting: Dpp255CapacitorPlugin, multi: true},
@@ -168,7 +175,8 @@ registerLocaleData(locale_frCA, 'fr-CA');
         AudioService,
         AudioInteractionService,
         AudioRepositoryService,
-        { provide: PLUGINS, useExisting: AudioConsolePlugin, multi: true, deps: [AudioService]}
+        { provide: PLUGINS, useExisting: AudioConsolePlugin, multi: true, deps: [AudioService]},
+        Storage
     ]
 })
 export class CoreModule {

@@ -1,2 +1,5 @@
 ---
 dmls:
+  -
+    name: deleteDeviceParamModels
+    dml: delete from DeviceParamModel where device_id = ${deviceId} and app_id = ${appId}

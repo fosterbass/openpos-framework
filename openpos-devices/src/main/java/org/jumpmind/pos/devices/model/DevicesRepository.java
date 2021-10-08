@@ -79,6 +79,11 @@ public class DevicesRepository {
 
         devSession.save(device);
 
+        Map<String, Object> params = new HashMap<>();
+        params.put("deviceId", device.getDeviceId());
+        params.put("appId", device.getAppId());
+        devSession.executeDml("deleteDeviceParamModels", params);
+
         if (CollectionUtils.isNotEmpty(device.getDeviceParamModels())) {
             for (DeviceParamModel paramModel : device.getDeviceParamModels()) {
                 paramModel.setAppId(device.getAppId());

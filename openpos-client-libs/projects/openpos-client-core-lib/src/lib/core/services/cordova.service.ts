@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
-import {from, of, Observable} from "rxjs";
-import { Subject, BehaviorSubject } from 'rxjs';
-import {Capacitor, DeviceInfo, Plugins} from "@capacitor/core";
-import {map} from "rxjs/operators";
+import {Observable, Subject, BehaviorSubject, Subscription} from "rxjs";
+import {filter, map} from "rxjs/operators";
 
 
 declare var cordova: any;
+declare var window: any;
 
 @Injectable({
     providedIn: 'root',
@@ -15,9 +14,12 @@ export class CordovaService {
     private _isRunningInCordova: boolean = null;
     public plugins: any;
 
+    private subscription: Subscription;
+
     constructor() {
         document.addEventListener('deviceready', () => {
                 console.info('Cordova devices are ready');
+
                 this._isRunningInCordova = true;
                 this.plugins = cordova.plugins;
                 this.onDeviceReady.next(`deviceready`);
@@ -27,9 +29,11 @@ export class CordovaService {
     }
 
     public isRunningInCordova(): boolean {
-        if (this._isRunningInCordova == null) {
+
+        if (this._isRunningInCordova == null) {   
             this._isRunningInCordova = typeof cordova !== 'undefined' && !this.isRunningInBrowser();
         }
+        console.log(`Cordova check is ${typeof cordova !== 'undefined'}, running in browser = ${this.isRunningInBrowser()}. Returning ${this._isRunningInCordova}`);
 
         return this._isRunningInCordova;
     }
@@ -48,9 +52,21 @@ export class CordovaService {
     }
 
     public getDeviceName(): Observable<string> {
-        console.log(window['device']['serial']);
-        return of(window['device']['serial']);
+        return this.onDeviceReady.pipe(
+            filter(m => m === 'deviceready'),
+            map(m => {
+                console.info(`DeviceName requested...`)
+                try {
+                    console.log(`window['device']['serial']=${window['device']['serial']}`);
+                    return window['device']['serial'];
+                } catch (e) {
+                    console.error(`Error getting device name:`, JSON.stringify(e));
+                    return 'UNKNOWN';
+                }
+            })
+        );
     }
+
 }
 
 

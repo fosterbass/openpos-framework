@@ -1,70 +1,62 @@
-import {filter, retryWhen, switchMap, take, tap} from 'rxjs/operators';
 import {IStartupTask} from './startup-task.interface';
 import {PersonalizationService} from '../personalization/personalization.service';
-import {concat, interval, merge, Observable, of, Subject, throwError} from 'rxjs';
+import {concat, interval, merge, Observable, of, Subject, throwError, defer, iif} from 'rxjs';
 import {MatDialog} from '@angular/material';
 import {StartupTaskNames} from './startup-task-names';
 import {Injectable} from '@angular/core';
 import {StartupTaskData} from './startup-task-data';
 import {Params} from '@angular/router';
 import {PersonalizationComponent} from '../personalization/personalization.component';
-
+import {
+    catchError,
+    filter,
+    map,
+    retryWhen,
+    switchMap,
+    take,
+    timeout,
+    tap, flatMap
+} from 'rxjs/operators';
 @Injectable({
     providedIn: 'root',
 })
 export class PersonalizationStartupTask implements IStartupTask {
-
     name = StartupTaskNames.PERSONALIZATION;
 
     order = 500;
 
-    constructor(protected personalization: PersonalizationService, protected matDialog: MatDialog) {
-
-    }
+    constructor(protected personalization: PersonalizationService, protected matDialog: MatDialog) {}
 
     execute(data: StartupTaskData): Observable<string> {
-        if (this.personalization.shouldAutoPersonalize()) {
-            return of("Auto-personalizing client");
-        }
-        if (this.hasPersonalizationQueryParams(data.route.queryParams) || this.personalization.hasSavedSession()) {
 
-            let personalize$: Observable<string>;
+        let observableToRun: Observable<string>;
 
-            let messages = new Subject<string>();
-            let attemptMessage;
-
-            if (this.hasPersonalizationQueryParams(data.route.queryParams)) {
-                attemptMessage = 'Attempting to personalize using query parameters';
-                personalize$ = this.personalizeFromQueueParams(data.route.queryParams);
-            } else if (this.personalization.hasSavedSession()) {
-
-                attemptMessage = 'Attempting to personalize from saved token';
-                personalize$ = this.personalization.personalizeFromSavedSession();
-            }
-
-            return concat(
-                of(attemptMessage),
-                merge(
-                    messages,
-                    personalize$.pipe(
-                        retryWhen(errors =>
-                            errors.pipe(
-                                switchMap(() => interval(1000),
-                                    (error, time) => `${error} \n Retry in ${5 - time}`),
-                                tap(result => messages.next(result)),
-                                filter(result => result.endsWith('0')),
-                                tap(() => messages.next(attemptMessage))
-                            )
-                        ),
-                        take(1),
-                        tap(() => messages.complete())
-                    ))
+        if (this.hasPersonalizationQueryParams(data.route.queryParams)) {
+            observableToRun =  this.doPersonalizeWithRetry(
+                'Attempting to personalize using query parameters',
+                this.personalizeFromQueueParams(data.route.queryParams)
             );
-
+        } else {
+            observableToRun = this.personalization.hasSavedSession().pipe(
+                flatMap(hasSavedSession => {
+                    if (hasSavedSession) {
+                        return this.doPersonalizeWithRetry(
+                            'Attempting to personalize from saved token',
+                            this.personalization.personalizeFromSavedSession()
+                        )
+                    } else {
+                        return this.promptForPersonalization();
+                    }
+                })
+            );
         }
 
+        return observableToRun;
+    }
+
+    private promptForPersonalization(): Observable<string> {
         return concat(
-            of("No saved session found prompting manual personalization"),
+            of("No saved session found, prompting manual personalization"),
             this.matDialog.open(
                 PersonalizationComponent, {
                     disableClose: true,
@@ -74,6 +66,28 @@ export class PersonalizationStartupTask implements IStartupTask {
             ).afterClosed().pipe(take(1)));
     }
 
+    private doPersonalizeWithRetry(attemptMessage: string, personalize$: Observable<string>): Observable<string> {
+        let messages = new Subject<string>();
+        return concat(
+            of(attemptMessage),
+            merge(
+                messages,
+                personalize$.pipe(
+                    retryWhen(errors =>
+                        errors.pipe(
+                            switchMap(() => interval(1000),
+                                (error, time) => `${error} \n Retry in ${5 - time}`),
+                            tap(result => messages.next(result)),
+                            filter(result => result.endsWith('0')),
+                            tap(() => messages.next(attemptMessage))
+                        )
+                    ),
+                    take(1),
+                    tap(() => messages.complete())
+                ))
+        );
+
+    }
     hasPersonalizationQueryParams(queryParams: Params): boolean {
         return queryParams.deviceId && queryParams.appId && queryParams.serverName && queryParams.serverPort;
 

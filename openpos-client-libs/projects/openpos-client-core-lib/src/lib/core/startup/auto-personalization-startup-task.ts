@@ -1,11 +1,10 @@
-import {catchError, first, flatMap, take, tap, timeout} from 'rxjs/operators';
+import {catchError, first, flatMap, switchMap, take, tap, timeout} from 'rxjs/operators';
 import {IStartupTask} from './startup-task.interface';
 import {PersonalizationService} from '../personalization/personalization.service';
-import {concat, Observable, of} from 'rxjs';
+import {concat, Observable, of, Subject} from 'rxjs';
 import {MatDialog} from '@angular/material';
 import {Injectable} from '@angular/core';
 import {StartupTaskData} from './startup-task-data';
-import {PersonalizationComponent} from '../personalization/personalization.component';
 import {Zeroconf, ZeroconfService} from "@ionic-native/zeroconf";
 import {StartupTaskNames} from "./startup-task-names";
 import {WrapperService} from "../services/wrapper.service";
@@ -17,7 +16,7 @@ import {Configuration} from "../../configuration/configuration";
 })
 export class AutoPersonalizationStartupTask implements IStartupTask {
     name = StartupTaskNames.AUTO_PERSONALIZATION;
-    order = 500;
+    order = 490;
     private readonly TYPE = '_jmc-personalize._tcp.';
     private readonly DOMAIN = 'local.';
 
@@ -25,24 +24,26 @@ export class AutoPersonalizationStartupTask implements IStartupTask {
     }
 
     execute(data: StartupTaskData): Observable<string> {
-        console.log('[AutoPersonalizationTask] started')
-        if (this.personalization.shouldAutoPersonalize()) {
-            if (this.personalization.hasSavedSession()) {
-                console.log('[AutoPersonalizationTask] saved session exists, personalizing with it')
-                return this.personalization.personalizeFromSavedSession().pipe(
-                    catchError(e => {
-                        this.logPersonalizationError(e);
-                        return this.manualPersonalization();
-                    }));
+
+        return Observable.create((message: Subject<string>) => {
+            message.next('started');
+            if (this.personalization.shouldAutoPersonalize()) {
+                this.personalization.hasSavedSession().subscribe(hasSavedSession => {
+                    if (hasSavedSession) {
+                        console.log('[AutoPersonalizationTask] saved session exists')
+                        // Let personalizationTask take it from here
+                        message.next("Saved personalization session exists, letting default Personalization run")
+                        message.complete();
+                    } else {
+                        console.log('[AutoPersonalizationTask] saved session not found, trying personalization with Zero conf')
+                        return this.personalizeUsingZeroConf(message).subscribe();
+                    }
+                })
             } else {
-                return this.personalizeUsingZeroConf();
-                // For testing locally in a browser ensure shouldAutoPersonalize() returns true
-                // and use this personalizeUsingZeroConfMock() method instead
-                // return this.personalizeUsingZeroConfMock();
+                message.next("No auto personalization available for device");
+                message.complete();
             }
-        } else {
-            return of("No auto personalization available for device");
-        }
+        });
     }
 
 /*
@@ -59,35 +60,35 @@ export class AutoPersonalizationStartupTask implements IStartupTask {
         );
     }
 */
-    personalizeUsingZeroConf(): Observable<string> {
-        let name: string = null;
-
+    personalizeUsingZeroConf(observer: Subject<string>): Observable<string> {
         let serviceConfig: ZeroconfService = null;
 
-        console.log('[AutoPersonalizationTask] Starting ZeroConf watch on device ', this.wrapperService.getDeviceName());
-
-        return Zeroconf.watch(this.TYPE, this.DOMAIN).pipe(
-            timeout(Configuration.autoPersonalizationRequestTimeoutMillis),
-            first(conf => conf.action === 'resolved'),
-            tap(conf => {
-                serviceConfig = conf.service;
-                console.log('[AutoPersonalizationTask] service resolved', conf.service);
-            }),
-            flatMap(() => this.wrapperService.getDeviceName()),
-            tap(deviceName => name = deviceName),
-            flatMap(() => {
-                const url = `${serviceConfig.hostname}:${serviceConfig.port}/${serviceConfig.txtRecord.path}`;
-                return this.attemptAutoPersonalize(url, name);
-            }),
-            catchError(e => {
-                this.logPersonalizationError(e);
-                return this.personalizeWithHostname();
+        return this.wrapperService.getDeviceName().pipe(
+             switchMap(deviceName => {
+                console.log('[AutoPersonalizationTask] Starting ZeroConf watch on device ', deviceName);
+                return Zeroconf.watch(this.TYPE, this.DOMAIN).pipe(
+                    timeout(Configuration.autoPersonalizationRequestTimeoutMillis),
+                    first(conf => conf.action === 'resolved'),
+                    tap(conf => {
+                        serviceConfig = conf.service;
+                        console.log('[AutoPersonalizationTask] service resolved');
+                    }),
+                    flatMap(() => {
+                        const url = `${serviceConfig.hostname}:${serviceConfig.port}/${serviceConfig.txtRecord.path}`;
+                        return this.attemptAutoPersonalize(observer, url, deviceName);
+                    }),
+                    catchError(e => {
+                        console.log('[AutoPersonalizationTask] error during Zeroconf.watch');
+                        this.logPersonalizationError(e);
+                        return this.personalizeWithHostname(observer);
+                    })
+                );
             })
         );
 
     }
 
-    personalizeWithHostname(): Observable<string> {
+    personalizeWithHostname(observer: Subject<string>): Observable<string> {
         const servicePath = Configuration.autoPersonalizationServicePath;
         if (!!servicePath) {
             let name: string = null;
@@ -95,31 +96,20 @@ export class AutoPersonalizationStartupTask implements IStartupTask {
                 of("Attempting to retrieve personalization params via hostname"),
                 this.wrapperService.getDeviceName().pipe(
                     tap(deviceName => name = deviceName),
-                    flatMap(() => this.attemptAutoPersonalize(Configuration.autoPersonalizationServicePath, name)),
+                    flatMap(() => this.attemptAutoPersonalize(observer, Configuration.autoPersonalizationServicePath, name)),
                     catchError(e => {
+                        observer.next()
                         this.logPersonalizationError(e);
-                        return this.manualPersonalization();
+                        observer.complete();
+                        return of("");
                     })),
             );
         } else {
-            return this.manualPersonalization();
+            observer.complete();
         }
     }
 
-    manualPersonalization(): Observable<string> {
-        return concat(
-            of("Auto-personalization failed, reverting to manual personalization"),
-            this.matDialog.open(
-                PersonalizationComponent, {
-                    disableClose: true,
-                    hasBackdrop: false,
-                    panelClass: 'openpos-default-theme'
-                }
-            ).afterClosed().pipe(take(1)));
-    }
-
-
-    private attemptAutoPersonalize(url: string, deviceName: string): Observable<string> {
+    private attemptAutoPersonalize(observer: Subject<string>, url: string, deviceName: string): Observable<string> {
         return this.personalization.getAutoPersonalizationParameters(deviceName, url)
             .pipe(
                 flatMap(info => {
@@ -128,24 +118,18 @@ export class AutoPersonalizationStartupTask implements IStartupTask {
                         if (info.personalizationParams && ! (info.personalizationParams instanceof Map)) {
                             info.personalizationParams = new Map<string, string>(Object.entries(info.personalizationParams));
                         }
-                        return this.personalization.personalize(
-                            info.serverAddress,
-                            info.serverPort,
-                            info.deviceId,
-                            info.appId,
-                            info.personalizationParams,
-                            info.sslEnabled).pipe(
-                            catchError(e => {
-                                this.logPersonalizationError(e);
-                                return this.manualPersonalization();
-                            })
-                        );
+                        observer.next('Storing personalization parameters received from server.');
+                        this.personalization.store(info.serverAddress, info.serverPort, info.deviceId, info.appId, info.personalizationParams, info.sslEnabled);
+                        observer.complete();
+                        return of("");
                     }
-                    return this.manualPersonalization();
+                    observer.complete();
                 }),
                 catchError(e => {
+                    console.log('[AutoPersonalizationTask] error during attempt to Auto personalize');
+                    observer.next(`Error during auto-personalization to host '${url}': ${JSON.stringify(e)}`);
                     this.logPersonalizationError(e);
-                    return this.manualPersonalization();
+                    throw(e);
                 }));
     }
 

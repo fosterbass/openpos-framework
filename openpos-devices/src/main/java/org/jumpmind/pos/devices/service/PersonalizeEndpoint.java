@@ -61,8 +61,12 @@ public class PersonalizeEndpoint {
                 log.info("Validating auth request of {} as {}", deviceId, appId);
                 String auth = devicesRepository.getDeviceAuth(request.getDeviceId(), request.getAppId());
 
-                if( !auth.equals(authToken)) {
-                    throw new DeviceNotAuthorizedException();
+                if (authToken != null) {
+                    if(!auth.equals(authToken)) {
+                        throw new DeviceNotAuthorizedException();
+                    }
+                } else {
+                    throw new DeviceNotFoundException("token is null, re-personalizing existing device");
                 }
 
             } catch (DeviceNotFoundException ex){
@@ -70,7 +74,6 @@ public class PersonalizeEndpoint {
                 // if device doesn't exist create a new unique code
                 authToken = UUID.randomUUID().toString();
                 devicesRepository.saveDeviceAuth(appId, deviceId, authToken);
-
             }
 
             deviceModel = new DeviceModel();

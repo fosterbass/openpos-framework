@@ -1,14 +1,14 @@
 import {Injectable, Injector} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {PersonalizationConfigResponse} from './personalization-config-response.interface';
-import {BehaviorSubject, Observable, throwError} from 'rxjs';
+import {BehaviorSubject, combineLatest, concat, Observable, of, pipe, throwError, zip} from 'rxjs';
 import {catchError, map, tap, timeout} from 'rxjs/operators';
 import {PersonalizationRequest} from './personalization-request';
 import {PersonalizationResponse} from './personalization-response.interface';
 import {AutoPersonalizationParametersResponse} from "./device-personalization.interface";
-import {ZeroconfService} from "@ionic-native/zeroconf";
 import {Configuration} from "../../configuration/configuration";
 import {WrapperService} from "../services/wrapper.service";
+import { Storage } from '../storage/storage.service';
 
 @Injectable({
     providedIn: 'root'
@@ -16,17 +16,42 @@ import {WrapperService} from "../services/wrapper.service";
 export class PersonalizationService {
     static readonly OPENPOS_MANAGED_SERVER_PROPERTY = 'managedServer';
 
-    private personalizationProperties$ = new BehaviorSubject<Map<string, string>>(null);
-    private deviceId$ = new BehaviorSubject<string>(null);
-    private appId$ = new BehaviorSubject<string>(null);
-    private deviceToken$ = new BehaviorSubject<string>(localStorage.getItem('deviceToken'));
-    private serverName$ = new BehaviorSubject<string>(localStorage.getItem('serverName'));
-    private serverPort$ = new BehaviorSubject<string>(localStorage.getItem('serverPort'));
-    private sslEnabled$ = new BehaviorSubject<boolean>('true' === localStorage.getItem('sslEnabled'));
-    private isManagedServer$ = new BehaviorSubject<boolean>('true' === localStorage.getItem(PersonalizationService.OPENPOS_MANAGED_SERVER_PROPERTY));
-    private personalizationSuccessFul$ = new BehaviorSubject<boolean>(false);
+    readonly personalizationInitialized$ = new BehaviorSubject<boolean>(false);
 
-    constructor(private http: HttpClient, private wrapperService: WrapperService, private injector: Injector) {
+    private readonly personalizationProperties$ = new BehaviorSubject<Map<string, string> | null>(null);
+    private readonly deviceId$ = new BehaviorSubject<string | null>(null);
+    private readonly appId$ = new BehaviorSubject<string | null>(null);
+    private readonly deviceToken$ = new BehaviorSubject<string | null>(null);
+    private readonly serverName$ = new BehaviorSubject<string | null>(null);
+    private readonly serverPort$ = new BehaviorSubject<string | null>(null);
+    private readonly sslEnabled$ = new BehaviorSubject<boolean | null>(null);
+    private readonly isManagedServer$ = new BehaviorSubject<boolean | null>(null);
+    private readonly personalizationSuccessFul$ = new BehaviorSubject<boolean>(false);
+
+    constructor(
+        private storage: Storage,
+        private wrapperService: WrapperService, 
+        private http: HttpClient
+    ) {
+        storage.isAvailable().subscribe( available => {
+            console.log(`[PersonalizationService] storage is available, initializing`);
+            zip(
+                storage.getValue('deviceToken'),
+                storage.getValue('serverName'),
+                storage.getValue('serverPort'),
+                storage.getValue('sslEnabled'),
+                storage.getValue(PersonalizationService.OPENPOS_MANAGED_SERVER_PROPERTY)
+            ).subscribe(results => {
+                this.deviceToken$.next(results[0] !== 'null' ? results[0] : null);
+                this.serverName$.next(results[1] !== 'null' ? results[1] : null);
+                this.serverPort$.next(results[2] !== 'null' ? results[2] : null);
+                this.sslEnabled$.next(results[3] !== 'null' ? results[3] === 'true' : false );
+                if (results[4]) {
+                    this.isManagedServer$.next(results[4] !== 'null' ? results[4] === 'true' : false);
+                }
+                this.personalizationInitialized$.next(true);
+            });
+        });
     }
 
     public shouldAutoPersonalize(): boolean {
@@ -47,13 +72,42 @@ export class PersonalizationService {
                 }));
     }
 
-    public personalizeFromSavedSession(): Observable<string> {
-        let request = new PersonalizationRequest(this.deviceToken$.getValue(), null, null, null);
+    public personalizeFromSavedSession(): Observable<string>{
+        const request = new PersonalizationRequest(this.deviceToken$.getValue(), null, null, null );
+
+        console.log('[PersonalizationService] Personalizing from saved session.');
         return this.sendPersonalizationRequest(this.sslEnabled$.getValue(), this.serverName$.getValue(), this.serverPort$.getValue(), request, null);
     }
 
-    public hasSavedSession(): boolean {
-        return !!this.deviceToken$.getValue() && !!this.serverPort$.getValue() && !!this.serverName$.getValue();
+    public hasSavedSession(): Observable<boolean> {
+        return combineLatest(
+            this.storage.getValue('deviceToken'),
+            this.storage.getValue('serverPort'),
+            this.storage.getValue('serverName')
+
+        ).pipe(
+            map(([deviceToken, serverPort, serverName]) => {
+                console.info(`deviceToken:${deviceToken}, serverPort: ${serverPort}, serverName: ${serverName}`);
+                return !!deviceToken && deviceToken !== "null"
+                    && !!serverPort && serverPort !== "null"
+                    && !!serverName && serverName !== "null";
+            })
+        );
+    }
+
+    public store(
+        serverName: string,
+        serverPort: string,
+        deviceId: string,
+        appId: string,
+        personalizationProperties?: Map<string, string>,
+        sslEnabled?: boolean) {
+        this.setServerName(serverName);
+        this.setServerPort(serverPort);
+        this.setDeviceId(deviceId);
+        this.setAppId(appId);
+        this.setPersonalizationProperties(personalizationProperties);
+        this.setSslEnabled(sslEnabled);
     }
 
     public personalize(
@@ -114,17 +168,38 @@ export class PersonalizationService {
                 }
 
                 return throwError(`${error.statusText}`);
-
             })
         )
     }
 
+    public refreshApp() {
+        window.location.reload();
+    }
+
+    public clearStorage(): Observable<void> {
+        return concat(
+            this.storage.clear(),
+            of(this.remove(this.deviceId$, null)),
+            of(this.remove(this.serverName$, null)),
+            of(this.remove(this.serverPort$, null)),
+            of(this.remove(this.deviceToken$, null)),
+            of(this.remove(this.sslEnabled$, null)),
+            of(this.remove(this.isManagedServer$, null)),
+            of(this.remove(this.personalizationProperties$, null))
+        );
+    }
+
     public dePersonalize() {
-        localStorage.removeItem('serverName');
-        localStorage.removeItem('serverPort');
-        localStorage.removeItem('deviceToken');
-        localStorage.removeItem('theme');
-        localStorage.removeItem('sslEnabled');
+        this.remove(this.deviceId$, null);
+        this.remove(this.appId$, null);
+        this.remove(this.serverName$, this.storage.remove('serverName'));
+        this.remove(this.serverPort$, this.storage.remove('serverPort'));
+        this.remove(this.deviceToken$, this.storage.remove('deviceToken'));
+        this.remove(null, this.storage.remove('theme'));
+        this.remove(this.sslEnabled$, this.storage.remove('sslEnabled'));
+        this.remove(this.isManagedServer$, this.storage.remove(PersonalizationService.OPENPOS_MANAGED_SERVER_PROPERTY));
+        this.remove(this.personalizationProperties$, null);
+
     }
 
 
@@ -179,17 +254,17 @@ export class PersonalizationService {
     }
 
     private setSslEnabled(enabled: boolean) {
-        localStorage.setItem('sslEnabled', enabled + '');
+        this.storage.setValue('sslEnabled', enabled + '').subscribe();
         this.sslEnabled$.next(enabled);
     }
 
     private setServerName(name: string) {
-        localStorage.setItem('serverName', name);
+        this.storage.setValue('serverName', name).subscribe();
         this.serverName$.next(name);
     }
 
     private setServerPort(port: string) {
-        localStorage.setItem('serverPort', port);
+        this.storage.setValue('serverPort', port).subscribe();
         this.serverPort$.next(port);
     }
 
@@ -201,14 +276,18 @@ export class PersonalizationService {
         this.appId$.next(id);
     }
 
-    private setDeviceToken(token: string) {
-        localStorage.setItem('deviceToken', token);
+    private setDeviceToken(token: string){
+        this.storage.setValue('deviceToken', token).subscribe();
         this.deviceToken$.next(token);
     }
 
-    public refreshApp() {
-        window.location.reload();
+    private remove(fieldSubject: BehaviorSubject<any>, storageField: Observable<void>) {
+        if (fieldSubject) {
+            fieldSubject.next(null);
+        }
+        if (storageField) {
+            storageField.subscribe();
+        }
     }
+
 }
-
-

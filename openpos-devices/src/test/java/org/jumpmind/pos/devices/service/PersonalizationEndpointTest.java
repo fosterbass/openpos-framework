@@ -114,20 +114,25 @@ public class PersonalizationEndpointTest {
         assertNotNull(response.getAuthToken());
         assertNotNull(response.getDeviceModel());
     }
-
     @Test
-    public void personalizationRequestForExistingDeviceShouldFailIfAuthTokenIsNotProvided() throws Exception{
-        mvc.perform(
-                new MockPostRequestBuilder("/devices/personalize")
-                        .content(
-                                PersonalizationRequest.builder()
-                                        .deviceId("00145-001")
-                                        .appId("pos")
-                                        .build()
-                        )
-                        .build()
-        )
-        .andExpect(status().is5xxServerError());
+    public void personalizationRequestForExistingDeviceWithSameAppIdShouldSucceedIfAuthTokenIsNull() throws Exception {
+        String result = mvc.perform(
+                        new MockPostRequestBuilder("/devices/personalize")
+                                .content(
+                                        PersonalizationRequest.builder()
+                                                .deviceId("11111-111")
+                                                .appId("pos")
+                                                .build()
+                                )
+                                .build()
+                )
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        PersonalizationResponse response = mapper.readValue(result, PersonalizationResponse.class);
+        assertNotNull(response.getDeviceModel());
+        assertNotNull(response.getAuthToken());
+
     }
 
     @Test
