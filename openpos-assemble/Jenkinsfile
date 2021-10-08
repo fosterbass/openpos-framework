@@ -3,6 +3,11 @@ pipeline {
     environment {
         MAVEN_JM_PW = credentials('mavenJumpMindPassword')
     }
+
+    options {
+        timeout(time: 1, unit: 'HOURS')   // timeout on whole pipeline job
+    }
+
     stages {
         stage('Clean') {
             steps {
