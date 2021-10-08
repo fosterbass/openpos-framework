@@ -58,7 +58,7 @@ describe('LoyaltyCustomerFormDialogComponent', () => {
         }).compileComponents();
         fixture = TestBed.createComponent(LoyaltyCustomerFormDialogComponent);
         component = fixture.componentInstance;
-        component.screen = { form: mockForm } as LoyaltyCustomerFormInterface;
+        component.screen = { form: JSON.parse(JSON.stringify(mockForm)) } as LoyaltyCustomerFormInterface;
         formBuilder = TestBed.inject(FormBuilder);
         fixture.detectChanges();
     });
@@ -165,9 +165,11 @@ describe('LoyaltyCustomerFormDialogComponent', () => {
     describe('buildScreen()', () => {
         const firstNameField = { id: 'firstName', label: 'firstName' };
         const lastNameField = { id: 'lastName', label: 'lastName' };
+        const form = JSON.parse(JSON.stringify(mockForm));
+        form.formElements.push(firstNameField);
+        form.formElements.push(lastNameField);
         beforeEach(() => {
-            component.screen.form.formElements.push(firstNameField);
-            component.screen.form.formElements.push(lastNameField);
+            component.screen.form = form;
             spyOn(formBuilder, 'group').and.callThrough();
         });
         it('adds unhandled fields into extraElements and calls formBuilder.group when not a structured form', () => {
@@ -176,7 +178,7 @@ describe('LoyaltyCustomerFormDialogComponent', () => {
             expect(component.extraElements.length).toBe(4);
             expect(component.extraElements[2].id).toBe('firstName');
             expect(component.extraElements[3].id).toBe('lastName');
-            expect(formBuilder.group).toHaveBeenCalledWith(mockForm);
+            expect(formBuilder.group).toHaveBeenCalledWith(form);
         });
         it('a structured form removes handled fields from extraElements', () => {
             component.screen.isStructuredForm = true;
