@@ -129,7 +129,8 @@ jacocoTestReport {
 }
 
 test {
-    maxHeapSize = '1024m'
+    jvmArgs '-XX:+CrashOnOutOfMemoryError'
+    maxHeapSize = '2048m'
     if (project.hasProperty('ignoreFailures')) {
        ignoreFailures = project.property('ignoreFailures').toBoolean()
     }
