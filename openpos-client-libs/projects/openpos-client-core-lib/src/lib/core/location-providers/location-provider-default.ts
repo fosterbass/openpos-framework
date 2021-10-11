@@ -6,7 +6,7 @@ import { Configuration } from '../../configuration/configuration';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import {ConfigurationService} from "../services/configuration.service";
-import {filter} from "rxjs/operators";
+import {filter, take} from "rxjs/operators";
 
 @Injectable({
     providedIn: 'root'
@@ -17,7 +17,7 @@ export class LocationProviderDefault implements ILocationProvider {
 
     constructor(private http: Http, private configurationService: ConfigurationService) {
         this.configurationService.getConfiguration('uiConfig')
-            .pipe(filter(config => Object.keys(config).includes('googleApiKey')))
+            .pipe(filter(config => Object.keys(config).includes('googleApiKey')), take(1))
             .subscribe(config => {
             if(this.coordinateBuffer != null) {
                 this.getCurrentLocation(this.coordinateBuffer, config['googleApiKey']);
