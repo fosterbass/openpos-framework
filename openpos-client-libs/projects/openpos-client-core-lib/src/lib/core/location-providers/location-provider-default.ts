@@ -5,7 +5,7 @@ import {ILocationData} from './location-data.interface';
 import {Configuration} from '../../configuration/configuration';
 import {Injectable} from '@angular/core';
 import {ConfigurationService} from "../services/configuration.service";
-import {filter} from "rxjs/operators";
+import {filter, take} from "rxjs/operators";
 
 interface GoogleGeocodeResponse {
     results: GoogleGeocodeResult[];
@@ -30,7 +30,7 @@ export class LocationProviderDefault implements ILocationProvider {
 
     constructor(private http: HttpClient, private configurationService: ConfigurationService) {
         this.configurationService.getConfiguration('uiConfig')
-            .pipe(filter(config => Object.keys(config).includes('googleApiKey')))
+            .pipe(filter(config => Object.keys(config).includes('googleApiKey')), take(1))
             .subscribe(config => {
                 if (this.coordinateBuffer != null) {
                     this.getCurrentLocation(this.coordinateBuffer, config['googleApiKey']);

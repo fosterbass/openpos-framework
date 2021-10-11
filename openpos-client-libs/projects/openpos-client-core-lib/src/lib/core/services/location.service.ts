@@ -1,5 +1,5 @@
 import { SessionService } from './session.service';
-import { filter, map } from 'rxjs/operators';
+import {filter, map, take} from 'rxjs/operators';
 import { Optional, Inject, InjectionToken, OnDestroy, Injectable } from '@angular/core';
 import { ILocationProvider } from '../location-providers/location-provider.interface';
 import { ILocationData } from '../location-providers/location-data.interface';
@@ -22,7 +22,7 @@ export class LocationService implements OnDestroy {
                 @Optional() @Inject(PROVIDERS) private locationProviders: Array<ILocationProvider>) {
 
         sessionService.getMessages('ConfigChanged').pipe(
-            filter( m => m.configType === 'LocationService')
+            filter( m => m.configType === 'LocationService'), take(1)
         ).subscribe( message => {
             if (message.enabled === 'true') {
                 if (message.countries) {
