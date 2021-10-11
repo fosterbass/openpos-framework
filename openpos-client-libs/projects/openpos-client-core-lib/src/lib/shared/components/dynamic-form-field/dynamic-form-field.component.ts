@@ -240,5 +240,19 @@ export class DynamicFormFieldComponent implements OnInit, OnDestroy, AfterViewIn
     patchGroup[fieldId] = value;
     this.formGroup.patchValue(patchGroup);
   }
+
+  onPaste(event: ClipboardEvent): boolean {
+    let maxLength = this.formField.maxLength;
+    let pastedText = event.clipboardData.getData('text');
+    // Decreasing expected maxLength for money fields as such fields will be prepopulated with '$' sign
+    if (this.formField.inputType === 'Money') {
+      maxLength--;
+      // In case pasted text doesn't contain '.' symbol - decreasing expected length as final amount will be split by '.'
+      if (!pastedText.includes(".")) {
+        maxLength--;
+      }
+    }
+    return pastedText.length <= maxLength;
+  }
 }
 
