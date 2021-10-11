@@ -66,8 +66,12 @@
                 </p>
 
                 <ng-template #buddyStoreTable>
-                    <table *ngIf="buddyStoresOnline$ | async" class="item-details-table buddy-stores">                    
+                    <table *ngIf="buddyStoresOnline$ | async" class="item-details-table buddy-stores" aria-label="Availability at nearby stores">                    
                         <tbody>
+                            <tr class="table-header">
+                                <th scope="col">Store Name</th>
+                                <th scope="col">Inventory Count</th>
+                            </tr>
                             <tr *ngFor="let store of buddyStores$ | async">
                                 <td>{{store.storeName}}</td>
                                 <td class="buddy-store-inventory-count">{{store.storeCount}}</td>
@@ -88,12 +92,12 @@
                 <app-instructions *ngIf="screen.promotions && screen.promotions.length > 1"  [instructions]="screen.promotionStackingDisclaimer"
                                 [instructionsSize]="'text-md'"></app-instructions>
 
-                <table class="item-details-table promotions">                    
+                <table class="item-details-table promotions" aria-label="Applicable promotions">                    
                     <tbody>
                         <tr>
-                            <th class="promotion-icon"></th>
-                            <th>{{screen.itemValueDisplay.label}}</th>
-                            <th>{{screen.itemValueDisplay.value}}</th>
+                            <th class="promotion-icon" scope="col"></th>
+                            <th scope="col">{{screen.itemValueDisplay.label}}</th>
+                            <th scope="col">{{screen.itemValueDisplay.value}}</th>
                         </tr>
                         <tr *ngFor="let promo of screen.promotions">
                             <td class="promotion-icon">

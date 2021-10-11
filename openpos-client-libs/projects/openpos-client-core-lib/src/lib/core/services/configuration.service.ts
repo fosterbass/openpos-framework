@@ -3,8 +3,8 @@ import { VERSIONS } from './../../version';
 import { Injectable } from '@angular/core';
 import { SessionService } from './session.service';
 import { Configuration } from './../../configuration/configuration';
-import { distinct, filter, groupBy, map, mergeMap, publish, share, tap } from 'rxjs/operators';
-import { BehaviorSubject, ConnectableObservable, Observable, ReplaySubject } from 'rxjs';
+import { distinct, filter, map } from 'rxjs/operators';
+import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
 import { ConfigChangedMessage } from '../messages/config-changed-message';
 import { ThemeChangedMessage } from '../messages/theme-changed-message';
 import { VersionsChangedMessage } from '../messages/versions-changed-message';
@@ -16,11 +16,11 @@ import { MessageTypes } from '../messages/message-types';
 export class ConfigurationService {
 
     public versions: Array<IVersion> = [];
-    public theme$ =  new BehaviorSubject<string>('openpos-default-theme');
+    public theme$ = new BehaviorSubject<string>('openpos-default-theme');
 
     private config$ = new ReplaySubject<Map<string, ConfigChangedMessage>>(1);
 
-    constructor(private sessionService: SessionService ) {
+    constructor(private sessionService: SessionService) {
         const capturedConfig = new Map<string, ConfigChangedMessage>();
         this.sessionService.getMessages(MessageTypes.CONFIG_CHANGED).pipe(
             map(m => m as ConfigChangedMessage),
@@ -32,11 +32,11 @@ export class ConfigurationService {
             }
         });
 
-        this.getConfiguration('uiConfig').subscribe( m => this.mapConfig(m));
-        this.getConfiguration<ThemeChangedMessage>('theme').subscribe( m => this.theme$.next(m.name));
-        this.getConfiguration<VersionsChangedMessage>('versions').subscribe( m => {
-            this.versions = m.versions.map( v => v);
-            this.versions.concat(VERSIONS as IVersion[]);
+        this.getConfiguration('uiConfig').subscribe(m => this.mapConfig(m));
+        this.getConfiguration<ThemeChangedMessage>('theme').subscribe(m => this.theme$.next(m.name));
+        this.getConfiguration<VersionsChangedMessage>('versions').subscribe(m => {
+            this.versions = m.versions.map(v => v);
+            this.versions = this.versions.concat(VERSIONS as IVersion[]);
         });
     }
 
@@ -65,8 +65,8 @@ export class ConfigurationService {
                     }
                 } catch (e) {
                     console.warn(`Failed to convert configuration response property '${p}' with value [${response[p]}] ` +
-                      `and type '${responsePropertyType}' to Configuration[${p}] of type '${configPropertyType}'` +
-                      ` Error: ${e}`);
+                        `and type '${responsePropertyType}' to Configuration[${p}] of type '${configPropertyType}'` +
+                        ` Error: ${e}`);
                 }
             }
         }

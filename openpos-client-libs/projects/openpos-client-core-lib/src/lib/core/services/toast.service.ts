@@ -55,7 +55,7 @@ export class ToastService {
         return toastMessage.duration === 0;
     }
 
-    private getPosition(verticalPosition: String): string {
+    private getPosition(verticalPosition: string): string {
         switch (verticalPosition) {
             case 'top':
                 return 'toast-top-center';
@@ -65,7 +65,7 @@ export class ToastService {
         return null;
     }
 
-    private getType(type: String): string {
+    private getType(type: string): string {
         switch (type) {
             case ToastType.Success:
                 return 'toast-success';

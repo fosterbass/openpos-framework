@@ -1,4 +1,4 @@
-import { ConfigChangedMessage } from "./config-changed-message";
+import { ConfigChangedMessage } from './config-changed-message';
 
 export class UIConfigMessage extends ConfigChangedMessage {
     configType = 'uiConfig';

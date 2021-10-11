@@ -4,7 +4,7 @@ export interface RewardHistory {
     expirationDate: string;
     amount: number;
     redeemed: boolean;
-};
+}
 
 export interface RewardsHistoryLineItemComponentInterface {
     redeemedLabel: string;

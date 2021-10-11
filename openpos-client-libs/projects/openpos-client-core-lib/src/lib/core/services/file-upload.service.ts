@@ -9,44 +9,45 @@ import { FileChunkReader } from './../../shared/utils/filechunkreader';
 import { DiscoveryService } from '../discovery/discovery.service';
 @Injectable({
     providedIn: 'root',
-  })
+})
 export class FileUploadService {
-    constructor(private cordovaService: CordovaService,
-                private personalization: PersonalizationService, private httpClient: HttpClient,
-                private discovery: DiscoveryService) {
-    }
+    constructor(
+        private cordovaService: CordovaService,
+        private personalization: PersonalizationService,
+        private httpClient: HttpClient,
+        private discovery: DiscoveryService
+    ) { }
 
     public async uploadLocalDeviceFileToServer(context: string, filename: string, contentType: string, filepath: string):
-      Promise<FileUploadResult> {
+        Promise<FileUploadResult> {
 
         if (this.cordovaService.isRunningInCordova()) {
             let localfilepath = filepath;
-            if (! filename.startsWith('file:')) {
+            if (!filename.startsWith('file:')) {
                 localfilepath = `file://${localfilepath}`;
             }
             console.info(`File to upload: ${localfilepath}`);
 
             const url = this.getUploadServiceUrl();
             console.info(`File upload endpoint url: ${url}`);
-            try {
-                return this.uploadFileInChunks(url, context, localfilepath, filename, contentType);
-            } catch (error) {
-                if ('success' in error && 'message' in error) {
-                    return error;
-                } else {
-                    return { success: false, message: error instanceof Error ? error.message : JSON.stringify(error)};
-                }
-            }
+            return this.uploadFileInChunks(url, context, localfilepath, filename, contentType)
+                .catch((error) => {
+                    if ('success' in error && 'message' in error) {
+                        return error;
+                    } else {
+                        return { success: false, message: error instanceof Error ? error.message : JSON.stringify(error) };
+                    }
+                });
         } else {
             const msg = `Not running in Cordova, cannot upload file ${filename}`;
             console.warn(msg);
-           return Promise.reject({success: false, message: msg});
-       }
+            return Promise.reject({ success: false, message: msg });
+        }
 
     }
 
     public async uploadFileInChunks(url: string, context: string, localfilepath: string, filename: string,
-        contentType: string, timeoutMillis = 60000): Promise<FileUploadResult> {
+                                    contentType: string, timeoutMillis = 60000): Promise<FileUploadResult> {
 
         let fileUploadTimer: any = null;
         let uploadSub: Subscription = null;
@@ -59,10 +60,10 @@ export class FileUploadService {
                 f.append('filename', filename);
                 f.append('file', blob);
                 f.append('chunkIndex', fileChunkReader.chunkIndex.toString());
-                uploadSub = this.httpClient.post(url, f, {observe: 'response'}).subscribe(response => {
-                        console.debug(`${filename} chunk uploaded.  bytes uploaded/total: ${fileChunkReader.bytesReadCount}/${fileChunkReader.fileSize}`);
-                        resolve(true);
-                    },
+                uploadSub = this.httpClient.post(url, f, { observe: 'response' }).subscribe(() => {
+                    console.debug(`${filename} chunk uploaded.  bytes uploaded/total: ${fileChunkReader.bytesReadCount}/${fileChunkReader.fileSize}`);
+                    resolve(true);
+                },
                     err => {
                         fileChunkReader.cancel();
                         if (fileUploadTimer) {
@@ -78,15 +79,15 @@ export class FileUploadService {
         const fileChunkReader = new FileChunkReader(localfilepath, contentType, uploadFunc);
 
         const timeoutPromise = new Promise<FileUploadResult>((resolve, reject) => {
-            fileUploadTimer = setTimeout( () => {
+            fileUploadTimer = setTimeout(() => {
                 console.info(`upload timed out`);
                 fileChunkReader.cancel();
                 if (uploadSub) {
                     uploadSub.unsubscribe();
                 }
-                resolve({success: false, message: `Upload request for '${filename}' timed out.`});
+                resolve({ success: false, message: `Upload request for '${filename}' timed out.` });
             },
-            timeoutMillis);
+                timeoutMillis);
         });
 
 
@@ -99,11 +100,11 @@ export class FileUploadService {
                     const msg = `File '${filename}' uploaded to server successfully.`;
                     console.info(msg);
                     // console.info(`File upload response: ${JSON.stringify(response)}`);
-                    resolve({success: true, message: msg});
+                    resolve({ success: true, message: msg });
                 } else {
                     const msg = `Upload of file '${filename}' FAILED!`;
                     console.error(msg);
-                    resolve({success: false, message: msg});
+                    resolve({ success: false, message: msg });
                 }
             }).catch(err => {
                 if (fileUploadTimer) {
@@ -122,8 +123,8 @@ export class FileUploadService {
                     }
                 }
                 const returnMsg = `${statusCode ? statusCode + ': ' : ''}` +
-                   (errMsg ? errMsg : 'Upload failed. Check client and server logs.');
-                reject({success: false, message: returnMsg});
+                    (errMsg ? errMsg : 'Upload failed. Check client and server logs.');
+                reject({ success: false, message: returnMsg });
             });
         });
         return Promise.race([timeoutPromise, readAndUploadPromise]);
@@ -140,5 +141,4 @@ export class FileUploadService {
         console.error(errorMsg);
         throw new Error(errorMsg);
     }
-
 }

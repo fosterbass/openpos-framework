@@ -92,7 +92,7 @@
                     <ng-template #itemHistoryTemplate let-item>
                         <div class="item" responsive-class>
                             <div class="image-container">
-                                <img [src]="item.imageUrl | imageUrl">
+                                <img [src]="item.imageUrl | imageUrl" alt="item icon">
                             </div>
                             <h3 class="title">{{ item.title }}</h3>
                             <div class="labels-cont">

@@ -39,7 +39,7 @@ export interface PurchasedItem {
     labels: UILabel[];
     transaction: TransactionIdentifier;
     transactionDetailsAction: IActionItem;
-    itemId: String;
+    itemId: string;
     itemDetailsAction: IActionItem;
 }
 
