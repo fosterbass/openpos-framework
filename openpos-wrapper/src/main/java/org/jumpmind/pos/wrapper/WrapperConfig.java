@@ -210,6 +210,24 @@ public class WrapperConfig {
         return sb.toString();
     }
 
+    public boolean isAutoUpdateEnabled() {
+        return autoUpdateEndpoint() != null
+                && getProperty(properties, "wrapper.updater.enabled", "false").equalsIgnoreCase("true");
+    }
+
+    public String autoUpdateEndpoint() {
+        return getProperty(properties, "wrapper.updater.endpoint", null);
+    }
+
+    public File getPendingUpdateFile() {
+        final String pendingFileLocation = getProperty(properties, "wrapper.updater.pendingfile", null);
+        if (pendingFileLocation == null) {
+            return null;
+        }
+
+        return new File(pendingFileLocation);
+    }
+
     String expandWildcard(String classPath) {
         int index = classPath.indexOf("*");
         if (index != -1) {
