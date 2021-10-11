@@ -19,4 +19,4 @@ openpos:
     fileSystemSoftwareProvider:
       artifactExtension: zip
       baseDir: ./work/update
-      namePattern: '^\w+-(?<version>(\d+)(\.(\d+)(\.(\d+))?)?(-+([\w-]+[\w\-.]+))?(\+([\w-]+[\w\-.]+))?)$'
+      namePattern: '^(\w+-)+(?<version>(\d+)(\.(\d+)(\.(\d+))?)?(-+([\w-]+[\w\-.]+))?(\+([\w-]+[\w\-.]+))?)\.zip$'
