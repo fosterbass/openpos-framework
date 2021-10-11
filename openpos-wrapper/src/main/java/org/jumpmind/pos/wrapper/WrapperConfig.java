@@ -211,12 +211,12 @@ public class WrapperConfig {
     }
 
     public boolean isAutoUpdateEnabled() {
-        return autoUpdateEndpoint() != null
+        return getAutoUpdateServer() != null
                 && getProperty(properties, "wrapper.updater.enabled", "false").equalsIgnoreCase("true");
     }
 
-    public String autoUpdateEndpoint() {
-        return getProperty(properties, "wrapper.updater.endpoint", null);
+    public String getAutoUpdateServer() {
+        return getProperty(properties, "wrapper.updater.server", null);
     }
 
     public File getPendingUpdateFile() {

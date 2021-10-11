@@ -9,14 +9,18 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jumpmind.pos.wrapper.Constants.Status;
 
 import com.sun.jna.Platform;
+import org.update4j.Archive;
 
 public abstract class WrapperService {
 
@@ -387,6 +391,51 @@ public abstract class WrapperService {
     }
 
     protected void updateStatus(Status status) {
+    }
+
+    protected final void tryAutoUpdate() {
+        if (config == null || !config.isAutoUpdateEnabled()) {
+            System.out.println("auto-update disabled; skipping...");
+            return;
+        }
+
+        final File pendingUpdateFile = config.getPendingUpdateFile();
+
+        if (pendingUpdateFile != null && pendingUpdateFile.exists()) {
+            System.out.println("installing pending update...");
+
+            try {
+                Archive.read(pendingUpdateFile.getPath()).install(true);
+                System.out.println("pending update installed!");
+                return;
+            } catch (IOException ex) {
+                System.err.println("failed to open pending update: " + ex.getMessage());
+
+                // fallthrough and let's try the update from the server
+            }
+        }
+
+        final String server = config.getAutoUpdateServer();
+        if (StringUtils.isEmpty(server)) {
+            System.out.println("auto-update from server disabled; skipping...");
+            return;
+        }
+
+// todo: need installation id which depends on some configuration scripting.
+//        String endpoint = StringUtils.stripEnd(server, "/");
+//        endpoint += "/update/installation/" + INSTALLATIONDEVICEID;
+//
+//
+//        final URL url;
+//
+//        try {
+//            url = new URL(endpoint);
+//        } catch (MalformedURLException ex) {
+//            System.err.println("invalid url '" + endpoint + "'; cannot update from server...");
+//            return;
+//        }
+//
+//        System.out.println("looking for updates at '" + endpoint + "'");
     }
 
     private static String getStackTrace(Throwable throwable) {
