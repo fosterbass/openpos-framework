@@ -4,18 +4,18 @@ import org.apache.commons.io.IOUtils;
 import org.jumpmind.pos.service.Endpoint;
 import org.jumpmind.pos.update.UpdateModule;
 import org.jumpmind.pos.update.provider.ISoftwareProvider;
+import org.jumpmind.pos.update.provider.SoftwareProviderFactory;
 import org.jumpmind.pos.update.versioning.Version;
 import org.jumpmind.pos.update.versioning.Versioning;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.web.servlet.HandlerMapping;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -24,14 +24,18 @@ import java.util.zip.ZipFile;
 public class DownloadEndpoint {
     final static String PATH = "/update/download/";
 
-    @Autowired(required = false)
-    Map<String, ISoftwareProvider> softwareProviders;
-
-    @Value("${openpos.update.softwareProvider:fileSystemSoftwareProvider}")
-    String softwareProvider;
-
     @Autowired
     Versioning versionFactory;
+
+    @Autowired
+    SoftwareProviderFactory softwareProviderFactory;
+
+    ISoftwareProvider provider;
+    
+    @PostConstruct
+    public void init(){
+        provider = softwareProviderFactory.getSoftwareProvider();
+    }
 
     public void download(
             String version,
@@ -52,7 +56,6 @@ public class DownloadEndpoint {
             return;
         }
 
-        ISoftwareProvider provider = softwareProviders.get(softwareProvider);
 
         String path = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
         path = path.substring(PATH.length() + version.length() + 1);

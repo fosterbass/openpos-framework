@@ -5,6 +5,7 @@ import org.jumpmind.pos.update.UpdateModule;
 import org.jumpmind.pos.update.model.InstallGroupModel;
 import org.jumpmind.pos.update.model.InstallRepository;
 import org.jumpmind.pos.update.provider.ISoftwareProvider;
+import org.jumpmind.pos.update.provider.SoftwareProviderFactory;
 import org.jumpmind.pos.update.versioning.Version;
 import org.jumpmind.pos.update.versioning.Versioning;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.context.annotation.Profile;
 import org.update4j.Configuration;
 import org.update4j.FileMetadata;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -24,9 +26,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @Profile(UpdateModule.NAME)
 @Endpoint(path = "/update/installation/{installationId}")
 public class UpdateEndpoint {
-
-    @Autowired(required = false)
-    Map<String, ISoftwareProvider> softwareProviders;
 
     @Autowired
     InstallRepository installRepository;
@@ -45,12 +44,20 @@ public class UpdateEndpoint {
     @Autowired
     Versioning versionFactory;
 
+    @Autowired
+    SoftwareProviderFactory softwareProviderFactory;
+
+    ISoftwareProvider provider;
+
+    @PostConstruct
+    public void init(){
+        provider = softwareProviderFactory.getSoftwareProvider();
+    }
+
     public void update(
             String installationId,
             HttpServletResponse response
     ) throws Exception {
-        ISoftwareProvider provider = softwareProviders.get(softwareProvider);
-
         Version version = null;
         InstallGroupModel installGroupModel = installRepository.findInstallGroup(installationId);
 

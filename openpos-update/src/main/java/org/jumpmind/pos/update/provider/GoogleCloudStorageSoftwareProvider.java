@@ -11,6 +11,7 @@ import org.jumpmind.pos.update.versioning.Version;
 import org.jumpmind.pos.update.versioning.Versioning;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -27,6 +28,7 @@ import java.util.regex.Pattern;
 
 @Profile(UpdateModule.NAME)
 @Component
+@Lazy
 @Slf4j
 public class GoogleCloudStorageSoftwareProvider implements ISoftwareProvider {
 

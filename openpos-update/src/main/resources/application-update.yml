@@ -14,7 +14,6 @@ openpos:
         initialDelay: 10000
 
   update:
-    softwareProvider: fileSystemSoftwareProvider
     installUrl: http://localhost:6142
     installBasePath: ${dollar}{user.dir}
     fileSystemSoftwareProvider:

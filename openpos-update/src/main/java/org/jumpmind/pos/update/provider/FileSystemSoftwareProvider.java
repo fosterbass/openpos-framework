@@ -8,6 +8,7 @@ import org.jumpmind.pos.update.versioning.Version;
 import org.jumpmind.pos.update.versioning.Versioning;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +27,7 @@ import static java.util.Comparator.naturalOrder;
 
 @Profile(UpdateModule.NAME)
 @Component
+@Lazy
 public class FileSystemSoftwareProvider implements ISoftwareProvider {
 
     @Value("${openpos.update.fileSystemSoftwareProvider.artifactExtension}")
