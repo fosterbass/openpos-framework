@@ -5,8 +5,8 @@ import { IForm } from '../interfaces/form.interface';
 
 // cannot import the ../../shared barrel here because of a circular reference
 import { ValidatorsService } from './validators.service';
-import { OpenPosValidators } from '../../shared/validators/openpos-validators';
-import { RequireAtLeastOneValidator, RequireAtLeastOneValidatorFn } from '../../shared/validators/require-at-least-one-validator';
+import { RequireAtLeastOneValidatorFn } from '../../shared/validators/require-at-least-one-validator';
+import { CustomDateValidator } from '../../shared/validators/custom-date-validators';
 
 @Injectable({
     providedIn: 'root'
@@ -100,6 +100,14 @@ export class FormBuilder {
 
         if (element.maxValue) {
             validators.push(Validators.max(element.maxValue));
+        }
+
+        if (element.minDate) {
+            validators.push(CustomDateValidator.minDate(element.minDate));
+        }
+
+        if (element.maxDate) {
+            validators.push(CustomDateValidator.maxDate(element.maxDate));
         }
 
         validators.push(this.validatorService.getValidator(element.inputType));

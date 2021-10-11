@@ -11,8 +11,7 @@ export class DateValidator implements IValidator {
             const dateParts = ctrl.value.split('/');
             if (dateParts.length !== 3) {
                 return {
-                    // tslint:disable-next-line:object-literal-key-quotes
-                    'date': {
+                    date: {
                         valid: false
                     }
                 } as any;
@@ -29,8 +28,7 @@ export class DateValidator implements IValidator {
                     return null;
                 } else {
                     return {
-                        // tslint:disable-next-line:object-literal-key-quotes
-                        'date': {
+                        date: {
                             valid: false
                         }
                     } as any;
