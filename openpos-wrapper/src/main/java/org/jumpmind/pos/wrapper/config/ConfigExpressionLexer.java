@@ -78,22 +78,18 @@ public class ConfigExpressionLexer {
             character = stream.peekChar();
         }
 
+        if (isDigit(character)) {
+            return Optional.of(scanNumber());
+        }
+
+        if (isValidIdentifierChar(character, false)) {
+            return Optional.of(scanIdentifier());
+        }
+
         switch (character) {
             case '\'':
             case '\"':
                 return Optional.of(scanStringLiteral());
-
-            case '0':
-            case '1':
-            case '2':
-            case '3':
-            case '4':
-            case '5':
-            case '6':
-            case '7':
-            case '8':
-            case '9':
-                return Optional.of(scanNumber());
 
             case '*':
                 return Optional.of(tokenAtPosition("*", TokenKind.ASTERISK));
@@ -239,6 +235,60 @@ public class ConfigExpressionLexer {
         token.setDecimalValue(new BigDecimal(builder.toString()));
 
         return token;
+    }
+
+    private Token scanIdentifier() {
+        final int startAt = stream.getCurrentPosition();
+
+        builder.setLength(0);
+
+        char character = stream.peekChar();
+        builder.append(character);
+
+        stream.advanceChar();
+        character = stream.peekChar();
+
+        while (isValidIdentifierChar(character, true)) {
+            builder.append(character);
+
+            stream.advanceChar();
+
+            if (stream.isAtEnd()) {
+                break;
+            }
+
+            character = stream.peekChar();
+        }
+
+        return new Token(
+                startAt,
+                builder.toString(),
+                TokenKind.IDENTIFIER
+        );
+    }
+
+    private boolean isDigit(char character) {
+        return character >= 0x30 && character <= 0x39;
+    }
+
+    private boolean isValidIdentifierChar(char character, boolean digitAllowedInPosition) {
+        boolean isUppercaseLetter = character >= 0x41 && character <= 0x5A;
+        boolean isLowercaseLetter = character >= 0x61 && character <= 0x7A;
+
+        if (isUppercaseLetter || isLowercaseLetter) {
+            return true;
+        }
+
+        if (digitAllowedInPosition && isDigit(character)) {
+            return true;
+        }
+
+        // we're going to allow config entries to be directly referenced, which looks like `something.value.thing`
+        if (character == '.' || character == '_') {
+            return true;
+        }
+
+        return false;
     }
 
     private Token error(int position, String message) {

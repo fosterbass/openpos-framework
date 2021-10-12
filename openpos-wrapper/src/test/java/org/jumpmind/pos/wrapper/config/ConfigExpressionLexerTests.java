@@ -137,6 +137,24 @@ public class ConfigExpressionLexerTests {
         assertNumberToken(8, 4, tokens.get(4));
     }
 
+    @Test
+    public void simpleIdentifier() {
+        final List<ConfigExpressionLexer.Token> tokens = tokenStream("test.identIfieR_thing42");
+
+        assertEquals(1, tokens.size());
+        assertIdentifierToken(0, "test.identIfieR_thing42", tokens.get(0));
+    }
+
+    @Test
+    public void identifierInMathExpression() {
+        final List<ConfigExpressionLexer.Token> tokens = tokenStream("test.value + 12");
+
+        assertEquals(3, tokens.size());
+        assertIdentifierToken(0, "test.value", tokens.get(0));
+        assertPlusToken(11, tokens.get(1));
+        assertNumberToken(13, 12, tokens.get(2));
+    }
+
     private ConfigExpressionLexer makeLexer(String expression) {
         return new ConfigExpressionLexer(new StringExpressionTextStream(expression));
     }
@@ -164,6 +182,14 @@ public class ConfigExpressionLexerTests {
         assertEquals(expectedRawText, token.getRawText());
         assertEquals(expectedPosition, token.getPosition());
         assertEquals(expectedKind, token.getKind());
+    }
+
+    private void assertIdentifierToken(
+            int expectedPosition,
+            String expectedIdentifier,
+            ConfigExpressionLexer.Token token
+    ) {
+        assertToken(expectedPosition, expectedIdentifier, ConfigExpressionLexer.TokenKind.IDENTIFIER, token);
     }
 
     private void assertStringLiteralToken(
