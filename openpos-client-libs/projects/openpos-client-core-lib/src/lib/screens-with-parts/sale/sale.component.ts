@@ -11,10 +11,11 @@ import { IActionItem } from '../../core/actions/action-item.interface';
 import { MediaBreakpoints, OpenposMediaService } from '../../core/media/openpos-media.service';
 import { Configuration } from './../../configuration/configuration';
 import { MobileSaleOrdersSheetComponent } from './mobile-sale-orders-sheet/mobile-sale-orders-sheet.component';
-import { KeyPressProvider } from '../../shared/providers/keypress.provider';
+import {KeyPressProvider} from '../../shared/providers/keypress.provider';
+import {ISellItem} from "../../core/interfaces/sell-item.interface";
+import {UIDataMessageService} from "../../core/ui-data-message/ui-data-message.service";
 import { delay, filter, takeUntil, tap } from 'rxjs/operators';
 import { SaleItemCardListComponent } from '../../shared/screen-parts/sale-item-card-list/sale-item-card-list.component';
-import { ISellItem } from '../../core/interfaces/sell-item.interface';
 
 
 @ScreenComponent({
@@ -35,6 +36,7 @@ export class SaleComponent extends PosScreen<SaleInterface> {
     removeOrderAction: IActionItem;
     buildScreen$ = new Subject();
     stop$: Observable<any>;
+    items: Observable<ISellItem[]>;
     sidenavOpened = false;
     isEmpty = true;
 
@@ -43,6 +45,7 @@ export class SaleComponent extends PosScreen<SaleInterface> {
                 media: OpenposMediaService,
                 private bottomSheet: MatBottomSheet,
                 private keyPressProvider: KeyPressProvider,
+                private dataMessageService: UIDataMessageService,
                 private changeDetectorRef: ChangeDetectorRef) {
         super(injector);
         this.isMobile$ = media.observe(new Map([
@@ -57,6 +60,7 @@ export class SaleComponent extends PosScreen<SaleInterface> {
     }
 
     buildScreen() {
+        this.items = this.dataMessageService.getData$(this.screen.providerKey);
         this.buildScreen$.next();
         // Reallocate totals array to force change detection in child app-overflow-list
         this.totals = this.screen.totals ? this.screen.totals.slice() : [];

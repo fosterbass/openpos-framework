@@ -31,6 +31,7 @@
             <app-mobile-employee-part class="sale-employee-mobile"></app-mobile-employee-part>
             <app-mobile-loyalty-part class="sale-loyalty-mobile"></app-mobile-loyalty-part>
             <app-mobile-sale-item-list class="sale-list-background-mobile"></app-mobile-sale-item-list>
+            <app-status-strip *ngIf="(items | async)?.length !== 0" [showTimestamps]="false"></app-status-strip>
         </div>
         <app-mobile-totals-part *ngIf="(isMobile$ | async)"></app-mobile-totals-part>
         <div *ngIf="(isMobile$ | async) && screen.orders && screen.orders.length > 0" class="orders-mobile-swipe-up-container dark-background" (swipeup)="openSheet()" responsive-class>
