@@ -42,7 +42,6 @@ public class ConfigExpressionLexer {
         ERROR,
         IDENTIFIER,
         NUMBER,
-        OPERATOR,
         PIPE,
         STRING_LITERAL,
         ASTERISK,

@@ -155,6 +155,22 @@ public class ConfigExpressionLexerTests {
         assertNumberToken(13, 12, tokens.get(2));
     }
 
+    @Test
+    public void testExpressionParser() {
+        final ConfigExpressionLexer lexar = makeLexer("1 + 2 * 3 / 3 + 1 * 2 + 5 - 2");
+        final ConfigExpression expr = ConfigExpression.parse(lexar);
+
+        assertEquals("8", expr.process());
+    }
+
+    @Test
+    public void testExpressionParserParen() {
+        final ConfigExpressionLexer lexar = makeLexer("(1 + (2 * 4)) * (3)");
+        final ConfigExpression expr = ConfigExpression.parse(lexar);
+
+        assertEquals("27", expr.process());
+    }
+
     private ConfigExpressionLexer makeLexer(String expression) {
         return new ConfigExpressionLexer(new StringExpressionTextStream(expression));
     }
