@@ -1,0 +1,36 @@
+@mixin customer-display-return-theme($theme){
+    $app-primary: mat-color(map-get($theme, returns));
+    $app-accent: mat-color(map-get($theme, accent));
+    $app-warn: mat-color(map-get($theme, warn));
+
+    $contrast: mat-color(map-get($theme, returns), default-contrast);
+    $dark: map-get($mat-grey, 600);
+
+    $foreground: map-get($theme, foreground );
+    $background: map-get($theme, background );
+
+    .dark-background {
+        background-color: $dark;
+    }
+
+    .contrast-color {
+        color: $contrast;
+    }
+
+  app-customer-display-return {
+            .item-counts {
+                background-color:$app-primary;
+                color:$contrast;
+            }
+
+            .sale-total-button {
+                    .mat-flat-button.mat-primary {
+                        background-color:$app-primary;
+                        color:$contrast;
+                    }
+                    button {
+                        border-color:$app-primary;
+                    }
+            }
+    }
+}
