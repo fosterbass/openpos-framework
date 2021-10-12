@@ -1,6 +1,6 @@
 @import '../../../styles/mixins/typography';
 
-.grid-container {
+.grid-container, .points-container {
     display: grid;
     grid-template-columns: 1fr 10fr;
     grid-template-rows: 1fr;

@@ -5,7 +5,6 @@
                     class="screen-icon" 
                     [iconName]="screenData.headerIcon"
                     [iconClass]="headerIconClass"></app-icon>
-
         <span><ng-container *ngIf="!!screenData.headerIcon && !!screenData.headerText">&nbsp;</ng-container>{{screenData.headerText}}</span>
     </div>
     <app-icon-button 
@@ -16,4 +15,4 @@
         [actionItem]="screenData.backButton"
         [iconName]="'close'"
         ></app-icon-button>
-</mat-card-title> 
+</mat-card-title>

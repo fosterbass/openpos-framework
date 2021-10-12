@@ -7,6 +7,7 @@
     height: 100%;
   }
   mat-card {
+    overflow: scroll;
     margin: 0;
     .no-items {
       @extend %text-lg;
@@ -29,6 +30,7 @@
   justify-content: end;
   grid-column-gap: 8px;
   padding-bottom: 16px;
+  margin-bottom: -16px;
   .keybinding {
     margin-left: 10px;
   }
@@ -78,6 +80,8 @@ app-content-card {
 }
 
 .mobile-dialog-container {
+  display: flex;
+  flex-direction: column;
   height: 65vh;
   max-height: 65vh;
 
@@ -206,7 +210,6 @@ app-content-card {
   justify-content: center;
   flex-direction: column;
   text-align: center;
-
   @extend %text-md;
 }
 
@@ -335,7 +338,7 @@ app-content-card {
     }
   }
 }
- 
+
 .item:last-child {
   border-bottom: none;
 }
@@ -354,7 +357,7 @@ app-infinite-scroll {
   > .date-range {
     display: flex;
     flex-direction: row;
-    
+
     span {
       margin: 20px 12px 0px 12px;
     }
