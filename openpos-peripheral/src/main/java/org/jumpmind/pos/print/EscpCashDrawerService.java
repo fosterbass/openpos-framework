@@ -3,6 +3,7 @@ package org.jumpmind.pos.print;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fazecast.jSerialComm.SerialPort;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -65,6 +66,7 @@ public class EscpCashDrawerService implements CashDrawerService19 {
             settings.put("port", printerPort);
             settings.put("connectionClass", "org.jumpmind.pos.print.SocketConnectionFactory");
             settings.put("printerCommandLocations", "esc_p.properties,epson.properties");
+            settings.put("connectTimeout", SerialPort.TIMEOUT_NONBLOCKING);
             this.printer.init(settings, null);
         }
     }
