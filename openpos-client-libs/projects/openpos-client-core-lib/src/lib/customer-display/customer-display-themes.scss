@@ -1,5 +1,7 @@
 @import './styles/customer-display-common-theme.scss';
+@import "customer-display-return/customer-display-return-theme";
 
 @mixin customer-display-themes($theme) {
     @include customer-display-common-theme($theme);
+    @include customer-display-return-theme($theme);
 }
