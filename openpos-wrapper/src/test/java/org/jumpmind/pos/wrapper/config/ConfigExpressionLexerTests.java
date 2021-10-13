@@ -158,7 +158,7 @@ public class ConfigExpressionLexerTests {
     @Test
     public void testExpressionParser() {
         final ConfigExpressionLexer lexer = makeLexer("1 + 2 * 3 / 3 + 1 * 2 + 5 - 2");
-        final ConfigExpression expr = ConfigExpression.parse(lexer, FunctionCollection.empty());
+        final ConfigExpression expr = ConfigExpression.parse(lexer, FunctionCollection.empty(), IdentifierCollection.empty());
 
         assertEquals("8", expr.process());
     }
@@ -166,7 +166,7 @@ public class ConfigExpressionLexerTests {
     @Test
     public void testExpressionParserParen() {
         final ConfigExpressionLexer lexer = makeLexer("(1 + (2 * 4)) * (3)");
-        final ConfigExpression expr = ConfigExpression.parse(lexer, FunctionCollection.empty());
+        final ConfigExpression expr = ConfigExpression.parse(lexer, FunctionCollection.empty(), IdentifierCollection.empty());
 
         assertEquals("27", expr.process());
     }
@@ -174,7 +174,7 @@ public class ConfigExpressionLexerTests {
     @Test
     public void testExpressionParserParen2() {
         final ConfigExpressionLexer lexer = makeLexer("6 / (3 * 2) * 2");
-        final ConfigExpression expr = ConfigExpression.parse(lexer, FunctionCollection.empty());
+        final ConfigExpression expr = ConfigExpression.parse(lexer, FunctionCollection.empty(), IdentifierCollection.empty());
 
         assertEquals("2", expr.process());
     }
@@ -185,7 +185,7 @@ public class ConfigExpressionLexerTests {
         final List<ExpressionFunction<?>> functions = new ArrayList<>();
         functions.add(ExpressionFunction.make("test", BigDecimal.class, () -> new BigDecimal(42)));
 
-        final ConfigExpression expr = ConfigExpression.parse(lexer, new FunctionCollection(functions));
+        final ConfigExpression expr = ConfigExpression.parse(lexer, new FunctionCollection(functions), IdentifierCollection.empty());
 
         assertEquals("47", expr.process());
     }
@@ -196,7 +196,7 @@ public class ConfigExpressionLexerTests {
         final List<ExpressionFunction<?>> functions = new ArrayList<>();
         functions.add(ExpressionFunction.make("test", BigDecimal.class, () -> new BigDecimal(42)));
 
-        final ConfigExpression expr = ConfigExpression.parse(lexer, new FunctionCollection(functions));
+        final ConfigExpression expr = ConfigExpression.parse(lexer, new FunctionCollection(functions), IdentifierCollection.empty());
 
         assertEquals("47", expr.process());
     }
@@ -207,7 +207,7 @@ public class ConfigExpressionLexerTests {
         final List<ExpressionFunction<?>> functions = new ArrayList<>();
         functions.add(ExpressionFunction.make("echo", String.class, String.class, (arg) -> arg));
 
-        final ConfigExpression expr = ConfigExpression.parse(lexer, new FunctionCollection(functions));
+        final ConfigExpression expr = ConfigExpression.parse(lexer, new FunctionCollection(functions), IdentifierCollection.empty());
 
         assertEquals("Hello, World!", expr.process());
     }
@@ -215,9 +215,19 @@ public class ConfigExpressionLexerTests {
     @Test
     public void testExpressionParserWithMultipleArg() {
         final ConfigExpressionLexer lexer = makeLexer("concat('Hello, ', 'Billy', '!')");
-        final ConfigExpression expr = ConfigExpression.parse(lexer, BasicFunctionLibrary.collection());
+        final ConfigExpression expr = ConfigExpression.parse(lexer, BasicFunctionLibrary.collection(), IdentifierCollection.empty());
 
         assertEquals("Hello, Billy!", expr.process());
+    }
+
+    @Test
+    public void testExpressionParserWithConstant() {
+        final ConfigExpressionLexer lexer = makeLexer("5 + some.constant");
+        final List<IdentifierValue<?>> identifierValues = new ArrayList<>();
+        identifierValues.add(IdentifierValue.fromConstant("some.constant", new BigDecimal("42")));
+        final ConfigExpression expr = ConfigExpression.parse(lexer, BasicFunctionLibrary.collection(), new IdentifierCollection(identifierValues));
+
+        assertEquals("47", expr.process());
     }
 
     private ConfigExpressionLexer makeLexer(String expression) {
@@ -270,7 +280,7 @@ public class ConfigExpressionLexerTests {
             int expectedNumber,
             ConfigExpressionLexer.Token token
     ) {
-        assertNumberToken(expectedPosition, new BigDecimal(Integer.toString(expectedNumber)), token);
+        assertNumberToken(expectedPosition, new BigDecimal(expectedNumber), token);
     }
 
     private void assertNumberToken(
@@ -278,7 +288,7 @@ public class ConfigExpressionLexerTests {
             double expectedNumber,
             ConfigExpressionLexer.Token token
     ) {
-        assertNumberToken(expectedPosition, new BigDecimal(Double.toString(expectedNumber)), token);
+        assertNumberToken(expectedPosition, new BigDecimal(expectedNumber), token);
     }
 
     private void assertNumberToken(

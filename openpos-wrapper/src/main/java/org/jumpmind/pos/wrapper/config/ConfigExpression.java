@@ -6,17 +6,48 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public final class ConfigExpression {
-    public static ConfigExpression parse(ConfigExpressionLexer lexer, FunctionCollection functionLookup) {
+    public static ConfigExpression parse(ConfigExpressionLexer lexer, FunctionCollection functionLookup, IdentifierCollection identifierLookup) {
         ConfigExpressionLexer.Token token = lexer.getNextToken().orElse(null);
 
         final Deque<ExpressionStackFrame> frames = new ArrayDeque<>();
         frames.push(new ExpressionStackFrame());
 
-        while (token != null) {
-            final ExpressionStackFrame currentFrame = frames.peek();
+        ExpressionStackFrame currentFrame = null;
+
+        // Its possible for an identifier to be the very last token in an expression but the compiler is still trying to
+        // determine if the identifier is a function invocation or not. So if we receive no more tokens but we are still
+        // waiting for an identifier to be processed, continue inside the loop so the identifier processing code can be
+        // run.
+        while (token != null || (currentFrame != null && (currentFrame.getWorkingIdentifier() != null || currentFrame.getWorkingFunction() != null))) {
+            currentFrame = frames.peek();
             assert currentFrame != null;
 
             OperatorKind activeOperator = currentFrame.getActiveOperator();
+
+            if (currentFrame.getWorkingIdentifier() != null) {
+                if (token == null || token.getKind() != ConfigExpressionLexer.TokenKind.OPEN_PAREN) {
+                    final IdentifierValue<?> value = identifierLookup.findIdentifier(currentFrame.getWorkingIdentifier());
+                    final IdentifierNode<?> identNode = new IdentifierNode<>(value);
+
+                    if (currentFrame.getActiveOperator() != null) {
+                        if (identNode.expectedResult() != BigDecimal.class) {
+                            throw new IllegalStateException("must be a number ident");
+                        }
+
+                        //noinspection unchecked
+                        processOperator(currentFrame, (IdentifierNode<BigDecimal>) identNode);
+                    } else {
+                        currentFrame.pushNode(identNode);
+                    }
+
+                    currentFrame.setWorkingIdentifier(null);
+                }
+            }
+
+            // we require a token by this point for evaluation.
+            if (token == null) {
+                continue;
+            }
 
             switch (token.getKind()) {
                 case NUMBER:
@@ -518,6 +549,24 @@ public final class ConfigExpression {
 
         public <A> void addArgument(ExpressionNode<A> arg) {
             arguments.add(arg);
+        }
+    }
+
+    private static final class IdentifierNode<T> implements ExpressionNode<T> {
+        private final IdentifierValue<T> identifierValue;
+
+        public IdentifierNode(IdentifierValue<T> identifierValue) {
+            this.identifierValue = identifierValue;
+        }
+
+        @Override
+        public Class<T> expectedResult() {
+            return identifierValue.getValueType();
+        }
+
+        @Override
+        public T evaluate() {
+            return identifierValue.getValue();
         }
     }
 }
