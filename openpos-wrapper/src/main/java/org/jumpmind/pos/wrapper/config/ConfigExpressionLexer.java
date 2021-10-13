@@ -50,6 +50,7 @@ public class ConfigExpressionLexer {
         MINUS,
         OPEN_PAREN,
         CLOSE_PAREN,
+        COMMA,
         EQUALITY,
         INEQUALITY
     }
@@ -107,6 +108,9 @@ public class ConfigExpressionLexer {
 
             case ')':
                 return Optional.of(tokenAtPosition(")", TokenKind.CLOSE_PAREN));
+
+            case ',':
+                return Optional.of(tokenAtPosition(",", TokenKind.COMMA));
 
             // todo: greater/less than
             // assignments aren't allowed, expect (in)equality.

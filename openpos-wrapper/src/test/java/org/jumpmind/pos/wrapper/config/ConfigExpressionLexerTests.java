@@ -172,6 +172,14 @@ public class ConfigExpressionLexerTests {
     }
 
     @Test
+    public void testExpressionParserParen2() {
+        final ConfigExpressionLexer lexer = makeLexer("6 / (3 * 2) * 2");
+        final ConfigExpression expr = ConfigExpression.parse(lexer, FunctionCollection.empty());
+
+        assertEquals("2", expr.process());
+    }
+
+    @Test
     public void testExpressionParserFuncRight() {
         final ConfigExpressionLexer lexer = makeLexer("5 + test()");
         final List<ExpressionFunction<?>> functions = new ArrayList<>();
@@ -184,13 +192,32 @@ public class ConfigExpressionLexerTests {
 
     @Test
     public void testExpressionParserFuncLeft() {
-        final ConfigExpressionLexer lexer = makeLexer(" test() + 5");
+        final ConfigExpressionLexer lexer = makeLexer("test() + 5");
         final List<ExpressionFunction<?>> functions = new ArrayList<>();
         functions.add(ExpressionFunction.make("test", BigDecimal.class, () -> new BigDecimal(42)));
 
         final ConfigExpression expr = ConfigExpression.parse(lexer, new FunctionCollection(functions));
 
         assertEquals("47", expr.process());
+    }
+
+    @Test
+    public void testExpressionParserWithSingleArg() {
+        final ConfigExpressionLexer lexer = makeLexer("echo('Hello, World!')");
+        final List<ExpressionFunction<?>> functions = new ArrayList<>();
+        functions.add(ExpressionFunction.make("echo", String.class, String.class, (arg) -> arg));
+
+        final ConfigExpression expr = ConfigExpression.parse(lexer, new FunctionCollection(functions));
+
+        assertEquals("Hello, World!", expr.process());
+    }
+
+    @Test
+    public void testExpressionParserWithMultipleArg() {
+        final ConfigExpressionLexer lexer = makeLexer("concat('Hello, ', 'Billy', '!')");
+        final ConfigExpression expr = ConfigExpression.parse(lexer, BasicFunctionLibrary.collection());
+
+        assertEquals("Hello, Billy!", expr.process());
     }
 
     private ConfigExpressionLexer makeLexer(String expression) {

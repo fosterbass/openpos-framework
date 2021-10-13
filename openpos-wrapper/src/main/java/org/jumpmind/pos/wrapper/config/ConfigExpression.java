@@ -31,6 +31,15 @@ public final class ConfigExpression {
                     }
                     break;
 
+                case STRING_LITERAL:
+                    if (activeOperator != null) {
+                        // todo: consider string concat with `+`
+                        throw new IllegalStateException("cannot operate on strings");
+                    }
+
+                    currentFrame.pushNode(new StringLiteralNode(token.getRawText()));
+                    break;
+
                 case PLUS:
                     currentFrame.setActiveOperator(OperatorKind.ADDITION);
                     break;
@@ -51,6 +60,30 @@ public final class ConfigExpression {
                     currentFrame.setWorkingIdentifier(token.getRawText());
                     break;
 
+                case COMMA:
+                    if (!currentFrame.isForFunctionArg()) {
+                        throw new IllegalStateException("must be working on a function");
+                    }
+
+                    final ExpressionStackFrame argFrame = frames.pop();
+                    final ExpressionStackFrame parent = frames.peek();
+
+                    assert parent != null;
+
+                    final FunctionNode<?> workingFunction = parent.getWorkingFunction();
+                    if (workingFunction == null) {
+                        throw new IllegalStateException("must be working on a function");
+                    }
+
+                    if (argFrame.peekNode() == null) {
+                        throw new IllegalStateException("function argument cannot be evaluated");
+                    }
+
+                    workingFunction.addArgument(argFrame.popNode());
+                    frames.push(new ExpressionStackFrame(true));
+
+                    break;
+
                 case OPEN_PAREN:
                     if (currentFrame.getWorkingIdentifier() != null) {
                         final ExpressionFunction<?> function = functionLookup.findFunction(currentFrame.workingIdentifier);
@@ -61,7 +94,7 @@ public final class ConfigExpression {
 
                         currentFrame.setWorkingFunction(new FunctionNode<>(function));
                         currentFrame.setWorkingIdentifier(null);
-                        frames.push(new ExpressionStackFrame());
+                        frames.push(new ExpressionStackFrame(true));
                     } else {
                         frames.push(new ExpressionStackFrame());
                     }
@@ -219,10 +252,20 @@ public final class ConfigExpression {
     }
 
     private static final class ExpressionStackFrame {
+        public final boolean isForFunctionArg;
+
         private String workingIdentifier;
         private FunctionNode<?> workingFunction;
         private OperatorKind activeOperator;
         private final Deque<ExpressionNode<?>> nodes = new ArrayDeque<>();
+
+        public ExpressionStackFrame() {
+            this(false);
+        }
+
+        public ExpressionStackFrame(boolean isForFunctionArg) {
+            this.isForFunctionArg = isForFunctionArg;
+        }
 
         public ExpressionNode<?> popNode() throws NoSuchElementException {
             return nodes.pop();
@@ -268,6 +311,10 @@ public final class ConfigExpression {
             }
 
             workingIdentifier = value;
+        }
+
+        public boolean isForFunctionArg() {
+            return this.isForFunctionArg;
         }
 
         public FunctionNode<?> getWorkingFunction() {
