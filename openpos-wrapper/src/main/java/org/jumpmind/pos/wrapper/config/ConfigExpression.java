@@ -102,9 +102,9 @@ public final class ConfigExpression {
                         }
 
                         //noinspection unchecked
-                        processOperator(parentFrame, new ParenExpression<>((ExpressionNode<BigDecimal>) node));
+                        processOperator(parentFrame, new ParenNode<>((ExpressionNode<BigDecimal>) node));
                     } else {
-                        parentFrame.pushNode(new ParenExpression<>(compiledFrame.peekNode()));
+                        parentFrame.pushNode(new ParenNode<>(compiledFrame.peekNode()));
                     }
 
                     break;
@@ -429,10 +429,10 @@ public final class ConfigExpression {
         }
     }
 
-    private static final class ParenExpression<T> implements ExpressionNode<T> {
+    private static final class ParenNode<T> implements ExpressionNode<T> {
         private final ExpressionNode<T> expression;
 
-        public ParenExpression(ExpressionNode<T> expression) {
+        public ParenNode(ExpressionNode<T> expression) {
             this.expression = expression;
         }
 
