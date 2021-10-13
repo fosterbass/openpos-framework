@@ -52,7 +52,9 @@ public class ConfigExpressionLexer {
         CLOSE_PAREN,
         COMMA,
         EQUALITY,
-        INEQUALITY
+        INEQUALITY,
+        TRUE_KW,
+        FALSE_KW
     }
 
     private final IExpressionTextStream stream;
@@ -263,10 +265,20 @@ public class ConfigExpressionLexer {
             character = stream.peekChar();
         }
 
+        final String ident = builder.toString();
+
+        TokenKind kind = TokenKind.IDENTIFIER;
+
+        if ("true".equals(ident)) {
+            kind = TokenKind.TRUE_KW;
+        } else if ("false".equals(ident)) {
+            kind = TokenKind.FALSE_KW;
+        }
+
         return new Token(
                 startAt,
-                builder.toString(),
-                TokenKind.IDENTIFIER
+                ident,
+                kind
         );
     }
 
