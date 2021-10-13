@@ -84,6 +84,8 @@ export class LoyaltyCustomerFormDialogComponent extends PosScreen<LoyaltyCustome
     }
 
     buildScreen(): void {
+        this.extraElements = [];
+
         if (this.screen.isStructuredForm) {
             this.buildStructuredForm();
         }
