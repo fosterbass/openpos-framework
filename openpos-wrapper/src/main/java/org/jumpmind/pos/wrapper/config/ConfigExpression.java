@@ -2,12 +2,11 @@ package org.jumpmind.pos.wrapper.config;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.NoSuchElementException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public final class ConfigExpression {
-    public static ConfigExpression parse(ConfigExpressionLexer lexer) {
+    public static ConfigExpression parse(ConfigExpressionLexer lexer, FunctionCollection functionLookup) {
         ConfigExpressionLexer.Token token = lexer.getNextToken().orElse(null);
 
         final Deque<ExpressionStackFrame> frames = new ArrayDeque<>();
@@ -15,6 +14,8 @@ public final class ConfigExpression {
 
         while (token != null) {
             final ExpressionStackFrame currentFrame = frames.peek();
+            assert currentFrame != null;
+
             OperatorKind activeOperator = currentFrame.getActiveOperator();
 
             switch (token.getKind()) {
@@ -46,16 +47,55 @@ public final class ConfigExpression {
                     currentFrame.setActiveOperator(OperatorKind.SUBTRACTION);
                     break;
 
+                case IDENTIFIER:
+                    currentFrame.setWorkingIdentifier(token.getRawText());
+                    break;
+
                 case OPEN_PAREN:
-                    frames.push(new ExpressionStackFrame());
+                    if (currentFrame.getWorkingIdentifier() != null) {
+                        final ExpressionFunction<?> function = functionLookup.findFunction(currentFrame.workingIdentifier);
+
+                        if (function == null) {
+                            throw new IllegalStateException("function not found");
+                        }
+
+                        currentFrame.setWorkingFunction(new FunctionNode<>(function));
+                        currentFrame.setWorkingIdentifier(null);
+                        frames.push(new ExpressionStackFrame());
+                    } else {
+                        frames.push(new ExpressionStackFrame());
+                    }
                     break;
 
                 case CLOSE_PAREN:
-                    final ExpressionStackFrame parenFrame = frames.pop();
+                    final ExpressionStackFrame compiledFrame = frames.pop();
                     final ExpressionStackFrame parentFrame = frames.peek();
 
-                    if (parentFrame.getActiveOperator() != null) {
-                        final ExpressionNode<?> node = parenFrame.peekNode();
+                    assert parentFrame != null;
+
+                    if (parentFrame.getWorkingFunction() != null) {
+                        final ExpressionNode<?> argExpression = compiledFrame.peekNode();
+
+                        // close out the last argument if any
+                        if (argExpression != null) {
+                            parentFrame.getWorkingFunction().addArgument(compiledFrame.popNode());
+                        }
+
+                        final FunctionNode<?> functionNode = parentFrame.getWorkingFunction();
+                        parentFrame.setWorkingFunction(null);
+
+                        if (parentFrame.getActiveOperator() != null) {
+                            if (functionNode.expectedResult() != BigDecimal.class) {
+                                throw new IllegalStateException("expected numeric function result");
+                            }
+
+                            //noinspection unchecked
+                            processOperator(parentFrame, (ExpressionNode<BigDecimal>) functionNode);
+                        } else {
+                            parentFrame.pushNode(functionNode);
+                        }
+                    } else if (parentFrame.getActiveOperator() != null) {
+                        final ExpressionNode<?> node = compiledFrame.peekNode();
 
                         if (node.expectedResult() != BigDecimal.class) {
                             throw new IllegalStateException("expected numeric node");
@@ -64,7 +104,7 @@ public final class ConfigExpression {
                         //noinspection unchecked
                         processOperator(parentFrame, new ParenExpression<>((ExpressionNode<BigDecimal>) node));
                     } else {
-                        parentFrame.pushNode(new ParenExpression<>(parenFrame.peekNode()));
+                        parentFrame.pushNode(new ParenExpression<>(compiledFrame.peekNode()));
                     }
 
                     break;
@@ -73,7 +113,18 @@ public final class ConfigExpression {
             token = lexer.getNextToken().orElse(null);
         }
 
-        return new ConfigExpression(frames.pop().popNode());
+        if (frames.size() != 1) {
+            throw new IllegalArgumentException("expression could not be parsed");
+        }
+
+        final ExpressionStackFrame finalizedFrame = frames.pop();
+        final ExpressionNode<?> rootNode = finalizedFrame.popNode();
+
+        if (finalizedFrame.peekNode() != null) {
+            throw new IllegalArgumentException("expression could not be parsed");
+        }
+
+        return new ConfigExpression(rootNode);
     }
 
     private final ExpressionNode<?> rootNode;
@@ -168,8 +219,10 @@ public final class ConfigExpression {
     }
 
     private static final class ExpressionStackFrame {
+        private String workingIdentifier;
+        private FunctionNode<?> workingFunction;
         private OperatorKind activeOperator;
-        private Deque<ExpressionNode<?>> nodes = new ArrayDeque<>();
+        private final Deque<ExpressionNode<?>> nodes = new ArrayDeque<>();
 
         public ExpressionNode<?> popNode() throws NoSuchElementException {
             return nodes.pop();
@@ -198,6 +251,58 @@ public final class ConfigExpression {
             }
 
             activeOperator = kind;
+        }
+
+        public String getWorkingIdentifier() {
+            return workingIdentifier;
+        }
+
+        public void setWorkingIdentifier(String value) {
+            if (value == null) {
+                workingIdentifier = null;
+                return;
+            }
+
+            if (workingIdentifier != null) {
+                throw new IllegalStateException("working identifier already assigned");
+            }
+
+            workingIdentifier = value;
+        }
+
+        public FunctionNode<?> getWorkingFunction() {
+            return workingFunction;
+        }
+
+        public void setWorkingFunction(FunctionNode<?> value) {
+            if (value == null) {
+                workingFunction = null;
+                return;
+            }
+
+            if (workingFunction != null) {
+                throw new IllegalStateException("working identifier already assigned");
+            }
+
+            workingFunction = value;
+        }
+    }
+
+    public static final class StringLiteralNode implements ExpressionNode<String> {
+        private final String value;
+
+        public StringLiteralNode(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public Class<String> expectedResult() {
+            return String.class;
+        }
+
+        @Override
+        public String evaluate() {
+            return value;
         }
     }
 
@@ -339,6 +444,33 @@ public final class ConfigExpression {
         @Override
         public T evaluate() {
             return this.expression.evaluate();
+        }
+    }
+
+    private static final class FunctionNode<T> implements ExpressionNode<T> {
+        private final ExpressionFunction<T> function;
+        private final List<ExpressionNode<?>> arguments = new ArrayList<>();
+
+        public FunctionNode(ExpressionFunction<T> function) {
+            this.function = function;
+        }
+
+        @Override
+        public Class<T> expectedResult() {
+            return function.getReturnType();
+        }
+
+        @Override
+        public T evaluate() {
+            final List<Object> argumentValues = arguments.stream()
+                    .map(ExpressionNode::evaluate)
+                    .collect(Collectors.toList());
+
+            return function.execute(argumentValues);
+        }
+
+        public <A> void addArgument(ExpressionNode<A> arg) {
+            arguments.add(arg);
         }
     }
 }
