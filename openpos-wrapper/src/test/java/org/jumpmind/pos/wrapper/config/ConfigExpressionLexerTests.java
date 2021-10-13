@@ -157,38 +157,38 @@ public class ConfigExpressionLexerTests {
 
     @Test
     public void testExpressionParser() {
-        final ConfigExpressionLexer lexar = makeLexer("1 + 2 * 3 / 3 + 1 * 2 + 5 - 2");
-        final ConfigExpression expr = ConfigExpression.parse(lexar, FunctionCollection.empty());
+        final ConfigExpressionLexer lexer = makeLexer("1 + 2 * 3 / 3 + 1 * 2 + 5 - 2");
+        final ConfigExpression expr = ConfigExpression.parse(lexer, FunctionCollection.empty());
 
         assertEquals("8", expr.process());
     }
 
     @Test
     public void testExpressionParserParen() {
-        final ConfigExpressionLexer lexar = makeLexer("(1 + (2 * 4)) * (3)");
-        final ConfigExpression expr = ConfigExpression.parse(lexar, FunctionCollection.empty());
+        final ConfigExpressionLexer lexer = makeLexer("(1 + (2 * 4)) * (3)");
+        final ConfigExpression expr = ConfigExpression.parse(lexer, FunctionCollection.empty());
 
         assertEquals("27", expr.process());
     }
 
     @Test
     public void testExpressionParserFuncRight() {
-        final ConfigExpressionLexer lexar = makeLexer("5 + test()");
+        final ConfigExpressionLexer lexer = makeLexer("5 + test()");
         final List<ExpressionFunction<?>> functions = new ArrayList<>();
         functions.add(ExpressionFunction.make("test", BigDecimal.class, () -> new BigDecimal(42)));
 
-        final ConfigExpression expr = ConfigExpression.parse(lexar, new FunctionCollection(functions));
+        final ConfigExpression expr = ConfigExpression.parse(lexer, new FunctionCollection(functions));
 
         assertEquals("47", expr.process());
     }
 
     @Test
     public void testExpressionParserFuncLeft() {
-        final ConfigExpressionLexer lexar = makeLexer(" test() + 5");
+        final ConfigExpressionLexer lexer = makeLexer(" test() + 5");
         final List<ExpressionFunction<?>> functions = new ArrayList<>();
         functions.add(ExpressionFunction.make("test", BigDecimal.class, () -> new BigDecimal(42)));
 
-        final ConfigExpression expr = ConfigExpression.parse(lexar, new FunctionCollection(functions));
+        final ConfigExpression expr = ConfigExpression.parse(lexer, new FunctionCollection(functions));
 
         assertEquals("47", expr.process());
     }
