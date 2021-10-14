@@ -81,7 +81,7 @@ public class EndpointInvoker implements InvocationHandler {
             namingPattern("service-instrumentation-thread-%d").daemon(true).
             build();
 
-    private static final ExecutorService instrumentationExecutor = Executors.newSingleThreadExecutor(factory);
+    private static ExecutorService instrumentationExecutor = Executors.newSingleThreadExecutor(factory);
     protected HashMap<String, Boolean> endpointEnabledCache = new HashMap<>();
 
     @EventListener

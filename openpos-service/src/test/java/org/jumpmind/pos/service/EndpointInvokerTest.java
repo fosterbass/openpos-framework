@@ -343,9 +343,10 @@ public class EndpointInvokerTest {
         Field executor = EndpointInvoker.class.getDeclaredField("instrumentationExecutor");
         executor.setAccessible(true);
 
-        Field modifiers = Field.class.getDeclaredField("modifiers");
-        modifiers.setAccessible(true);
-        modifiers.setInt(executor, executor.getModifiers() & ~Modifier.FINAL);
+// This trick does not work on later versions of java.  Making EndpointInvoker.instrumentationExecutor non final
+//        Field modifiers = Field.class.getDeclaredField("modifiers");
+//        modifiers.setAccessible(true);
+//        modifiers.setInt(executor, executor.getModifiers() & ~Modifier.FINAL);
 
         ExecutorService executorService = mock(ExecutorService.class);
         executor.set(endpointInvoker, executorService);
