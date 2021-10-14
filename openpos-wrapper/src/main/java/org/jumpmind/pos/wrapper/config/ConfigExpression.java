@@ -87,6 +87,14 @@ public final class ConfigExpression {
                     currentFrame.setActiveOperator(OperatorKind.SUBTRACTION);
                     break;
 
+                case TRUE_KW:
+                    currentFrame.pushNode(new BooleanNode(true));
+                    break;
+
+                case FALSE_KW:
+                    currentFrame.pushNode(new BooleanNode(false));
+                    break;
+
                 case IDENTIFIER:
                     currentFrame.setWorkingIdentifier(token.getRawText());
                     break;
@@ -250,6 +258,10 @@ public final class ConfigExpression {
 
     private static int getOperatorPrecedence(OperatorKind kind) {
         switch (kind) {
+            case EQUALITY:
+            case INEQUALITY:
+                return 1;
+
             case ADDITION:
             case SUBTRACTION:
                 return 2;
@@ -406,7 +418,9 @@ public final class ConfigExpression {
         ADDITION,
         SUBTRACTION,
         MULTIPLICATION,
-        DIVISION
+        DIVISION,
+        EQUALITY,
+        INEQUALITY
     }
 
     private abstract static class NumericOperatorNode implements ExpressionNode<BigDecimal> {
@@ -567,6 +581,53 @@ public final class ConfigExpression {
         @Override
         public T evaluate() {
             return identifierValue.getValue();
+        }
+    }
+
+    private static final class BooleanNode implements ExpressionNode<Boolean> {
+        private final Boolean value;
+
+        public BooleanNode(Boolean value) {
+            this.value = value;
+        }
+
+        @Override
+        public Class<Boolean> expectedResult() {
+            return Boolean.class;
+        }
+
+        @Override
+        public Boolean evaluate() {
+            return value;
+        }
+    }
+
+    private static final class BooleanOperatorNode<LEFT, RIGHT> implements ExpressionNode<Boolean> {
+        private ExpressionNode<LEFT> leftNode;
+        private ExpressionNode<RIGHT> rightNode;
+
+        private final boolean invert;
+
+        public BooleanOperatorNode(ExpressionNode<LEFT> left, ExpressionNode<RIGHT> right, boolean inequalityComparison) {
+            leftNode = left;
+            rightNode = right;
+            invert = inequalityComparison;
+        }
+
+        @Override
+        public Class<Boolean> expectedResult() {
+            return Boolean.class;
+        }
+
+        @Override
+        public Boolean evaluate() {
+            boolean result = leftNode.evaluate().equals(rightNode.evaluate());
+
+            if (invert) {
+                return !result;
+            }
+
+            return result;
         }
     }
 }
