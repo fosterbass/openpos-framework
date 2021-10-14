@@ -19,7 +19,6 @@ import { throwIfAlreadyLoaded } from './module-import-guard';
 import { StartupComponent } from './startup/startup.component';
 import { PersonalizationService } from './personalization/personalization.service';
 import { ConfigurationService } from './services/configuration.service';
-import { DialogService } from './services/dialog.service';
 import { ErrorHandlerService } from './services/errorhandler.service';
 import { StompRService } from '@stomp/ng2-stompjs';
 import { SubscribeToSessionTask } from './startup/subscribe-to-session-task';
@@ -28,7 +27,6 @@ import { StartupFailedComponent } from './startup/startup-failed.component';
 import { MatDialog } from '@angular/material';
 import { FinalStartupTask } from './startup/final-startup-task';
 import { DialogContentComponent } from './components/dialog-content/dialog-content.component';
-import { DialogServiceStartupTask } from './startup/dialog-service-startup-task';
 import { TrainingOverlayService } from './services/training-overlay.service';
 import { KeyPressProvider } from '../shared/providers/keypress.provider';
 import { fromEvent, Observable } from 'rxjs';
@@ -138,7 +136,6 @@ registerLocaleData(locale_frCA, 'fr-CA');
         { provide: ZEROCONF_TOKEN, useClass: CapacitorZeroconf, multi: true, deps: [CapacitorService] },
         { provide: STARTUP_TASKS, useClass: PersonalizationStartupTask, multi: true, deps: [PersonalizationService, MatDialog, ZEROCONF_TOKEN] },
         { provide: STARTUP_TASKS, useClass: SubscribeToSessionTask, multi: true, deps: [SessionService, Router] },
-        { provide: STARTUP_TASKS, useClass: DialogServiceStartupTask, multi: true, deps: [DialogService] },
         { provide: STARTUP_TASKS, useClass: AudioStartupTask, multi: true, deps: [AudioRepositoryService, AudioService, AudioInteractionService] },
         { provide: STARTUP_TASKS, useClass: FinalStartupTask, multi: true, deps: [SessionService] },
         { provide: STARTUP_TASKS, useClass: PlatformReadyStartupTask, multi: true },

@@ -35,17 +35,12 @@ export class DialogService {
         private componentFactoryResolver: ComponentFactoryResolver,
         private session: SessionService,
         private dialog: MatDialog) {
-    }
-
-    public start() {
-        // Defer set up of dialog subscriptions for updating dialogs until service has been started.
-        // Addresses problem of dialogs from server side being shown before app startup has finished.
-        // We use a Startup Task to invoke this start method at nearly the end of startup.
-
+        console.log('The dialog service is being initialized');
         // Pipe all the messages for dialog updates
         this.messageProvider.setMessageType(MessageTypes.DIALOG);
         this.session.getMessages(MessageTypes.DIALOG).subscribe(m => this.updateDialog(m));
         this.session.getMessages(MessageTypes.SCREEN).pipe(tap(x => console.log("Last screen sequence = ", x.sequenceNumber))).subscribe( m => this.lastScreenSeq = m.sequenceNumber)
+
     }
 
     public addDialog(name: string, type: Type<IScreen>): void {
