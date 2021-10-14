@@ -129,7 +129,7 @@ jacocoTestReport {
 }
 
 test {
-    jvmArgs '-XX:+CrashOnOutOfMemoryError -Dfile.encoding=utf-8'
+    jvmArgs '-XX:+CrashOnOutOfMemoryError', '-Dfile.encoding=utf-8'
     maxHeapSize = '2048m'
     if (project.hasProperty('ignoreFailures')) {
        ignoreFailures = project.property('ignoreFailures').toBoolean()
