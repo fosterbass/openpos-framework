@@ -20,7 +20,6 @@ export * from './lib/shared/components/loader/loader-state';
 export * from './lib/shared/components/loader/loader.component';
 export * from './lib/shared/components/openpos-app/openpos-app.component';
 export * from './lib/core/personalization/personalization.component';
-export * from './lib/core/startup/dialog-service-startup-task';
 export * from './lib/core/startup/final-startup-task';
 export * from './lib/core/startup/personalization-startup-task';
 export * from './lib/core/startup/startup-failed.component';

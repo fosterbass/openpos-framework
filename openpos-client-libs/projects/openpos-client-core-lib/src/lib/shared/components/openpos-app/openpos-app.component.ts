@@ -6,6 +6,7 @@ import {PrinterService} from '../../../core/platform-plugins/printers/printer.se
 import {FetchMessageService} from '../../../core/services/fetch-message.service';
 import {LocaleService} from '../../../core/services/locale.service';
 import {LocationService} from '../../../core/services/location.service';
+import {DialogService} from "../../../core/services/dialog.service";
 
 @Component({
     selector: 'app-openpos-root',
@@ -19,7 +20,8 @@ export class OpenposAppComponent {
         protected mediaService: OpenposMediaService,
         protected lockScreenService: LockScreenService,
         protected printService: PrinterService,
-        protected fetchMessageService: FetchMessageService
+        protected fetchMessageService: FetchMessageService,
+        protected dialogService: DialogService
     ) {
     }
 }
