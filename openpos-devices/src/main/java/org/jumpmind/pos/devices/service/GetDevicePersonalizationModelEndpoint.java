@@ -1,6 +1,7 @@
 package org.jumpmind.pos.devices.service;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.jumpmind.pos.devices.model.DevicePersonalizationModel;
 import org.jumpmind.pos.devices.model.DevicesRepository;
 import org.jumpmind.pos.devices.service.model.PersonalizeMeResponse;
@@ -9,7 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.web.bind.annotation.RequestParam;
 
-@Endpoint(path = "/admin/personalizeMe")
+import static org.jumpmind.pos.util.RestApiSupport.REST_API_CONTEXT_PATH;
+
+@Slf4j
+@Endpoint(path = REST_API_CONTEXT_PATH + "/admin/personalizeMe")
 public class GetDevicePersonalizationModelEndpoint {
     @Autowired
     private DevicesRepository repository;

@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
 
+import static org.jumpmind.pos.util.RestApiSupport.REST_API_CONTEXT_PATH;
+
 @Slf4j
-@Endpoint(path="/devices/personalize", implementation = "virtual")
+@Endpoint(path = REST_API_CONTEXT_PATH + "/devices/personalize", implementation = "virtual")
 public class PersonalizeVirtualDeviceEndpoint {
 
     @Autowired

@@ -15,7 +15,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Endpoint(path="/devices/personalizationConfig")
+import static org.jumpmind.pos.util.RestApiSupport.REST_API_CONTEXT_PATH;
+
+@Endpoint(path = REST_API_CONTEXT_PATH + "/devices/personalizationConfig")
 public class GetPersonalizationConfigEndpoint {
 
     @Autowired(required=false)

@@ -7,7 +7,9 @@ import org.jumpmind.pos.service.Endpoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-@Endpoint(path = "/devices/connectedDeviceIds")
+import static org.jumpmind.pos.util.RestApiSupport.REST_API_CONTEXT_PATH;
+
+@Endpoint(path = REST_API_CONTEXT_PATH + "/devices/connectedDeviceIds")
 public class GetConnectedDeviceIdsEndpoint {
 
     @Autowired

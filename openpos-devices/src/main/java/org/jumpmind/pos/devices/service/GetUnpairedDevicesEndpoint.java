@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-@Endpoint(path = "/devices/unpaired")
+import static org.jumpmind.pos.util.RestApiSupport.REST_API_CONTEXT_PATH;
+
+@Endpoint(path = REST_API_CONTEXT_PATH + "/devices/unpaired")
 public class GetUnpairedDevicesEndpoint {
     @Autowired
     DevicesRepository devicesRepository;

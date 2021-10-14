@@ -143,7 +143,7 @@ export class PersonalizationService {
         personalizationParameters: Map<string, string>
     ): Observable<string> {
         let url = sslEnabled ? 'https://' : 'http://';
-        url += serverName + ':' + serverPort + '/devices/personalize';
+        url += serverName + ':' + serverPort + '/rest/devices/personalize';
 
         if (personalizationParameters) {
             console.log('personalizationParams', personalizationParameters);
@@ -211,7 +211,7 @@ export class PersonalizationService {
         sslEnabled: boolean
     ): Observable<PersonalizationConfigResponse> {
         let url = sslEnabled ? 'https://' : 'http://';
-        url += serverName + ':' + serverPort + '/devices/personalizationConfig';
+        url += serverName + ':' + serverPort + '/rest/devices/personalizationConfig';
 
         console.log('Requesting Personalization config with url: ' + url);
         return this.http.get<PersonalizationConfigResponse>(url).pipe(

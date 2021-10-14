@@ -5,9 +5,11 @@ import org.jumpmind.pos.devices.service.model.*;
 import org.jumpmind.pos.util.SuppressMethodLogging;
 import org.springframework.web.bind.annotation.*;
 
+import static org.jumpmind.pos.util.RestApiSupport.REST_API_CONTEXT_PATH;
+
 @Api(tags = "Devices Service")
 @RestController("devices")
-@RequestMapping("/devices")
+@RequestMapping(REST_API_CONTEXT_PATH + "/devices")
 public interface IDevicesService {
 
     @RequestMapping(path = "/personalizationConfig")

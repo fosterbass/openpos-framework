@@ -20,8 +20,10 @@ import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
+import static org.jumpmind.pos.util.RestApiSupport.REST_API_CONTEXT_PATH;
+
 @Slf4j
-@Endpoint(path = "/devices/personalize")
+@Endpoint(path = REST_API_CONTEXT_PATH + "/devices/personalize")
 public class PersonalizeEndpoint {
 
     @Autowired

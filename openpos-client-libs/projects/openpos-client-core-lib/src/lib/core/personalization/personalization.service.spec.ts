@@ -46,7 +46,7 @@ describe("PersonalizationService", () => {
                expect(personalizationService.getAppId$().getValue()).toBe('pos');
             });
 
-            let req = httpMock.expectOne('http://server:6140/devices/personalize');
+            let req = httpMock.expectOne('http://server:6140/rest/devices/personalize');
 
             expect(req.request.method).toBe('POST');
 
@@ -81,7 +81,7 @@ describe("PersonalizationService", () => {
                 expect(personalizationService.getAppId$().getValue()).toBe('pos');
             });
 
-            let req = httpMock.expectOne('https://server:6140/devices/personalize');
+            let req = httpMock.expectOne('https://server:6140/rest/devices/personalize');
 
             expect(req.request.method).toBe('POST');
 
@@ -107,7 +107,7 @@ describe("PersonalizationService", () => {
                error: error => expect(error).toEqual('No saved session')
            });
 
-           httpMock.expectNone('http://server:6140/devices/personalize');
+           httpMock.expectNone('http://server:6140/rest/devices/personalize');
 
         });
 
@@ -133,7 +133,7 @@ describe("PersonalizationService", () => {
                 expect(localStorage.getItem('serverPort')).toBe('6140');
             });
 
-            let req = httpMock.expectOne('http://server:6140/devices/personalize');
+            let req = httpMock.expectOne('http://server:6140/rest/devices/personalize');
 
             let resp = {
                authToken: 'MY_TOKEN',
@@ -167,7 +167,7 @@ describe("PersonalizationService", () => {
                 expect(localStorage.getItem('serverPort')).toBe('6140');
             });
 
-            let req = httpMock.expectOne('https://server:6140/devices/personalize');
+            let req = httpMock.expectOne('https://server:6140/rest/devices/personalize');
 
             let resp = {
                 authToken: 'MY_TOKEN',
@@ -208,7 +208,7 @@ describe("PersonalizationService", () => {
                 expect(result.devicePattern).toBe('pattern');
             });
 
-            let req = httpMock.expectOne('http://server:6140/devices/personalizationConfig');
+            let req = httpMock.expectOne('http://server:6140/rest/devices/personalizationConfig');
 
             expect(req.request.method).toBe('GET');
 
@@ -232,7 +232,7 @@ describe("PersonalizationService", () => {
                 expect(result.devicePattern).toBe('pattern');
             });
 
-            let req = httpMock.expectOne('https://server:6140/devices/personalizationConfig');
+            let req = httpMock.expectOne('https://server:6140/rest/devices/personalizationConfig');
 
             expect(req.request.method).toBe('GET');
 

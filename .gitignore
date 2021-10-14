@@ -4,11 +4,17 @@
 # Log file
 *.log*
 
+# Vim swap files
+*.swp
+
 # BlueJ files
 *.ctxt
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
+
+# Vim swap files
+*.swp
 
 # Package Files #
 *.war

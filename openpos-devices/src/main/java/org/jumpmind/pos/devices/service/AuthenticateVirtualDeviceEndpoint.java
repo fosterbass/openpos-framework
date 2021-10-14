@@ -9,7 +9,9 @@ import org.jumpmind.pos.service.Endpoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@Endpoint(path = "/devices/authenticate", implementation = "virtual")
+import static org.jumpmind.pos.util.RestApiSupport.REST_API_CONTEXT_PATH;
+
+@Endpoint(path = REST_API_CONTEXT_PATH + "/devices/authenticate", implementation = "virtual")
 public class AuthenticateVirtualDeviceEndpoint {
 
     @Autowired

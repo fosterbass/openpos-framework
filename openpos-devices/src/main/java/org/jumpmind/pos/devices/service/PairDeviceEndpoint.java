@@ -6,7 +6,9 @@ import org.jumpmind.pos.devices.service.model.PairDeviceResponse;
 import org.jumpmind.pos.service.Endpoint;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@Endpoint(path = "/devices/pair")
+import static org.jumpmind.pos.util.RestApiSupport.REST_API_CONTEXT_PATH;
+
+@Endpoint(path = REST_API_CONTEXT_PATH + "/devices/pair")
 public class PairDeviceEndpoint {
     @Autowired
     DevicesRepository devicesRepository;
