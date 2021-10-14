@@ -29,6 +29,7 @@ export class DialogService {
     private lastDialogType: string;
     private lastDialogId: string;
     private lastScreenSeq: number;
+    private listening: boolean;
 
     constructor(
         private messageProvider: MessageProvider,
@@ -36,11 +37,16 @@ export class DialogService {
         private session: SessionService,
         private dialog: MatDialog) {
         console.log('The dialog service is being initialized');
-        // Pipe all the messages for dialog updates
-        this.messageProvider.setMessageType(MessageTypes.DIALOG);
-        this.session.getMessages(MessageTypes.DIALOG).subscribe(m => this.updateDialog(m));
-        this.session.getMessages(MessageTypes.SCREEN).pipe(tap(x => console.log("Last screen sequence = ", x.sequenceNumber))).subscribe( m => this.lastScreenSeq = m.sequenceNumber)
+    }
 
+    public listen() {
+        if (!this.listening) {
+            // Pipe all the messages for dialog updates
+            this.messageProvider.setMessageType(MessageTypes.DIALOG);
+            this.session.dialogMessage$.subscribe((m) => this.updateDialog(m))
+            this.session.getMessages(MessageTypes.SCREEN).pipe(tap(x => console.log("Last screen sequence = ", x.sequenceNumber))).subscribe(m => this.lastScreenSeq = m.sequenceNumber)
+            this.listening = true;
+        }
     }
 
     public addDialog(name: string, type: Type<IScreen>): void {
