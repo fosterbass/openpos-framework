@@ -23,7 +23,12 @@ export class FailoverService {
     }
 
     public isFailedOver(): boolean {
-        return !this.personalization.getPrimaryServer().active;
+        const primaryServer = this.personalization.getPrimaryServer();
+        if (!primaryServer) {
+            return primaryServer.active;
+        } else {
+            return false;
+        }
     }
 
     private configure(m: any) {

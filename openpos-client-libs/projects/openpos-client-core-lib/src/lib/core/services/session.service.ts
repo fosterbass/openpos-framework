@@ -115,6 +115,8 @@ export class SessionService implements IMessageHandler<any> {
 
     public screenMessage$: Observable<any>;
 
+    public dialogMessage$: Observable<any>;
+
     private powerStatus: PowerStatus;
 
     constructor(
@@ -147,8 +149,16 @@ export class SessionService implements IMessageHandler<any> {
 
         this.screenMessage$ = screenMessagesBehavior;
 
+        const dialogMessagesBehavior = this.stompJsonMessages$.pipe(
+            filter(message => message.type === MessageTypes.DIALOG && message.screenType !== 'NoOp'),
+            publishReplay(1)
+        ) as ConnectableObservable<any>;
+
+        this.dialogMessage$ = dialogMessagesBehavior;
+
         // We need to capture incoming screen messages even with no subscribers, so make this hot 🔥
         screenMessagesBehavior.connect();
+        dialogMessagesBehavior.connect();
     }
 
     public sendMessage<T extends OpenposMessage>(message: T): boolean {

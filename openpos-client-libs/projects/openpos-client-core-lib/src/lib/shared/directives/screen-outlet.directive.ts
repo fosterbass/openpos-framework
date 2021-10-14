@@ -23,6 +23,7 @@ import { LifeCycleTypeGuards } from '../../core/life-cycle-interfaces/lifecycle-
 import { ScreenCreatorService } from '../../core/services/screen-creator.service';
 import { FocusService } from '../../core/focus/focus.service';
 import { filter } from 'rxjs/operators';
+import {MessageProvider} from "../providers/message.provider";
 
 // tslint:disable-next-line:directive-selector
 @Directive({ selector: '[openposScreenOutlet]' })
@@ -46,6 +47,7 @@ export class OpenposScreenOutletDirective implements OnInit, OnDestroy {
     private subscriptions = new Subscription();
 
     constructor(
+        private messageProvider: MessageProvider,
         private screenService: ScreenService,
         private viewContainerRef: ViewContainerRef,
         private session: SessionService,
@@ -56,9 +58,11 @@ export class OpenposScreenOutletDirective implements OnInit, OnDestroy {
         private screenCreator: ScreenCreatorService,
         private personalization: PersonalizationService,
         private renderer: Renderer2) {
+        console.log('the screen outlet is being created');
     }
 
     ngOnInit(): void {
+        console.log('the screen outlet is being ng initialized');
         this.subscriptions.add(this.session.screenMessage$.subscribe((message) => this.handle(message)));
         this.subscriptions.add(this.session.getMessages(MessageTypes.LIFE_CYCLE_EVENT).subscribe(message => this.handleLifeCycleEvent(message)));
         this.subscriptions.add(this.configurationService.theme$.subscribe( theme => {
@@ -70,6 +74,9 @@ export class OpenposScreenOutletDirective implements OnInit, OnDestroy {
         ).subscribe(properties => {
             this.updatePersonalizationProperties(properties);
         }));
+
+        this.dialogService.listen();
+
     }
 
     ngOnDestroy(): void {
