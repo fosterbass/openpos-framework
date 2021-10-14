@@ -107,7 +107,7 @@ pipeline {
     
     post {
         always {
-            junit '**/build/reports/**/*.xml'
+            junit '**/build/reports/**/*.xml,**/build/test-results/**/*.xml'
         }
         success {
             slackSend (color: '#00FF00',
