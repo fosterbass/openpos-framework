@@ -106,7 +106,7 @@ interface ControlSequence { modifiers: string[]; key: string; }
         });
 
         // buffer up all keydown events and prevent them from propagating while scanning
-        return this.domEventManager.createEventObserver(window, 'keydown', {capture: true}).pipe(
+        this.scanObservable = this.domEventManager.createEventObserver(window, 'keydown', {capture: true}).pipe(
             bufferToggle(
                 startScanBuffer,
                 () => stopScanBuffer
@@ -119,6 +119,7 @@ interface ControlSequence { modifiers: string[]; key: string; }
             map( (s) => s.join('')),
             map( (s: string) => this.getScanData(s))
         );
+        return this.scanObservable;
     }
 
     private getControlStrings( sequence: string): ControlSequence {

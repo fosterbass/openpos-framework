@@ -1,6 +1,6 @@
 import {
-  Component, ViewChild, AfterViewInit, OnInit, OnDestroy,
-  Output, Input, EventEmitter
+  Component, ViewChild, AfterViewInit, OnInit, OnChanges, OnDestroy,
+  Output, Input, EventEmitter, SimpleChanges
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatInput } from '@angular/material/input';
@@ -21,7 +21,7 @@ import { Scan } from '../../../core/oldplugins/scan';
   templateUrl: './dynamic-form-field.component.html',
   styleUrls: ['./dynamic-form-field.component.scss']
 })
-export class DynamicFormFieldComponent implements OnInit, OnDestroy, AfterViewInit {
+export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterViewInit {
 
   @ViewChild(MatInput) field: MatInput;
   @ViewChild(DynamicDateFormFieldComponent) dateField: DynamicDateFormFieldComponent;
@@ -43,27 +43,36 @@ export class DynamicFormFieldComponent implements OnInit, OnDestroy, AfterViewIn
   public values: Array<string> = [];
 
   public focus(): void {
-    if ( this.field ) {
-        this.field.focus();
+    if (this.field) {
+      this.field.focus();
     }
-    if ( this.dateField ) {
-        this.dateField.focus();
+    if (this.dateField) {
+      this.dateField.focus();
     }
   }
 
   public isReadOnly(): boolean {
-      if (this.field) {
-          return this.field.readonly;
-      }
-      return false;
+    if (this.field) {
+      return this.field.readonly;
+    }
+    return false;
   }
 
-  constructor(  public session: SessionService,
-                public screenService: ScreenService,
-                protected dialog: MatDialog,
-                private pluginService: OldPluginService) { }
+  constructor(public session: SessionService,
+              public screenService: ScreenService,
+              protected dialog: MatDialog,
+              private pluginService: OldPluginService) {
+  }
 
-  ngOnInit() {
+  ngOnChanges(changes: SimpleChanges): void {
+    if (!changes.formField || !changes.formGroup) {
+      return;
+    }
+
+    if (!this.formField || !this.formGroup) {
+      return;
+    }
+
     this.controlName = this.formField.id;
 
     if (this.formField.disabled) {
@@ -88,8 +97,6 @@ export class DynamicFormFieldComponent implements OnInit, OnDestroy, AfterViewIn
         this.values = this.formField.values;
         console.info(`Using ${this.values.length} values received on the screen for ${this.formField.id}`);
       }
-
-
     }
 
     if (this.isNumericField()) {
@@ -242,6 +249,20 @@ export class DynamicFormFieldComponent implements OnInit, OnDestroy, AfterViewIn
     const patchGroup = {};
     patchGroup[fieldId] = value;
     this.formGroup.patchValue(patchGroup);
+  }
+
+  onPaste(event: ClipboardEvent): boolean {
+    let maxLength = this.formField.maxLength;
+    let pastedText = event.clipboardData.getData('text');
+    // Decreasing expected maxLength for money fields as such fields will be prepopulated with '$' sign
+    if (this.formField.inputType === 'Money') {
+      maxLength--;
+      // In case pasted text doesn't contain '.' symbol - decreasing expected length as final amount will be split by '.'
+      if (!pastedText.includes(".")) {
+        maxLength--;
+      }
+    }
+    return pastedText.length <= maxLength;
   }
 }
 

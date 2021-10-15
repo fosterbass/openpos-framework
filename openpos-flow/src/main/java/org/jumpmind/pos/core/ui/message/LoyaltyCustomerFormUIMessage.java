@@ -27,6 +27,7 @@ public class LoyaltyCustomerFormUIMessage extends UIMessage implements IHasForm 
     private ActionItem countrySelected;
     private ActionItem stateSelected;
     private ActionItem submitButton;
+    private ActionItem secondaryButton;
 
     private String profileIcon;
     private String loyaltyNumberIcon;

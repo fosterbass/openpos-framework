@@ -1,7 +1,7 @@
 <app-dialog-header></app-dialog-header>
 <app-content-card>
     <div class="image-instructions-outer">
-    <img *ngIf="screen.imageUrl" [src]="screen.imageUrl | imageUrl" class="image">
+    <img *ngIf="screen.imageUrl" [src]="screen.imageUrl | imageUrl" alt="error" class="image">
     <app-instructions *ngIf="screen.message" [instructions]="screen.message"
                       [instructionsSize]="'text-sm'" class="image-instructions"></app-instructions>
     </div>

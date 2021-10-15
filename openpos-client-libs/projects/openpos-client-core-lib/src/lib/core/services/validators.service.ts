@@ -9,54 +9,44 @@ import { OpenPosValidators } from '../../shared/validators/openpos-validators';
 
 @Injectable({
     providedIn: 'root',
-  })
+})
 export class ValidatorsService {
 
     private validators = new Map<string, Map<string, IValidator>>();
 
     constructor(private localeService: LocaleService) {
-        const USValidators = new Map<string, IValidator>();
-        const NOLOCALEValidators = new Map<string, IValidator>();
-        const CAValidators = new Map<string, IValidator>();
+        const US_VALIDATORS = new Map<string, IValidator>();
+        const NO_LOCALE_VALIDATORS = new Map<string, IValidator>();
+        const CA_VALIDATORS = new Map<string, IValidator>();
 
-        USValidators.set('phone', OpenPosValidators.PHONE_US);
-        CAValidators.set('phone', OpenPosValidators.PHONE_CA);
-        CAValidators.set('postalcode', { name: 'PostalCode', validationFunc: Validators.minLength(6) });
+        US_VALIDATORS.set('phone', OpenPosValidators.PHONE_US);
+        CA_VALIDATORS.set('phone', OpenPosValidators.PHONE_CA);
+        CA_VALIDATORS.set('postalcode', { name: 'PostalCode', validationFunc: Validators.minLength(6) });
 
-        NOLOCALEValidators.set('giftcode', OpenPosValidators.GIFT_CODE);
-        NOLOCALEValidators.set('date', OpenPosValidators.DATE_MMDDYYYY);
-        NOLOCALEValidators.set('datemmddyy', OpenPosValidators.DATE_MMDDYY);
-        NOLOCALEValidators.set('dateddmmyyyy', OpenPosValidators.DATE_DDMMYYYY);
-        NOLOCALEValidators.set('dateddmmyy', OpenPosValidators.DATE_DDMMYY);
+        NO_LOCALE_VALIDATORS.set('giftcode', OpenPosValidators.GIFT_CODE);
+        NO_LOCALE_VALIDATORS.set('date', OpenPosValidators.DATE_MMDDYYYY);
+        NO_LOCALE_VALIDATORS.set('datemmddyy', OpenPosValidators.DATE_MMDDYY);
+        NO_LOCALE_VALIDATORS.set('dateddmmyyyy', OpenPosValidators.DATE_DDMMYYYY);
+        NO_LOCALE_VALIDATORS.set('dateddmmyy', OpenPosValidators.DATE_DDMMYY);
 
-        NOLOCALEValidators.set('email', { name: 'Email', validationFunc: Validators.email } );
-        NOLOCALEValidators.set('postalcode', { name: 'PostalCode', validationFunc: Validators.minLength(5) });
-        NOLOCALEValidators.set('gt_0', OpenPosValidators.GT_0);
-        NOLOCALEValidators.set('gte_0', OpenPosValidators.GTE_0);
+        NO_LOCALE_VALIDATORS.set('email', { name: 'Email', validationFunc: Validators.email });
+        NO_LOCALE_VALIDATORS.set('postalcode', { name: 'PostalCode', validationFunc: Validators.minLength(5) });
+        NO_LOCALE_VALIDATORS.set('gt_0', OpenPosValidators.GT_0);
+        NO_LOCALE_VALIDATORS.set('gte_0', OpenPosValidators.GTE_0);
 
-        this.validators.set('en-us', USValidators);
-        this.validators.set('us', USValidators);
-        this.validators.set('ca', CAValidators);
-        this.validators.set('en-ca', CAValidators);
+        this.validators.set('en-us', US_VALIDATORS);
+        this.validators.set('us', US_VALIDATORS);
+        this.validators.set('ca', CA_VALIDATORS);
+        this.validators.set('en-ca', CA_VALIDATORS);
 
-        this.validators.set('NO-LOCALE', NOLOCALEValidators);
+        this.validators.set('NO-LOCALE', NO_LOCALE_VALIDATORS);
     }
 
     getValidator(validatorSpec: string | IValidatorSpec): ValidatorFn {
         const locale = this.localeService.getLocale();
-        if (typeof (validatorSpec as IValidatorSpec) !== 'undefined' && (validatorSpec as IValidatorSpec).name) {
-            // Support for dynamically loading validators specified by the server side.
-            // If locale support is needed, that can be handled in the validator implementation
-            const name = (validatorSpec as IValidatorSpec).name;
-            const validatorInstance: IValidator =
-                ValidationConstants.validators.find(entry => entry.name === name).validatorClass.prototype;
-            validatorInstance.constructor.apply(validatorInstance, [validatorSpec]);
-            return validatorInstance.validationFunc;
-        } else {
-            const name = (validatorSpec as string);
-
-            if (name && locale) {
-                const lname = name.toLowerCase();
+        if (typeof validatorSpec === 'string') {
+            if (validatorSpec && locale) {
+                const lname = validatorSpec.toLowerCase();
                 const llocale = locale.toLowerCase();
                 // see if we have a validator map for the current locale
                 //  and that locale has the validator we need
@@ -70,8 +60,15 @@ export class ValidatorsService {
                     return typeof v !== 'undefined' ? v.validationFunc : undefined;
                 }
             }
-            console.info(`No validator found for locale '${locale}' validator name '${name}'. Using an 'always valid' validator`);
+            console.info(`No validator found for locale '${locale}' validator name '${validatorSpec}'. Using an 'always valid' validator`);
             return () => null;
+        } else {
+            // Support for dynamically loading validators specified by the server side.
+            // If locale support is needed, that can be handled in the validator implementation
+            const validatorInstance: IValidator =
+                ValidationConstants.validators.find(entry => entry.name === validatorSpec.name).validatorClass.prototype;
+            validatorInstance.constructor.apply(validatorInstance, [validatorSpec]);
+            return validatorInstance.validationFunc;
         }
     }
 
@@ -81,5 +78,4 @@ export class ValidatorsService {
             map.set(validatorName, validator);
         }
     }
-
 }

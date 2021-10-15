@@ -61,6 +61,10 @@ export class ConnectedMessage {
     type = MessageTypes.CONNECTED;
 }
 
+export class DisconnectedMessage {
+    type = MessageTypes.DISCONNECTED;
+}
+
 @Injectable({
     providedIn: 'root',
 })
@@ -361,6 +365,7 @@ export class SessionService implements IMessageHandler<any> {
     private sendDisconnected() {
         if (this.connectedOnce) {
             this.sendMessage(new ImmediateLoadingMessage(this.disconnectedMessage));
+            this.sendMessage(new DisconnectedMessage());
         }
     }
 

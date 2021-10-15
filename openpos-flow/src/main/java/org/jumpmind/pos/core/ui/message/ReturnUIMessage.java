@@ -1,25 +1,19 @@
 package org.jumpmind.pos.core.ui.message;
 
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Data;
 import org.jumpmind.pos.core.ui.ActionItem;
 import org.jumpmind.pos.core.ui.AssignKeyBindings;
 import org.jumpmind.pos.core.ui.data.TransactionReceipt;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @AssignKeyBindings
 @Data
-public class ReturnUIMessage extends TransactionUIMessage {
+public class ReturnUIMessage extends LoyaltySaleUIMessage {
+
     private static final long serialVersionUID = 1L;
 
     private List<TransactionReceipt> receipts = new ArrayList<>();
-    private ActionItem removeReceiptAction;
-
-    private String loyaltySignupInProgressTitle;
-    private String loyaltySignupInProgressIcon;
-    private String loyaltySignupInProgressDetailsIcon;
-    private ActionItem loyaltyCancelButton;
 
     public ReturnUIMessage() {
         this.setScreenType(UIMessageType.RETURN);

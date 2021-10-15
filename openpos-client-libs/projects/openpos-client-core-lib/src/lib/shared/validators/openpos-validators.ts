@@ -19,8 +19,7 @@ export class OpenPosValidators {
     static readonly GT_0 = new GreaterThanEqZeroValidator();
     static readonly GTE_0 = new GreaterThanEqZeroValidator();
 
-
-    static LESS_THAN( limit: Number ): ValidatorFn {
+    static LESS_THAN( limit: number ): ValidatorFn {
 
         return (c: AbstractControl): ValidationErrors | null => {
             let value = c.value;
@@ -28,15 +27,14 @@ export class OpenPosValidators {
                 value = value.replace(',', '');
             }
             return Number(value) < limit ? null : {
-                // tslint:disable-next-line:object-literal-key-quotes
-                'less_than' : {
+                less_than : {
                     valid: false
                 }
             };
         };
     }
 
-    static LESS_THAN_OR_EQUAL( limit: Number ): ValidatorFn {
+    static LESS_THAN_OR_EQUAL( limit: number ): ValidatorFn {
 
         return (c: AbstractControl): ValidationErrors | null => {
             let value = c.value;
@@ -44,8 +42,7 @@ export class OpenPosValidators {
                 value = value.replace(',', '');
             }
             return Number(value) <= limit ? null : {
-                // tslint:disable-next-line:object-literal-key-quotes
-                'less_than_equal' : {
+                less_than_equal : {
                     valid: false
                 }
             };
@@ -53,15 +50,14 @@ export class OpenPosValidators {
     }
 
 
-    static GREATER_THAN(limit: Number): ValidatorFn {
+    static GREATER_THAN(limit: number): ValidatorFn {
         return (c: AbstractControl): ValidationErrors | null => {
             let value = c.value;
             if (value) {
                 value = value.replace(',', '');
             }
             return Number(value) > limit ? null : {
-                // tslint:disable-next-line:object-literal-key-quotes
-                'greater_than' : {
+                greater_than : {
                     valid: false
                 }
             };
@@ -69,20 +65,17 @@ export class OpenPosValidators {
     }
 
 
-    static GREATER_THAN_OR_EQUAL(limit: Number): ValidatorFn {
+    static GREATER_THAN_OR_EQUAL(limit: number): ValidatorFn {
         return (c: AbstractControl): ValidationErrors | null => {
             let value = c.value;
             if (value) {
                 value = value.replace(',', '');
             }
             return Number(value) >= limit ? null : {
-                // tslint:disable-next-line:object-literal-key-quotes
-                'greater_than_equal' : {
+                greater_than_equal : {
                     valid: false
                 }
             };
         };
     }
-
-
 }

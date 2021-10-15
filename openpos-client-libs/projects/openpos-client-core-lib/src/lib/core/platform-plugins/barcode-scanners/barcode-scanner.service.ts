@@ -1,8 +1,7 @@
-
 import { Inject, Injectable, Optional } from '@angular/core';
 import { BehaviorSubject, merge, Observable, of, throwError } from 'rxjs';
 import { share, switchMap } from 'rxjs/operators';
-import { ConfigChangedMessage } from '../../messages/config-changed-message';
+import { ImageScannerMessage } from '../../messages/image-scanner-message';
 import { ConfigurationService } from '../../services/configuration.service';
 
 import { IMAGE_SCANNERS, ImageScanner, ScannerViewRef, SCANNERS, Scanner, ScanData, ScanOptions } from './scanner';
@@ -27,20 +26,18 @@ export class BarcodeScanner {
     ) {
         console.log('scanner config');
         configuration.getConfiguration('imageScanner').subscribe({
-            next: (config: ConfigChangedMessage & any) => {
+            next: (config: ImageScannerMessage) => {
                 console.log('got config for scanner');
 
-                const type = config.scannerType as string;
+                const type = config.scannerType;
 
                 if (type && imageScanners) {
                     for (const scanner of imageScanners) {
-                        const s = scanner as ImageScanner;
-            
-                        const configName = s.name();
-    
+                        const configName = scanner.name();
+
                         if (type === configName) {
                             console.log(`using image scanner ${configName}`);
-                            this._scanner.next(s);
+                            this._scanner.next(scanner);
                             return;
                         }
                     }
@@ -70,7 +67,7 @@ export class BarcodeScanner {
         if (this.isImageScannerActive) {
             return throwError('only one active scan allowed at a time');
         }
-        
+
         // Sorta doing this weird wrapping in order to tack on some custom
         // teardown logic.
         this._activeScan = this._scanner.pipe(
@@ -93,10 +90,10 @@ export class BarcodeScanner {
                 };
             }))
         )
-        .pipe(
-            // Multicast
-            share()
-        );
+            .pipe(
+                // Multicast
+                share()
+            );
 
         return this._activeScan;
     }

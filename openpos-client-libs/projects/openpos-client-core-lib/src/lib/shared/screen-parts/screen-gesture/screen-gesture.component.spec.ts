@@ -15,9 +15,9 @@ describe('ScreenGestureComponent', () => {
     let fixture: ComponentFixture<ScreenGestureComponent>;
 
     const mockService = { doAction: () => { } };
-    class ClientContext { };
+    class ClientContext { }
     const action = 'Back';
-    const unlockPans: PanEvent[] = [{ angleLower: -90, angleUpper: 0, distance: 500 }]
+    const unlockPans: PanEvent[] = [{ angleLower: -90, angleUpper: 0, distance: 500 }];
     const unlockSwipes = [SwipeEvent.SWIPE_UP, SwipeEvent.SWIPE_DOWN, SwipeEvent.SWIPE_LEFT, SwipeEvent.SWIPE_RIGHT];
 
     beforeEach(() => {
@@ -48,7 +48,7 @@ describe('ScreenGestureComponent', () => {
             expect(component.hasUnlockPans).toBeTruthy();
             expect(component.hasUnlockSwipes).toBeTruthy();
             expect(component.swipeTimeoutMillis).toBe(200);
-        })
+        });
         it('updates the flags when screenData is undefined', () => {
             delete component.screenData;
             component.ngOnInit();
@@ -80,7 +80,7 @@ describe('ScreenGestureComponent', () => {
             expect(component.hasUnlockPans).toBeTruthy();
             expect(component.hasUnlockSwipes).toBeTruthy();
             expect(component.swipeTimeoutMillis).toBe(200);
-        })
+        });
         it('updates the flags when screenData is undefined', () => {
             delete component.screenData;
             component.screenDataUpdated();
@@ -141,7 +141,7 @@ describe('ScreenGestureComponent', () => {
     describe('unlock by pan', () => {
         beforeEach(() => {
             spyOn(component.actionService, 'doAction').and.callThrough();
-        })
+        });
         it('triggers the provided action when the pan are complete', () => {
             component.onPanStart({ angle: -45, distance: 5 });
             expect(component.actionService.doAction).not.toHaveBeenCalled();
@@ -160,7 +160,10 @@ describe('ScreenGestureComponent', () => {
             expect(component.actionService.doAction).not.toHaveBeenCalled();
         });
         it('triggers the provided action only when all pans are complete', () => {
-            component.screenData.pans = [{ angleLower: -90, angleUpper: 0, distance: 500 }, { angleLower: 0, angleUpper: 90, distance: 500 }];
+            component.screenData.pans = [
+                { angleLower: -90, angleUpper: 0, distance: 500 },
+                { angleLower: 0, angleUpper: 90, distance: 500 }
+            ];
             component.onPanStart({ angle: -45, distance: 5 });
             expect(component.actionService.doAction).not.toHaveBeenCalled();
             component.onPanMove({ angle: -40, distance: 100 });
@@ -175,7 +178,10 @@ describe('ScreenGestureComponent', () => {
             expect(component.actionService.doAction).toHaveBeenCalledWith({ action }, undefined);
         });
         it('allows the first pan to go beyond the distance before completing the second pan', () => {
-            component.screenData.pans = [{ angleLower: -90, angleUpper: 0, distance: 500 }, { angleLower: 0, angleUpper: 90, distance: 500 }];
+            component.screenData.pans = [
+                { angleLower: -90, angleUpper: 0, distance: 500 },
+                { angleLower: 0, angleUpper: 90, distance: 500 }
+            ];
             component.onPanStart({ angle: -45, distance: 5 });
             expect(component.actionService.doAction).not.toHaveBeenCalled();
             component.onPanMove({ angle: -40, distance: 400 });
@@ -190,7 +196,10 @@ describe('ScreenGestureComponent', () => {
             expect(component.actionService.doAction).toHaveBeenCalledWith({ action }, undefined);
         });
         it('does not trigger the action if any part of the second pan is outside the bounds', () => {
-            component.screenData.pans = [{ angleLower: -90, angleUpper: 0, distance: 500 }, { angleLower: 0, angleUpper: 90, distance: 500 }];
+            component.screenData.pans = [
+                { angleLower: -90, angleUpper: 0, distance: 500 },
+                { angleLower: 0, angleUpper: 90, distance: 500 }
+            ];
             component.onPanStart({ angle: -45, distance: 5 });
             component.onPanMove({ angle: -60, distance: 300 });
             component.onPanEnd({ angle: -50, distance: 500 });

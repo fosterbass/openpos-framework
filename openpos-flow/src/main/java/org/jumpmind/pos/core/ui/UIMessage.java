@@ -12,6 +12,7 @@ public class UIMessage extends Message {
     private String id;
     private Integer sessionTimeoutMillis;
     private Action sessionTimeoutAction;
+    private boolean allowRestoreFromFailover;
 
     public UIMessage(String screenType, String id) {
         this();

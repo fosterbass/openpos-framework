@@ -1,15 +1,15 @@
-import {map} from 'rxjs/operators';
-import {UIDataMessageService} from '../../core/ui-data-message/ui-data-message.service';
-import {BuddyStoreInterface} from './buddy-store.interface';
+import { map } from 'rxjs/operators';
+import { UIDataMessageService } from '../../core/ui-data-message/ui-data-message.service';
+import { BuddyStoreInterface } from './buddy-store.interface';
 import { ItemDetailInterface } from './item-detail.interface';
 import { ScreenComponent } from '../../shared/decorators/screen-component.decorator';
-import {Component, Injector, Optional} from '@angular/core';
+import { Component, Injector, Optional } from '@angular/core';
 import { PosScreen } from '../pos-screen/pos-screen.component';
-import {MediaBreakpoints, OpenposMediaService} from "../../core/media/openpos-media.service";
-import {Observable} from "rxjs";
-import {BasicProductOptionPart} from './option-components/basic-product-option-part/basic-product-option-part';
-import {SwatchProductOptionPart} from './option-components/swatch-product-option-part/swatch-product-option-part.component';
-import {ProductOptionInterface} from './product-option.interface';
+import { MediaBreakpoints, OpenposMediaService } from '../../core/media/openpos-media.service';
+import { Observable } from 'rxjs';
+import { BasicProductOptionPart } from './option-components/basic-product-option-part/basic-product-option-part';
+import { SwatchProductOptionPart } from './option-components/swatch-product-option-part/swatch-product-option-part.component';
+import { ProductOptionInterface } from './product-option.interface';
 import { OPTION_NAME } from './item-detail-option';
 
 @ScreenComponent({
@@ -22,15 +22,15 @@ import { OPTION_NAME } from './item-detail-option';
 })
 export class ItemDetailComponent extends PosScreen<ItemDetailInterface> {
     isMobile: Observable<boolean>;
-    carouselSize: String;
+    carouselSize: string;
 
     optionComponents = new Map();
-    
+
     buddyStores$: Observable<BuddyStoreInterface[]>;
     buddyStoresOnline$: Observable<boolean>;
     inventoryMessage$: Observable<string>;
 
-    constructor( @Optional() private injector: Injector, media: OpenposMediaService, private dataMessageService: UIDataMessageService) {
+    constructor(@Optional() private injector: Injector, media: OpenposMediaService, private dataMessageService: UIDataMessageService) {
         super(injector);
         this.isMobile = media.observe(new Map([
             [MediaBreakpoints.MOBILE_PORTRAIT, true],
@@ -55,30 +55,30 @@ export class ItemDetailComponent extends PosScreen<ItemDetailInterface> {
 
         if (this.screen.productOptionsComponents) {
             this.screen.productOptionsComponents.forEach(value => {
-                let injector = Injector.create({ 
-                    providers: [{ provide: OPTION_NAME, useValue: value.name }], 
+                const injector = Injector.create({
+                    providers: [{ provide: OPTION_NAME, useValue: value.name }],
                     parent: this.injector
                 });
 
                 this.optionComponents.set(injector, this.getComponentFromOptionType(value));
             });
         }
-        
+
         this.buddyStores$ = this.dataMessageService.getData$(this.screen.buddyStoreProviderKey);
         this.buddyStoresOnline$ = this.buddyStores$
-            .pipe(map( stores => stores != null && stores != undefined));
+            .pipe(map(stores => stores != null && stores != undefined));
         this.inventoryMessage$ = this.dataMessageService.getData$(this.screen.inventoryMessageProviderKey)
             .pipe(map(value => value != null ? value[0] : null));
         this.screen.imageUrls = [].concat(this.screen.imageUrls);
     }
-    
+
     getComponentFromOptionType(productOption: ProductOptionInterface) {
-        switch( productOption.type ){
+        switch (productOption.type) {
             case 'basicProductOption':
                 return BasicProductOptionPart;
             case 'swatchProductOption':
                 return SwatchProductOptionPart;
         }
-        
+
     }
 }

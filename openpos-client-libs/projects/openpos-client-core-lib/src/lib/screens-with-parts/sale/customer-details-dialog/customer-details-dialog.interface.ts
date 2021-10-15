@@ -40,7 +40,6 @@ export interface CustomerDetailsDialogInterface extends IAbstractScreen {
     loyaltyNumberIcon: string;
     rewardHistoryIcon: string;
     itemHistoryIcon: string;
-
     itemsHistoryDataProviderKey: string;
     itemHistoryFilter: CustomerItemHistoryFilter;
 }

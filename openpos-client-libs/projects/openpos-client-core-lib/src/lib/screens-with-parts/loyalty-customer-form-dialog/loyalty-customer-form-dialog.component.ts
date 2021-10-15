@@ -1,12 +1,12 @@
-import {Component, Injector, ViewChild} from '@angular/core';
+import { Component, Injector, ViewChild } from '@angular/core';
 import { DialogComponent } from '../../shared/decorators/dialog-component.decorator';
 import { PosScreen } from '../pos-screen/pos-screen.component';
-import {LoyaltyCustomerFormInterface} from "./loyalty-customer-form.interface";
-import {Observable} from "rxjs";
-import {MediaBreakpoints, OpenposMediaService} from "../../core/media/openpos-media.service";
-import {IFormElement} from "../../core/interfaces/form-field.interface";
-import {FormBuilder} from "../../core/services/form-builder.service";
-import {ShowErrorsComponent} from "../../shared/components/show-errors/show-errors.component";
+import { LoyaltyCustomerFormInterface } from './loyalty-customer-form.interface';
+import { Observable } from 'rxjs';
+import { MediaBreakpoints, OpenposMediaService } from '../../core/media/openpos-media.service';
+import { IFormElement } from '../../core/interfaces/form-field.interface';
+import { FormBuilder } from '../../core/services/form-builder.service';
+import { ShowErrorsComponent } from '../../shared/components/show-errors/show-errors.component';
 
 @DialogComponent({
     name: 'LoyaltyCustomerDialog',
@@ -14,40 +14,38 @@ import {ShowErrorsComponent} from "../../shared/components/show-errors/show-erro
 @Component({
     selector: 'app-loyalty-customer-form-dialog',
     templateUrl: './loyalty-customer-form-dialog.component.html',
-    styleUrls: [ './loyalty-customer-form-dialog.component.scss']
+    styleUrls: ['./loyalty-customer-form-dialog.component.scss']
 })
 export class LoyaltyCustomerFormDialogComponent extends PosScreen<LoyaltyCustomerFormInterface> {
 
     isMobile: Observable<boolean>;
     @ViewChild('formErrors', { static: true }) formErrors: ShowErrorsComponent;
 
-    firstNameField : any;
-    lastNameField : IFormElement;
-    loyaltyNumberField : IFormElement;
-    phoneField : IFormElement;
-    phoneFields : IFormElement[] = [];
-    phoneLabelFields : IFormElement[] = [];
-    emailField : IFormElement;
-    emailFields : IFormElement[] = [];
-    emailLabelFields : IFormElement[] = [];
+    firstNameField: any;
+    lastNameField: IFormElement;
+    loyaltyNumberField: IFormElement;
+    phoneField: IFormElement;
+    phoneFields: IFormElement[] = [];
+    phoneLabelFields: IFormElement[] = [];
+    emailField: IFormElement;
+    emailFields: IFormElement[] = [];
+    emailLabelFields: IFormElement[] = [];
 
-    handledFormFields : string[] = [];
-    extraElements : IFormElement[] = [];
+    handledFormFields: string[] = [];
+    extraElements: IFormElement[] = [];
 
-    line1Field : IFormElement;
-    line2Field : IFormElement;
-    cityField : IFormElement;
-    stateField : IFormElement;
-    postalCodeField : IFormElement;
-    countryField : IFormElement;
-    addressIconLocationClass : string;
+    line1Field: IFormElement;
+    line2Field: IFormElement;
+    cityField: IFormElement;
+    stateField: IFormElement;
+    postalCodeField: IFormElement;
+    countryField: IFormElement;
+    addressIconLocationClass: string;
 
     constructor(injector: Injector, private media: OpenposMediaService, private formBuilder: FormBuilder) {
         super(injector);
         this.initIsMobile();
     }
-
-    ngOnInit() {}
 
     initIsMobile(): void {
         this.isMobile = this.media.observe(new Map([
@@ -60,36 +58,43 @@ export class LoyaltyCustomerFormDialogComponent extends PosScreen<LoyaltyCustome
         ]));
     }
 
-    getFormElementById(formElementId : string) : IFormElement {
-        return this.screen.form.formElements.filter(element => element.id == formElementId)[0];
+    getFormElementById(formElementId: string): IFormElement {
+        return this.screen.form?.formElements.filter(element => element.id === formElementId)[0];
     }
 
-    anyAddressFieldsPresent() : boolean {
+    anyAddressFieldsPresent(): boolean {
         return !!(this.line1Field || this.line2Field || this.cityField || this.stateField || this.postalCodeField || this.countryField);
     }
 
-    onFieldChanged(formElement: IFormElement) : void {
+    onFieldChanged(formElement: IFormElement): void {
         if (formElement.valueChangedAction) {
-            let form = this.formBuilder.buildFormPayload(this.screen.formGroup, this.screen.form);
+            const form = this.formBuilder.buildFormPayload(this.screen.formGroup, this.screen.form);
             this.doAction(formElement.valueChangedAction, form);
         }
     }
 
-    submitForm() : void {
+    submitForm(): void {
         this.formBuilder.buildFormPayload(this.screen.formGroup, this.screen.form);
         this.doAction(this.screen.submitButton, this.screen.form);
     }
 
-    buildScreen() : void {
-        if(this.screen.isStructuredForm) {
+    secondaryButtonClicked(): void {
+        this.formBuilder.buildFormPayload(this.screen.formGroup, this.screen.form);
+        this.doAction(this.screen.secondaryButton, this.screen.form);
+    }
+
+    buildScreen(): void {
+        this.extraElements = [];
+
+        if (this.screen.isStructuredForm) {
             this.buildStructuredForm();
         }
 
         this.screen.form.formElements.forEach(element => {
-            if (this.handledFormFields.indexOf(element.id) == -1) {
+            if (this.handledFormFields.indexOf(element.id) === -1) {
                 this.extraElements.push(element);
             }
-        })
+        });
 
         this.screen.formGroup = this.formBuilder.group(this.screen.form);
     }
@@ -122,7 +127,7 @@ export class LoyaltyCustomerFormDialogComponent extends PosScreen<LoyaltyCustome
         this.postalCodeField = this.getFormElementById('postalCode');
         this.countryField = this.getFormElementById('country');
 
-        if(this.line1Field) {
+        if (this.line1Field) {
             this.addressIconLocationClass = 'icon1';
         } else if (this.line2Field) {
             this.addressIconLocationClass = 'icon2';
@@ -148,12 +153,12 @@ export class LoyaltyCustomerFormDialogComponent extends PosScreen<LoyaltyCustome
                     this.handledFormFields.push(element.id);
                 }
 
-                if(element.id.match(/emailsList\d/)) {
+                if (element.id.match(/emailsList\d/)) {
                     this.emailFields.push(element);
                     this.handledFormFields.push(element.id);
                 }
 
-                if(element.id.match(/emailsListLabel\d/)) {
+                if (element.id.match(/emailsListLabel\d/)) {
                     this.emailLabelFields.push(element);
                     this.handledFormFields.push(element.id);
                 }

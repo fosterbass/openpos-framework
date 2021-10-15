@@ -4,9 +4,7 @@ import {Status} from '../../core/messages/status.enum';
 
 export class StatusMessage implements OpenposMessage {
     type = MessageTypes.STATUS;
-    id: string;
-    name: string;
-    icon: string;
-    status: Status;
-    message: string;
+    constructor( public id: string, public name: string, public icon: string, public status: Status, public message: string) {
+    }
+
 }

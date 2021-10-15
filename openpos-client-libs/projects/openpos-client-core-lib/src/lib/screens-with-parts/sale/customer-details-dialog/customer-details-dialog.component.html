@@ -188,21 +188,57 @@
         </div>
         <app-membership-points-display *ngIf="(isMobile | async) && screen.membershipPointsEnabled" class="points" responsive-class></app-membership-points-display>
     </app-content-card>
-    <div *ngIf="screen.rewardTabEnabled || screen.rewardHistoryTabEnabled || screen.itemHistoryEnabled" class="tabs" responsive-class>
-        <mat-tab-group mat-align-tabs="start" animationDuration="0ms" (selectedTabChange)="onTabChanged($event)">
-            <mat-tab *ngIf="screen.rewardTabEnabled" class="rewardsTab" [label]="getRewardsLabel()">
-                <mat-card class="rewardsContent" [ngClass]="{'with-points': screen.membershipPointsEnabled, 'no-promotions': !hasRewards()}">
-                    <app-infinite-scroll
-                            [dataKey]="screen.rewardsDataKey"
-                            [itemTemplate]="itemTemplate"
-                            [noItemsTemplate]="noItemTemplate"
-                            virtualScrollMinBufferPx="200"
-                            virtualScrollMaxBufferPx="400"
-                            [itemHeightPx]="50"
-                            [tabChanged]="changedToRewardTab">
-                        <ng-template #itemTemplate let-item>
-                            <div class="reward-list line">
-                                <app-rewards-line-item class="rewardItem" [reward]="item"></app-rewards-line-item>
+    <div *ngIf="(isMobile | async) || (!(isMobile | async) && (screen.rewardTabEnabled || screen.rewardHistoryTabEnabled || screen.itemHistoryEnabled))"
+         class="tabs" [ngClass]="{'tabs': true, 'mobile': (isMobile | async)}" responsive-class>
+        <mat-tab-group mat-align-tabs="start" animationDuration="0ms">
+            <mat-tab class="contactTab" [label]="screen.contactLabel" *ngIf="isMobile | async">
+                <mat-card class="customer-details muted-color">
+                    <app-customer-information [customer]="screen.customer"></app-customer-information>
+                </mat-card>
+            </mat-tab>
+            <mat-tab *ngIf="screen.rewardTabEnabled"
+                    class="rewardsTab" [label]="getRewardsLabel()">
+                <mat-card [ngClass]="{'rewardsContent': true, 'with-points': !(isMobile | async) && screen.membershipPointsEnabled, 'no-promotions': !(screen.customer.rewards && screen.customer.rewards.length)}">
+                    <div class="reward-list" *ngIf="(screen.customer.rewards && screen.customer.rewards.length)" >
+                        <div *ngFor="let reward of screen.customer.rewards" class="line">
+                            <app-rewards-line-item [reward]="reward"></app-rewards-line-item>
+                        </div>
+                    </div>
+                    <app-membership-points-display *ngIf="!(isMobile | async) && screen.membershipPointsEnabled" class="points" responsive-class></app-membership-points-display>
+                    <div *ngIf="!(screen.customer.rewards && screen.customer.rewards.length)" class="no-items" responsive-class>
+                        {{screen.noPromotionsLabel}}
+                    </div>
+                </mat-card>
+            </mat-tab>
+            <mat-tab *ngIf="screen.itemHistoryEnabled" [label]="screen.itemHistoryLabel">
+                <div class="filter-bar">
+                    <div class="date-range">
+                        <mat-form-field>
+                            <input matInput [matDatepicker]="dateFrom" [placeholder]="screen.itemHistoryFilter.fromDatePlaceholder" [formControl]="itemsHistoryFilterController.fromDate" (dateChange)="itemsHistoryFilterController.fromDateFilterChanged($event.value)">
+                            <mat-datepicker-toggle matSuffix [for]="dateFrom"></mat-datepicker-toggle>
+                            <mat-datepicker #dateFrom></mat-datepicker>
+                        </mat-form-field>
+                        <span>-</span>
+                        <mat-form-field>
+                            <input matInput [matDatepicker]="dateTo" [placeholder]="screen.itemHistoryFilter.toDatePlaceholder" [formControl]="itemsHistoryFilterController.toDate" (dateChange)="itemsHistoryFilterController.toDateFilterChanged($event.value)">
+                            <mat-datepicker-toggle matSuffix [for]="dateTo"></mat-datepicker-toggle>
+                            <mat-datepicker #dateTo></mat-datepicker>
+                        </mat-form-field>
+                    </div>
+                    <div class="filter">
+                        <mat-form-field>
+                            <input matInput [formControl]="itemsHistoryFilterController.textFilter" (keypress)="itemsHistoryFilterController.onFilterKeyPress($event)" (focus)="$event.target.select()" [placeholder]="screen.itemHistoryFilter.textPlaceholder">
+                        </mat-form-field>
+                        <button mat-flat-button mat-primary-inverse (click)="itemsHistoryFilterController.filterItemHistory()" class="filter-button">
+                            {{screen.itemHistoryFilterLabel}}
+                        </button>
+                    </div>
+                </div>
+                <app-infinite-scroll class="item-history" [dataKey]="screen.itemsHistoryDataProviderKey" [itemTemplate]="itemHistoryTemplate" virtualScrollMinBufferPx="400" virtualScrollMaxBufferPx="800" [itemHeightPx]="155">
+                    <ng-template #itemHistoryTemplate let-item>
+                        <div class="item" responsive-class>
+                            <div class="image-container">
+                                <img [src]="item.imageUrl | imageUrl" alt="item icon">
                             </div>
                         </ng-template>
                         <ng-template #noItemTemplate>

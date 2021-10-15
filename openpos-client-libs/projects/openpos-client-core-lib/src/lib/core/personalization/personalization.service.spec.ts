@@ -114,7 +114,7 @@ describe("PersonalizationService", () => {
     });
 
     describe( 'personalize', () => {
-       it('should send personalization request to server and save response', () => {
+       it('should send personalization request to server and save response', done => {
             cleanup();
             setup();
 
@@ -131,6 +131,7 @@ describe("PersonalizationService", () => {
                 expect(localStorage.getItem('deviceToken')).toBe('MY_TOKEN');
                 expect(localStorage.getItem('serverName')).toBe('server');
                 expect(localStorage.getItem('serverPort')).toBe('6140');
+                done();
             });
 
             let req = httpMock.expectOne('http://server:6140/rest/devices/personalize');
@@ -142,9 +143,7 @@ describe("PersonalizationService", () => {
                    appId: 'pos'
                }
             } as PersonalizationResponse;
-
             req.flush(resp);
-
             httpMock.verify();
        });
 
