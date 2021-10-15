@@ -6,7 +6,7 @@ import org.jumpmind.pos.core.ui.ActionItem;
 import org.jumpmind.pos.core.ui.UIMessage;
 
 @Data
-public class LoyaltySaleUIMessage extends UIMessage {
+public class LoyaltySaleUIMessage extends TransactionUIMessage {
 
     private static final long serialVersionUID = 1L;
 
