@@ -189,7 +189,11 @@ interface ControlSequence { modifiers: string[]; key: string; }
                 // skip the next value since we already accounted for it.
                 i+=4;
             } else if ( WEDGE_SCANNER_ACCEPTED_KEYS.includes(e.key)) {
-                charList.push(e.key);
+                let key = e.key;
+                if (key === 'Enter') {
+                    key = '\n';
+                }
+                charList.push(key);
             }
         }
 
