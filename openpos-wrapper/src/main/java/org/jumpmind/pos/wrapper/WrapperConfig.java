@@ -22,7 +22,11 @@ package org.jumpmind.pos.wrapper;
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+import org.jumpmind.pos.wrapper.config.*;
 import org.jumpmind.pos.wrapper.jna.WinsvcEx;
 import static java.util.Arrays.*;
 
@@ -39,9 +43,21 @@ public class WrapperConfig {
     protected String jarFile;
 
     protected Properties envProperties;
+
+    protected final FunctionCollection functionCollection = BasicFunctionLibrary.collection();
+    protected final IdentifierCollection identifierCollection;
     
     public WrapperConfig(String appHomeDir, String configFile, String jarFile) throws IOException {
         this.envProperties = this.loadEnvProperties();
+
+        identifierCollection = new IdentifierCollection(
+                envProperties.entrySet()
+                        .stream()
+                        .filter(set -> set.getKey() instanceof String)
+                        .map(set -> IdentifierValue.fromConstant((String) set.getKey(), set.getValue()))
+                        .collect(Collectors.toList())
+        );
+
         this.properties = getProperties(configFile);
         this.configFile = new File(configFile).getAbsolutePath();
         this.jarFile = new File(jarFile).getAbsolutePath();
@@ -257,7 +273,7 @@ public class WrapperConfig {
      * @throws IOException
      */
     Map<String, ArrayList<String>> getProperties(String filename) throws IOException {
-        HashMap<String, ArrayList<String>> map = new HashMap<String, ArrayList<String>>();
+        HashMap<String, ArrayList<String>> map = new HashMap<>();
         BufferedReader reader = new BufferedReader(new FileReader(filename));
         String line = null;
 
@@ -304,19 +320,35 @@ public class WrapperConfig {
         return properties;
     }
 
+    private final Pattern expressionPattern = Pattern.compile("\\$\\{(?<expression>[\\w\\+\\-\\/\\*\\(\\)\\s\\'\\\"]+)\\}");
     String doTokenReplacementOnValue(String value) {
-        for (Map.Entry<Object, Object> e : envProperties.entrySet()) {
-            if (e.getValue() != null) {
-                value = value.replace("${" + e.getKey() + "}", (String)e.getValue());
+        final Matcher matcher = expressionPattern.matcher(value);
+
+        while (matcher.find()) {
+            final String expression = matcher.group("expression");
+
+            final ConfigExpression compiledExpression;
+
+            try {
+                final ConfigExpressionLexer lexer = new ConfigExpressionLexer(new StringExpressionTextStream(expression));
+                compiledExpression = ConfigExpression.parse(lexer, functionCollection, identifierCollection);
+            } catch (Exception ex) {
+                System.err.println("failed to compile expression '" + expression + "': " + ex.getMessage());
+                continue;
             }
+
+            final String result = compiledExpression.process();
+
+            value = value.replace(matcher.group(), result);
         }
+
         return value;
     }
     
     String getProperty(Map<String, ArrayList<String>> prop, String name, String defaultValue) {
         ArrayList<String> values = prop.get(name);
         String value = null;
-        if (values != null && values.size() > 0) {
+        if (values != null && !values.isEmpty()) {
             value = values.get(0);
         } else {
             value = defaultValue;
@@ -327,7 +359,7 @@ public class WrapperConfig {
     List<String> getListProperty(Map<String, ArrayList<String>> prop, String name) {
         ArrayList<String> value = prop.get(name);
         if (value == null) {
-            value = new ArrayList<String>(0);
+            value = new ArrayList<>(0);
         }
         return value;
     }

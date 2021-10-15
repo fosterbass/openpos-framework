@@ -60,7 +60,7 @@ public class ConfigExpressionLexer {
     private final IExpressionTextStream stream;
     private final StringBuilder builder = new StringBuilder();
 
-    ConfigExpressionLexer(IExpressionTextStream stream) {
+    public ConfigExpressionLexer(IExpressionTextStream stream) {
         if (stream == null) {
             throw new IllegalArgumentException("source stream must be specified");
         }

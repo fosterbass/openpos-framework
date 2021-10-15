@@ -1,6 +1,7 @@
 package org.jumpmind.pos.wrapper.config;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -13,12 +14,20 @@ public class IdentifierCollection {
         return new IdentifierCollection(new ArrayList<>());
     }
 
-    public IdentifierCollection(Iterable<IdentifierValue<?>> functions) {
-        identifierLookup = StreamSupport.stream(functions.spliterator(), false)
+    public IdentifierCollection() {
+        identifierLookup = new HashMap<>();
+    }
+
+    public IdentifierCollection(Iterable<IdentifierValue<?>> identifiers) {
+        identifierLookup = StreamSupport.stream(identifiers.spliterator(), false)
                 .collect(Collectors.toMap(
                         IdentifierValue::getIdentifier,
                         Function.identity()
                 ));
+    }
+
+    public <T> void addIdentifier(IdentifierValue<T> value) {
+        identifierLookup.putIfAbsent(value.getIdentifier(), value);
     }
 
     public IdentifierValue<?> findIdentifier(String identifier) {

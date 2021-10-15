@@ -570,6 +570,10 @@ public final class ConfigExpression {
         private final IdentifierValue<T> identifierValue;
 
         public IdentifierNode(IdentifierValue<T> identifierValue) {
+            if (identifierValue == null) {
+                throw new IllegalArgumentException("identifier value required");
+            }
+
             this.identifierValue = identifierValue;
         }
 
@@ -580,6 +584,8 @@ public final class ConfigExpression {
 
         @Override
         public T evaluate() {
+
+
             return identifierValue.getValue();
         }
     }
