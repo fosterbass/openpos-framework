@@ -9,10 +9,10 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ConfigExpressionLexerTests {
+class ConfigExpressionLexerTests extends ConfigExpressionEngineTests {
 
     @Test
-    public void stringLiteral() {
+    void stringLiteral() {
         final List<ConfigExpressionLexer.Token> tokens = tokenStream("'test'");
 
         assertEquals(1, tokens.size());
@@ -20,7 +20,7 @@ public class ConfigExpressionLexerTests {
     }
 
     @Test
-    public void wholeNumberLiteral() {
+    void wholeNumberLiteral() {
         final List<ConfigExpressionLexer.Token> tokens = tokenStream("123");
 
         assertEquals(1, tokens.size());
@@ -28,7 +28,7 @@ public class ConfigExpressionLexerTests {
     }
 
     @Test
-    public void fractionalNumberLiteral() {
+    void fractionalNumberLiteral() {
         final List<ConfigExpressionLexer.Token> tokens = tokenStream("321.23");
 
         assertEquals(1, tokens.size());
@@ -36,7 +36,7 @@ public class ConfigExpressionLexerTests {
     }
 
     @Test
-    public void simpleAddition() {
+    void simpleAddition() {
         final List<ConfigExpressionLexer.Token> tokens = tokenStream("1+2");
 
         assertEquals(3, tokens.size());
@@ -46,7 +46,7 @@ public class ConfigExpressionLexerTests {
     }
 
     @Test
-    public void simpleMultiplication() {
+    void simpleMultiplication() {
         final List<ConfigExpressionLexer.Token> tokens = tokenStream("2*3");
 
         assertEquals(3, tokens.size());
@@ -56,7 +56,7 @@ public class ConfigExpressionLexerTests {
     }
 
     @Test
-    public void simpleSubtraction() {
+    void simpleSubtraction() {
         final List<ConfigExpressionLexer.Token> tokens = tokenStream("9-4");
 
         assertEquals(3, tokens.size());
@@ -66,7 +66,7 @@ public class ConfigExpressionLexerTests {
     }
 
     @Test
-    public void simpleDivision() {
+    void simpleDivision() {
         final List<ConfigExpressionLexer.Token> tokens = tokenStream("1/6");
 
         assertEquals(3, tokens.size());
@@ -76,7 +76,7 @@ public class ConfigExpressionLexerTests {
     }
 
     @Test
-    public void longMath() {
+    void longMath() {
 
         final List<ConfigExpressionLexer.Token> tokens = tokenStream("2+3*4/5-6");
 
@@ -94,7 +94,7 @@ public class ConfigExpressionLexerTests {
     }
 
     @Test
-    public void simpleEquality() {
+    void simpleEquality() {
         final List<ConfigExpressionLexer.Token> tokens = tokenStream("2==3");
 
         assertEquals(3, tokens.size());
@@ -104,7 +104,7 @@ public class ConfigExpressionLexerTests {
     }
 
     @Test
-    public void simpleInequality() {
+    void simpleInequality() {
         final List<ConfigExpressionLexer.Token> tokens = tokenStream("4!=5");
 
         assertEquals(3, tokens.size());
@@ -114,7 +114,7 @@ public class ConfigExpressionLexerTests {
     }
 
     @Test
-    public void expressionWithSpaces() {
+    void expressionWithSpaces() {
         final List<ConfigExpressionLexer.Token> tokens = tokenStream("2 + 3 * 4");
 
         assertEquals(5, tokens.size());
@@ -126,7 +126,7 @@ public class ConfigExpressionLexerTests {
     }
 
     @Test
-    public void expressionWithTabs() {
+    void expressionWithTabs() {
         final List<ConfigExpressionLexer.Token> tokens = tokenStream("2\t+\t3\t*\t4");
 
         assertEquals(5, tokens.size());
@@ -138,7 +138,7 @@ public class ConfigExpressionLexerTests {
     }
 
     @Test
-    public void simpleIdentifier() {
+    void simpleIdentifier() {
         final List<ConfigExpressionLexer.Token> tokens = tokenStream("test.identIfieR_thing42");
 
         assertEquals(1, tokens.size());
@@ -146,212 +146,12 @@ public class ConfigExpressionLexerTests {
     }
 
     @Test
-    public void identifierInMathExpression() {
+    void identifierInMathExpression() {
         final List<ConfigExpressionLexer.Token> tokens = tokenStream("test.value + 12");
 
         assertEquals(3, tokens.size());
         assertIdentifierToken(0, "test.value", tokens.get(0));
         assertPlusToken(11, tokens.get(1));
         assertNumberToken(13, 12, tokens.get(2));
-    }
-
-    @Test
-    public void testExpressionParser() {
-        final ConfigExpressionLexer lexer = makeLexer("1 + 2 * 3 / 3 + 1 * 2 + 5 - 2");
-        final ConfigExpression expr = ConfigExpression.parse(lexer, FunctionCollection.empty(), IdentifierCollection.empty());
-
-        assertEquals("8", expr.process());
-    }
-
-    @Test
-    public void testExpressionParserParen() {
-        final ConfigExpressionLexer lexer = makeLexer("(1 + (2 * 4)) * (3)");
-        final ConfigExpression expr = ConfigExpression.parse(lexer, FunctionCollection.empty(), IdentifierCollection.empty());
-
-        assertEquals("27", expr.process());
-    }
-
-    @Test
-    public void testExpressionParserParen2() {
-        final ConfigExpressionLexer lexer = makeLexer("6 / (3 * 2) * 2");
-        final ConfigExpression expr = ConfigExpression.parse(lexer, FunctionCollection.empty(), IdentifierCollection.empty());
-
-        assertEquals("2", expr.process());
-    }
-
-    @Test
-    public void testExpressionParserFuncRight() {
-        final ConfigExpressionLexer lexer = makeLexer("5 + test()");
-        final List<ExpressionFunction<?>> functions = new ArrayList<>();
-        functions.add(ExpressionFunction.make("test", BigDecimal.class, () -> new BigDecimal(42)));
-
-        final ConfigExpression expr = ConfigExpression.parse(lexer, new FunctionCollection(functions), IdentifierCollection.empty());
-
-        assertEquals("47", expr.process());
-    }
-
-    @Test
-    public void testExpressionParserFuncLeft() {
-        final ConfigExpressionLexer lexer = makeLexer("test() + 5");
-        final List<ExpressionFunction<?>> functions = new ArrayList<>();
-        functions.add(ExpressionFunction.make("test", BigDecimal.class, () -> new BigDecimal(42)));
-
-        final ConfigExpression expr = ConfigExpression.parse(lexer, new FunctionCollection(functions), IdentifierCollection.empty());
-
-        assertEquals("47", expr.process());
-    }
-
-    @Test
-    public void testExpressionParserWithSingleArg() {
-        final ConfigExpressionLexer lexer = makeLexer("echo('Hello, World!')");
-        final List<ExpressionFunction<?>> functions = new ArrayList<>();
-        functions.add(ExpressionFunction.make("echo", String.class, String.class, (arg) -> arg));
-
-        final ConfigExpression expr = ConfigExpression.parse(lexer, new FunctionCollection(functions), IdentifierCollection.empty());
-
-        assertEquals("Hello, World!", expr.process());
-    }
-
-    @Test
-    public void testExpressionParserWithMultipleArg() {
-        final ConfigExpressionLexer lexer = makeLexer("concat('Hello, ', 'Billy', '!')");
-        final ConfigExpression expr = ConfigExpression.parse(lexer, BasicFunctionLibrary.collection(), IdentifierCollection.empty());
-
-        assertEquals("Hello, Billy!", expr.process());
-    }
-
-    @Test
-    public void testExpressionParserWithConstant() {
-        final ConfigExpressionLexer lexer = makeLexer("5 + some.constant");
-        final List<IdentifierValue<?>> identifierValues = new ArrayList<>();
-        identifierValues.add(IdentifierValue.fromConstant("some.constant", new BigDecimal("42")));
-        final ConfigExpression expr = ConfigExpression.parse(lexer, BasicFunctionLibrary.collection(), new IdentifierCollection(identifierValues));
-
-        assertEquals("47", expr.process());
-    }
-
-    private ConfigExpressionLexer makeLexer(String expression) {
-        return new ConfigExpressionLexer(new StringExpressionTextStream(expression));
-    }
-
-    private List<ConfigExpressionLexer.Token> tokenStream(String expression) {
-        final ConfigExpressionLexer lexer = makeLexer(expression);
-
-        final List<ConfigExpressionLexer.Token> tokens = new ArrayList<>();
-
-        Optional<ConfigExpressionLexer.Token> nextToken = lexer.getNextToken();
-        while (nextToken.isPresent()) {
-            tokens.add(nextToken.get());
-            nextToken = lexer.getNextToken();
-        }
-
-        return tokens;
-    }
-
-    private void assertToken(
-            int expectedPosition,
-            String expectedRawText,
-            ConfigExpressionLexer.TokenKind expectedKind,
-            ConfigExpressionLexer.Token token
-    ) {
-        assertEquals(expectedRawText, token.getRawText());
-        assertEquals(expectedPosition, token.getPosition());
-        assertEquals(expectedKind, token.getKind());
-    }
-
-    private void assertIdentifierToken(
-            int expectedPosition,
-            String expectedIdentifier,
-            ConfigExpressionLexer.Token token
-    ) {
-        assertToken(expectedPosition, expectedIdentifier, ConfigExpressionLexer.TokenKind.IDENTIFIER, token);
-    }
-
-    private void assertStringLiteralToken(
-            int expectedPosition,
-            String expectedText,
-            ConfigExpressionLexer.Token token
-    ) {
-        assertToken(expectedPosition, expectedText, ConfigExpressionLexer.TokenKind.STRING_LITERAL, token);
-    }
-
-    private void assertNumberToken(
-            int expectedPosition,
-            int expectedNumber,
-            ConfigExpressionLexer.Token token
-    ) {
-        assertNumberToken(expectedPosition, new BigDecimal(expectedNumber), token);
-    }
-
-    private void assertNumberToken(
-            int expectedPosition,
-            double expectedNumber,
-            ConfigExpressionLexer.Token token
-    ) {
-        assertNumberToken(expectedPosition, new BigDecimal(expectedNumber), token);
-    }
-
-    private void assertNumberToken(
-            int expectedPosition,
-            BigDecimal expectedNumber,
-            ConfigExpressionLexer.Token token
-    ) {
-        assertToken(expectedPosition, expectedNumber.toPlainString(), ConfigExpressionLexer.TokenKind.NUMBER, token);
-        assertEquals(expectedNumber, token.getDecimalValue());
-    }
-
-    private void assertPlusToken(
-            int expectedPosition,
-            ConfigExpressionLexer.Token token
-    ) {
-        assertToken(expectedPosition, "+", ConfigExpressionLexer.TokenKind.PLUS, token);
-    }
-
-    private void assertAsteriskToken(
-            int expectedPosition,
-            ConfigExpressionLexer.Token token
-    ) {
-        assertToken(expectedPosition, "*", ConfigExpressionLexer.TokenKind.ASTERISK, token);
-    }
-
-    private void assertMinusToken(
-            int expectedPosition,
-            ConfigExpressionLexer.Token token
-    ) {
-        assertToken(expectedPosition, "-", ConfigExpressionLexer.TokenKind.MINUS, token);
-    }
-
-    private void assertSlashToken(
-            int expectedPosition,
-            ConfigExpressionLexer.Token token
-    ) {
-        assertToken(expectedPosition, "/", ConfigExpressionLexer.TokenKind.SLASH, token);
-    }
-
-    private void assertEqualityToken(
-            int expectedPosition,
-            ConfigExpressionLexer.Token token
-    ) {
-        assertToken(expectedPosition, "==", ConfigExpressionLexer.TokenKind.EQUALITY, token);
-    }
-
-    private void assertInequalityToken(
-            int expectedPosition,
-            ConfigExpressionLexer.Token token
-    ) {
-        assertToken(expectedPosition, "!=", ConfigExpressionLexer.TokenKind.INEQUALITY, token);
-    }
-
-    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    private <T> T assertIsPresent(Optional<T> option) {
-        assertNotNull(option);
-        assertTrue(option.isPresent());
-        return option.get();
-    }
-
-    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    private void assertIsNotPresent(Optional<?> option) {
-        assertNotNull(option);
-        assertFalse(option.isPresent());
     }
 }
