@@ -179,12 +179,6 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
-            artifact sourcesJar {
-              classifier 'sources'
-            }
-            artifact testJar {
-              classifier 'test'
-            }
         }
     }
     repositories {
