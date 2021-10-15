@@ -37,7 +37,6 @@ public class LoyaltyCustomerFormUIMessageTest {
         screen.setMembershipsIcon("Icon");
         screen.setAddIcon("Icon");
         screen.setRemoveIcon("Icon");
-        screen.setCheckMarkIcon("Icon");
         screen.setInstructions("Instruction");
         screen.setImageUrl("URL");
     }

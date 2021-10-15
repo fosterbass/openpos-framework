@@ -3,10 +3,10 @@ import {IActionItem} from '../actions/action-item.interface';
 import { IConfirmationDialog } from '../actions/confirmation-dialog.interface';
 import { ValidatorFn } from '@angular/forms';
 export interface IFormElement {
+    id: string;
     elementType?: string;
     inputType?: string;
     label?: string;
-    id: string;
     value?: string;
     values?: string[];
     placeholder?: string;
@@ -32,21 +32,21 @@ export interface IFormElement {
     scanEnabled?: boolean;
     validators?: string[];
     additionalValidators?: ValidatorFn[];
-    validationMessages: Map<string, string>;
-    icon: string;
-    valueDisplayMode: any;
-    tabindex: any;
-    labelPosition: any;
-    mode: any;
-    formatter: any;
-    hideCalendar: any;
-    maxDate: any;
-    minDate: any;
-    startAtDate: any;
-    hintText: string;
-    hideButtons: boolean;
-    readOnly: boolean;
-    preValidate: boolean;
+    validationMessages?: Map<string, string>;
+    icon?: string;
+    valueDisplayMode?: any;
+    tabindex?: any;
+    labelPosition?: any;
+    mode?: any;
+    formatter?: any;
+    hideCalendar?: any;
+    maxDate?: any;
+    minDate?: any;
+    startAtDate?: any;
+    hintText?: string;
+    hideButtons?: boolean;
+    readOnly?: boolean;
+    preValidate?: boolean;
 }
 
 export interface IDynamicListField {

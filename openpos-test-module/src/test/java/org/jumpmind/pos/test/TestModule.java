@@ -7,11 +7,7 @@ import org.jumpmind.pos.persist.DBSessionFactory;
 import org.jumpmind.pos.service.AbstractRDBMSModule;
 import org.jumpmind.pos.service.ModuleEnabledCondition;
 import org.jumpmind.security.ISecurityService;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.context.annotation.*;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
