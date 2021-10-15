@@ -12,13 +12,21 @@ public interface IOpenposPrinter extends POSPrinterService19 {
 
     public void printImage(InputStream image);
 
+    public default boolean supportsPrintDivider() {
+        return false;
+    }
+
+    public default void printDivider() {
+
+    }
+
     public void openCashDrawer(String cashDrawerId);
 
     public String getCommand(String commandName);
 
     public int getPrintWidth();
 
-    public void init(Map<String,Object> settings, PrinterStatusReporter printerStatusReporter);
+    public void init(Map<String,Object> settings, IPrinterStatusReporter printerStatusReporter);
 
     public String getPrinterName();
 

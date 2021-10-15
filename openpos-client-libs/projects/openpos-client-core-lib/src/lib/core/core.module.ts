@@ -82,6 +82,7 @@ import { CapacitorStorageService } from './storage/capacitor/capacitor-storage.s
 import { CordovaStorageService } from './storage/cordova/cordova-storage.service';
 import { Storage } from './storage/storage.service';
 import { STORAGE_CONTAINERS } from './storage/storage-container';
+import {ZebraBluetoothPrinterCordovaPlugin} from "./platform-plugins/cordova-plugins/zebra-bluetooth-printer-cordova-plugin";
 
 registerLocaleData(locale_enCA, 'en-CA');
 registerLocaleData(locale_frCA, 'fr-CA');
@@ -154,6 +155,7 @@ registerLocaleData(locale_frCA, 'fr-CA');
         { provide: PLUGINS, useExisting: ScanditScannerCordovaPlugin, multi: true},
         { provide: PLUGINS, useExisting: InfineaScannerCapacitorPlugin, multi: true },
         { provide: PLUGINS, useExisting: Dpp255CapacitorPlugin, multi: true },
+        { provide: PLUGINS, useExisting: ZebraBluetoothPrinterCordovaPlugin, multi: true, deps: [CordovaService, SessionService]},
         { provide: SCANNERS, useExisting: ServerScannerPlugin, multi: true, deps: [SessionService]},
         { provide: PLATFORMS, useExisting: CordovaPlatform, multi: true},
         { provide: STORAGE_CONTAINERS, useClass: CapacitorStorageService, multi: true },

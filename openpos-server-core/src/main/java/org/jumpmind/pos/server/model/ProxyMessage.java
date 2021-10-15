@@ -1,9 +1,15 @@
 package org.jumpmind.pos.server.model;
 
+import java.util.Map;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.jumpmind.pos.util.model.Message;
 
+@Data()
+@EqualsAndHashCode(callSuper = true)
 public class ProxyMessage extends Message {
 
     private static final String MESSAGE_TYPE = "Proxy";
@@ -17,6 +23,8 @@ public class ProxyMessage extends Message {
     private String action;
 
     private String payload;
+
+    private Map<String, Object> additionalFields;
 
     public ProxyMessage() {
         this.setType(MESSAGE_TYPE);
@@ -33,36 +41,14 @@ public class ProxyMessage extends Message {
         this.payload = payload;
     }
 
-    public UUID getMessageId() {
-        return messageId;
+    @JsonIgnore
+    public void setAdditionalField(String fieldName, Object fieldValue) {
+        additionalFields.put(fieldName, fieldValue);
     }
 
-    public void setMessageId(UUID messageId) {
-        this.messageId = messageId;
-    }
-
-    public String getProxyType() {
-        return proxyType;
-    }
-
-    public void setProxyType(String proxyType) {
-        this.proxyType = proxyType;
-    }
-
-    public String getAction() {
-        return action;
-    }
-
-    public void setAction(String action) {
-        this.action = action;
-    }
-
-    public String getPayload() {
-        return payload;
-    }
-
-    public void setPayload(String payload) {
-        this.payload = payload;
+    @JsonIgnore
+    public Object getAdditionalField(String fieldName) {
+        return additionalFields.get(fieldName);
     }
 
 }

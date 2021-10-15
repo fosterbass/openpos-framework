@@ -11,4 +11,5 @@ public class PrinterConfig {
     PrinterTypeCode type;
     Map<String, Object> settings;
     String styleSheet;
+    boolean pingEnabled = true;
 }

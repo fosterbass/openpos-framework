@@ -1,1122 +1,561 @@
 package org.jumpmind.pos.print;
 
 import jpos.JposException;
-import jpos.POSPrinterConst;
-import jpos.services.EventCallbacks;
-import lombok.extern.slf4j.Slf4j;
-import org.jumpmind.pos.util.AppUtils;
-import org.jumpmind.pos.util.status.Status;
 
-import java.io.InputStream;
-import java.util.Map;
+public  class UnsupportedJposMethods {
 
-@Slf4j
-public class LogPOSPrinter implements IOpenposPrinter {
-
-    private PrinterCommands printerCommands = new PrinterCommandPlaceholders();
-
-    private StringBuilder buff = new StringBuilder(128);
-
-    @Override
-    public void printImage(InputStream image) {
+    public PrintNotSupportedException unsupported() {
+        throw new PrintNotSupportedException("Method not supported on this driver.");
     }
-
-    @Override
-    public String getCommand(String commandName) {
-        return printerCommands.get(commandName);
-    }
-
-    @Override
     public boolean getCapCompareFirmwareVersion() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapConcurrentPageMode() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
-    public int getPrintWidth() {
-        return 48;
-    }
-
-    @Override
-    public void init(Map<String, Object> settings, IPrinterStatusReporter printerStatusReporter) {
-        printerStatusReporter.reportStatus(Status.Online, "LogPOSPrinter Ok.");
-    }
-
-    @Override
-    public String getPrinterName() {
-        return "LogPOSPrinter";
-    }
-
-    @Override
-    public PeripheralConnection getPeripheralConnection() {
-        return new PeripheralConnection();
-    }
-
-    @Override
-    public int readPrinterStatus() {
-        return 0;
-    }
-
-    @Override
-    public void beginSlipMode() {
-    }
-
-    @Override
-    public void endSlipMode() {
-
-    }
-
-    @Override
-    public String readMicr() {
-        return " (1098765432( )321270742) 012547854(";
-    }
-
-    public void printSlip(String text, int timeoutInMillis) {
-        try {
-            printNormal(0, text);
-        } catch (JposException ex) {
-            throw new PrintException("Failed to print slip", ex);
-        }
-    }
-
-    @Override
-    public void openCashDrawer(String cashDrawerId) {
-        log.info("\r\n" +
-                "      ------------------------------ -\n" +
-                "    -/                              /|\n" +
-                "  -/                              -/ |\n" +
-                "-/                               /   |\n" +
-                "+-------------------------------+    |\n" +
-                "|      CASH DRAWER OPEN         |   / \n" +
-                "|            ----               | -/  \n" +
-                "|        LogPOSPrinter          |/    \n" +
-                "+-------------------------------+     ");
-    }
-
-    @Override
-    public boolean isDrawerOpen(String cashDrawerId) {
-        return false;
-    }
-
-    @Override
-    public int waitForDrawerClose(String cashDrawerId, long timeout) {
-        AppUtils.sleep(1000);
-        return DRAWER_CLOSED;
-    }
-
-    @Override
     public boolean getCapRecPageMode() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapSlpPageMode() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapUpdateFirmware() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public String getPageModeArea() throws JposException {
-        return null;
+        throw unsupported();
     }
-
-    @Override
     public int getPageModeDescriptor() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public int getPageModeHorizontalPosition() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public void setPageModeHorizontalPosition(int position) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public String getPageModePrintArea() throws JposException {
-        return null;
+        throw unsupported();
     }
-
-    @Override
     public void setPageModePrintArea(String area) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public int getPageModePrintDirection() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public void setPageModePrintDirection(int direction) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public int getPageModeStation() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public void setPageModeStation(int station) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public int getPageModeVerticalPosition() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public void setPageModeVerticalPosition(int position) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public void clearPrintArea() throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public void compareFirmwareVersion(String firmwareFileName, int[] result) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public void pageModePrint(int control) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public void updateFirmware(String firmwareFileName) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapStatisticsReporting() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapUpdateStatistics() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public void resetStatistics(String statisticsBuffer) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public void retrieveStatistics(String[] statisticsBuffer) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public void updateStatistics(String statisticsBuffer) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapMapCharacterSet() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getMapCharacterSet() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public void setMapCharacterSet(boolean mapCharacterSet) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public String getRecBitmapRotationList() throws JposException {
-        return null;
+        throw unsupported();
     }
-
-    @Override
     public String getSlpBitmapRotationList() throws JposException {
-        return null;
+        throw unsupported();
     }
-
-    @Override
     public int getCapJrnCartridgeSensor() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public int getCapJrnColor() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public int getCapRecCartridgeSensor() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public int getCapRecColor() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public int getCapRecMarkFeed() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapSlpBothSidesPrint() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public int getCapSlpCartridgeSensor() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public int getCapSlpColor() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public int getCartridgeNotify() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public void setCartridgeNotify(int notify) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public int getJrnCartridgeState() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public int getJrnCurrentCartridge() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public void setJrnCurrentCartridge(int cartridge) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public int getRecCartridgeState() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public int getRecCurrentCartridge() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public void setRecCurrentCartridge(int cartridge) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public int getSlpCartridgeState() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public int getSlpCurrentCartridge() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public void setSlpCurrentCartridge(int cartridge) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public int getSlpPrintSide() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public void changePrintSide(int side) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public void markFeed(int type) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public void deleteInstance() throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public int getCapPowerReporting() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public int getPowerNotify() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public void setPowerNotify(int powerNotify) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public int getPowerState() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public int getCapCharacterSet() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapConcurrentJrnRec() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapConcurrentJrnSlp() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapConcurrentRecSlp() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapCoverSensor() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapJrn2Color() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapJrnBold() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapJrnDhigh() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapJrnDwide() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapJrnDwideDhigh() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapJrnEmptySensor() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapJrnItalic() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapJrnNearEndSensor() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapJrnPresent() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapJrnUnderline() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapRec2Color() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapRecBarCode() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapRecBitmap() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapRecBold() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapRecDhigh() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapRecDwide() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapRecDwideDhigh() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapRecEmptySensor() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapRecItalic() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapRecLeft90() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapRecNearEndSensor() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapRecPapercut() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapRecPresent() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapRecRight90() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapRecRotate180() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapRecStamp() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapRecUnderline() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapSlp2Color() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapSlpBarCode() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapSlpBitmap() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapSlpBold() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapSlpDhigh() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapSlpDwide() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapSlpDwideDhigh() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapSlpEmptySensor() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapSlpFullslip() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapSlpItalic() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapSlpLeft90() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapSlpNearEndSensor() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapSlpPresent() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapSlpRight90() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapSlpRotate180() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapSlpUnderline() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getCapTransaction() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getAsyncMode() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public void setAsyncMode(boolean asyncMode) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public int getCharacterSet() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public void setCharacterSet(int characterSet) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public String getCharacterSetList() throws JposException {
-        return null;
+        throw unsupported();
     }
-
-    @Override
-    public boolean getCoverOpen() throws JposException {
-        return false;
-    }
-
-    @Override
     public int getErrorLevel() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public int getErrorStation() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public String getErrorString() throws JposException {
-        return null;
+        throw unsupported();
     }
-
-    @Override
     public boolean getFlagWhenIdle() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public void setFlagWhenIdle(boolean flagWhenIdle) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public String getFontTypefaceList() throws JposException {
-        return null;
+        throw unsupported();
     }
-
-    @Override
-    public boolean getJrnEmpty() throws JposException {
-        return false;
-    }
-
-    @Override
     public boolean getJrnLetterQuality() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public void setJrnLetterQuality(boolean jrnLetterQuality) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public int getJrnLineChars() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public void setJrnLineChars(int jrnLineChars) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public String getJrnLineCharsList() throws JposException {
-        return null;
+        throw unsupported();
     }
-
-    @Override
     public int getJrnLineHeight() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public void setJrnLineHeight(int jrnLineHeight) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public int getJrnLineSpacing() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public void setJrnLineSpacing(int jrnLineSpacing) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public int getJrnLineWidth() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public boolean getJrnNearEnd() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public int getMapMode() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public void setMapMode(int mapMode) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public int getOutputID() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public String getRecBarCodeRotationList() throws JposException {
-        return null;
+        throw unsupported();
     }
-
-    @Override
-    public boolean getRecEmpty() throws JposException {
-        return false;
-    }
-
-    @Override
     public boolean getRecLetterQuality() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public void setRecLetterQuality(boolean recLetterQuality) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public int getRecLineChars() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public void setRecLineChars(int recLineChars) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public String getRecLineCharsList() throws JposException {
-        return null;
+        throw unsupported();
     }
-
-    @Override
     public int getRecLineHeight() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public void setRecLineHeight(int recLineHeight) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
-    public int getRecLineSpacing() throws JposException {
-        return 0;
-    }
-
-    @Override
-    public void setRecLineSpacing(int recLineSpacing) throws JposException {
-
-    }
-
-    @Override
     public int getRecLinesToPaperCut() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public int getRecLineWidth() throws JposException {
-        return 0;
+        // TODO this would be nice to support.
+        throw unsupported();
     }
-
-    @Override
-    public boolean getRecNearEnd() throws JposException {
-        return false;
-    }
-
-    @Override
     public int getRecSidewaysMaxChars() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public int getRecSidewaysMaxLines() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public int getRotateSpecial() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public void setRotateSpecial(int rotateSpecial) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public String getSlpBarCodeRotationList() throws JposException {
-        return null;
+        throw unsupported();
     }
-
-    @Override
     public boolean getSlpEmpty() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public boolean getSlpLetterQuality() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public void setSlpLetterQuality(boolean recLetterQuality) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public int getSlpLineChars() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public void setSlpLineChars(int recLineChars) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public String getSlpLineCharsList() throws JposException {
-        return null;
+        throw unsupported();
     }
-
-    @Override
     public int getSlpLineHeight() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public void setSlpLineHeight(int recLineHeight) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public int getSlpLinesNearEndToEnd() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public int getSlpLineSpacing() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public void setSlpLineSpacing(int recLineSpacing) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public int getSlpLineWidth() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public int getSlpMaxLines() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public boolean getSlpNearEnd() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public int getSlpSidewaysMaxChars() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public int getSlpSidewaysMaxLines() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
     public void beginInsertion(int timeout) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
-    public void beginRemoval(int timeout) throws JposException {
-
-    }
-
-    @Override
     public void clearOutput() throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
-    public void cutPaper(int percentage) throws JposException {
-        log.info("\n" + buff.toString());
-        buff.setLength(0);
-    }
-
-    @Override
     public void endInsertion() throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
-    public void endRemoval() throws JposException {
-
-    }
-
-    @Override
-    public void printBarCode(int station, String data, int symbology, int height, int width, int alignment, int textPosition) throws JposException {
-        switch (symbology) {
-            case POSPrinterConst.PTR_BCS_Code128:
-                buff.append("<BARCODE_CODE128>" + data + "</BARCODE_CODE128>\n");
-                break;
-            case POSPrinterConst.PTR_BCS_Code39:
-                buff.append("<BARCODE_CODE39>" + data + "</BARCODE_CODE39>\n");
-                break;
-            default:
-                buff.append("<BARCODE_" + symbology + "/>" + data + "<BARCODE_" + symbology + "/>\n");
-                break;
-        }
-    }
-
-    @Override
-    public void printBitmap(int station, String fileName, int width, int alignment) throws JposException {
-
-    }
-
-    @Override
     public void printImmediate(int station, String data) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
-    public void printNormal(int station, String data) throws JposException {
-        buff.append(data);
-    }
-
-    @Override
     public void printTwoNormal(int stations, String data1, String data2) throws JposException {
-
+        // fiscal printer?
+        throw unsupported();
     }
-
-    @Override
     public void rotatePrint(int station, int rotation) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public void setBitmap(int bitmapNumber, int station, String fileName, int width, int alignment) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public void setLogo(int location, String data) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public void transactionPrint(int station, int control) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public void validateData(int station, String data) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public String getCheckHealthText() throws JposException {
-        return null;
+        throw unsupported();
     }
-
-    @Override
     public boolean getClaimed() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
-    public boolean getDeviceEnabled() throws JposException {
-        return false;
-    }
-
-    @Override
-    public void setDeviceEnabled(boolean deviceEnabled) throws JposException {
-
-    }
-
-    @Override
     public String getDeviceServiceDescription() throws JposException {
-        return null;
+        throw unsupported();
     }
-
-    @Override
-    public int getDeviceServiceVersion() throws JposException {
-        final int deviceVersion19  = 1009000; // 1.9.0
-        return deviceVersion19;
-    }
-
-    @Override
     public boolean getFreezeEvents() throws JposException {
-        return false;
+        throw unsupported();
     }
-
-    @Override
     public void setFreezeEvents(boolean freezeEvents) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public String getPhysicalDeviceDescription() throws JposException {
-        return null;
+        throw unsupported();
     }
-
-    @Override
     public String getPhysicalDeviceName() throws JposException {
-        return null;
+        throw unsupported();
     }
-
-    @Override
     public int getState() throws JposException {
-        return 0;
+        throw unsupported();
     }
-
-    @Override
-    public void claim(int timeout) throws JposException {
-
-    }
-
-    @Override
-    public void close() throws JposException {
-
-    }
-
-    @Override
     public void checkHealth(int level) throws JposException {
-
+        throw unsupported();
     }
-
-    @Override
     public void directIO(int command, int[] data, Object object) throws JposException {
-
-    }
-
-    @Override
-    public void open(String logicalName, EventCallbacks cb) throws JposException {
-
-    }
-
-    @Override
-    public void release() throws JposException {
-
+        throw unsupported();
     }
 }
