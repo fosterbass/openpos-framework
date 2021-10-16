@@ -14,6 +14,7 @@ public class ReturnUIMessage extends LoyaltySaleUIMessage {
     private static final long serialVersionUID = 1L;
 
     private List<TransactionReceipt> receipts = new ArrayList<>();
+    private ActionItem removeReceiptAction;
 
     public ReturnUIMessage() {
         this.setScreenType(UIMessageType.RETURN);
