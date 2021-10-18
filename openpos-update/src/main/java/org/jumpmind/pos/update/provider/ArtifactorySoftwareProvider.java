@@ -62,6 +62,7 @@ public class ArtifactorySoftwareProvider implements ISoftwareProvider{
 
     @PostConstruct
     public void init(){
+        
         try {
             tempDirectory = Files.createTempDirectory("jmcUpdates").toFile().getAbsolutePath();
         } catch (IOException e) {
@@ -87,16 +88,18 @@ public class ArtifactorySoftwareProvider implements ISoftwareProvider{
     }
 
     @Override
-    @Cacheable("softwareVersion")
     public Path getSoftwareVersion(Version version) {
         Folder folder = artifactory.repository(repositoryName).folder(pathToFolder).info();
         Item softwareItem = folder.getChildren().stream().filter(item -> version.equals(getVersionFromName(item.getName()))).findFirst().orElse(null);
         if( softwareItem != null ){
             try {
                 Path tempPath = Paths.get(tempDirectory, softwareItem.getName());
-                OutputStream outStream = new FileOutputStream(tempPath.toFile());
-                log.info("Downloading " + version.getVersionString() + " to " + tempPath);
-                IOUtils.copy(artifactory.repository(repositoryName).download(pathToFolder + softwareItem.getUri()).doDownload(), outStream);
+                if(!Files.exists(tempPath)) {
+                    // Only download if we don't already have this version
+                    OutputStream outStream = new FileOutputStream(tempPath.toFile());
+                    log.info("Downloading " + version.getVersionString() + " to " + tempPath);
+                    IOUtils.copy(artifactory.repository(repositoryName).download(pathToFolder + softwareItem.getUri()).doDownload(), outStream);
+                }
                 return tempPath;
             } catch (IOException exception){
                 log.error("Error saving to temp directory", exception);
