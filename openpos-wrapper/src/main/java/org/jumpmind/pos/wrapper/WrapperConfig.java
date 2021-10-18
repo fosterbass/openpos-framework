@@ -244,8 +244,8 @@ public class WrapperConfig {
         return new File(pendingFileLocation);
     }
 
-    public String getBuisnessUnitId() {
-        return getProperty(properties, "wrapper.buisnessunitid", null);
+    public String getInstallationId() {
+        return getProperty(properties, "wrapper.installationid", null);
     }
 
     String expandWildcard(String classPath) {

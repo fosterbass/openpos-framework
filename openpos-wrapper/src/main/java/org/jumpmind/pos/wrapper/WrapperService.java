@@ -430,7 +430,7 @@ public abstract class WrapperService {
             return;
         }
 
-        String deviceId = config.getBuisnessUnitId();
+        String deviceId = config.getInstallationId();
 
         if (deviceId == null) {
             return;
