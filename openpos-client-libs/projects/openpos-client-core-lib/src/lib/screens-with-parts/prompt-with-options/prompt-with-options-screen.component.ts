@@ -3,7 +3,7 @@ import { Component, ViewChild } from '@angular/core';
 import { ScreenComponent } from '../../shared/decorators/screen-component.decorator';
 import { IOptionItem } from '../../core/interfaces/option-item.interface';
 import { PromptWithOptionsInterface } from './prompt-with-options.interface';
-import { PosScreen } from '../pos-screen/pos-screen.component';
+import { PosScreenDirective } from '../pos-screen/pos-screen.component';
 import { PromptFormPartComponent } from '../../shared/screen-parts/prompt-form-part/prompt-form-part.component';
 
 
@@ -15,7 +15,7 @@ import { PromptFormPartComponent } from '../../shared/screen-parts/prompt-form-p
     templateUrl: './prompt-with-options-screen.component.html',
     styleUrls: ['./prompt-with-options-screen.component.scss']
 })
-export class PromptWithOptionsScreenComponent extends PosScreen<PromptWithOptionsInterface> {
+export class PromptWithOptionsScreenComponent extends PosScreenDirective<PromptWithOptionsInterface> {
 
     @ViewChild(PromptFormPartComponent, { static: true }) private promptForm: PromptFormPartComponent;
     public optionItems: IOptionItem[];

@@ -1,5 +1,5 @@
-import {IConfirmationDialog} from './confirmation-dialog.interface';
-import {IActionTimer} from './action-timer.interface';
+import { IConfirmationDialog } from './confirmation-dialog.interface';
+import { IActionTimer } from './action-timer.interface';
 
 export interface IActionItem {
     // Action to be sent to the server when the ActionItem is performed
@@ -28,7 +28,7 @@ export interface IActionItem {
      * If set the action service will queue up the action if the action service is currently blocked
      */
     queueIfBlocked?: boolean;
-    
+
     additionalStyle?: string;
 
     /**

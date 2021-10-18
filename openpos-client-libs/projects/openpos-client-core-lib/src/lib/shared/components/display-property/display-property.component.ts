@@ -9,18 +9,18 @@ import { DisplayPropertyAligment } from './display-property-alignment.enum';
 })
 export class DisplayPropertyComponent {
 
-    DisplayPropertyAlignment = DisplayPropertyAligment;
+    displayPropertyAlignment = DisplayPropertyAligment;
 
     @Input() alignmentType = DisplayPropertyAligment.column;
-    @Input() set label( label: string) {
+    @Input() set label(label: string) {
         this.property.label = label;
     }
-    @Input() set value( value: string) {
+    @Input() set value(value: string) {
         this.property.value = value;
     }
-    @Input() set valueFormatter( formatter: string) {
+    @Input() set valueFormatter(formatter: string) {
         this.property.valueFormatter = formatter;
     }
 
-    @Input() property: DisplayProperty = {label: '', value: '', valueFormatter: ''};
+    @Input() property: DisplayProperty = { label: '', value: '', valueFormatter: '' };
 }

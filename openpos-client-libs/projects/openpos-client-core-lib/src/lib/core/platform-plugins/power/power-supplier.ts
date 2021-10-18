@@ -1,5 +1,5 @@
 import { InjectionToken } from '@angular/core';
-import { Observable } from "rxjs";
+import { Observable } from 'rxjs';
 
 export const POWER_SUPPLIER_TOKEN = new InjectionToken<PowerSupplier>('POWER_SUPPLIER');
 

@@ -1,4 +1,4 @@
-import { ValidationConstants } from './../../shared/validators/validation.constants';
+import { VALIDATION_CONSTANTS } from './../../shared/validators/validation.constants';
 import { IValidator, IValidatorSpec } from './../interfaces/validator.interface';
 import { Injectable } from '@angular/core';
 import { ValidatorFn, Validators } from '@angular/forms';
@@ -66,7 +66,7 @@ export class ValidatorsService {
             // Support for dynamically loading validators specified by the server side.
             // If locale support is needed, that can be handled in the validator implementation
             const validatorInstance: IValidator =
-                ValidationConstants.validators.find(entry => entry.name === validatorSpec.name).validatorClass.prototype;
+                VALIDATION_CONSTANTS.validators.find(entry => entry.name === validatorSpec.name).validatorClass.prototype;
             validatorInstance.constructor.apply(validatorInstance, [validatorSpec]);
             return validatorInstance.validationFunc;
         }

@@ -8,10 +8,10 @@ const selectors = `
 [klass.gt-xs], [klass.gt-sm], [klass.gt-md], [klass.gt-lg]
 `;
 
-  @Directive({selector: selectors})
-  export class KlassDirective implements OnInit, OnDestroy  {
+@Directive({ selector: selectors })
+export class KlassDirective implements OnInit, OnDestroy {
     private prevClass: string;
-    private inputMap: Map<string, string> = new Map;
+    private inputMap: Map<string, string> = new Map();
     private subscriptions = new Subscription();
 
     @Input('klass')
@@ -83,30 +83,33 @@ const selectors = `
         this.inputMap.set('xl', val);
     }
 
-    constructor(private mediaService: OpenposMediaService, private renderer: Renderer2, private el: ElementRef) {
-    }
+    constructor(
+        private mediaService: OpenposMediaService,
+        private renderer: Renderer2,
+        private el: ElementRef
+    ) { }
 
     ngOnInit(): void {
-        this.subscriptions.add(this.mediaService.mediaObservableFromMap(this.inputMap).subscribe( c => {
+        this.subscriptions.add(this.mediaService.mediaObservableFromMap(this.inputMap).subscribe(c => {
 
             // Remove old class first incase there is overlap
-            if ( this.prevClass ) {
-                this.prevClass.split(' ').forEach( klass => {
-                    this.renderer.removeClass( this.el.nativeElement, klass);
+            if (this.prevClass) {
+                this.prevClass.split(' ').forEach(klass => {
+                    this.renderer.removeClass(this.el.nativeElement, klass);
                 });
             }
-            if ( c ) {
-                c.split(' ').forEach( klass => {
+            if (c) {
+                c.split(' ').forEach(klass => {
                     this.renderer.addClass(this.el.nativeElement, klass);
                 });
             }
             this.prevClass = c;
         }));
-      }
+    }
 
-      ngOnDestroy(): void {
+    ngOnDestroy(): void {
         if (!!this.subscriptions) {
             this.subscriptions.unsubscribe();
         }
-      }
-  }
+    }
+}

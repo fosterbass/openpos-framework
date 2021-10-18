@@ -4,7 +4,6 @@ import { IListComponent } from '../../../core/interfaces/list-component.interfac
 import { IActionItem } from '../../../core/actions/action-item.interface';
 import { IFormElement } from '../../../core/interfaces/form-field.interface';
 import { IForm } from '../../../core/interfaces/form.interface';
-import { SessionService } from '../../../core/services/session.service';
 import { ScreenService } from '../../../core/services/screen.service';
 import { FormBuilder } from '../../../core/services/form-builder.service';
 import { ActionService } from '../../../core/actions/action.service';
@@ -42,7 +41,7 @@ export class DynamicListControlComponent implements OnInit {
     constructor(
         public screenService: ScreenService,
         private formBuilder: FormBuilder,
-        public actionService: ActionService ) {
+        public actionService: ActionService) {
         this.log('Constructing DynamicListControlComponent...');
         this.log('initialized = ' + this._initialized);
     }
@@ -93,7 +92,7 @@ export class DynamicListControlComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.log('Initializing DynamicListControlComponent...')
+        this.log('Initializing DynamicListControlComponent...');
         if (!this.list.valueList) {
             this.list.valueList = [];
             this.log('Value List was undefined, initialized to empty');
@@ -108,8 +107,8 @@ export class DynamicListControlComponent implements OnInit {
 
         this.log('List Component Name: ' + this.list.name);
         this.log('List has ' + this.list.valueList.length + ' item(s)');
-        this.log('Add Value label: ' + this.list.addValueField.label + ', value: ' + this.list.addValueField.value + ', icon: ' + this.list.addValueField.iconName);
-        this.log('Summary label: ' + this.list.summaryField.label + ', value: ' + this.list.summaryField.value + ', icon: ' + this.list.summaryField.iconName);
+        this.log(`Add Value label: ${this.list.addValueField.label}, value: ${this.list.addValueField.value}, icon: ${this.list.addValueField.iconName}`);
+        this.log(`Summary label: ${this.list.summaryField.label}, value: ${this.list.summaryField.value}, icon: ${this.list.summaryField.iconName}`);
         this.log('Requires at least one value: ' + this.list.requiresAtLeastOneValue);
 
         if (!this.form) {
@@ -342,24 +341,24 @@ export class DynamicListControlComponent implements OnInit {
             if (this._isNumeric) {
                 const value = parseFloat(this.toCleanValue(this.list.valueList[i]));
                 if (!isNaN(this.list.addValueField.minValue) && value < this.list.addValueField.minValue) {
-                    this.list.formErrors.push('Item #' + (i + 1) + ' is less than the minimum value ' + this.list.addValueField.minValue);
+                    this.list.formErrors.push(`Item #${(i + 1)} is less than the minimum value ${this.list.addValueField.minValue}`);
 
                 } else if (!isNaN(this.list.addValueField.maxValue) && value > this.list.addValueField.maxValue) {
-                    this.list.formErrors.push('Item #' + (i + 1) + ' is greater than the maximum value ' + this.list.addValueField.maxValue);
+                    this.list.formErrors.push(`Item #${(i + 1)} is greater than the maximum value ${this.list.addValueField.maxValue}`);
                 }
 
             } else if (this._isText) {
                 if (this.list.valueList[i].length < this.list.addValueField.minLength) {
-                    this.list.formErrors.push('Item #' + (i + 1) + ' is shorter than the minimum length ' + this.list.addValueField.minLength);
+                    this.list.formErrors.push(`Item #${(i + 1)} is shorter than the minimum length ${this.list.addValueField.minLength}`);
 
                 } else if (this.list.valueList[i].length > this.list.addValueField.maxLength) {
-                    this.list.formErrors.push('Item #' + (i + 1) + ' is longer than the maximum length ' + this.list.addValueField.maxLength);
+                    this.list.formErrors.push(`Item #${(i + 1)} is longer than the maximum length ${this.list.addValueField.maxLength}`);
                 }
 
                 if (this.list.valueType === 'NumericText') {
                     const dummy = parseInt(this.list.valueList[i], 10);
                     if (isNaN(dummy)) {
-                        this.list.formErrors.push('Item #' + (i + 1) + ' is not numeric')
+                        this.list.formErrors.push('Item #' + (i + 1) + ' is not numeric');
                     }
                 }
             }
@@ -378,7 +377,7 @@ export class DynamicListControlComponent implements OnInit {
             //  No errors, perform the submit action.
 
             this.log('Form has no errors, firing action ' + action + '...');
-            this.actionService.doAction({action}, this.list.valueList);
+            this.actionService.doAction({ action }, this.list.valueList);
         }
 
         this.log('onSubmit() returning ' + isValid);

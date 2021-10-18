@@ -1,29 +1,26 @@
-import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
-
-import { combineLatest, concat, defer, iif, of } from "rxjs";
-import { bufferTime, catchError, filter, groupBy, map, mergeMap, publishReplay, refCount, switchMap, tap } from "rxjs/operators";
-
-import { VERSIONS } from '../../../version';
-import { ConfigurationService } from "../../services/configuration.service";
-import { ConfigChangedMessage } from "../../messages/config-changed-message";
-import { PersonalizationService } from "../../personalization/personalization.service";
-import { SessionService } from "../../services/session.service";
-import { ConsoleScraper, LogLevel } from "../console-scraper.service";
-import { CapacitorService } from "../../services/capacitor.service";
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { combineLatest, concat, defer, iif, of } from 'rxjs';
+import { bufferTime, catchError, filter, map, mergeMap, publishReplay, refCount, switchMap } from 'rxjs/operators';
+import { ConfigurationService } from '../../services/configuration.service';
+import { ConfigChangedMessage } from '../../messages/config-changed-message';
+import { PersonalizationService } from '../../personalization/personalization.service';
+import { SessionService } from '../../services/session.service';
+import { ConsoleScraper, LogLevel } from '../console-scraper.service';
+import { CapacitorService } from '../../services/capacitor.service';
 
 export interface NewRelicMessageGroup {
-    common?: { [key: string]: any },
-    logs: NewRelicLogMessage[],
+    common?: { [key: string]: any };
+    logs: NewRelicLogMessage[];
 }
 
 export interface NewRelicLogMessage {
-    timestamp?: number,
-    message: string,
-    log_level?: LogLevel,
+    timestamp?: number;
+    message: string;
+    log_level?: LogLevel;
 
     // attributes
-    [key: string]: any,
+    [key: string]: any;
 }
 
 export class NewRelicLoggerConfig extends ConfigChangedMessage {
@@ -48,11 +45,11 @@ export class NewRelicSink {
         config.getConfiguration<NewRelicLoggerConfig>('new-relic-logger').pipe(
             map(v => ({ enabled: v.enabled, apiKey: v.apiKey })),
         ).pipe(
-            switchMap(config => iif(
-                () => config && config.enabled && !!config.apiKey,
+            switchMap(newRelicLogger => iif(
+                () => newRelicLogger && newRelicLogger.enabled && !!newRelicLogger.apiKey,
 
-                defer(() => combineLatest(
-                    of(config),
+                defer(() => combineLatest([
+                    of(newRelicLogger),
                     personalization.getAppId$(),
                     personalization.getDeviceId$(),
                     personalization.getServerName$(),
@@ -67,16 +64,16 @@ export class NewRelicSink {
                         of(undefined)
                     ),
                     consoleScraper.messages$.pipe(
-                        map(cm => <NewRelicLogMessage>{
+                        map(cm => ({
                             log_level: cm.level,
                             message: cm.message,
                             timestamp: Math.round(Date.now())
-                        }),
+                        }) as NewRelicLogMessage),
                         publishReplay(100, 5000),
                         refCount()
                     )
-                ).pipe(
-                    map(c => (<NewRelicLogMessage>{
+                ]).pipe(
+                    map(c => ({
                         timestamp: c[7].timestamp,
                         config: c[0],
                         app_id: c[1] || undefined,
@@ -93,7 +90,7 @@ export class NewRelicSink {
                     filter(logs => logs.length > 0),
                     map(logs => ({
                         apiKey: logs[0].config.apiKey,
-                        groups: Array.of(<NewRelicMessageGroup>{
+                        groups: Array.of({
                             logs: logs.map(v => ({
                                 ...v,
                                 config: undefined,

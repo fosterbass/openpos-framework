@@ -1,4 +1,4 @@
-import { Input, Component, OnInit, Output, EventEmitter, AfterViewInit } from '@angular/core';
+import { Input, Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { DatePartChooserDialogComponent } from '../date-part-chooser-dialog/date-part-chooser-dialog.component';
@@ -11,7 +11,7 @@ import { FormattersService } from '../../../../core/services/formatters.service'
     styleUrls: ['./date-part-chooser-field.component.scss']
 })
 
-export class DatePartChooserFieldComponent implements OnInit, AfterViewInit {
+export class DatePartChooserFieldComponent implements OnInit {
 
     @Input() formGroup: FormGroup;
     @Input() controlName: string;
@@ -28,14 +28,10 @@ export class DatePartChooserFieldComponent implements OnInit, AfterViewInit {
 
     @Output() change = new EventEmitter<any>();
 
-    constructor(protected formatters: FormattersService,
+    constructor(
+        protected formatters: FormattersService,
         protected dialog: MatDialog,
-    ) {
-
-    }
-
-    ngAfterViewInit(): void {
-    }
+    ) { }
 
     ngOnInit(): void {
         if (this.formGroup && this.model.dayOfMonth && this.model.month) {
@@ -57,7 +53,7 @@ export class DatePartChooserFieldComponent implements OnInit, AfterViewInit {
             if (this.model.month === 2 && this.model.dayOfMonth === 29) {
                 // adjust year to nearest leap year
                 let year = d.getFullYear();
-                while (! this.isLeapYear(year) && year > 0) {
+                while (!this.isLeapYear(year) && year > 0) {
                     year--;
                 }
                 d.setFullYear(year);
@@ -86,7 +82,7 @@ export class DatePartChooserFieldComponent implements OnInit, AfterViewInit {
     }
 
     openDatePartChooser() {
-        if (! this.modifyAllowed) {
+        if (!this.modifyAllowed) {
             return;
         }
         const today = new Date();
@@ -112,12 +108,12 @@ export class DatePartChooserFieldComponent implements OnInit, AfterViewInit {
         const dialogRef = this.dialog.open(DatePartChooserDialogComponent, {
             width: '750px',
             data: {
-              dateParts,
-              mode: this.model.mode,
-              title: this.model.popupTitle,
-              disableClose: false,
-              autoFocus: false
-           }
+                dateParts,
+                mode: this.model.mode,
+                title: this.model.popupTitle,
+                disableClose: false,
+                autoFocus: false
+            }
         });
 
         dialogRef.afterClosed().subscribe(() => {

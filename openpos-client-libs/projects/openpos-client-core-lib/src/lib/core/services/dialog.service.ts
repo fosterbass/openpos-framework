@@ -1,14 +1,14 @@
-import {ComponentFactory, ComponentFactoryResolver, Injectable, Type } from '@angular/core';
+import { ComponentFactory, ComponentFactoryResolver, Injectable, Type } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { tap } from 'rxjs/operators';
-import {IScreen} from '../../shared/components/dynamic-screen/screen.interface';
-import {MessageProvider} from '../../shared/providers/message.provider';
-import {DialogContentComponent} from '../components/dialog-content/dialog-content.component';
-import {OpenPOSDialogConfig} from '../interfaces/open-pos-dialog-config.interface';
-import {LifeCycleEvents} from '../messages/life-cycle-events.enum';
-import {LifeCycleMessage} from '../messages/life-cycle-message';
-import {MessageTypes} from '../messages/message-types';
-import {SessionService} from './session.service';
+import { IScreen } from '../../shared/components/dynamic-screen/screen.interface';
+import { MessageProvider } from '../../shared/providers/message.provider';
+import { DialogContentComponent } from '../components/dialog-content/dialog-content.component';
+import { OpenPOSDialogConfig } from '../interfaces/open-pos-dialog-config.interface';
+import { LifeCycleEvents } from '../messages/life-cycle-events.enum';
+import { LifeCycleMessage } from '../messages/life-cycle-message';
+import { MessageTypes } from '../messages/message-types';
+import { SessionService } from './session.service';
 import { Subject } from 'rxjs';
 
 @Injectable({
@@ -43,8 +43,10 @@ export class DialogService {
         if (!this.listening) {
             // Pipe all the messages for dialog updates
             this.messageProvider.setMessageType(MessageTypes.DIALOG);
-            this.session.dialogMessage$.subscribe((m) => this.updateDialog(m))
-            this.session.getMessages(MessageTypes.SCREEN).pipe(tap(x => console.log("Last screen sequence = ", x.sequenceNumber))).subscribe(m => this.lastScreenSeq = m.sequenceNumber)
+            this.session.dialogMessage$.subscribe((m) => this.updateDialog(m));
+            this.session.getMessages(MessageTypes.SCREEN)
+                .pipe(tap(x => console.log('Last screen sequence = ', x.sequenceNumber)))
+                .subscribe(m => this.lastScreenSeq = m.sequenceNumber);
             this.listening = true;
         }
     }
@@ -96,7 +98,7 @@ export class DialogService {
             this.dialogRef = null;
             this.closingDialogRef.close();
 
-            this.session.sendMessage( new LifeCycleMessage(LifeCycleEvents.DialogClosing, null));
+            this.session.sendMessage(new LifeCycleMessage(LifeCycleEvents.DialogClosing, null));
 
             // Wait for the dialog to fully close before moving on
             await this.closingDialogRef.afterClosed().toPromise();
@@ -117,7 +119,7 @@ export class DialogService {
     }
 
     private updateDialog(dialog?: any): void {
-        if(dialog){
+        if (dialog) {
             const dialogType = this.hasDialog(dialog.subType) ? dialog.subType : 'Dialog';
             if (!this.dialogOpening) {
                 console.info('opening dialog \'' + dialogType + '\'');
@@ -150,7 +152,7 @@ export class DialogService {
             // By default we want to not allow the user to close by clicking off
             // By default we need the dialog to grab focus so you cannont execute actions on the screen
             // behind by hitting enter
-            const dialogProperties: OpenPOSDialogConfig = {disableClose: !closeable, autoFocus: true};
+            const dialogProperties: OpenPOSDialogConfig = { disableClose: !closeable, autoFocus: true };
             // const dialogComponent = dialogComponentFactory.componentType;
             if (dialog.dialogProperties) {
                 // Merge in any dialog properties provided on the screen
@@ -203,8 +205,7 @@ export class DialogService {
         } finally {
             this.dialogOpening = false;
         }
-        console.log("screen updated");
+        console.log('screen updated');
         this.session.sendMessage(new LifeCycleMessage(LifeCycleEvents.ScreenUpdated, dialog));
     }
-
 }

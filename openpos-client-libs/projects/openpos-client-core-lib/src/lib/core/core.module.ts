@@ -5,16 +5,12 @@ import { SessionService } from './services/session.service';
 import { PersonalizationStartupTask } from './startup/personalization-startup-task';
 import { STARTUP_FAILED_COMPONENT, STARTUP_TASKS } from './services/startup.service';
 import { ToastrModule } from 'ngx-toastr';
-// Angular Includes
 import { ErrorHandler, Injector, NgModule, Optional, SkipSelf } from '@angular/core';
-// Add supported locales
 import { DatePipe, Location, LocationStrategy, PathLocationStrategy, registerLocaleData } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { BreakpointObserver, MediaMatcher } from '@angular/cdk/layout';
-
 import { SharedModule } from '../shared/shared.module';
 import { AppInjector } from './app-injector';
-
 import { throwIfAlreadyLoaded } from './module-import-guard';
 import { StartupComponent } from './startup/startup.component';
 import { PersonalizationService } from './personalization/personalization.service';
@@ -50,7 +46,7 @@ import { CLIENTCONTEXT } from './client-context/client-context-provider.interfac
 import { TimeZoneContext } from './client-context/time-zone-context';
 import { UIDataMessageService } from './ui-data-message/ui-data-message.service';
 import { HelpTextService } from './help-text/help-text.service';
-import { ErrorStateMatcher, ShowOnDirtyErrorStateMatcher } from "@angular/material/core";
+import { ErrorStateMatcher, ShowOnDirtyErrorStateMatcher } from '@angular/material/core';
 import { TransactionService } from './services/transaction.service';
 import { AudioStartupTask } from './audio/audio-startup-task';
 import { AudioService } from './audio/audio.service';
@@ -61,7 +57,7 @@ import { CapacitorStatusBarPlatformPlugin } from './startup/capacitor-status-bar
 import { ScanditCapacitorImageScanner } from './platform-plugins/barcode-scanners/scandit-capacitor/scandit-capacitor.service';
 import { IMAGE_SCANNERS, SCANNERS } from './platform-plugins/barcode-scanners/scanner';
 import { BarcodeScanner } from './platform-plugins/barcode-scanners/barcode-scanner.service';
-import { ClientExecutableService } from "./services/client-executable.service";
+import { ClientExecutableService } from './services/client-executable.service';
 import { CapacitorIosPlatform } from './platforms/capacitor-ios.platform';
 import { CapacitorAndroidPlatform } from './platforms/capacitor-android.platform';
 import { AilaScannerCordovaPlugin } from './platform-plugins/barcode-scanners/aila-scanner-cordova/aila-scanner-cordova.plugin';
@@ -134,9 +130,15 @@ registerLocaleData(locale_frCA, 'fr-CA');
         BarcodeScanner,
         { provide: ZEROCONF_TOKEN, useClass: MDnsZeroconf, multi: true, deps: [ElectronService] },
         { provide: ZEROCONF_TOKEN, useClass: CapacitorZeroconf, multi: true, deps: [CapacitorService] },
-        { provide: STARTUP_TASKS, useClass: PersonalizationStartupTask, multi: true, deps: [PersonalizationService, MatDialog, ZEROCONF_TOKEN] },
+        {
+            provide: STARTUP_TASKS, useClass: PersonalizationStartupTask, multi: true,
+            deps: [PersonalizationService, MatDialog, ZEROCONF_TOKEN]
+        },
         { provide: STARTUP_TASKS, useClass: SubscribeToSessionTask, multi: true, deps: [SessionService, Router] },
-        { provide: STARTUP_TASKS, useClass: AudioStartupTask, multi: true, deps: [AudioRepositoryService, AudioService, AudioInteractionService] },
+        {
+            provide: STARTUP_TASKS, useClass: AudioStartupTask, multi: true,
+            deps: [AudioRepositoryService, AudioService, AudioInteractionService]
+        },
         { provide: STARTUP_TASKS, useClass: FinalStartupTask, multi: true, deps: [SessionService] },
         { provide: STARTUP_TASKS, useClass: PlatformReadyStartupTask, multi: true },
         { provide: STARTUP_TASKS, useClass: PluginStartupTask, multi: true },
@@ -187,14 +189,15 @@ registerLocaleData(locale_frCA, 'fr-CA');
 })
 export class CoreModule {
 
-    constructor(@Optional() @SkipSelf() parentModule: CoreModule,
+    constructor(
+        @Optional() @SkipSelf() parentModule: CoreModule,
         private injector: Injector,
         toastService: ToastService,
         uiDataService: UIDataMessageService,
         clientExecutableService: ClientExecutableService,
         keyProvider: KeyPressProvider) {
         throwIfAlreadyLoaded(parentModule, 'CoreModule');
-        AppInjector.Instance = this.injector;
+        AppInjector.instance = this.injector;
         keyProvider.registerKeyPressSource(fromEvent(document, 'keydown') as Observable<KeyboardEvent>);
         keyProvider.registerKeyPressSource(fromEvent(document, 'keyup') as Observable<KeyboardEvent>);
     }

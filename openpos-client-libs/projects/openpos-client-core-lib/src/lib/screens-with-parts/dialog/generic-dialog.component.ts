@@ -1,6 +1,6 @@
 
 import { IActionItem } from '../../core/actions/action-item.interface';
-import { PosScreen } from '../pos-screen/pos-screen.component';
+import { PosScreenDirective } from '../pos-screen/pos-screen.component';
 import { Component } from '@angular/core';
 import { DialogInterface, ILine } from './dialog.interface';
 import { DialogComponent } from '../../shared/decorators/dialog-component.decorator';
@@ -13,7 +13,7 @@ import { DialogComponent } from '../../shared/decorators/dialog-component.decora
   templateUrl: './generic-dialog.component.html',
   styleUrls: [ './generic-dialog.component.scss']
 })
-export class GenericDialogComponent extends PosScreen<DialogInterface> {
+export class GenericDialogComponent extends PosScreenDirective<DialogInterface> {
 
   primaryButton: IActionItem;
   otherButtons: IActionItem[];

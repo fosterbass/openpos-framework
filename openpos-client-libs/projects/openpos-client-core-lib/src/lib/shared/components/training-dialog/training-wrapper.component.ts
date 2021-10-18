@@ -1,4 +1,4 @@
-import { Component, Inject, Injector, ReflectiveInjector, ComponentRef } from '@angular/core';
+import { Component, Inject, Injector, ComponentRef } from '@angular/core';
 import { TrainingOverlayRef } from './training-overlay-ref';
 import { INSTRUCTIONS_DATA } from './training-token';
 import { TrainingDialogComponent } from './training-dialog.component';
@@ -31,9 +31,11 @@ export class TrainingWrapperComponent {
                     element.key = key;
 
                     // Inject instructions to the TrainingDialogComponent
-                    element.instructions = ReflectiveInjector.resolveAndCreate([
-                        { provide: INSTRUCTIONS_DATA, useValue: training[key] }
-                    ], this.injector);
+                    element.instructions = Injector.create({
+                        providers: [
+                            { provide: INSTRUCTIONS_DATA, useValue: training[key] }
+                        ], parent: this.injector
+                    });
 
                     // Create projectable nodes for the TrainingDialogComponent
                     element.projectableNodes = [[componentRef.location.nativeElement.querySelector('[' + key + ']')]];

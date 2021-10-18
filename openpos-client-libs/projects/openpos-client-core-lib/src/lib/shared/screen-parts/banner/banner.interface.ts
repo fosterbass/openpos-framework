@@ -1,4 +1,4 @@
-import {IActionItem} from "../../../core/actions/action-item.interface";
+import { IActionItem } from '../../../core/actions/action-item.interface';
 
 
 export interface BannerInterface {
@@ -10,6 +10,6 @@ export interface BannerInterface {
 
 export enum MessageType {
     INFO = 'INFO',
-    WARNING = 'WARNING', 
+    WARNING = 'WARNING',
     ERROR = 'ERROR'
 }

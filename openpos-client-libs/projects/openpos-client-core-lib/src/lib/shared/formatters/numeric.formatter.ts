@@ -10,7 +10,7 @@ export class NumericFormatter implements IFormatter {
     }
 
     formatValue(value: string): string {
-        if (value == undefined || value == null) {
+        if (value === undefined || value == null) {
             return null;
         } else {
             // remove any invalid chars

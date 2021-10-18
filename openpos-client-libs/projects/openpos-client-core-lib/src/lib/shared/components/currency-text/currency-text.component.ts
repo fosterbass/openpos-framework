@@ -41,12 +41,12 @@ export class CurrencyTextComponent implements OnChanges {
 
     upperBound?: CurrencyValue;
 
-    constructor(private localeService: LocaleService) {}
+    constructor(private localeService: LocaleService) { }
 
     ngOnChanges(): void {
         this.upperBound = undefined;
 
-        let localAmtText = this.amountText || (typeof(this.amountText) === 'number') ? this.amountText.toString().trim() : null;
+        const localAmtText = this.amountText || (typeof (this.amountText) === 'number') ? this.amountText.toString().trim() : null;
         if (localAmtText) {
             const rangeMatch = numberMatchWithRange.exec(localAmtText);
 
@@ -86,10 +86,10 @@ export class CurrencyTextComponent implements OnChanges {
         const isNegative = localAmtText.indexOf('-') >= 0;
         const hasParens = localAmtText.indexOf('(') >= 0;
 
-        var textBeforeSymbol: string;
-        var textAfterSymbol: string;
-        var symbolText: string;
-        
+        let textBeforeSymbol: string;
+        let textAfterSymbol: string;
+        let symbolText: string;
+
         // CurrencyPipe does not like text starting with open paren
         localAmtText = this.normalizeNegativeAmount(localAmtText);
 

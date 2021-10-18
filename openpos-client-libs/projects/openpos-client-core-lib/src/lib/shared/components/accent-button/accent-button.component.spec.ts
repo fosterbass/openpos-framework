@@ -3,15 +3,14 @@ import { DebugElement } from '@angular/core';
 import { AccentButtonComponent } from './accent-button.component';
 import { By } from '@angular/platform-browser';
 
-
 describe('AccentButtonComponent', () => {
     let component: AccentButtonComponent;
     let fixture: ComponentFixture<AccentButtonComponent>;
 
-    beforeEach( () => {
+    beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [],
-            declarations: [ AccentButtonComponent ],
+            declarations: [AccentButtonComponent],
             providers: []
         }).compileComponents();
         fixture = TestBed.createComponent(AccentButtonComponent);

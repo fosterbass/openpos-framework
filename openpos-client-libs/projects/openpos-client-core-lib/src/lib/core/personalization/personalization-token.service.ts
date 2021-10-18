@@ -14,7 +14,7 @@ export class PersonalizationTokenService {
     }
 
     public replaceTokens(value: string): string {
-        if(!value) {
+        if (!value) {
             return value;
         }
 

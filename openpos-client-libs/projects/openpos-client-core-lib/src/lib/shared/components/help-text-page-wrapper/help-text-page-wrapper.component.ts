@@ -3,7 +3,7 @@ import { MatSidenavContainer } from '@angular/material/sidenav';
 import { Subscription, Observable } from 'rxjs';
 import { HelpTextService } from '../../../core/help-text/help-text.service';
 import { ConfigurationService } from '../../../core/services/configuration.service';
-import {OpenposMediaService} from "../../../core/media/openpos-media.service";
+import { OpenposMediaService } from '../../../core/media/openpos-media.service';
 
 @Component({
     selector: 'app-help-text-page-wrapper',
@@ -27,11 +27,12 @@ export class HelpTextPageWrapperComponent implements OnInit, AfterViewInit, OnDe
 
     private subscription = new Subscription();
 
-    constructor(private helpTextService: HelpTextService, 
+    constructor(
+        private helpTextService: HelpTextService,
         private configurationService: ConfigurationService,
         private renderer: Renderer2,
-        private mediaService: OpenposMediaService) {
-    }
+        private mediaService: OpenposMediaService
+    ) { }
 
     ngOnInit() {
         this.helpTextService.initialize();
@@ -42,8 +43,8 @@ export class HelpTextPageWrapperComponent implements OnInit, AfterViewInit, OnDe
             ['md', 'side'],
             ['lg', 'side'],
             ['xl', 'side']
-          ]);
-    
+        ]);
+
         this.drawerMode$ = this.mediaService.mediaObservableFromMap(modeMap);
     }
 

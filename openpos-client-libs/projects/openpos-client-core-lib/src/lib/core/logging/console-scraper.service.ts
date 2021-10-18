@@ -1,11 +1,11 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Observable, Subscriber } from 'rxjs';
 import { publish, refCount } from 'rxjs/operators';
 
 export type LogLevel = 'info' | 'warn' | 'error' | 'debug';
 export interface ConsoleMessage {
-    level: LogLevel,
-    message: string,
+    level: LogLevel;
+    message: string;
 }
 
 export type SupportedConsoleMethods = keyof Console & ('info' | 'debug' | 'error' | 'warn' | 'log');
@@ -19,7 +19,7 @@ export class ConsoleScraper {
 
     constructor() {
         this.messages$ = new Observable(observer => {
-            const hooks = [ 
+            const hooks = [
                 this._hookConsoleMethod('debug', (args) => this._handleLogMessage(observer, 'debug', ...args)),
                 this._hookConsoleMethod('info', (args) => this._handleLogMessage(observer, 'info', ...args)),
                 this._hookConsoleMethod('warn', (args) => this._handleLogMessage(observer, 'warn', ...args)),
@@ -55,9 +55,9 @@ export class ConsoleScraper {
         let message = '';
 
         args.forEach(arg => {
-            if (arg !== null && arg !== undefined) {     
+            if (arg !== null && arg !== undefined) {
                 if (typeof arg === 'object') {
-                    let stringify = this._jsonStringifySanitize(arg);
+                    const stringify = this._jsonStringifySanitize(arg);
 
                     if (stringify.length > 0) {
                         if (message.length > 0) {
@@ -78,8 +78,8 @@ export class ConsoleScraper {
 
         if (message.length > 0) {
             observer.next({
-                level: level,
-                message: message,
+                level,
+                message,
             });
         }
     }
@@ -92,7 +92,7 @@ export class ConsoleScraper {
                 try {
                     this._isHandling = true;
                     onlog(args);
-                } catch(e) {
+                } catch (e) {
                     console.error(`failed to handle log for method ${method}...`, e);
                 } finally {
                     this._isHandling = false;
@@ -105,23 +105,23 @@ export class ConsoleScraper {
         console[method] = hookfn;
 
         return () => {
-            console[method] = originalMethod
+            console[method] = originalMethod;
         };
-    };
+    }
 
     private _makeCircularRefReplacer = () => {
         const seen = new WeakSet();
 
         return (_key: string, value: any) => {
-          if (typeof value === 'object' && value !== null) {
-            if (seen.has(value)) {
-              return;
+            if (typeof value === 'object' && value !== null) {
+                if (seen.has(value)) {
+                    return;
+                }
+
+                seen.add(value);
             }
 
-            seen.add(value);
-          }
-
-          return value;
+            return value;
         };
     }
 
@@ -129,12 +129,13 @@ export class ConsoleScraper {
     // preventing the JSON.stringify circular reference error
     private _jsonStringifySanitize(message: any): string {
         let cleansed = message;
-        
+
         if (message && typeof message === 'object') {
             try {
                 cleansed = JSON.stringify(message, this._makeCircularRefReplacer());
             } catch (e) {
-                cleansed = `Failed to convert object to a string for logging. Reason: ${e && e.hasOwnProperty('message') ? e.message : '?'}`;
+                cleansed =
+                    `Failed to convert object to a string for logging. Reason: ${e && e.hasOwnProperty('message') ? e.message : '?'}`;
             }
         }
 

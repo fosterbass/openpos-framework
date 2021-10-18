@@ -10,10 +10,9 @@ export class GreaterThanEqZeroValidator implements IValidator {
             value = value.replace(',', '');
         }
         return Number(value) >= 0 ? null : {
-            // tslint:disable-next-line:object-literal-key-quotes
-            'gt_0': {
+            gt_0: {
                 valid: false
             }
-        } as any;
+        };
     }
 }

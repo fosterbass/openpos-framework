@@ -1,6 +1,6 @@
 import { ScreenComponent } from '../../shared/decorators/screen-component.decorator';
 import { Component, OnInit, AfterViewChecked, ViewChild, ElementRef, Injector } from '@angular/core';
-import { PosScreen } from '../../screens-with-parts/pos-screen/pos-screen.component';
+import { PosScreenDirective } from '../../screens-with-parts/pos-screen/pos-screen.component';
 import { ISellItem } from '../../core/interfaces/sell-item.interface';
 import { Observable } from 'rxjs';
 import { OpenposMediaService, MediaBreakpoints } from '../../core/media/openpos-media.service';
@@ -14,7 +14,7 @@ import { OpenposMediaService, MediaBreakpoints } from '../../core/media/openpos-
     styleUrls: ['./customer-display-sale.component.scss']
 
 })
-export class CustomerDisplaySaleComponent extends PosScreen<any> implements OnInit, AfterViewChecked {
+export class CustomerDisplaySaleComponent extends PosScreenDirective<any> implements OnInit, AfterViewChecked {
     @ViewChild('scrollList', { read: ElementRef }) private scrollList: ElementRef;
 
     isMobile: Observable<boolean>;

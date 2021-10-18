@@ -1,5 +1,4 @@
 import { InjectionToken } from '@angular/core';
-
 import { Observable } from 'rxjs';
 
 export const SCANNERS = new InjectionToken<Scanner[]>('Scanners');
@@ -27,7 +26,7 @@ export interface ScanOptions {
 
 export interface Scanner {
     /**
-     * Starts the scanner and returns an observable which yields scan 
+     * Starts the scanner and returns an observable which yields scan
      * results.
      */
     beginScanning(options: ScanOptions): Observable<ScanData>;
@@ -40,10 +39,10 @@ export interface ImageScanner {
      * Starts the image scanner and returns a hot observable which yields
      * scan results. The image scanner must be closed on dispose.
      */
-    beginScanning(view: ScannerViewRef): Observable<ScanData>; 
+    beginScanning(view: ScannerViewRef): Observable<ScanData>;
 }
 
-export type ScanDataType = 
+export type ScanDataType =
     'UPCA' |
     'CODABAR' |
     'CODE25_NI2OF5' |

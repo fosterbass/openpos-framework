@@ -19,7 +19,7 @@ export class FileChunkReader {
         public contentType: string,
         public chunkHandler: (blob: Blob) => Promise<boolean>,
         public chunkSize = FileChunkReader.DEFAULT_CHUNK_SIZE
-        ) {
+    ) {
     }
 
     public get done(): boolean {
@@ -44,15 +44,14 @@ export class FileChunkReader {
         console.log(`Read cancelled on file '${this.file}'`);
     }
 
-
     public readFileInChunks(): Promise<boolean> {
         const prom = new Promise<boolean>(async (resolve, reject) => {
             try {
                 const initResult = await this.initFile();
-                if (! initResult) {
+                if (!initResult) {
                     reject(`Failed to initialize filesystem or access to file`);
                 }
-//                console.log(`Starting reading`);
+                //                console.log(`Starting reading`);
                 const processResult = await this.processFile();
                 this.onFinished();
                 resolve(processResult);
@@ -95,16 +94,19 @@ export class FileChunkReader {
 
     protected initFile(): Promise<boolean> {
         const prom = new Promise<boolean>((resolve, reject) => {
-            (<any>window).requestFileSystem((<any>window).PERSISTENT, 0, (fs: any) => {
-                (<any>window).resolveLocalFileSystemURL(this.filepath, (fileEntry: any) => {
-                    fileEntry.file( (file: any) => {
+            (window as any).requestFileSystem((window as any).PERSISTENT, 0, (fs: any) => {
+                (window as any).resolveLocalFileSystemURL(this.filepath, (fileEntry: any) => {
+                    fileEntry.file((file: any) => {
                         this.file = file;
                         this._fileSize = this.file.size;
                         console.log(`Got file: ${JSON.stringify(file)}. fileSize: ${this.file.size}`);
                         resolve(true);
                     }, (fileErr: any) => { console.log(`fileError: ${fileErr}`); reject(this.handleError(`Error getting fileEntry for file: ${this.filepath}`, fileErr)); });
                 }, (resolveErr: any) => { console.log(`resolveErr: ${resolveErr}`); reject(this.handleError(`Error resolving file: ${this.filepath}`, resolveErr)); });
-            }, (fsErr: any) => { console.log(`fsErr: ${fsErr}`); reject(this.handleError('Error getting persistent filesystem!', fsErr)); });
+            },
+                (fsErr: any) => {
+                    console.log(`fsErr: ${fsErr}`); reject(this.handleError('Error getting persistent filesystem!', fsErr));
+                });
         });
 
         return prom;
@@ -131,9 +133,8 @@ export class FileChunkReader {
     protected readEventHandler(readEvent: any): Promise<Blob> {
 
         if (readEvent.target.error == null) {
-            const blob = new Blob([new Uint8Array(<ArrayBuffer>readEvent.target.result)], { type: this.contentType });
+            const blob = new Blob([new Uint8Array(readEvent.target.result)], { type: this.contentType });
             this.currentOffset += blob.size;
-//            console.log(`FileChunkReader currentOffset: ${this.currentOffset}, blob.size: ${blob.size}`);
             return Promise.resolve(blob);
         } else {
             this.onFinished();
@@ -150,7 +151,7 @@ export class FileChunkReader {
 
     protected onFinished() {
         this._done = true;
-        if (this.completeSubscr && ! this.completeSubscr.closed) {
+        if (this.completeSubscr && !this.completeSubscr.closed) {
             this.completeSubscr.unsubscribe();
         }
     }

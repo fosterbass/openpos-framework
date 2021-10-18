@@ -14,5 +14,5 @@ export interface TenderPartInterface extends IAbstractScreen {
     imageUrl: string;
     optionsList: OptionsListInterface;
     roundUpAvailable: boolean;
-    roundUpButton: IActionItem
+    roundUpButton: IActionItem;
 }

@@ -36,6 +36,13 @@ pipeline {
                    build"""}
             }
         }
+        stage('Lint') {
+            steps {
+                dir('openpos-client-libs') {
+                    sh 'npm run lint'
+                }
+            }
+        }
         stage('Sonar Analysis - Branch') {
             when { branch pattern: "master|releases.*", comparator: "REGEXP"}
             steps {

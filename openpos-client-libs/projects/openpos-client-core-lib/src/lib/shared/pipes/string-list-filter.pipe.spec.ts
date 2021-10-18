@@ -10,7 +10,7 @@ describe('StringListFilterPipe', () => {
     ];
 
     it('filtering NULL list with NULL should be null', () => {
-      expect(pipe.transform(null, null)).toBeNull();
+        expect(pipe.transform(null, null)).toBeNull();
     });
 
     it('filtering NULL list with ABC should be null', () => {
@@ -23,15 +23,15 @@ describe('StringListFilterPipe', () => {
 
     it('filtering Undefined list with Undefined should be null', () => {
         expect(pipe.transform(undefined, undefined)).toBeNull();
-      });
+    });
 
-      it('filtering Undefined list with ABC should be null', () => {
-          expect(pipe.transform(undefined, 'ABC')).toBeNull();
-      });
+    it('filtering Undefined list with ABC should be null', () => {
+        expect(pipe.transform(undefined, 'ABC')).toBeNull();
+    });
 
-      it('filtering EMPTY list with Undefined should be null', () => {
-          expect(pipe.transform([], undefined)).toBeNull();
-      });
+    it('filtering EMPTY list with Undefined should be null', () => {
+        expect(pipe.transform([], undefined)).toBeNull();
+    });
 
     it('filter a list with an empty string should be the entire list', () => {
         expect(pipe.transform(testList, '').length).toEqual(3);
@@ -45,4 +45,4 @@ describe('StringListFilterPipe', () => {
         expect(pipe.transform(testList, 'a')).toEqual(['$%PoppA', 'aThing']);
     });
 
-  });
+});

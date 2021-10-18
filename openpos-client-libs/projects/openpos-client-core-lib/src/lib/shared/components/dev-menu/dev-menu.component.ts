@@ -6,7 +6,7 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { MatSnackBar, MatSnackBarRef, SimpleSnackBar } from '@angular/material/snack-bar';
 import { OverlayContainer } from '@angular/cdk/overlay';
-import { Configuration } from '../../../configuration/configuration';
+import { CONFIGURATION } from '../../../configuration/configuration';
 import { PersonalizationService } from '../../../core/personalization/personalization.service';
 import { PersonalizationComponent } from '../../../core/personalization/personalization.component';
 import { FileViewerComponent } from '../file-viewer/file-viewer.component';
@@ -141,7 +141,7 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
         public kioskMode: KioskModeController,
     ) {
 
-        if (Configuration.useTouchListener) {
+        if (CONFIGURATION.useTouchListener) {
             this.renderer.listen(this.elRef.nativeElement, 'touchstart', (event) => {
                 this.documentClick(event);
             });
@@ -677,7 +677,7 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
     }
 
     public useSimulatedScanner(): boolean {
-        return Configuration.useSimulatedScanner;
+        return CONFIGURATION.useSimulatedScanner;
     }
 
     public isElectronEnabled() {

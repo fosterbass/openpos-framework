@@ -8,8 +8,8 @@ import { ShowErrorsComponent } from '../../components/show-errors/show-errors.co
 import { IForm } from '../../../core/interfaces/form.interface';
 import { IFormElement } from '../../../core/interfaces/form-field.interface';
 import { IActionItem } from '../../../core/actions/action-item.interface';
-
 import type { QueryList } from '@angular/core';
+import { GoogleAddress } from '../../directives/auto-complete-address.directive';
 
 @ScreenPart({
     name: 'AutoCompleteAddressPart'
@@ -48,7 +48,7 @@ export class AutoCompleteAddressPartComponent extends ScreenPartComponent<IForm>
         super(injector);
     }
 
-    setAddress(address: any) {
+    setAddress(address: GoogleAddress) {
         if (address.streetNumber) {
             this.form.get('streetAddress').setValue(address.streetNumber + ' ' + address.streetName);
         } else {

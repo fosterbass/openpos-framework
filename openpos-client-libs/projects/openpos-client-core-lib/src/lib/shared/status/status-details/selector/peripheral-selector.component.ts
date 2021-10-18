@@ -1,11 +1,15 @@
 import { Component, Inject } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { PeripheralSelectionService, PeripheralCategory, PeripheralDevice } from '../../../../core/peripherals/peripheral-selection.service';
+import {
+    PeripheralSelectionService,
+    PeripheralCategory,
+    PeripheralDevice
+} from '../../../../core/peripherals/peripheral-selection.service';
 import { map, take } from 'rxjs/operators';
-import { PeripheralSelectorConfirmationComponent, PeripheralSelectorConfirmationDialogData } from '../confirmation/peripheral-selector-confirmation.component';
+import { PeripheralSelectorConfirmationComponent } from '../confirmation/peripheral-selector-confirmation.component';
 
 export interface PeripheralSelectorDialogData {
-    category: PeripheralCategory
+    category: PeripheralCategory;
 }
 @Component({
     templateUrl: './peripheral-selector.component.html',
@@ -25,10 +29,10 @@ export class PeripheralSelectorComponent {
     assignDevice(device: PeripheralDevice) {
         if (device.requiresConfirmation) {
             this._openConfirmationDialog = this.dialog.open(PeripheralSelectorConfirmationComponent, {
-                data: <PeripheralSelectorConfirmationDialogData> { device },
+                data: { device },
                 width: '50%'
             });
-    
+
             this._openConfirmationDialog.afterClosed().pipe(take(1)).subscribe(() => {
                 if (this._openConfirmationDialog.componentInstance.shouldContinue) {
                     this.periph.selectDevice(this.data.category, device);

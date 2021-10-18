@@ -1,13 +1,13 @@
-import {Injectable} from '@angular/core';
-import {TransStatusEnum} from '../../shared/trans-status.enum';
-import {TransTypeEnum} from '../../shared/trans-type.enum';
+import { Injectable } from '@angular/core';
+import { TransStatusEnum } from '../../shared/trans-status.enum';
+import { TransTypeEnum } from '../../shared/trans-type.enum';
 
 @Injectable({
     providedIn: 'root',
 })
 export class TransactionService {
     mapStatusToCssClass(status: TransStatusEnum): string {
-        switch(status) {
+        switch (status) {
             case TransStatusEnum.InProgress:
             case TransStatusEnum.Completed:
                 return 'success';

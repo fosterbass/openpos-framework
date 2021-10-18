@@ -12,7 +12,7 @@ export class StartupFailedComponent {
     messages: string[];
     protected _appReloadOnCloseEnabled = true;
 
-    constructor( @Inject(MAT_DIALOG_DATA) public data: any) {
+    constructor(@Inject(MAT_DIALOG_DATA) public data: any) {
         this.error = data.error;
         this.messages = data.messages;
     }

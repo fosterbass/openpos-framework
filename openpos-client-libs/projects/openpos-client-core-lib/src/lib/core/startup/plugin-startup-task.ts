@@ -1,4 +1,4 @@
-import { Observable, merge, concat, of, Subject, iif, defer, observable } from 'rxjs';
+import { Observable, merge, concat, of, defer } from 'rxjs';
 import { IStartupTask } from './startup-task.interface';
 import { StartupTaskNames } from './startup-task-names';
 import { InjectionToken, Optional, Inject, Injectable } from '@angular/core';
@@ -14,7 +14,7 @@ export const PLUGINS = new InjectionToken<IPlatformPlugin[]>('Plugins');
  */
 @Injectable()
 export class PluginStartupTask implements IStartupTask {
-    name =  StartupTaskNames.PLUGIN_INIT;
+    name = StartupTaskNames.PLUGIN_INIT;
     order = 800;
 
     constructor(
@@ -34,7 +34,7 @@ export class PluginStartupTask implements IStartupTask {
                     const scanner = p as unknown as Scanner;
 
                     if (scanner && this.scanners && this.scanners.includes(scanner)) {
-                        observer.next(`removing scanner: ${p.name()}   index: ${this.scanners.indexOf(scanner)}`)
+                        observer.next(`removing scanner: ${p.name()}   index: ${this.scanners.indexOf(scanner)}`);
                         this.scanners.splice(this.scanners.indexOf(scanner), 1);
                     }
 

@@ -1,9 +1,8 @@
 import { NgModule } from '@angular/core';
 import { SharedModule } from '../shared/shared.module';
-import {AutoCompleteAddressDialogComponent} from './auto-complete-address/auto-complete-address-dialog.component';
-import {BasicProductOptionPart} from './item-detail/option-components/basic-product-option-part/basic-product-option-part';
-import {SwatchProductOptionPart} from './item-detail/option-components/swatch-product-option-part/swatch-product-option-part.component';
-
+import { AutoCompleteAddressDialogComponent } from './auto-complete-address/auto-complete-address-dialog.component';
+import { BasicProductOptionPartComponent } from './item-detail/option-components/basic-product-option-part/basic-product-option-part';
+import { SwatchProductOptionPartComponent } from './item-detail/option-components/swatch-product-option-part/swatch-product-option-part.component';
 import { SelectionListScreenComponent } from './selection-list/selection-list-screen.component';
 import { SelectionListScreenDialogComponent } from './selection-list/selection-list-screen-dialog.component';
 import { GenericDialogComponent } from './dialog/generic-dialog.component';
@@ -33,14 +32,13 @@ import { MobileReturnReceiptsSheetComponent } from './return/mobile-return-recei
 import { OptionsScreenComponent } from './options/options-screen.component';
 import { OptionsScreenDialogComponent } from './options/options-screen-dialog.component';
 import { MobileSaleOrdersSheetComponent } from './sale/mobile-sale-orders-sheet/mobile-sale-orders-sheet.component';
-import {ErrorDialogComponent} from './error-dialog/error-dialog.component';
+import { ErrorDialogComponent } from './error-dialog/error-dialog.component';
 import { TransactionSearchComponent } from './transaction-search/transaction-search.component';
 import { TransactionDetailsComponent } from './transaction-details/transaction-details.component';
-import {SimulatedPeripheralViewerComponent} from './simulated-peripheral-viewer/simulated-peripheral-viewer.component';
-import {CustomerSearchResultDialogComponent} from './customer-search-result-dialog/customer-search-result-dialog.component';
-import { LoyaltyCustomerFormDialogComponent } from "./loyalty-customer-form-dialog/loyalty-customer-form-dialog.component";
-import { CustomerDetailsDialogComponent } from "./sale/customer-details-dialog/customer-details-dialog.component";
-
+import { SimulatedPeripheralViewerComponent } from './simulated-peripheral-viewer/simulated-peripheral-viewer.component';
+import { CustomerSearchResultDialogComponent } from './customer-search-result-dialog/customer-search-result-dialog.component';
+import { LoyaltyCustomerFormDialogComponent } from './loyalty-customer-form-dialog/loyalty-customer-form-dialog.component';
+import { CustomerDetailsDialogComponent } from './sale/customer-details-dialog/customer-details-dialog.component';
 
 const screens = [
     SelectionListScreenComponent,
@@ -87,9 +85,9 @@ const dialogs = [
 ];
 
 const parts = [
-    BasicProductOptionPart,
-    SwatchProductOptionPart    
-]
+    BasicProductOptionPartComponent,
+    SwatchProductOptionPartComponent
+];
 
 @NgModule({
     entryComponents: [

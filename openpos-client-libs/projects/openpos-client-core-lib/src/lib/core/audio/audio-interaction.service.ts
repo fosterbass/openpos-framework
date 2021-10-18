@@ -18,12 +18,13 @@ export class AudioInteractionService implements OnDestroy {
     private config = AudioUtil.getDefaultConfig();
     private isBeingTouched: boolean;
 
-    constructor(private audioRepositoryService: AudioRepositoryService,
-                private dialogService: DialogService,
-                private audioService: AudioService) {
-    }
+    constructor(
+        private audioRepositoryService: AudioRepositoryService,
+        private dialogService: DialogService,
+        private audioService: AudioService
+    ) { }
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         this.destroyed$.next();
     }
 
@@ -65,9 +66,9 @@ export class AudioInteractionService implements OnDestroy {
 
     listenForMouseInteractions(): void {
         // Use "capture" so this service hears the event even if propagation is stopped
-        const mouseDown$ = fromEvent<MouseEvent>(document.body, 'mousedown', {capture: true});
-        const mouseUp$ = fromEvent<MouseEvent>(document.body, 'mouseup', {capture: true});
-        const click$ = fromEvent<MouseEvent>(document.body, 'click', {capture: true});
+        const mouseDown$ = fromEvent<MouseEvent>(document.body, 'mousedown', { capture: true });
+        const mouseUp$ = fromEvent<MouseEvent>(document.body, 'mouseup', { capture: true });
+        const click$ = fromEvent<MouseEvent>(document.body, 'click', { capture: true });
         const mouseEvents$ = merge(mouseDown$, mouseUp$);
 
         mouseEvents$.pipe(
@@ -94,8 +95,8 @@ export class AudioInteractionService implements OnDestroy {
 
     listenForTouchInteractions(): void {
         // Use "capture" so this service hears the event even if propagation is stopped
-        const touchStart$ = fromEvent<MouseEvent>(document.body, 'touchstart', {capture: true});
-        const touchEnd$ = fromEvent<MouseEvent>(document.body, 'touchend', {capture: true});
+        const touchStart$ = fromEvent<MouseEvent>(document.body, 'touchstart', { capture: true });
+        const touchEnd$ = fromEvent<MouseEvent>(document.body, 'touchend', { capture: true });
         const touchEvents$ = merge(touchStart$, touchEnd$);
 
         touchEvents$.pipe(
@@ -109,7 +110,7 @@ export class AudioInteractionService implements OnDestroy {
                 console.log('[AudioInteractionService]: Playing button touch-start sound');
                 this.play(this.config.interactions.touch.touchStart);
             } else if (event.type === 'touchend') {
-                console.log('[AudioInteractionService]: Playing button touch-end sound')
+                console.log('[AudioInteractionService]: Playing button touch-end sound');
                 this.play(this.config.interactions.touch.touchEnd);
             }
         });

@@ -1,7 +1,7 @@
 import { Component, ViewChild, ElementRef, Input, Output, EventEmitter, AfterViewChecked } from '@angular/core';
 import { ISellItem } from '../../../core/interfaces/sell-item.interface';
 import { SelectableItemListComponentConfiguration } from '../selectable-item-list/selectable-item-list.component';
-import { Configuration } from '../../../configuration/configuration';
+import { CONFIGURATION } from '../../../configuration/configuration';
 import { IActionItem } from '../../../core/actions/action-item.interface';
 import { IActionItemGroup } from '../../../core/actions/action-item-group.interface';
 import { IItem } from '../../../core/interfaces/item.interface';
@@ -45,8 +45,8 @@ export class TransactionItemListComponent implements AfterViewChecked {
     this.selectedItemListChange.emit(event);
   }
 
-  public onItemActionsMultiMenulick(menuItem: IActionItem, selectedItemIndexes: number[],  selectedItems: IItem[]) {
-    if (menuItem.enabled  && selectedItems && selectedItems.length > 0) {
+  public onItemActionsMultiMenulick(menuItem: IActionItem, selectedItemIndexes: number[], selectedItems: IItem[]) {
+    if (menuItem.enabled && selectedItems && selectedItems.length > 0) {
       this.menuAction.emit({ menuItem, payload: selectedItems.map(i => i.index) });
     } else {
       this.onMenuItemClick(menuItem, selectedItemIndexes);
@@ -61,7 +61,7 @@ export class TransactionItemListComponent implements AfterViewChecked {
     }
   }
 
-  public menuItemLabel() : string {
+  public menuItemLabel(): string {
     return `${this.selectedItems.length} Item${this.selectedItems.length === 1 ? '' : 's'}  Selected`;
   }
 
@@ -79,7 +79,7 @@ export class TransactionItemListComponent implements AfterViewChecked {
   }
 
   public keybindsEnabled() {
-    return Configuration.enableKeybinds;
+    return CONFIGURATION.enableKeybinds;
   }
 
   public openTxMenu() {

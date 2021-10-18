@@ -1,4 +1,4 @@
-import {IDeviceModel} from './device-model.interface';
+import { IDeviceModel } from './device-model.interface';
 
 export interface PersonalizationResponse {
     authToken: string;

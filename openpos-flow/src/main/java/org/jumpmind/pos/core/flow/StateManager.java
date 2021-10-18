@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import static java.lang.String.*;
 
-import lombok.Getter;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.jumpmind.pos.core.clientconfiguration.ClientConfigChangedMessage;
@@ -172,14 +172,20 @@ public class StateManager implements IStateManager {
     public void reset() {
         log.info("StateManager reset queued");
         this.actionQueue.clear();
-        this.actionQueue.offer(new ActionContext(new Action(STATE_MANAGER_RESET_ACTION)));
+        boolean offered = this.actionQueue.offer(new ActionContext(new Action(STATE_MANAGER_RESET_ACTION)));
+        if (!offered) {
+            log.warn("StateManager failed to insert reset action into the queue");
+        }
     }
 
     @Override
     public void stop() {
         log.info("StateManager stopping.");
         this.actionQueue.clear();
-        this.actionQueue.offer(new ActionContext(new Action(STATE_MANAGER_STOP_ACTION)));
+        boolean offered = this.actionQueue.offer(new ActionContext(new Action(STATE_MANAGER_STOP_ACTION)));
+        if (!offered) {
+            log.warn("StateManager failed to insert stop action into the queue");
+        }
     }
 
     public void init(String appId, String nodeId) {
@@ -709,7 +715,10 @@ public class StateManager implements IStateManager {
         } else {
             actionContext = new ActionContext(action);
         }
-        actionQueue.offer(actionContext);
+        boolean offered = actionQueue.offer(actionContext);
+        if (!offered) {
+            log.warn("StateManager failed to insert action {} into the queue", action);
+        }
     }
 
     private boolean validateAction(Action action) {
@@ -733,7 +742,7 @@ public class StateManager implements IStateManager {
         Action action = actionContext.getAction();
         try {
             // Global action handler takes precedence over all actions (for now)
-            Class<? extends Object> globalActionHandler = getGlobalActionHandler(action);
+            Class<?> globalActionHandler = getGlobalActionHandler(action);
             if (globalActionHandler != null && !isCalledFromGlobalActionHandler(globalActionHandler, actionContext)) {
                 callGlobalActionHandler(action, globalActionHandler);
                 refreshDeviceScope();
@@ -750,8 +759,8 @@ public class StateManager implements IStateManager {
 
             validateStateConfig(applicationState.getCurrentContext().getState(), stateConfig);
 
-            Class<? extends Object> transitionStateClass = stateConfig.getActionToStateMapping().get(action.getName());
-            Class<? extends Object> globalTransitionStateClass = flowConfig.getActionToStateMapping().get(action.getName());
+            Class<?> transitionStateClass = stateConfig.getActionToStateMapping().get(action.getName());
+            Class<?> globalTransitionStateClass = flowConfig.getActionToStateMapping().get(action.getName());
             SubFlowConfig subStateConfig = stateConfig.getActionToSubStateMapping().get(action.getName());
             SubFlowConfig globalSubStateConfig = flowConfig.getActionToSubStateMapping().get(action.getName());
 
@@ -822,16 +831,16 @@ public class StateManager implements IStateManager {
         }
     }
 
-    protected Class<? extends Object> getGlobalActionHandler(Action action) {
+    protected Class<?> getGlobalActionHandler(Action action) {
         FlowConfig flowConfig = applicationState.getCurrentContext().getFlowConfig();
-        Class<? extends Object> currentActionHandler = flowConfig.getActionToStateMapping().get(action.getName());
+        Class<?> currentActionHandler = flowConfig.getActionToStateMapping().get(action.getName());
         LinkedList<StateContext> stateStack = applicationState.getStateStack();
 
         if (isActionHandler(currentActionHandler)) {
             return currentActionHandler;
         } else {
             for (StateContext state : stateStack) {
-                Class<? extends Object> actionHandler = state.getFlowConfig().getActionToStateMapping().get(action.getName());
+                Class<?> actionHandler = state.getFlowConfig().getActionToStateMapping().get(action.getName());
                 if (isActionHandler(actionHandler)) {
                     return actionHandler;
                 }
@@ -841,27 +850,27 @@ public class StateManager implements IStateManager {
         return null;
     }
 
-    protected boolean isState(Class<? extends Object> stateOrActionHandler) {
+    protected boolean isState(Class<?> stateOrActionHandler) {
         if (stateOrActionHandler != null) {
             List<Method> arriveMethods = MethodUtils.getMethodsListWithAnnotation(stateOrActionHandler, OnArrive.class, true, true);
-            return arriveMethods != null && !arriveMethods.isEmpty();
+            return CollectionUtils.isNotEmpty(arriveMethods);
         }
         return false;
     }
 
-    protected boolean isActionHandler(Class<? extends Object> stateOrActionHandler) {
+    protected boolean isActionHandler(Class<?> stateOrActionHandler) {
         if (stateOrActionHandler != null) {
             List<Method> globalMethods = MethodUtils.getMethodsListWithAnnotation(stateOrActionHandler, OnGlobalAction.class);
-            return globalMethods != null && !globalMethods.isEmpty();
+            return CollectionUtils.isNotEmpty(globalMethods);
         }
         return false;
     }
 
-    void callGlobalActionHandler(Action action, Class<? extends Object> globalActionHandler) {
+    void callGlobalActionHandler(Action action, Class<?> globalActionHandler) {
         log.debug("Calling global action handler: {}", globalActionHandler.getName());
 
         if (isState(globalActionHandler) && isActionHandler(globalActionHandler)) {
-            throw new FlowException("Class cannot implement @OnArrive and @OnGlobalAction: " + globalActionHandler.getClass().getName());
+            throw new FlowException("Class cannot implement @OnArrive and @OnGlobalAction: " + globalActionHandler.getName());
         }
 
         Object actionHandler;
@@ -894,12 +903,11 @@ public class StateManager implements IStateManager {
         for (StackTraceElement stackFrame : stackTrace) {
             Class<?> currentClass = helper.getClassFrom(stackFrame);
             if (currentClass != null && !Modifier.isAbstract(currentClass.getModifiers()) && FlowUtil.isGlobalActionHandler(currentClass)
-                    && !currentClass.getName().equals(((Class) handler).getName())) {
+                    && !currentClass.isAssignableFrom(handler.getClass())) {
                 return false;
             } else if (stackFrame.getClassName().equals(((Class) handler).getName())) {
                 return true;
             }
-
         }
 
         return false;
@@ -917,9 +925,9 @@ public class StateManager implements IStateManager {
         }
     }
 
-    protected void handleGlobalStateTransition(Action action, Class<? extends Object> stateOrActionHandler) {
+    protected void handleGlobalStateTransition(Action action, Class<?> stateOrActionHandler) {
         if (isState(stateOrActionHandler) && isActionHandler(stateOrActionHandler)) {
-            throw new FlowException("Class cannot implement @OnArrive and @OnGlobalAction: " + stateOrActionHandler.getClass().getName());
+            throw new FlowException("Class cannot implement @OnArrive and @OnGlobalAction: " + stateOrActionHandler.getName());
         } else if (isState(stateOrActionHandler)) {
             transitionToState(action, stateOrActionHandler);
         }
@@ -934,9 +942,8 @@ public class StateManager implements IStateManager {
         return (T) applicationState.getScopeValue(scopeType, name);
     }
 
-    @SuppressWarnings("unchecked")
     public <T> T getScopeValue(String name) {
-        return (T) applicationState.getScopeValue(name);
+        return applicationState.getScopeValue(name);
     }
 
     protected boolean handleAction(Object state, Action action) {
@@ -952,7 +959,7 @@ public class StateManager implements IStateManager {
             return false;
         }
 
-        Class<? extends Object> targetStateClass = stateConfig.getActionToStateMapping().get(action.getName());
+        Class<?> targetStateClass = stateConfig.getActionToStateMapping().get(action.getName());
 
         if (targetStateClass == null) {
             targetStateClass = applicationState.getCurrentContext().getFlowConfig().getActionToStateMapping().get(action.getName());
@@ -963,14 +970,14 @@ public class StateManager implements IStateManager {
                 StateContext suspendedState = applicationState.getStateStack().pop();
                 StateConfig suspendedStateConfig = suspendedState.getFlowConfig().getStateConfig(suspendedState.getState());
 
-                String returnAction = null;
+                String returnAction;
                 if (applicationState.getCurrentContext().isSubstateReturnAction(action.getName())) {
                     returnAction = action.getName();
                 } else {
                     returnAction = applicationState.getCurrentContext().getPrimarySubstateReturnAction();
                 }
 
-                Class<? extends Object> autoTransitionStateClass = suspendedStateConfig.getActionToStateMapping().get(returnAction);
+                Class<?> autoTransitionStateClass = suspendedStateConfig.getActionToStateMapping().get(returnAction);
                 if (autoTransitionStateClass != null && autoTransitionStateClass != CompleteState.class) {
                     transitionTo(action, createNewState(autoTransitionStateClass), null, suspendedState, true);
                 } else {
@@ -993,11 +1000,11 @@ public class StateManager implements IStateManager {
     }
 
     protected void transitionToSubState(Action action, SubFlowConfig subStateConfig) {
-        Class<? extends Object> subState = subStateConfig.getSubFlowConfig().getInitialState().getStateClass();
+        Class<?> subState = subStateConfig.getSubFlowConfig().getInitialState().getStateClass();
         transitionTo(action, createNewState(subState), subStateConfig, null);
     }
 
-    protected Object createNewState(Class<? extends Object> clazz) {
+    protected Object createNewState(Class<?> clazz) {
         try {
             return clazz.newInstance();
         } catch (Exception ex) {
@@ -1005,7 +1012,7 @@ public class StateManager implements IStateManager {
         }
     }
 
-    protected void transitionToState(Action action, Class<? extends Object> newStateClass) {
+    protected void transitionToState(Action action, Class<?> newStateClass) {
         StateConfig newStateConfig = applicationState.getCurrentContext().getFlowConfig().getStateConfig(newStateClass);
         if (newStateConfig != null) {
             transitionTo(action, newStateConfig);
@@ -1094,6 +1101,7 @@ public class StateManager implements IStateManager {
     }
 
 
+    @SuppressWarnings("unchecked")
     @Override
     public void showScreen(UIMessage screen, Map<String, UIDataMessageProvider<?>> dataMessageProviderMap) {
         keepAlive();
@@ -1126,7 +1134,6 @@ public class StateManager implements IStateManager {
         lastShowTimeInMs.set(System.currentTimeMillis());
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void showScreen(UIMessage screen) {
         showScreen(screen, null);
@@ -1188,7 +1195,7 @@ public class StateManager implements IStateManager {
     public void registerQueryParams(Map<String, Object> queryParams) {
         if (queryParams != null) {
             if (queryParams.size() > 0) {
-                log.info("Registering query params " + queryParams.toString());
+                log.info("Registering query params " + queryParams);
             }
             applicationState.getScope().setScopeValue(ScopeType.Device, "queryParams", queryParams);
         }
@@ -1241,7 +1248,10 @@ public class StateManager implements IStateManager {
     }
 
     protected void onEvent(Event event) {
-        this.actionQueue.offer(new ActionContext(new Action(STATE_MANAGER_PROCESS_EVENT_ACTION, event)));
+        boolean offered = this.actionQueue.offer(new ActionContext(new Action(STATE_MANAGER_PROCESS_EVENT_ACTION, event)));
+        if (!offered) {
+            log.warn("StateManager failed to insert process event action into the queue");
+        }
     }
 
 }

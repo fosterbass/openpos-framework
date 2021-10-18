@@ -1,22 +1,18 @@
 import { Inject, Injectable, Optional } from '@angular/core';
-
-import { of, from } from 'rxjs';
-import { filter, first, map, mergeMap, single } from 'rxjs/operators';
-
-import { ConfigurationService } from '../../services/configuration.service';
-import { KIOSK_MODE_PLATFORM, KioskModePlatform, KioskModeHandle } from './kiosk-mode-platform';
+import { of } from 'rxjs';
+import { filter, first, map, mergeMap } from 'rxjs/operators';
+import { KIOSK_MODE_PLATFORM, KioskModePlatform } from './kiosk-mode-platform';
 
 @Injectable()
 export class KioskModeController {
     private _selectedPlatform?: KioskModePlatform;
 
     constructor(
-        private _config: ConfigurationService,
         @Inject(KIOSK_MODE_PLATFORM) @Optional() platformPlugins: KioskModePlatform[]
     ) {
         if (platformPlugins) {
             of(...platformPlugins).pipe(
-                mergeMap(platform => platform.isAvailable().then(avail => ({platform, avail}))),
+                mergeMap(platform => platform.isAvailable().then(avail => ({ platform, avail }))),
                 filter(p => p.avail),
                 first(),
                 map(p => p.platform)
@@ -47,7 +43,7 @@ export class KioskModeController {
         }
 
         console.debug(`attempting to enter kiosk mode on platform: '${this._selectedPlatform.name()}`);
-        
+
         try {
             await this._selectedPlatform.enter();
         } catch (e) {

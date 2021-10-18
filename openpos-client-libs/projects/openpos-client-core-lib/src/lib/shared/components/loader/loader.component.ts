@@ -5,7 +5,7 @@ import { ILoading } from '../../../core/interfaces/loading.interface';
 import { IMessageHandler } from '../../../core/interfaces/message-handler.interface';
 import { ConfigurationService } from '../../../core/services/configuration.service';
 import { Observable } from 'rxjs';
-import { Configuration } from '../../../configuration/configuration';
+import { CONFIGURATION } from '../../../configuration/configuration';
 
 @Component({
     selector: 'app-loader',
@@ -39,7 +39,7 @@ export class LoaderComponent implements OnInit, OnDestroy, IMessageHandler<ILoad
             this.loading = true;
             this.updateLoadingTimerId = window.setTimeout(
                 () => this.updateLoading(message, false),
-                Configuration.loadingDialogDelay
+                CONFIGURATION.loadingDialogDelay
             );
         } else {
             this.updateLoading(message, true);
@@ -75,7 +75,7 @@ export class LoaderComponent implements OnInit, OnDestroy, IMessageHandler<ILoad
         this.reconnecting = true;
         this.interval = setInterval(() => {
             this.time = new Date();
-          }, 1);
+        }, 1);
     }
 
     stopClock() {

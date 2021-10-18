@@ -1,15 +1,15 @@
-import {Injectable, OnDestroy} from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import {BehaviorSubject, Observable, Subscription} from 'rxjs';
-import {LoaderState} from '../../shared/components/loader/loader-state';
-import {MessageProvider} from '../../shared/providers/message.provider';
-import {ConfirmationDialogComponent} from '../components/confirmation-dialog/confirmation-dialog.component';
-import {ActionMessage} from '../messages/action-message';
-import {OpenposMessage} from '../messages/message';
-import {MessageTypes} from '../messages/message-types';
-import {QueueLoadingMessage} from '../services/session.service';
-import {IActionItem} from './action-item.interface';
-import {IUrlMenuItem} from './url-menu-item.interface';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { LoaderState } from '../../shared/components/loader/loader-state';
+import { MessageProvider } from '../../shared/providers/message.provider';
+import { ConfirmationDialogComponent } from '../components/confirmation-dialog/confirmation-dialog.component';
+import { ActionMessage } from '../messages/action-message';
+import { OpenposMessage } from '../messages/message';
+import { MessageTypes } from '../messages/message-types';
+import { QueueLoadingMessage } from '../services/session.service';
+import { IActionItem } from './action-item.interface';
+import { IUrlMenuItem } from './url-menu-item.interface';
 
 @Injectable()
 export class ActionService implements OnDestroy {
@@ -23,7 +23,7 @@ export class ActionService implements OnDestroy {
     constructor(
         private dialogService: MatDialog,
         private messageProvider: MessageProvider) {
-        console.log("Creating new Action Service")
+        console.log('Creating new Action Service');
         this.subscriptions.add(messageProvider.getScopedMessages$().subscribe(message => {
             if (message.willUnblock === false) {
                 console.log('creating a screen that is disabled');
@@ -45,7 +45,7 @@ export class ActionService implements OnDestroy {
         const sendAction = await this.canPerformAction(actionItem);
         if (sendAction) {
             if (typeof payload !== 'undefined' && typeof actionItem.defaultPayload !== 'undefined') {
-                console.warn("Default action payload overridden for action " + actionItem.action);
+                console.warn('Default action payload overridden for action ' + actionItem.action);
             }
 
             if (typeof payload === 'undefined' && typeof actionItem.defaultPayload !== 'undefined') {
@@ -76,7 +76,7 @@ export class ActionService implements OnDestroy {
                 this.queueLoading();
             }
         } else if (actionItem.queueIfBlocked) {
-            console.log('queueing an action to send')
+            console.log('queueing an action to send');
             this.actionQueue.push(new QueuedItem(actionItem, payload));
         }
     }
@@ -164,7 +164,7 @@ export class ActionService implements OnDestroy {
 
         if (actionItem.confirmationDialog) {
             console.info('Confirming action');
-            const dialogRef = this.dialogService.open(ConfirmationDialogComponent, {disableClose: true});
+            const dialogRef = this.dialogService.open(ConfirmationDialogComponent, { disableClose: true });
             dialogRef.componentInstance.confirmDialog = actionItem.confirmationDialog;
             const result = await dialogRef.afterClosed().toPromise();
 
@@ -177,8 +177,6 @@ export class ActionService implements OnDestroy {
 
         return true;
     }
-
-
 }
 
 export class QueuedItem {

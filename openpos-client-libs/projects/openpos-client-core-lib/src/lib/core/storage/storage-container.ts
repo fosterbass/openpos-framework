@@ -1,5 +1,5 @@
 import { InjectionToken } from '@angular/core';
-import { Observable } from "rxjs";
+import { Observable } from 'rxjs';
 
 export const STORAGE_CONTAINERS = new InjectionToken<StorageContainer[]>('Sto≥rageContainers');
 
@@ -21,7 +21,7 @@ export interface StorageContainer {
      * Gets an observable that provides the current value of the stored key,
      * and then completes. If there is no associated value for the specified
      * key, then `undefined` is provided through the stream.
-     * 
+     *
      * @param key The unique key used to access the value.
      */
     getValue(key: string): Observable<string | undefined>;
@@ -29,7 +29,7 @@ export interface StorageContainer {
     /**
      * Assigns the value of the specified key to the specified value. Returns
      * an Observable that completes when successfully finished.
-     * 
+     *
      * @param key The unique key used to access the value.
      * @param value The new value.
      */
@@ -39,7 +39,7 @@ export interface StorageContainer {
      * Removes the specified key and its associated value from storage. Returns
      * an Observable that completes when successfully finished. If the key is
      * not present, it still completes successfully as if it were present.
-     * 
+     *
      * @param key The unique key used to access the value.
      */
     remove(key: string): Observable<void>;

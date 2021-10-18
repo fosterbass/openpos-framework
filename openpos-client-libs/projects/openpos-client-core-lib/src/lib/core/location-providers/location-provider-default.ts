@@ -1,11 +1,11 @@
-import {HttpClient} from '@angular/common/http';
-import {BehaviorSubject, Observable} from 'rxjs';
-import {ILocationProvider} from './location-provider.interface';
-import {ILocationData} from './location-data.interface';
-import {Configuration} from '../../configuration/configuration';
-import {Injectable} from '@angular/core';
-import {ConfigurationService} from "../services/configuration.service";
-import {filter, take} from "rxjs/operators";
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { ILocationProvider } from './location-provider.interface';
+import { ILocationData } from './location-data.interface';
+import { CONFIGURATION } from '../../configuration/configuration';
+import { ConfigurationService } from '../services/configuration.service';
+import { filter, take } from 'rxjs/operators';
 
 interface GoogleGeocodeResponse {
     results: GoogleGeocodeResult[];
@@ -43,11 +43,11 @@ export class LocationProviderDefault implements ILocationProvider {
     }
 
     getCurrentLocation(buffer: number, googleApiKey?: string): Observable<ILocationData> {
-        this.coordinateBuffer = buffer
-        if (navigator.geolocation && (Configuration.googleApiKey || googleApiKey)) {
+        this.coordinateBuffer = buffer;
+        if (navigator.geolocation && (CONFIGURATION.googleApiKey || googleApiKey)) {
             let zipCode = '';
             let countryName = '';
-            const previous = {latitude: 0, longitude: 0};
+            const previous = { latitude: 0, longitude: 0 };
             navigator.geolocation.watchPosition((position) => {
                 const lat = position.coords.latitude;
                 const long = position.coords.longitude;
@@ -57,7 +57,7 @@ export class LocationProviderDefault implements ILocationProvider {
                     previous.longitude = long;
                     const latlong = lat + ',' + long;
                     console.log('calling google maps geocode api');
-                    this.reverseGeocode(Configuration.googleApiKey, latlong)
+                    this.reverseGeocode(CONFIGURATION.googleApiKey, latlong)
                         .then((response) => {
                             console.log(response.results[0].address_components);
                             for (const addressComponent of response.results[0].address_components) {

@@ -2,7 +2,7 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { Component, Injector } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
-import { PosScreen } from '../pos-screen/pos-screen.component';
+import { PosScreenDirective } from '../pos-screen/pos-screen.component';
 import { ScreenComponent } from '../../shared/decorators/screen-component.decorator';
 import { IActionItem } from '../../core/actions/action-item.interface';
 import { ITransactionReceipt } from '../../shared/components/receipt-card/transaction-receipt.interface';
@@ -20,7 +20,7 @@ import { MobileReturnReceiptsSheetComponent } from './mobile-return-receipts-she
     templateUrl: './return.component.html',
     styleUrls: ['./return.component.scss']
 })
-export class ReturnComponent extends PosScreen<any> {
+export class ReturnComponent extends PosScreenDirective<any> {
 
     isMobile: Observable<boolean>;
 

@@ -7,7 +7,6 @@ import { skip, take, takeUntil, tap } from 'rxjs/operators';
 import { AudioConfigMessage } from './audio-config-message.interface';
 import { AudioCache } from './audio-cache.interface';
 import { AudioRequest } from './audio-request.interface';
-import { PersonalizationService } from '../personalization/personalization.service';
 import { deepAssign } from '../../utilites/deep-assign';
 import { AudioUtil } from './audio-util';
 import { AudioPreloadMessage } from './audio-preload-message.interface';
@@ -24,9 +23,10 @@ export class AudioRepositoryService implements OnDestroy {
     config: AudioConfig = AudioUtil.getDefaultConfig();
     config$ = new BehaviorSubject<AudioConfig>(AudioUtil.getDefaultConfig());
 
-    constructor(private sessionService: SessionService,
-                private personalizationService: PersonalizationService,
-                private personalizationTokenService: PersonalizationTokenService) {
+    constructor(
+        private sessionService: SessionService,
+        private personalizationTokenService: PersonalizationTokenService
+    ) {
         this.listenForMessages();
     }
 
@@ -49,7 +49,7 @@ export class AudioRepositoryService implements OnDestroy {
         console.log('[AudioRepositoryService]: Preloading audio...');
         this.sessionService.publish('Preload', 'Audio');
 
-        return Observable.create(subscriber => {
+        return new Observable(subscriber => {
             this.preloading$.pipe(skip(1)).subscribe(config => {
                 subscriber.next(this.cache);
                 subscriber.complete();
@@ -62,7 +62,7 @@ export class AudioRepositoryService implements OnDestroy {
             return of(null);
         }
 
-        let actualRequest = typeof request === 'string' ? {url: request} : request;
+        let actualRequest = typeof request === 'string' ? { url: request } : request;
         actualRequest = AudioUtil.getDefaultRequest(actualRequest);
 
         if (this.preloading$.getValue()) {
@@ -92,7 +92,7 @@ export class AudioRepositoryService implements OnDestroy {
 
         return this.createAudio(actualRequest)
             .pipe(
-                tap(audio => this.cache[cacheKey] = audio)
+                tap(audioElement => this.cache[cacheKey] = audioElement)
             );
     }
 

@@ -38,7 +38,7 @@ export class PromptInputComponent implements OnInit, OnDestroy {
     constructor(
         private _actionService: ActionService,
         private _barcodeScanner: BarcodeScanner
-    ) {}
+    ) { }
 
     isNumericField(): boolean {
         if (this.responseType) {
@@ -100,15 +100,16 @@ export class PromptInputComponent implements OnInit, OnDestroy {
     }
 
     private setFieldValue(value: any) {
-        const patchGroup = {};
-        patchGroup['promptInputControl'] = value;
+        const patchGroup = {
+            promptInputControl: value
+        };
         this.promptFormGroup.patchValue(patchGroup);
     }
 
     private setKeyboardLayout() {
-        if (this.responseType)  {
+        if (this.responseType) {
             if (['numerictext', 'money', 'phone', 'postalCode', 'percent', 'percentint', 'income', 'decimal']
-            .indexOf(this.responseType.toLowerCase()) >= 0) {
+                .indexOf(this.responseType.toLowerCase()) >= 0) {
                 this.keyboardLayout = 'Numeric';
             } else if (this.responseType.toLowerCase() === 'email') {
                 this.keyboardLayout = 'Email';
@@ -119,7 +120,7 @@ export class PromptInputComponent implements OnInit, OnDestroy {
 
 export class MyErrorStateMatcher implements ErrorStateMatcher {
     isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
-      const isSubmitted = form && form.submitted;
-      return (control && (control.dirty && control.invalid));  // show error only when dirty and invalid
+        const isSubmitted = form && form.submitted;
+        return (control && (control.dirty && control.invalid));  // show error only when dirty and invalid
     }
 }

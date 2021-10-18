@@ -1,14 +1,14 @@
-import {Component, EventEmitter, Input, OnDestroy, Output} from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import {Subscription} from 'rxjs';
-import {finalize} from 'rxjs/operators';
-import {ActionService} from '../../../core/actions/action.service';
-import {KeyPressProvider} from '../../providers/keypress.provider';
-import {Configuration} from '../../../configuration/configuration';
-import {KebabMenuComponent} from '../kebab-menu/kebab-menu.component';
-import {FocusService} from '../../../core/focus/focus.service';
-import {IActionItem} from '../../../core/actions/action-item.interface';
-import {MediaBreakpoints, OpenposMediaService} from "../../../core/media/openpos-media.service";
+import { Subscription } from 'rxjs';
+import { finalize } from 'rxjs/operators';
+import { ActionService } from '../../../core/actions/action.service';
+import { KeyPressProvider } from '../../providers/keypress.provider';
+import { CONFIGURATION } from '../../../configuration/configuration';
+import { KebabMenuComponent } from '../kebab-menu/kebab-menu.component';
+import { FocusService } from '../../../core/focus/focus.service';
+import { IActionItem } from '../../../core/actions/action-item.interface';
+import { MediaBreakpoints, OpenposMediaService } from '../../../core/media/openpos-media.service';
 
 @Component({
     selector: 'app-kebab-button',
@@ -40,7 +40,7 @@ export class KebabButtonComponent implements OnDestroy {
         if (!!key) {
             this.subscription = this.keyPresses.subscribe(key, 100, event => {
                 // ignore repeats
-                if (event.repeat || !Configuration.enableKeybinds) {
+                if (event.repeat || !CONFIGURATION.enableKeybinds) {
                     return;
                 }
                 if (event.type === 'keydown') {
@@ -53,15 +53,17 @@ export class KebabButtonComponent implements OnDestroy {
     @Output()
     menuItemClick = new EventEmitter<IActionItem>();
 
-    modalWidth: string = '35vw';
+    modalWidth = '35vw';
 
     protected subscription: Subscription;
 
-    constructor(protected dialog: MatDialog,
-                protected keyPresses: KeyPressProvider,
-                protected focusService: FocusService,
-                protected actionService: ActionService,
-                private mediaService: OpenposMediaService) {
+    constructor(
+        protected dialog: MatDialog,
+        protected keyPresses: KeyPressProvider,
+        protected focusService: FocusService,
+        protected actionService: ActionService,
+        private mediaService: OpenposMediaService
+    ) {
         this.checkScreenSize();
     }
 
@@ -102,12 +104,12 @@ export class KebabButtonComponent implements OnDestroy {
 
     checkScreenSize() {
         this.mediaService.observe(new Map([
-            [MediaBreakpoints.MOBILE_PORTRAIT, "90vw"],
-            [MediaBreakpoints.MOBILE_LANDSCAPE, "50vw"],
-            [MediaBreakpoints.TABLET_PORTRAIT, "70vw"],
-            [MediaBreakpoints.TABLET_LANDSCAPE, "50vw"],
-            [MediaBreakpoints.DESKTOP_PORTRAIT, "50vw"],
-            [MediaBreakpoints.DESKTOP_LANDSCAPE, "35vw"]
+            [MediaBreakpoints.MOBILE_PORTRAIT, '90vw'],
+            [MediaBreakpoints.MOBILE_LANDSCAPE, '50vw'],
+            [MediaBreakpoints.TABLET_PORTRAIT, '70vw'],
+            [MediaBreakpoints.TABLET_LANDSCAPE, '50vw'],
+            [MediaBreakpoints.DESKTOP_PORTRAIT, '50vw'],
+            [MediaBreakpoints.DESKTOP_LANDSCAPE, '35vw']
         ])).subscribe(res => this.modalWidth = res);
     }
 }

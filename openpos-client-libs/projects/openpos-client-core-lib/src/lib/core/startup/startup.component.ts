@@ -11,8 +11,7 @@ export class StartupComponent {
     message: string;
     startupFailed = false;
 
-    constructor( public startup: StartupService) {
-        startup.startupTaskMessages$.subscribe( message => this.message = message);
+    constructor(public startup: StartupService) {
+        startup.startupTaskMessages$.subscribe(message => this.message = message);
     }
 }
-

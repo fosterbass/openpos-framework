@@ -1,5 +1,5 @@
-import {Directive, ElementRef, Renderer2, AfterViewInit, OnDestroy} from '@angular/core';
-import {Observable, Subscription} from 'rxjs';
+import { Directive, ElementRef, Renderer2, AfterViewInit, OnDestroy } from '@angular/core';
+import { Observable, Subscription } from 'rxjs';
 import { FloaterService } from '../../core/services/floater.service';
 
 // tslint:disable-next-line:directive-selector
@@ -14,16 +14,16 @@ export class FixediOsScrollDirective implements AfterViewInit, OnDestroy {
 
     ngAfterViewInit(): void {
         this.subscription = this.isFloater$.subscribe((isFloating) => {
-            if(isFloating){
+            if (isFloating) {
                 this.renderer.addClass(this.el.nativeElement, 'sid-nav-content-scrollblock');
-            }else{
+            } else {
                 this.renderer.removeClass(this.el.nativeElement, 'sid-nav-content-scrollblock');
             }
         });
     }
 
     ngOnDestroy(): void {
-        if(this.subscription){
+        if (this.subscription) {
             this.subscription.unsubscribe();
         }
     }

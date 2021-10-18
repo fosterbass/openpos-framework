@@ -1,5 +1,4 @@
 import { Pipe, PipeTransform, OnDestroy, ChangeDetectorRef } from '@angular/core';
-
 import { LocaleService } from '../../core/services/locale.service';
 import { Subscription } from 'rxjs';
 
@@ -15,7 +14,7 @@ export class LocalizePipe implements PipeTransform, OnDestroy {
     constructor(
         private _locale: LocaleService,
         private _ref: ChangeDetectorRef
-    ){}
+    ) { }
 
     ngOnDestroy() {
         if (this._subscription) {
@@ -36,8 +35,8 @@ export class LocalizePipe implements PipeTransform, OnDestroy {
         }
 
         const split = value.split(':');
-        
-        if (split.length != 2) {
+
+        if (split.length !== 2) {
             console.error('invalid localization key specified, cannot localize (expecting `base:key` format)');
             return this._latestValue = value;
         }

@@ -26,7 +26,7 @@ export interface ISellItem extends IItem {
     additionalLabels: IAdditionalLabel[];
     returnItemLabels: IAdditionalLabel[];
     orderItemLabels: IAdditionalLabel[];
-    collapsedAdditionalLabels : IAdditionalLabel[];
+    collapsedAdditionalLabels: IAdditionalLabel[];
     promoLabels: IAdditionalLabel[];
     optionsLabel: string;
     isOrderItem: boolean;

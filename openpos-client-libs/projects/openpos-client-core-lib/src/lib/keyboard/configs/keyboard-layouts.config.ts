@@ -71,8 +71,8 @@ import { IKeyboardLayouts } from '../interfaces/keyboard-layouts.interface';
 export const MAT_KEYBOARD_LAYOUTS = new InjectionToken<IKeyboardLayouts>('keyboard-layouts.config');
 export const keyboardLayouts: IKeyboardLayouts = {
   'US Standard': {
-    'name': 'US Standard',
-    'keys': [
+    name: 'US Standard',
+    keys: [
       [
         // tslint:disable-next-line:max-line-length
         ['`', '~'], ['1', '!'], ['2', '@'], ['3', '#'], ['4', '$'], ['5', '%'], ['6', '^'], ['7', '&'], ['8', '*'], ['9', '('], ['0', ')'], ['-', '_'], ['=', '+'],
@@ -97,11 +97,11 @@ export const keyboardLayouts: IKeyboardLayouts = {
         [KeyboardClassKey.Space, KeyboardClassKey.Space, KeyboardClassKey.Space, KeyboardClassKey.Space]
       ]
     ],
-    'lang': ['en-US'],
+    lang: ['en-US'],
   },
-  'Email': {
-    'name': 'Email',
-    'keys': [
+  Email: {
+    name: 'Email',
+    keys: [
       [
         // tslint:disable-next-line:max-line-length
         ['`', '~'], ['1', '!'], ['2', '@'], ['3', '#'], ['4', '$'], ['5', '%'], ['6', '^'], ['7', '&'], ['8', '*'], ['9', '('], ['0', ')'], ['-', '_'], ['=', '+'],
@@ -128,11 +128,11 @@ export const keyboardLayouts: IKeyboardLayouts = {
         [KeyboardClassKey.Space, KeyboardClassKey.Space, KeyboardClassKey.Space, KeyboardClassKey.Space]
       ]
     ],
-    'lang': ['email'],
+    lang: ['email'],
   },
-  'Numeric': {
-    'name': 'Numeric',
-    'keys': [
+  Numeric: {
+    name: 'Numeric',
+    keys: [
       [
         [KeyboardClassKey.Bksp, KeyboardClassKey.Bksp, KeyboardClassKey.Bksp]
       ],
@@ -149,6 +149,6 @@ export const keyboardLayouts: IKeyboardLayouts = {
         ['.', '.', '.'], ['0', '0', '0'], [KeyboardClassKey.Enter, KeyboardClassKey.Enter, KeyboardClassKey.Enter]
       ]
     ],
-    'lang': ['numeric']
+    lang: ['numeric']
   }
 };

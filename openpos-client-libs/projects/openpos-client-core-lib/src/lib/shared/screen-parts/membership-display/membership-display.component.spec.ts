@@ -1,22 +1,22 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import {ActionService} from '../../../core/actions/action.service';
-import {MembershipDisplayComponent} from './membership-display.component';
-import {validateDoesNotExist, validateIcon, validateText} from '../../../utilites/test-utils';
-import {By} from '@angular/platform-browser';
-import {Membership} from './memebership-display.interface';
+import { ActionService } from '../../../core/actions/action.service';
+import { MembershipDisplayComponent } from './membership-display.component';
+import { validateDoesNotExist, validateIcon, validateText } from '../../../utilites/test-utils';
+import { By } from '@angular/platform-browser';
+import { Membership } from './memebership-display.interface';
 import { MatDialog } from '@angular/material/dialog';
-import {HttpClientTestingModule} from '@angular/common/http/testing';
-import {ElectronService} from 'ngx-electron';
-import {TimeZoneContext} from '../../../core/client-context/time-zone-context';
-import {CLIENTCONTEXT} from '../../../core/client-context/client-context-provider.interface';
-import {KeyPressProvider} from '../../providers/keypress.provider';
-import {Subscription} from 'rxjs';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { ElectronService } from 'ngx-electron';
+import { TimeZoneContext } from '../../../core/client-context/time-zone-context';
+import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provider.interface';
+import { KeyPressProvider } from '../../providers/keypress.provider';
+import { Subscription } from 'rxjs';
 
-class MockActionService {}
-class MockMatDialog {}
-class MockElectronService {}
-class ClientContext {}
+class MockActionService { }
+class MockMatDialog { }
+class MockElectronService { }
+class ClientContext { }
 class MockKeyPressProvider {
     subscribe(): Subscription {
         return new Subscription();
@@ -27,9 +27,9 @@ describe('MembershipDisplayComponent', () => {
     let component: MembershipDisplayComponent;
     let fixture: ComponentFixture<MembershipDisplayComponent>;
     let membership: Membership;
-    beforeEach( () => {
+    beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [ HttpClientTestingModule ],
+            imports: [HttpClientTestingModule],
             declarations: [
                 MembershipDisplayComponent
             ],
@@ -38,8 +38,8 @@ describe('MembershipDisplayComponent', () => {
                 { provide: ActionService, useClass: MockActionService },
                 { provide: ElectronService, useClass: MockElectronService },
                 { provide: KeyPressProvider, useClass: MockKeyPressProvider },
-                { provide: ClientContext, useValue: {}},
-                { provide: CLIENTCONTEXT, useClass: TimeZoneContext}
+                { provide: ClientContext, useValue: {} },
+                { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
             ],
             schemas: [
                 NO_ERRORS_SCHEMA,

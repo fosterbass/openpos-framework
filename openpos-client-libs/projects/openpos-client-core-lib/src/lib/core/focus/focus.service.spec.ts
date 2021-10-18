@@ -1,32 +1,33 @@
 import { FocusService } from './focus.service';
-import { FocusTrapFactory, FocusTrap } from '@angular/cdk/a11y';
+import { ConfigurableFocusTrapFactory, ConfigurableFocusTrap } from '@angular/cdk/a11y';
 import { TestBed, fakeAsync } from '@angular/core/testing';
 
 describe('FocusService', () => {
 
     let focusService: FocusService;
-    let focusTrapFactory: jasmine.SpyObj<FocusTrapFactory>;
-    let focusTrap: jasmine.SpyObj<FocusTrap>;
+    let focusTrap: jasmine.SpyObj<ConfigurableFocusTrap>;
+    const focusTrapFactory = {
+        create: (elm) => focusTrap
+    };
     let htmlElement: jasmine.SpyObj<HTMLElement>;
 
     beforeEach(() => {
-        focusTrapFactory = jasmine.createSpyObj('FocusTrapFactory', ['create']);
-        focusTrap = jasmine.createSpyObj('FocusTrap', ['focusInitialElementWhenReady', 'destroy', 'focusInitialElement']);
+        focusTrap = jasmine.createSpyObj('ConfigurableFocusTrap', ['focusInitialElementWhenReady', 'destroy', 'focusInitialElement']);
         htmlElement = jasmine.createSpyObj('HTMLElement', ['focus']);
 
         TestBed.configureTestingModule({
             providers: [
-                { provide: FocusTrapFactory, useValue: focusTrapFactory },
+                { provide: ConfigurableFocusTrapFactory, useValue: focusTrapFactory },
                 FocusService
             ]
         });
 
-        focusTrapFactory.create.and.returnValue(focusTrap);
         focusService = TestBed.inject(FocusService);
     });
 
     describe('createInitialFocus', () => {
         it('sets up focusTrap', () => {
+            spyOn(focusTrapFactory, 'create').and.callThrough();
             focusService.createInitialFocus(htmlElement);
             expect(focusTrapFactory.create).toHaveBeenCalledWith(htmlElement);
             expect(focusTrap.focusInitialElementWhenReady).toHaveBeenCalled();

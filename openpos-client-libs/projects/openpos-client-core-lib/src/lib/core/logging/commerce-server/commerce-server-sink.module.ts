@@ -3,5 +3,5 @@ import { CommerceServerSink } from './commerce-server-sink.service';
 
 @NgModule({})
 export class CommerceServerSinkModule {
-    constructor(serverLogger: CommerceServerSink) {}
+    constructor(serverLogger: CommerceServerSink) { }
 }

@@ -34,7 +34,7 @@ describe('HelpTextService', () => {
 
     describe('handle', () => {
         it('emits help text when it exists on message', (done: DoneFn) => {
-            const message = { 
+            const message = {
                 helpText: {
                     text: 'help me'
                 }
@@ -48,7 +48,7 @@ describe('HelpTextService', () => {
 
         it('emits new help text when it exists on message', (done: DoneFn) => {
             (helpTextService.getText() as BehaviorSubject<string>).next('old help');
-            const message = { 
+            const message = {
                 helpText: {
                     text: 'help me'
                 }
@@ -64,7 +64,7 @@ describe('HelpTextService', () => {
             (helpTextService.getText() as BehaviorSubject<string>).next('existing help');
             const noopMessage = {
                 screenType: 'NoOp'
-            }
+            };
             helpTextService.handle(noopMessage);
             helpTextService.getText().subscribe(v => {
                 expect(v).toEqual('existing help');
@@ -76,7 +76,7 @@ describe('HelpTextService', () => {
             (helpTextService.getText() as BehaviorSubject<string>).next('existing help');
             const message = {
                 screen: 'some screen'
-            }
+            };
             helpTextService.handle(message);
             helpTextService.getText().subscribe(v => {
                 expect(v).toBeNull();

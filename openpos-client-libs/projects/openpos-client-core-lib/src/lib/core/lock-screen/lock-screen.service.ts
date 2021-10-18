@@ -1,5 +1,5 @@
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
-import { ComponentPortal, PortalInjector } from '@angular/cdk/portal';
+import { ComponentPortal } from '@angular/cdk/portal';
 import { Injectable, Injector } from '@angular/core';
 import { BehaviorSubject, ReplaySubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -18,7 +18,8 @@ export class LockScreenService {
     private lockScreenData = new ReplaySubject<LockScreenMessage>();
     public enabled$ = new BehaviorSubject(false);
 
-    constructor(sessionService: SessionService,
+    constructor(
+        sessionService: SessionService,
         private overlay: Overlay,
         private injector: Injector,
         private focusService: FocusService
@@ -35,8 +36,9 @@ export class LockScreenService {
     }
 
     private showLockScreen() {
-        if (this.lockScreenOverlayRef != null) return;
-
+        if (this.lockScreenOverlayRef != null) {
+            return;
+        }
         this.lockScreenOverlayRef = this.overlay.create({
             height: '100%',
             width: '100%',
@@ -44,7 +46,7 @@ export class LockScreenService {
         });
         const lockScreenPortal = new ComponentPortal(LockScreenComponent, null, this.createInjector());
         this.lockScreenOverlayRef.attach(lockScreenPortal);
-        this.focusService.createInitialFocus(this.lockScreenOverlayRef.hostElement)
+        this.focusService.createInitialFocus(this.lockScreenOverlayRef.hostElement);
     }
 
     private removeLockScreen(message: LockScreenMessage) {
@@ -55,14 +57,9 @@ export class LockScreenService {
 
     }
 
-    private createInjector(): PortalInjector {
-        // Instantiate new WeakMap for our custom injection tokens
-        const injectionTokens = new WeakMap();
-
-        // Set custom injection tokens
-        injectionTokens.set(LOCK_SCREEN_DATA, this.lockScreenData);
-        // Instantiate new PortalInjector
-        return new PortalInjector(this.injector, injectionTokens);
+    private createInjector(): Injector {
+        const providers = [{ provide: LOCK_SCREEN_DATA, useValue: this.lockScreenData }];
+        return Injector.create({ providers, parent: this.injector });
     }
 
 }

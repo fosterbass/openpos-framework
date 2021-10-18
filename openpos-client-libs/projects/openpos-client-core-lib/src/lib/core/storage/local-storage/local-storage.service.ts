@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { EMPTY, Observable, of } from 'rxjs';
-
 import { StorageContainer } from '../storage-container';
 
 @Injectable({
@@ -16,8 +15,8 @@ export class LocalStorageService implements StorageContainer {
     }
 
     getValue(key: string): Observable<string | undefined> {
-        let value = localStorage.getItem(key);
-        
+        const value = localStorage.getItem(key);
+
         if (!value) {
             return of(undefined);
         }

@@ -96,7 +96,7 @@ It is worth nothing that you are not required to use Screen Parts. Your screen m
 
 This is the component that brings it all together. A screen should have a 1 to 1 relationship with a UIMessage from the server and should composite all the other types of components together to create the final screen the user sees.
 
-A Screen should extend PosScreen and pass in a generic argument of an interface that defines the data the screen needs. (This could be just a subset of the data since some of the screen may be rendered by ScreenParts)
+A Screen should extend PosScreenDirective and pass in a generic argument of an interface that defines the data the screen needs. (This could be just a subset of the data since some of the screen may be rendered by ScreenParts)
 
 A screen needs to be added to both the EntryComponents and Declarations sections of the ScreenWithPartsModule and have the @Screen decorator applied to it to define the name that maps to the UIMessage. The decorator register this component with the ScreenService and adds it to the factory used to determine which screen to create per UIMessage received.
 
@@ -104,7 +104,7 @@ A screen needs to be added to both the EntryComponents and Declarations sections
 
 Same concept as a Screen but created in a dialog container instead of in the main document.
 
-These also should also extend PosScreen but should have the @Dialog decorator applied instead of @Screen
+These also should also extend PosScreenDirective but should have the @Dialog decorator applied instead of @Screen
 
 ### Keyboard Module
 

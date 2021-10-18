@@ -1,8 +1,8 @@
 export interface Membership {
-    id: string,
-    name: string,
+    id: string;
+    name: string;
     nonMemberName?: string;
-    member: boolean
+    member: boolean;
 }
 
 export interface MembershipDisplayComponentInterface {

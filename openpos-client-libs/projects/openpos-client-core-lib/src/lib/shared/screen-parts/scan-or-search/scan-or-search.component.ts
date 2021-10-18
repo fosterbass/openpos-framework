@@ -1,4 +1,4 @@
-import {IActionItem} from '../../../core/actions/action-item.interface';
+import { IActionItem } from '../../../core/actions/action-item.interface';
 import {
     Component,
     ElementRef,
@@ -10,13 +10,13 @@ import {
     OnInit,
     Output
 } from '@angular/core';
-import {ScreenPartComponent} from '../screen-part';
-import {ScanOrSearchInterface} from './scan-or-search.interface';
-import {ScreenPart} from '../../decorators/screen-part.decorator';
-import {MediaBreakpoints, OpenposMediaService} from '../../../core/media/openpos-media.service';
-import {Observable, Subject, Subscription} from 'rxjs';
-import {OnBecomingActive} from '../../../core/life-cycle-interfaces/becoming-active.interface';
-import {OnLeavingActive} from '../../../core/life-cycle-interfaces/leaving-active.interface';
+import { ScreenPartComponent } from '../screen-part';
+import { ScanOrSearchInterface } from './scan-or-search.interface';
+import { ScreenPart } from '../../decorators/screen-part.decorator';
+import { MediaBreakpoints, OpenposMediaService } from '../../../core/media/openpos-media.service';
+import { Observable, Subject, Subscription } from 'rxjs';
+import { OnBecomingActive } from '../../../core/life-cycle-interfaces/becoming-active.interface';
+import { OnLeavingActive } from '../../../core/life-cycle-interfaces/leaving-active.interface';
 import { BarcodeScanner } from '../../../core/platform-plugins/barcode-scanners/barcode-scanner.service';
 import { ScanData } from '../../../core/platform-plugins/barcode-scanners/scanner';
 import { MatDialog } from '@angular/material/dialog';
@@ -30,7 +30,8 @@ import { LockScreenService } from '../../../core/lock-screen/lock-screen.service
     templateUrl: './scan-or-search.component.html',
     styleUrls: ['./scan-or-search.component.scss']
 })
-export class ScanOrSearchComponent extends ScreenPartComponent<ScanOrSearchInterface> implements OnInit, OnDestroy, OnBecomingActive, OnLeavingActive {
+export class ScanOrSearchComponent extends ScreenPartComponent<ScanOrSearchInterface>
+    implements OnInit, OnDestroy, OnBecomingActive, OnLeavingActive {
 
     public barcode: string;
     isMobile$: Observable<boolean>;
@@ -144,8 +145,8 @@ export class ScanOrSearchComponent extends ScreenPartComponent<ScanOrSearchInter
     }
 
     screenDataUpdated() {
-        //Since we are checking if the screen is disabled (willUnblock set to false) we need to try and register the scanner
-        //on every update just in case we go from disabled to enabled.
+        // Since we are checking if the screen is disabled (willUnblock set to false) we need to try and register the scanner
+        // on every update just in case we go from disabled to enabled.
         this.registerScanner();
     }
 

@@ -1,4 +1,4 @@
-export const Configuration = {
+export const CONFIGURATION = {
     mimicScroll: false,
     useOnScreenKeyboard: false,
     useTouchListener: true,

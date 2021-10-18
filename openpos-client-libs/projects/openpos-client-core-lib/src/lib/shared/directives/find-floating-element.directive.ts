@@ -1,8 +1,9 @@
 import { Directive, Host, Self, OnDestroy } from '@angular/core';
 import { MatMenuTrigger } from '@angular/material/menu';
-import {BehaviorSubject, Subscription} from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { FloaterService } from '../../core/services/floater.service';
 
+// tslint:disable-next-line: directive-selector
 @Directive({ selector: `[matMenuTriggerFor], [mat-menu-trigger-for]` })
 export class FindFloatingElementDirective implements OnDestroy {
     private isFloating$ = new BehaviorSubject<boolean>(false);

@@ -8,15 +8,15 @@ import {
     ViewChild,
     ViewChildren
 } from '@angular/core';
-import {FormGroup} from '@angular/forms';
-import {ScreenPartComponent} from '../screen-part';
-import {FormBuilder} from '../../../core/services/form-builder.service';
-import {DynamicFormFieldComponent} from '../../components/dynamic-form-field/dynamic-form-field.component';
-import {ShowErrorsComponent} from '../../components/show-errors/show-errors.component';
-import {IForm} from '../../../core/interfaces/form.interface';
-import {IFormElement} from '../../../core/interfaces/form-field.interface';
-import {IActionItem} from '../../../core/actions/action-item.interface';
-import {IDynamicFormPartEventArg} from './dynamic-form-part-event-arg.interface';
+import { FormGroup } from '@angular/forms';
+import { ScreenPartComponent } from '../screen-part';
+import { FormBuilder } from '../../../core/services/form-builder.service';
+import { DynamicFormFieldComponent } from '../../components/dynamic-form-field/dynamic-form-field.component';
+import { ShowErrorsComponent } from '../../components/show-errors/show-errors.component';
+import { IForm } from '../../../core/interfaces/form.interface';
+import { IFormElement } from '../../../core/interfaces/form-field.interface';
+import { IActionItem } from '../../../core/actions/action-item.interface';
+import { IDynamicFormPartEventArg } from './dynamic-form-part-event-arg.interface';
 import { takeUntil, tap } from 'rxjs/operators';
 
 import type { QueryList } from '@angular/core';
@@ -37,7 +37,7 @@ export class DynamicFormPartComponent extends ScreenPartComponent<IForm> impleme
     disableSubmitButton: boolean;
 
     private _alternateSubmitActions: string[];
-    private  lastFocusedId;
+    private lastFocusedId;
 
 
     @Input() set formName(name: string) {
@@ -54,9 +54,9 @@ export class DynamicFormPartComponent extends ScreenPartComponent<IForm> impleme
         this.buttons = new Array<IFormElement>();
 
         // Before we rebuild what element has focus so we can restore
-        if(this.children){
-            let focusedField = this.children.find(item => item.field && item.field.focused);
-            if(focusedField){
+        if (this.children) {
+            const focusedField = this.children.find(item => item.field && item.field.focused);
+            if (focusedField) {
                 this.lastFocusedId = focusedField.formField.id;
             }
         }
@@ -110,9 +110,9 @@ export class DynamicFormPartComponent extends ScreenPartComponent<IForm> impleme
     }
 
     ngAfterViewInit(): void {
-        this.children.changes.subscribe( (changes) => {
-            if( this.lastFocusedId ){
-                let elementToFocus = this.children.find(item => item.formField.id === this.lastFocusedId);
+        this.children.changes.subscribe((changes) => {
+            if (this.lastFocusedId) {
+                const elementToFocus = this.children.find(item => item.formField.id === this.lastFocusedId);
                 setTimeout(() => elementToFocus.focus());
             }
         });
@@ -137,7 +137,7 @@ export class DynamicFormPartComponent extends ScreenPartComponent<IForm> impleme
                         // Show errors for each of the fields where necessary
                         Object.keys(this.form.controls).forEach(f => {
                             const control = this.form.get(f);
-                            control.markAsTouched({onlySelf: true});
+                            control.markAsTouched({ onlySelf: true });
                         });
                         throw Error('form is invalid');
                     }
@@ -155,9 +155,8 @@ export class DynamicFormPartComponent extends ScreenPartComponent<IForm> impleme
 
     onFieldChanged(formElement: IFormElement) {
         if (formElement.valueChangedAction) {
-            let form = this.formBuilder.buildFormPayload(this.form, this.screenData);
-            this.doAction( formElement.valueChangedAction, form);
+            const form = this.formBuilder.buildFormPayload(this.form, this.screenData);
+            this.doAction(formElement.valueChangedAction, form);
         }
     }
 }
-

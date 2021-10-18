@@ -5,10 +5,9 @@ import { CordovaDevicePlugin } from '../oldplugins/cordova-device-plugin';
 import { CordovaPlugin } from '../oldplugins/cordova-plugin';
 import { IDevicePlugin } from '../oldplugins/device-plugin.interface';
 
-
 @Injectable({
     providedIn: 'root',
-  })
+})
 export class OldPluginService {
 
     private plugins = new Map<string, PluginMapEntry>();
@@ -24,8 +23,8 @@ export class OldPluginService {
                 // There apparently is not a consistent way to access references to
                 // cordova plugins.
                 if (this.cordovaService.cordova.file) {
-                    if (! this.cordovaService.plugins || ! this.cordovaService.plugins['file']) {
-                        this.cordovaService.plugins['file'] = this.cordovaService.cordova.file;
+                    if (!this.cordovaService.plugins || !this.cordovaService.plugins.file) {
+                        this.cordovaService.plugins.file = this.cordovaService.cordova.file;
                         console.info('PluginService added cordova-plugin-file to cordova.plugins');
                     }
                 } else {
@@ -41,13 +40,13 @@ export class OldPluginService {
     }
 
     public addPlugin(pluginId: string, plugin: IOldPlugin) {
-        this.plugins.set(pluginId, {plugin, initialized: false});
+        this.plugins.set(pluginId, { plugin, initialized: false });
         console.info(`plugin '${pluginId}' added to the PluginService`);
     }
 
     public configurePlugin(pluginId: string, pluginConfig: any): Promise<boolean> {
         console.info(`Configuring plugin '${pluginId}'...`);
-        return new Promise<boolean>( (resolve, reject) => {
+        return new Promise<boolean>((resolve, reject) => {
             this.getPlugin(pluginId, false).then(
                 plugin => {
                     console.info(`Got plugin '${pluginId}'...`);
@@ -80,12 +79,15 @@ export class OldPluginService {
                     reject(error);
                 }
             );
-          }
+        }
         );
     }
 
-    public getPluginWithOptions(pluginId: string, doInitWhenNeeded: boolean = true,
-      options?: {waitForCordovaInit?: boolean}): Promise<IOldPlugin> {
+    public getPluginWithOptions(
+        pluginId: string,
+        doInitWhenNeeded: boolean = true,
+        options?: { waitForCordovaInit?: boolean }
+    ): Promise<IOldPlugin> {
         // waitForCordovaInit addresses a race condition where a cordova dependent plugin
         // could be attempted to be fetched before it has been added to the plugin service.
         // I believe this was happening the barcodescanner plugin. May need to revisit how
@@ -100,9 +102,9 @@ export class OldPluginService {
                     // provided by cordova.
                     this.cordovaService.onDeviceReady.subscribe(ready => {
                         if (ready) {
-                            this.getPlugin(pluginId, doInitWhenNeeded).then( plugin => {
+                            this.getPlugin(pluginId, doInitWhenNeeded).then(plugin => {
                                 resolve(plugin);
-                            }).catch( error => {
+                            }).catch(error => {
                                 reject(error);
                             });
                         }
@@ -117,13 +119,13 @@ export class OldPluginService {
     }
 
     public getPlugin(pluginId: string, doInitWhenNeeded: boolean = true): Promise<IOldPlugin> {
-        return new Promise( (resolve, reject) => {
+        return new Promise((resolve, reject) => {
             console.debug(`Getting plugin '${pluginId}'...`);
             let pluginEntry: PluginMapEntry = this.plugins.get(pluginId);
             let initRequired = false;
             let targetPlugin: IOldPlugin;
             if (pluginEntry) {
-                initRequired = ! pluginEntry.initialized;
+                initRequired = !pluginEntry.initialized;
                 targetPlugin = pluginEntry.plugin;
                 console.debug(`Plugin '${pluginId}' found. initRequired? ${initRequired}`);
             } else {
@@ -135,7 +137,7 @@ export class OldPluginService {
                         targetPlugin = new CordovaPlugin(pluginId);
                     }
 
-                    pluginEntry = {plugin: targetPlugin, initialized: false};
+                    pluginEntry = { plugin: targetPlugin, initialized: false };
                     this.plugins.set(pluginId, pluginEntry);
                     console.info(`Added plugin '${pluginId}' to map.`);
                     if (doInitWhenNeeded) {
@@ -179,33 +181,33 @@ export class OldPluginService {
     }
 
     public getDevicePlugin(pluginId: string, doInitWhenNeeded: boolean = true): Promise<IDevicePlugin> {
-        return new Promise<IDevicePlugin>( (resolve, reject) => {
-                const pluginPromise: Promise<IOldPlugin> = this.getPlugin(pluginId, doInitWhenNeeded);
-                pluginPromise.then(thePlugin => {
-                    if (thePlugin && (<IDevicePlugin>thePlugin).processRequest) {
-                        resolve(<IDevicePlugin> thePlugin);
-                    } else {
-                        resolve(null);
-                    }
-                }).catch(
-                    (error) => { reject(error); }
-                );
-            }
+        return new Promise<IDevicePlugin>((resolve, reject) => {
+            const pluginPromise: Promise<IOldPlugin> = this.getPlugin(pluginId, doInitWhenNeeded);
+            pluginPromise.then((thePlugin: IDevicePlugin) => {
+                if (thePlugin && thePlugin.processRequest) {
+                    resolve(thePlugin);
+                } else {
+                    resolve(null);
+                }
+            }).catch(
+                (error) => { reject(error); }
+            );
+        }
         );
     }
 
     private pluginInit(plugin: IOldPlugin): Promise<IOldPlugin> {
         const returnPromise: Promise<IOldPlugin> = new Promise(
-          (resolve, reject) => {
-            plugin.init(
-                () => {
-                    resolve(plugin);
-                },
-                (error) => {
-                    reject(error);
-                }
-            );
-          }
+            (resolve, reject) => {
+                plugin.init(
+                    () => {
+                        resolve(plugin);
+                    },
+                    (error) => {
+                        reject(error);
+                    }
+                );
+            }
         );
 
         return returnPromise;

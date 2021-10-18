@@ -1,9 +1,9 @@
-import {map} from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { ScreenPartComponent } from '../screen-part';
 import { StatusStripInterface } from './status-strip.interface';
 import { MatDialog } from '@angular/material/dialog';
-import {interval, of, timer} from 'rxjs';
-import {Component, Injector, Input} from '@angular/core';
+import { interval, of, timer } from 'rxjs';
+import { Component, Injector, Input } from '@angular/core';
 import { ScreenPart } from '../../decorators/screen-part.decorator';
 @ScreenPart({
     name: 'statusStrip'
@@ -18,11 +18,11 @@ export class StatusStripComponent extends ScreenPartComponent<StatusStripInterfa
     @Input()
     showTimestamps: boolean = true;
 
-    date = interval(1000).pipe( map( () => Date.now()));
-    timer = interval(1000).pipe(map( () => {
-        if ( this.screenData.timestampBegin ) {
-        const timestampBegin = this.screenData.timestampBegin;
-        return ((new Date()).getTime() - timestampBegin) / 1000;
+    date = interval(1000).pipe(map(() => Date.now()));
+    timer = interval(1000).pipe(map(() => {
+        if (this.screenData.timestampBegin) {
+            const timestampBegin = this.screenData.timestampBegin;
+            return ((new Date()).getTime() - timestampBegin) / 1000;
         }
     }));
 

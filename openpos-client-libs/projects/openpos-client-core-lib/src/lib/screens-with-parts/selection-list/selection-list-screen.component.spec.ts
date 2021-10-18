@@ -1,26 +1,27 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {NO_ERRORS_SCHEMA} from '@angular/core'
-import {ActionService} from "../../core/actions/action.service";
-import {IActionItem} from "../../core/actions/action-item.interface";
-import {By} from "@angular/platform-browser";
-import {SelectionListInterface} from "../selection-list/selection-list.interface";
-import {ElectronService} from "ngx-electron";
-import {CLIENTCONTEXT} from "../../core/client-context/client-context-provider.interface";
-import {TimeZoneContext} from "../../core/client-context/time-zone-context";
-import { MatDialog } from "@angular/material/dialog";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {SelectableItemListComponentConfiguration} from "../../shared/components/selectable-item-list/selectable-item-list.component";
-import {SelectionListScreenComponent} from "./selection-list-screen.component";
-import {ISelectionListItem} from "./selection-list-item.interface";
-import {SelectionMode} from "../../core/interfaces/selection-mode.enum";
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { ActionService } from '../../core/actions/action.service';
+import { IActionItem } from '../../core/actions/action-item.interface';
+import { By } from '@angular/platform-browser';
+import { SelectionListInterface } from '../selection-list/selection-list.interface';
+import { ElectronService } from 'ngx-electron';
+import { CLIENTCONTEXT } from '../../core/client-context/client-context-provider.interface';
+import { TimeZoneContext } from '../../core/client-context/time-zone-context';
+import { MatDialog } from '@angular/material/dialog';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { SelectableItemListComponentConfiguration } from '../../shared/components/selectable-item-list/selectable-item-list.component';
+import { SelectionListScreenComponent } from './selection-list-screen.component';
+import { ISelectionListItem } from './selection-list-item.interface';
+import { SelectionMode } from '../../core/interfaces/selection-mode.enum';
 import { ImageUrlPipe } from '../../shared/pipes/image-url.pipe';
-import {ICustomerDetails} from "../customer-search-result-dialog/customer-search-result-dialog.interface";
+import { ICustomerDetails } from '../customer-search-result-dialog/customer-search-result-dialog.interface';
 
 class MockActionService {
-    doAction(action: IActionItem){}
-};
-class MockMatDialog {};
-class MockElectronService {};
+    doAction(action: IActionItem) { }
+}
+class MockMatDialog { }
+class MockElectronService { }
+class ClientContext { }
 
 describe('SelectionListScreenComponent', () => {
     let component: SelectionListScreenComponent;
@@ -31,16 +32,15 @@ describe('SelectionListScreenComponent', () => {
     let threeResults;
 
     describe('non mobile', () => {
-        beforeEach( () => {
-            testAddress = {line1: 'testStreet', line2: 'testStreetLine2', city: 'testCity', state: 'testState', postalCode: '12345'};
-            testCustomer = {enabled: true, selected: false} as ISelectionListItem;
-            testCustomerDisabled = {...testCustomer} as ISelectionListItem;
+        beforeEach(() => {
+            testAddress = { line1: 'testStreet', line2: 'testStreetLine2', city: 'testCity', state: 'testState', postalCode: '12345' };
+            testCustomer = { enabled: true, selected: false } as ISelectionListItem;
+            testCustomerDisabled = { ...testCustomer } as ISelectionListItem;
             testCustomerDisabled.enabled = false;
             threeResults = [testCustomer, testCustomer, testCustomerDisabled];
 
-            let ClientContext;
             TestBed.configureTestingModule({
-                imports: [ HttpClientTestingModule ],
+                imports: [HttpClientTestingModule],
                 declarations: [
                     SelectionListScreenComponent,
                     ImageUrlPipe
@@ -49,8 +49,8 @@ describe('SelectionListScreenComponent', () => {
                     { provide: ActionService, useClass: MockActionService },
                     { provide: MatDialog, useClass: MockMatDialog },
                     { provide: ElectronService, useClass: MockElectronService },
-                    { provide: ClientContext, useValue: {}},
-                    { provide: CLIENTCONTEXT, useClass: TimeZoneContext}
+                    { provide: ClientContext, useValue: {} },
+                    { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
                 ],
                 schemas: [
                     NO_ERRORS_SCHEMA,
@@ -58,7 +58,10 @@ describe('SelectionListScreenComponent', () => {
             }).compileComponents();
             fixture = TestBed.createComponent(SelectionListScreenComponent);
             component = fixture.componentInstance;
-            component.screen = {nonSelectionButtons: [{title: 'NonSelectable'}], selectionButtons: [{title: 'Select'}, {title: 'View'}] } as SelectionListInterface<ISelectionListItem>;
+            component.screen = {
+                nonSelectionButtons: [{ title: 'NonSelectable' }],
+                selectionButtons: [{ title: 'Select' }, { title: 'View' }]
+            } as SelectionListInterface<ISelectionListItem>;
             fixture.detectChanges();
         });
 
@@ -70,11 +73,11 @@ describe('SelectionListScreenComponent', () => {
             beforeEach(() => {
                 fixture = TestBed.createComponent(SelectionListScreenComponent);
                 component = fixture.componentInstance;
-                component.screen = {nonSelectionButtons: [{title: 'NonSelectable'}], selectionButtons: [{title: 'Select'}, {title: 'View'}] } as SelectionListInterface<ISelectionListItem>;
+                component.screen = { nonSelectionButtons: [{ title: 'NonSelectable' }], selectionButtons: [{ title: 'Select' }, { title: 'View' }] } as SelectionListInterface<ISelectionListItem>;
                 fixture.detectChanges();
             });
-            it('transform response results to item maps',(done) => {
-                component.screen.selectionList = threeResults
+            it('transform response results to item maps', (done) => {
+                component.screen.selectionList = threeResults;
                 component.buildScreen();
                 component.listData.subscribe(
                     result => {
@@ -83,11 +86,11 @@ describe('SelectionListScreenComponent', () => {
                         expect(result.items.size).toBe(3);
                         expect(result.disabledItems.size).toBe(1);
                         expect(result.items.get(0)).toBe(testCustomer);
-                        expect(result.disabledItems.get(2)).toBe(testCustomerDisabled)
+                        expect(result.disabledItems.get(2)).toBe(testCustomerDisabled);
                         done();
                     },
-                    () => {fail(); done();},
-                    () => {fail(); done();}
+                    () => { fail(); done(); },
+                    () => { fail(); done(); }
                 );
             });
 
@@ -95,28 +98,28 @@ describe('SelectionListScreenComponent', () => {
                 let selectedCustomer;
                 let listIn;
                 beforeEach(() => {
-                    selectedCustomer = {...testCustomer} as ICustomerDetails;
+                    selectedCustomer = { ...testCustomer } as ICustomerDetails;
                     selectedCustomer.selected = true;
-                    listIn = [testCustomer, selectedCustomer]
+                    listIn = [testCustomer, selectedCustomer];
                 });
-                it('should not populate selectedItems if multiSelect not specified', function () {
-                    component.screen.selectionList = threeResults
-                    component.screen.fetchDataAction = "Something";
+                it('should not populate selectedItems if multiSelect not specified', () => {
+                    component.screen.selectionList = threeResults;
+                    component.screen.fetchDataAction = 'Something';
                     component.buildScreen();
                     expect(component.selectedItems).toBeUndefined();
                 });
-                it('should put selected customers in to selectedItems if multiSelect', function () {
-                    component.screen.selectionList = listIn
-                    component.screen.fetchDataAction = undefined
+                it('should put selected customers in to selectedItems if multiSelect', () => {
+                    component.screen.selectionList = listIn;
+                    component.screen.fetchDataAction = undefined;
                     component.screen.multiSelect = true;
                     component.buildScreen();
                     expect(component.selectedItems[0]).toBe(selectedCustomer);
                     expect(component.indexes.length).toBe(1);
                 });
 
-                it('should put selected customers in to selectedItem if not multiSelect', function () {
-                    component.screen.selectionList = listIn
-                    component.screen.fetchDataAction = undefined
+                it('should put selected customers in to selectedItem if not multiSelect', () => {
+                    component.screen.selectionList = listIn;
+                    component.screen.fetchDataAction = undefined;
                     component.screen.multiSelect = false;
                     component.buildScreen();
                     expect(component.selectedItem).toBe(selectedCustomer);
@@ -135,7 +138,7 @@ describe('SelectionListScreenComponent', () => {
                 expect(component.listConfig.selectionMode).toBe(SelectionMode.Single);
                 expect(component.listConfig.fetchDataAction).toBe(component.screen.fetchDataAction);
             });
-            it('define selection list configuration with 1000 items per page ', function () {
+            it('define selection list configuration with 1000 items per page ', () => {
                 component.screen.numberItemsPerPage = 1000;
                 component.screen.selectionList = threeResults;
                 component.screen.multiSelect = true;
@@ -151,8 +154,8 @@ describe('SelectionListScreenComponent', () => {
                 component.onItemChange(5);
                 expect(component.index).toBe(5);
             });
-            it('doSelectionButtonAction should pass on action ',  () =>{
-                spyOn(component, 'doAction')
+            it('doSelectionButtonAction should pass on action ', () => {
+                spyOn(component, 'doAction');
                 component.index = 1;
                 component.doSelectionButtonAction({} as IActionItem);
                 expect(component.doAction).toHaveBeenCalledWith({} as IActionItem, 1);
@@ -160,7 +163,7 @@ describe('SelectionListScreenComponent', () => {
         });
 
         describe('template', () => {
-            it('nonSelectable buttons will render and have actions', function () {
+            it('nonSelectable buttons will render and have actions', () => {
                 const secondaryButton = fixture.debugElement.queryAll(By.css('app-secondary-button'));
                 expect(secondaryButton[0].nativeElement.textContent).toBeDefined();
                 spyOn(component, 'doNonSelectionButtonAction');
@@ -179,7 +182,7 @@ describe('SelectionListScreenComponent', () => {
                 const primaryButton = fixture.debugElement.query(By.css('app-primary-button'));
                 expect(primaryButton.nativeElement.textContent).toBeDefined();
                 spyOn(component, 'doSelectionButtonAction');
-                primaryButton.nativeElement.click()
+                primaryButton.nativeElement.click();
                 expect(component.doSelectionButtonAction).toHaveBeenCalled();
             });
         });

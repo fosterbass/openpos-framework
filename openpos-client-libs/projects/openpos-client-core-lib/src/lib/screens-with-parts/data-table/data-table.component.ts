@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { PosScreen } from '../pos-screen/pos-screen.component';
+import { PosScreenDirective } from '../pos-screen/pos-screen.component';
 import { ScreenComponent } from '../../shared/decorators/screen-component.decorator';
 import { IActionItem } from '../../core/actions/action-item.interface';
-import { Configuration } from '../../configuration/configuration';
+import { CONFIGURATION } from '../../configuration/configuration';
 import { DataTableInterface } from './data-table.interface';
 
 @ScreenComponent({
@@ -13,7 +13,7 @@ import { DataTableInterface } from './data-table.interface';
     templateUrl: './data-table.component.html',
     styleUrls: ['./data-table.component.scss']
 })
-export class DataTableComponent extends PosScreen<DataTableInterface> {
+export class DataTableComponent extends PosScreenDirective<DataTableInterface> {
 
     rows = [];
     columnHeaders = [];
@@ -28,7 +28,7 @@ export class DataTableComponent extends PosScreen<DataTableInterface> {
     }
 
     public keybindsEnabled(menuItem: IActionItem): boolean {
-        return Configuration.enableKeybinds && menuItem.keybind && menuItem.keybind !== 'Enter';
+        return CONFIGURATION.enableKeybinds && menuItem.keybind && menuItem.keybind !== 'Enter';
     }
 
 }

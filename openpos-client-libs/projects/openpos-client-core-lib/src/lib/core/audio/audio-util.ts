@@ -40,7 +40,7 @@ export class AudioUtil {
             + `delayTime:${request.delayTime}|`
             + `url:${request.url}|`;
     }
-    
+
     static isPlaying(audio: HTMLAudioElement): boolean {
         return audio
             && audio.currentTime > 0

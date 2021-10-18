@@ -15,7 +15,7 @@ export interface CloseToastMessage {
 }
 
 export enum ToastType {
-    Success= 'Success',
-    Warn= 'Warn',
-    Info= 'Info'
+    Success = 'Success',
+    Warn = 'Warn',
+    Info = 'Info'
 }

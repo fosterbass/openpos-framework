@@ -21,7 +21,7 @@ export class ScreenGestureComponent extends ScreenPartComponent<ScreenGestureInt
 
     hasUnlockPans = true;
     isPanValid: boolean;
-    currentPanValidationIndex: number = 0;
+    currentPanValidationIndex = 0;
 
     constructor(injector: Injector) {
         super(injector);
@@ -109,11 +109,11 @@ export class ScreenGestureComponent extends ScreenPartComponent<ScreenGestureInt
 
     private checkForSwipeComplete(): void {
         console.log('Checking if the current swipe sequence is complete.', this.swipeEvents);
-        let successfulUnlock: boolean = false;
-        if (this.swipeEvents.length == this.screenData.swipes.length) {
+        let successfulUnlock = false;
+        if (this.swipeEvents.length === this.screenData.swipes.length) {
             successfulUnlock = true;
             for (let i = 0; i < this.screenData.swipes.length; i++) {
-                if (this.screenData.swipes[i] != this.swipeEvents[i]) {
+                if (this.screenData.swipes[i] !== this.swipeEvents[i]) {
                     successfulUnlock = false;
                 }
             }

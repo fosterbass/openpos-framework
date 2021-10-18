@@ -1,5 +1,5 @@
-import {IClientContext} from './client-context-provider.interface';
-import {Injectable} from '@angular/core';
+import { IClientContext } from './client-context-provider.interface';
+import { Injectable } from '@angular/core';
 
 @Injectable()
 export class TimeZoneContext implements IClientContext {

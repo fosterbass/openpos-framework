@@ -1,12 +1,5 @@
 package org.jumpmind.pos.core.flow;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -14,6 +7,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
 
 @Component
 @org.springframework.context.annotation.Scope("prototype")
@@ -66,11 +65,11 @@ public class Injector {
 
                 if (nullField) {
                     try {
-                        if (!field.getType().isPrimitive()) {                        
+                        if (!field.getType().isPrimitive()) {
                             field.set(target, null);
-                        } else if (field.getType().equals(int.class)){
+                        } else if (field.getType().equals(int.class)) {
                             field.set(target, 0);
-                        } else if (field.getType().equals(boolean.class)){
+                        } else if (field.getType().equals(boolean.class)) {
                             field.set(target, false);
                         } else {
                             throw new FlowException("Unhandled type: " + field.getType() + " on target " + target);
@@ -127,10 +126,10 @@ public class Injector {
                         field);
             }
         }
-    }    
+    }
 
     protected void injectField(Class<?> targetClass, Object target, Scope scope, StateContext currentContext, String name,
-            ScopeType scopeType, boolean required, boolean autoCreate, Field field) {
+                               ScopeType scopeType, boolean required, boolean autoCreate, Field field) {
         if (StringUtils.isEmpty(name)) {
             name = field.getName();
         }
@@ -141,7 +140,7 @@ public class Injector {
         switch (scopeType) {
             case Config:
                 Object configScopeValue = currentContext.getFlowConfig().getConfigScope() != null
-                ? currentContext.getFlowConfig().getConfigScope().get(name)
+                        ? currentContext.getFlowConfig().getConfigScope().get(name)
                         : null;
                 value = new ScopeValue(configScopeValue);
                 break;
@@ -162,20 +161,20 @@ public class Injector {
         }
 
         if ((value == null || value.getValue() == null) && autoCreate) {
-            value = autoCreate(name, scopeType, scope, currentContext);
+            value = autoCreateScopeValue(name, scopeType, scope, currentContext);
         }
 
         if (value == null) {
             value = resolveThroughValueProviders(name, scopeType, target, field);
             if (value != null) {
                 scope.setScopeValue(scopeType, name, value);
-            }            
+            }
         }
 
-        
-        if( (value == null || value.getValue() == null) && required ){
+
+        if ((value == null || value.getValue() == null) && required) {
             throw failedToResolveInjection(field, name, targetClass, target, scope, currentContext, scopeType);
-        } else if ((value != null && value.getValue() != null) || (ScopeType.Config.equals(scopeType) && !field.getType().isPrimitive())) {
+        } else if (value != null && (value.getValue() != null || (ScopeType.Config.equals(scopeType) && !field.getType().isPrimitive()))) {
             try {
                 field.set(target, value.getValue());
                 logger.trace("Injected field '{}' with value {}", name, value.getValue());
@@ -185,8 +184,8 @@ public class Injector {
         }
         logger.trace("Injection of field '{}' on bean {} completed", name, target);
     }
-    
-    protected ScopeValue autoCreate(String name, ScopeType scopeType, Scope scope, StateContext currentContext) {
+
+    protected ScopeValue autoCreateScopeValue(String name, ScopeType scopeType, Scope scope, StateContext currentContext) {
         Object bean = applicationContext.getBean(name);
         performInjections(bean, scope, currentContext);
         scope.setScopeValue(scopeType, name, bean);
@@ -307,7 +306,7 @@ public class Injector {
                 targetClass = null;
             }
         }
-        
+
         return false;
     }
 }

@@ -9,17 +9,19 @@ import { CordovaService } from '../../core/services/cordova.service';
 })
 export class HideFormAccessoryBarDirective implements OnDestroy {
 
-    constructor(private cordovaService : CordovaService) {
+    constructor(private cordovaService: CordovaService) {
         this._toggleFormBar(true);
     }
 
-    ngOnDestroy() : void {
+    ngOnDestroy(): void {
         this._toggleFormBar(false);
     }
 
-    private _toggleFormBar(toggle: boolean) : void {
+    private _toggleFormBar(toggle: boolean): void {
         const windowRef = window as any;
-        if (this.cordovaService.isRunningInCordova() && windowRef.Keyboard && typeof windowRef.Keyboard.hideFormAccessoryBar === 'function') {
+        if (this.cordovaService.isRunningInCordova() &&
+            windowRef.Keyboard &&
+            typeof windowRef.Keyboard.hideFormAccessoryBar === 'function') {
             windowRef.Keyboard.hideFormAccessoryBar(toggle);
         }
     }

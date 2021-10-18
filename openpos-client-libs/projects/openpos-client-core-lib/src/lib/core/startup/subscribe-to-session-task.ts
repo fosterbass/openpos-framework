@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { StartupTaskData } from './startup-task-data';
 import { StartupTaskNames } from './startup-task-names';
 import { map, take, timeoutWith } from 'rxjs/operators';
-import { Configuration } from '../../configuration/configuration';
+import { CONFIGURATION } from '../../configuration/configuration';
 import { MessageTypes } from '../messages/message-types';
 
 @Injectable()
@@ -21,7 +21,7 @@ export class SubscribeToSessionTask implements IStartupTask {
 
     execute(data: StartupTaskData): Observable<string> {
         if (!this.session.connected()) {
-            const subscribe = Observable.create(observer => {
+            const subscribe = new Observable(observer => {
                 data.route.queryParamMap.keys.forEach(key => {
                     this.session.addQueryParam(key, data.route.queryParamMap.get(key));
                 });
@@ -38,7 +38,7 @@ export class SubscribeToSessionTask implements IStartupTask {
             return concat(
                 subscribe,
                 this.session.getMessages(MessageTypes.STARTUP).pipe(
-                    timeoutWith(Configuration.confirmConnectionTimeoutMillis, throwError('Timed out waiting for server')),
+                    timeoutWith(CONFIGURATION.confirmConnectionTimeoutMillis, throwError('Timed out waiting for server')),
                     map(() => 'Successfully connected to server'),
                     take(1)
                 )

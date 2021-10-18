@@ -1,6 +1,6 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { CounterComponent } from './counter.component';
-import { NO_ERRORS_SCHEMA } from '@angular/core'
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 
 
@@ -9,7 +9,7 @@ describe('CounterComponent', () => {
     let fixture: ComponentFixture<CounterComponent>;
     const formBuilder: FormBuilder = new FormBuilder();
 
-    beforeEach( () => {
+    beforeEach(() => {
         TestBed.configureTestingModule({
             declarations: [
                 CounterComponent,
@@ -31,59 +31,59 @@ describe('CounterComponent', () => {
     describe('checkMinusDisable', () => {
 
         it('should be disabled when form value is less than min', () => {
-            counterComponent.formGroup.value['formValue'] = '0';
-            expect(counterComponent.checkMinusDisable()).toBe(true);
+            counterComponent.formGroup.value.formValue = '0';
+            expect(counterComponent.checkMinusDisable()).toBeTruthy();
         });
 
         it('should be disabled when form value is not an number', () => {
-            counterComponent.formGroup.value['formValue'] = '';
-            expect(counterComponent.checkMinusDisable()).toBe(true);
+            counterComponent.formGroup.value.formValue = '';
+            expect(counterComponent.checkMinusDisable()).toBeTruthy();
         });
 
         it('should be disabled when form value is equal to min', () => {
-            counterComponent.formGroup.value['formValue'] = '1';
-            expect(counterComponent.checkMinusDisable()).toBe(true);
+            counterComponent.formGroup.value.formValue = '1';
+            expect(counterComponent.checkMinusDisable()).toBeTruthy();
         });
 
         it('should be enabled when form value is greater than min', () => {
-            counterComponent.formGroup.value['formValue'] = '4';
-            expect(counterComponent.checkMinusDisable()).toBe(false);
+            counterComponent.formGroup.value.formValue = '4';
+            expect(counterComponent.checkMinusDisable()).toBeFalsy();
         });
     });
 
     describe('checkPlusDisable', () => {
 
         it('should be disabled when form value is greater than max', () => {
-            counterComponent.formGroup.value['formValue'] = '6';
-            expect(counterComponent.checkPlusDisable()).toBe(true);
+            counterComponent.formGroup.value.formValue = '6';
+            expect(counterComponent.checkPlusDisable()).toBeTruthy();
         });
 
         it('should be disabled when form value is not an number', () => {
-            counterComponent.formGroup.value['formValue'] = '';
-            expect(counterComponent.checkPlusDisable()).toBe(true);
+            counterComponent.formGroup.value.formValue = '';
+            expect(counterComponent.checkPlusDisable()).toBeTruthy();
         });
 
         it('should be disabled when form value is equal to max', () => {
-            counterComponent.formGroup.value['formValue'] = '5';
-            expect(counterComponent.checkPlusDisable()).toBe(true);
+            counterComponent.formGroup.value.formValue = '5';
+            expect(counterComponent.checkPlusDisable()).toBeTruthy();
         });
 
         it('should be enabled when form value is less than max', () => {
-            counterComponent.formGroup.value['formValue'] = '4';
-            expect(counterComponent.checkPlusDisable()).toBe(false);
+            counterComponent.formGroup.value.formValue = '4';
+            expect(counterComponent.checkPlusDisable()).toBeFalsy();
         });
     });
 
     describe('decrementQty', () => {
 
-        beforeEach( () => {
+        beforeEach(() => {
             spyOn(counterComponent.valueChange, 'emit');
         });
 
         it('should decrement quanity when enabled', () => {
             counterComponent.minusDisabled = false;
-            counterComponent.value = '3'
-            counterComponent.formGroup.value['formValue'] = counterComponent.value;
+            counterComponent.value = '3';
+            counterComponent.formGroup.value.formValue = counterComponent.value;
             counterComponent.decrementQty();
             expect(counterComponent.value).toBe('2');
             expect(counterComponent.valueChange.emit).toHaveBeenCalledWith('2');
@@ -91,8 +91,8 @@ describe('CounterComponent', () => {
 
         it('should not decrement quanity when disabled', () => {
             counterComponent.minusDisabled = true;
-            counterComponent.value = '3'
-            counterComponent.formGroup.value['formValue'] = counterComponent.value;
+            counterComponent.value = '3';
+            counterComponent.formGroup.value.formValue = counterComponent.value;
             counterComponent.decrementQty();
             expect(counterComponent.value).toBe('3');
             expect(counterComponent.valueChange.emit).not.toHaveBeenCalled();
@@ -101,14 +101,14 @@ describe('CounterComponent', () => {
 
     describe('incrementQty', () => {
 
-        beforeEach( () => {
+        beforeEach(() => {
             spyOn(counterComponent.valueChange, 'emit');
         });
 
         it('should increment quanity when enabled', () => {
             counterComponent.plusDisabled = false;
-            counterComponent.value = '3'
-            counterComponent.formGroup.value['formValue'] = counterComponent.value;
+            counterComponent.value = '3';
+            counterComponent.formGroup.value.formValue = counterComponent.value;
             counterComponent.incrementQty();
             expect(counterComponent.value).toBe('4');
             expect(counterComponent.valueChange.emit).toHaveBeenCalledWith('4');
@@ -116,8 +116,8 @@ describe('CounterComponent', () => {
 
         it('should not increment quanity when disabled', () => {
             counterComponent.plusDisabled = true;
-            counterComponent.value = '3'
-            counterComponent.formGroup.value['formValue'] = counterComponent.value;
+            counterComponent.value = '3';
+            counterComponent.formGroup.value.formValue = counterComponent.value;
             counterComponent.incrementQty();
             expect(counterComponent.value).toBe('3');
             expect(counterComponent.valueChange.emit).not.toHaveBeenCalled();
@@ -126,13 +126,13 @@ describe('CounterComponent', () => {
 
     describe('onValueChange', () => {
 
-        beforeEach( () => {
+        beforeEach(() => {
             spyOn(counterComponent.valueChange, 'emit');
         });
 
         it('should emit new value when changed', () => {
-            counterComponent.value = '3'
-            counterComponent.formGroup.value['formValue'] = '4';
+            counterComponent.value = '3';
+            counterComponent.formGroup.value.formValue = '4';
             counterComponent.onValueChange();
             expect(counterComponent.value).toBe('4');
             expect(counterComponent.valueChange.emit).toHaveBeenCalledWith('4');

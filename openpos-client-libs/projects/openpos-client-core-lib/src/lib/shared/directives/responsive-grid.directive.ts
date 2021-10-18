@@ -1,44 +1,47 @@
-import {Directive, ElementRef, Inject, InjectionToken, Input, OnDestroy, OnInit, Renderer2} from '@angular/core';
-import {Subscription} from 'rxjs';
-import {OpenposMediaService} from '../../core/media/openpos-media.service';
+import { Directive, ElementRef, Inject, InjectionToken, Input, OnDestroy, OnInit, Renderer2 } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { OpenposMediaService } from '../../core/media/openpos-media.service';
 
 @Directive({
+    // tslint:disable-next-line: directive-selector
     selector: '[opAreas], [opAreas.mobile], [opAreas.tablet], [opAreas.desktop]'
 })
 export class ResponsiveGridDirective implements OnInit, OnDestroy {
-    private theMap: Map<string, string> = new Map;
+    private theMap: Map<string, string> = new Map();
 
-    private breakpointToClassName = new Map([['xs', 'mobile'],['sm', 'mobile'],['md', 'tablet'],['lg', 'desktop'],['xl', 'desktop']]);
+    private breakpointToClassName = new Map([['xs', 'mobile'], ['sm', 'mobile'], ['md', 'tablet'], ['lg', 'desktop'], ['xl', 'desktop']]);
 
     @Input('opAreas')
-    set areas( value: string){
+    set areas(value: string) {
         this.theMap.set('', value);
     }
 
     @Input('opAreas.mobile')
-    set mobileAreas( value: string){
+    set mobileAreas(value: string) {
         this.theMap.set('mobile', value);
-    };
+    }
 
     @Input('opAreas.tablet')
-    set tabletAreas( value: string){
+    set tabletAreas(value: string) {
         this.theMap.set('tablet', value);
-    };
+    }
 
     @Input('opAreas.desktop')
-    set desktopAreas( value: string){
+    set desktopAreas(value: string) {
         this.theMap.set('desktop', value);
     }
 
     private subscription: Subscription;
 
-    constructor(private mediaService: OpenposMediaService,
-                 private el: ElementRef,
-                 private renderer: Renderer2){
+    constructor(
+        private mediaService: OpenposMediaService,
+        private el: ElementRef,
+        private renderer: Renderer2
+    ) {
     }
 
     ngOnDestroy(): void {
-        if(this.subscription){
+        if (this.subscription) {
             this.subscription.unsubscribe();
         }
     }
@@ -48,10 +51,10 @@ export class ResponsiveGridDirective implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        this.subscription = this.mediaService.mediaObservableFromMap(this.breakpointToClassName).subscribe( className => {
+        this.subscription = this.mediaService.mediaObservableFromMap(this.breakpointToClassName).subscribe(className => {
             this.renderer.setStyle(this.el.nativeElement, 'display', 'grid');
             let areas = this.getAreas(this.theMap.get(''));
-            if( this.theMap.has(className)){
+            if (this.theMap.has(className)) {
                 areas = this.getAreas(this.theMap.get(className));
             }
             this.renderer.setStyle(this.el.nativeElement, 'grid-template-areas', areas);

@@ -1,9 +1,9 @@
-import {Injectable} from '@angular/core';
-import {Observable, of, Subject} from 'rxjs';
-import {IPlatformPlugin} from '../platform-plugin.interface';
+import { Injectable } from '@angular/core';
+import { Observable, of, Subject } from 'rxjs';
+import { IPlatformPlugin } from '../platform-plugin.interface';
 
-export class AndroidContentQuery{
-    constructor( public contentUri: string, public projection?: string[] ) {
+export class AndroidContentQuery {
+    constructor(public contentUri: string, public projection?: string[]) {
     }
 }
 
@@ -18,6 +18,7 @@ export class AndroidContentProviderPlugin implements IPlatformPlugin {
     }
 
     pluginPresent(): boolean {
+        // tslint:disable-next-line: no-string-literal
         return window.hasOwnProperty('plugins') && window['plugins'].hasOwnProperty('contentproviderplugin');
     }
 
@@ -25,25 +26,25 @@ export class AndroidContentProviderPlugin implements IPlatformPlugin {
         return of('Android Content Provider Initialized');
     }
 
-    query( queryRequest: AndroidContentQuery ){
-        let response = new Subject<any>();
+    query(queryRequest: AndroidContentQuery) {
+        const response = new Subject<any>();
 
+        // tslint:disable-next-line: no-string-literal
         window['plugins'].contentproviderplugin.query({
             contentUri: queryRequest.contentUri,
             projection: queryRequest.projection,
             selection: null,
             selectionArgs: null,
             sortOrder: null
-        }, function (data) {
+        }, (data) => {
             console.log(`Content provider data for request ${queryRequest} is : ${data}`);
             response.next(data);
             response.complete();
-        }, function (err) {
+        }, (err) => {
             console.warn(`Content provider query resulted in error: ${err}`);
             response.error(err);
         });
 
         return response;
     }
-
 }

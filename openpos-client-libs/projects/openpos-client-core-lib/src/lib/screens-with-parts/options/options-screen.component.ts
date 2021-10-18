@@ -1,6 +1,6 @@
 import { ScreenComponent } from '../../shared/decorators/screen-component.decorator';
 import { Component } from '@angular/core';
-import { PosScreen } from '../pos-screen/pos-screen.component';
+import { PosScreenDirective } from '../pos-screen/pos-screen.component';
 import { OptionsInterface } from './options.interface';
 
 @ScreenComponent({
@@ -11,7 +11,7 @@ import { OptionsInterface } from './options.interface';
     templateUrl: './options-screen.component.html',
     styleUrls: ['./options-screen.component.scss']
 })
-export class OptionsScreenComponent extends PosScreen<OptionsInterface> {
+export class OptionsScreenComponent extends PosScreenDirective<OptionsInterface> {
 
     buildScreen() {
     }

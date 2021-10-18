@@ -5,12 +5,13 @@ import { BehaviorSubject, Observable,throwError, zip, merge } from 'rxjs';
 import { catchError, filter, map, take, tap , timeout } from 'rxjs/operators';
 import { PersonalizationRequest } from './personalization-request';
 import { PersonalizationResponse } from './personalization-response.interface';
-import { AutoPersonalizationParametersResponse } from "./device-personalization.interface";
-import { Configuration } from "../../configuration/configuration";
+import { AutoPersonalizationParametersResponse } from './device-personalization.interface';
+import { ZeroconfService } from '@ionic-native/zeroconf';
+import { CONFIGURATION } from '../../configuration/configuration';
 
 import { Storage } from '../storage/storage.service';
 import { Zeroconf, ZEROCONF_TOKEN } from '../startup/zeroconf/zeroconf';
-import {ServerLocation} from './server-location';
+import { ServerLocation } from './server-location';
 
 @Injectable({
     providedIn: 'root'
@@ -46,18 +47,18 @@ export class PersonalizationService {
             storage.getValue(PersonalizationService.OPENPOS_MANAGED_SERVER_PROPERTY),
             storage.getValue('skipAutoPersonalization'),
             storage.getValue('primaryServerName'),
-            storage.getValue( 'primaryServerPort'),
+            storage.getValue('primaryServerPort'),
             storage.getValue('primaryServerToken'),
             storage.getValue('failover0ServerName'),
             storage.getValue('failover0Port'),
-            storage.getValue( 'failover0Token'),
+            storage.getValue('failover0Token'),
             storage.getValue('failover1ServerName'),
             storage.getValue('failover1Port'),
-            storage.getValue( 'failover1Token'),
+            storage.getValue('failover1Token'),
             storage.getValue('failover2ServerName'),
             storage.getValue('failover2Port'),
         ).subscribe(results => {
-            console.log('Storage results' ,results);
+            console.log('Storage results', results);
             if (results[0]) {
                 this.deviceToken$.next(results[0]);
             }
@@ -83,32 +84,32 @@ export class PersonalizationService {
             } else {
                 this.skipAutoPersonalization$.next(false);
             }
-            
-            if(results[6] && results[7]){
+
+            if (results[6] && results[7]) {
                 this.primaryServer = new ServerLocation(results[6], results[7], results[8]);
             }
-            
-            const failovers : ServerLocation[] = [];
-            
+
+            const failovers: ServerLocation[] = [];
+
             if (results[9] && results[10]) {
-                let location = new ServerLocation(results[9], results[10], results[11]);
+                const location = new ServerLocation(results[9], results[10], results[11]);
 
                 failovers.push(location);
             }
-            
+
             if (results[12] && results[13]) {
-                let location = new ServerLocation(results[12], results[13], results[14]);
+                const location = new ServerLocation(results[12], results[13], results[14]);
 
                 failovers.push(location);
             }
-            
+
             if (results[15] && results[16]) {
-                let location = new ServerLocation(results[15], results[16], results[17]);
+                const location = new ServerLocation(results[15], results[16], results[17]);
 
                 failovers.push(location);
             }
-            
-            if(failovers.length > 0 ){
+
+            if (failovers.length > 0) {
                 console.log('Found failover servers');
                 this.failovers = failovers;
             } else {
@@ -134,12 +135,12 @@ export class PersonalizationService {
 
         return this.http.get<AutoPersonalizationParametersResponse>(url, { params: { deviceName: deviceName }})
             .pipe(
-                timeout(Configuration.autoPersonalizationRequestTimeoutMillis),
+                timeout(CONFIGURATION.autoPersonalizationRequestTimeoutMillis),
                 tap(response => {
                     if (response) {
                         response.sslEnabled = this.sslEnabled$.getValue();
                         this.setFailovers(response.failovers);
-                        this.setPrimaryServer(new ServerLocation(response.serverAddress, response.serverPort, null))
+                        this.setPrimaryServer(new ServerLocation(response.serverAddress, response.serverPort, null));
                     }
                 }));
     }
@@ -216,20 +217,21 @@ export class PersonalizationService {
                     });
                 }
 
-               this.setPersonalizationProperties(personalizationParameters);
+                this.setPersonalizationProperties(personalizationParameters);
 
                 if (sslEnabled) {
                     this.setSslEnabled(sslEnabled);
                 } else {
                     this.setSslEnabled(false);
                 }
-                if(this.primaryServer){
-                    this.primaryServer.active = this.primaryServer.address == this.serverName$.getValue() && this.primaryServer.port == this.serverPort$.getValue();
+                if (this.primaryServer) {
+                    this.primaryServer.active = this.primaryServer.address === this.serverName$.getValue() &&
+                        this.primaryServer.port === this.serverPort$.getValue();
                 }
-                
-                if(this.failovers){
-                    this.failovers.forEach( f => {
-                        f.active = f.address == this.serverName$.getValue() && f.port == this.serverPort$.getValue();
+
+                if (this.failovers) {
+                    this.failovers.forEach(f => {
+                        f.active = f.address === this.serverName$.getValue() && f.port === this.serverPort$.getValue();
                     });
                 }
 
@@ -317,12 +319,12 @@ export class PersonalizationService {
     public getSkipAutoPersonalization$(): Observable<boolean> {
         return this.skipAutoPersonalization$;
     }
-    
+
     public getFailovers(): ServerLocation[] {
         return this.failovers;
     }
-    
-    public getPrimaryServer(): ServerLocation{
+
+    public getPrimaryServer(): ServerLocation {
         return this.primaryServer;
     }
 
@@ -355,33 +357,33 @@ export class PersonalizationService {
 
     private setDeviceToken(token: string, server: string, port: string) {
         this.storage.setValue('deviceToken', token).subscribe();
-        
-        //Persist token with correct server address
-        let primaryServerLocation = this.primaryServer;
-        if(!!primaryServerLocation && primaryServerLocation.address === server && primaryServerLocation.port === port){
+
+        // Persist token with correct server address
+        const primaryServerLocation = this.primaryServer;
+        if (!!primaryServerLocation && primaryServerLocation.address === server && primaryServerLocation.port === port) {
             this.setPrimaryServer(new ServerLocation(server, port, token));
-        } else if( !!this.failovers && this.failovers.size > 0 ){
-            this.failovers.forEach( failover => {
-                if(failover.address === server && failover.port === port){
+        } else if (!!this.failovers && this.failovers.size > 0) {
+            this.failovers.forEach(failover => {
+                if (failover.address === server && failover.port === port) {
                     failover.token = token;
                 }
             });
         }
-            
+
         this.deviceToken$.next(token);
     }
-    
-    private setFailovers(failovers: ServerLocation[]){
+
+    private setFailovers(failovers: ServerLocation[]) {
         failovers.forEach((value, index) => {
             this.storage.setValue(`failover${index}ServerName`, value.address);
             this.storage.setValue(`failover${index}Port`, value.port);
             this.storage.setValue(`failover${index}Token`, value.token);
         });
-        
-        this.failovers =  failovers;
+
+        this.failovers = failovers;
     }
-    
-    private setPrimaryServer(primary: ServerLocation){
+
+    private setPrimaryServer(primary: ServerLocation) {
         this.storage.setValue(`primaryServerName`, primary.address);
         this.storage.setValue(`primaryServerPort`, primary.port);
         this.storage.setValue(`primaryServerToken`, primary.token);
