@@ -1,27 +1,27 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core'
-import {CustomerDetailsDialogComponent} from './customer-details-dialog.component';
-import {CustomerDetailsDialogInterface} from './customer-details-dialog.interface';
-import {ActionService} from '../../../core/actions/action.service';
-import {validateDoesNotExist, validateExist, validateText} from '../../../utilites/test-utils';
-import {By} from '@angular/platform-browser';
-import {IActionItem} from '../../../core/actions/action-item.interface';
-import {PhonePipe} from '../../../shared/pipes/phone.pipe';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { CustomerDetailsDialogComponent } from './customer-details-dialog.component';
+import { CustomerDetailsDialogInterface } from './customer-details-dialog.interface';
+import { ActionService } from '../../../core/actions/action.service';
+import { validateDoesNotExist, validateExist, validateText } from '../../../utilites/test-utils';
+import { By } from '@angular/platform-browser';
+import { IActionItem } from '../../../core/actions/action-item.interface';
+import { PhonePipe } from '../../../shared/pipes/phone.pipe';
 import { MatDialog } from '@angular/material/dialog';
-import {HttpClientTestingModule} from '@angular/common/http/testing';
-import {ElectronService} from 'ngx-electron';
-import {CLIENTCONTEXT} from '../../../core/client-context/client-context-provider.interface';
-import {TimeZoneContext} from '../../../core/client-context/time-zone-context';
-import {Observable, of} from 'rxjs';
-import {MediaBreakpoints, OpenposMediaService} from '../../../core/media/openpos-media.service';
-import {Reward} from '../../../shared/screen-parts/rewards-line-item/rewards-line-item.interface';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { ElectronService } from 'ngx-electron';
+import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provider.interface';
+import { TimeZoneContext } from '../../../core/client-context/time-zone-context';
+import { Observable, of } from 'rxjs';
+import { MediaBreakpoints, OpenposMediaService } from '../../../core/media/openpos-media.service';
+import { Reward } from '../../../shared/screen-parts/rewards-line-item/rewards-line-item.interface';
 import { ImageUrlPipe } from '../../../shared/pipes/image-url.pipe';
 import { MarkdownFormatterPipe } from '../../../shared/pipes/markdown-formatter.pipe';
 
-class MockActionService {};
-class MockMatDialog {};
-class MockElectronService {};
-class ClientContext {};
+class MockActionService { }
+class MockMatDialog { }
+class MockElectronService { }
+class ClientContext { }
 
 describe('CustomerDetailsDialog', () => {
   let component: CustomerDetailsDialogComponent;
@@ -31,13 +31,12 @@ describe('CustomerDetailsDialog', () => {
     observe(): Observable<boolean> {
       return of(false);
     }
-  };
-
+  }
   class MockOpenposMediaServiceMobileTrue {
     observe(): Observable<boolean> {
       return of(true);
     }
-  };
+  }
 
   beforeEach(() => {
     customer = {
@@ -55,9 +54,9 @@ describe('CustomerDetailsDialog', () => {
   });
 
   describe('shared', () => {
-    beforeEach( () => {
+    beforeEach(() => {
       TestBed.configureTestingModule({
-        imports: [ HttpClientTestingModule],
+        imports: [HttpClientTestingModule],
         declarations: [
           CustomerDetailsDialogComponent, PhonePipe, ImageUrlPipe, MarkdownFormatterPipe
         ],
@@ -66,8 +65,8 @@ describe('CustomerDetailsDialog', () => {
           { provide: MatDialog, useClass: MockMatDialog },
           { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobileFalse },
           { provide: ElectronService, useClass: MockElectronService },
-          { provide: ClientContext, useValue: {}},
-          { provide: CLIENTCONTEXT, useClass: TimeZoneContext}
+          { provide: ClientContext, useValue: {} },
+          { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
         ],
         schemas: [
           NO_ERRORS_SCHEMA,
@@ -75,7 +74,8 @@ describe('CustomerDetailsDialog', () => {
       }).compileComponents();
       fixture = TestBed.createComponent(CustomerDetailsDialogComponent);
       component = fixture.componentInstance;
-      component.screen = { customer,
+      component.screen = {
+        customer,
         rewardTabEnabled: true,
         rewardHistoryTabEnabled: true
       } as CustomerDetailsDialogInterface;
@@ -149,7 +149,7 @@ describe('CustomerDetailsDialog', () => {
             beforeEach(() => {
               memberships = [
                 {}, {}, {}
-              ]
+              ];
               component.screen.customer.memberships = memberships;
               component.screen.membershipEnabled = true;
               component.screen.memberTierLabel = '';
@@ -188,7 +188,7 @@ describe('CustomerDetailsDialog', () => {
           });
 
         });
-      })
+      });
       describe('tabs', () => {
         it('displays the tabs section', () => {
           const tabsElement = fixture.debugElement.query(By.css('.tabs'));
@@ -223,20 +223,16 @@ describe('CustomerDetailsDialog', () => {
             validateDoesNotExist(fixture, selector);
           });
 
-          // it('displays the configured text', () => {
-          //   expect(button.nativeElement.innerText).toContain(configuration.title);
-          // });
-
           it('calls doAction with the configuration when an actionClick event is triggered', () => {
             spyOn(component, 'doAction');
-            const button = fixture.debugElement.query(By.css(selector));
+            button = fixture.debugElement.query(By.css(selector));
             button.nativeElement.dispatchEvent(new Event('actionClick'));
             expect(component.doAction).toHaveBeenCalledWith(configuration);
           });
 
           it('calls doAction with the configuration when the button is clicked', () => {
             spyOn(component, 'doAction');
-            const button = fixture.debugElement.query(By.css(selector));
+            button = fixture.debugElement.query(By.css(selector));
             button.nativeElement.click();
             expect(component.doAction).toHaveBeenCalledWith(configuration);
           });
@@ -268,20 +264,16 @@ describe('CustomerDetailsDialog', () => {
             validateDoesNotExist(fixture, selector);
           });
 
-          // it('displays the configured text', () => {
-          //   expect(button.nativeElement.innerText).toContain(configuration.title);
-          // });
-
           it('calls doAction with the configuration when an actionClick event is triggered', () => {
             spyOn(component, 'doAction');
-            const button = fixture.debugElement.query(By.css(selector));
+            button = fixture.debugElement.query(By.css(selector));
             button.nativeElement.dispatchEvent(new Event('actionClick'));
             expect(component.doAction).toHaveBeenCalledWith(configuration);
           });
 
           it('calls doAction with the configuration when the button is clicked', () => {
             spyOn(component, 'doAction');
-            const button = fixture.debugElement.query(By.css(selector));
+            button = fixture.debugElement.query(By.css(selector));
             button.nativeElement.click();
             expect(component.doAction).toHaveBeenCalledWith(configuration);
           });
@@ -313,20 +305,16 @@ describe('CustomerDetailsDialog', () => {
             validateDoesNotExist(fixture, selector);
           });
 
-          // it('displays the configured text', () => {
-          //   expect(button.nativeElement.innerText).toContain(configuration.title);
-          // });
-
           it('calls doAction with the configuration when an actionClick event is triggered', () => {
             spyOn(component, 'doAction');
-            const button = fixture.debugElement.query(By.css(selector));
+            button = fixture.debugElement.query(By.css(selector));
             button.nativeElement.dispatchEvent(new Event('actionClick'));
             expect(component.doAction).toHaveBeenCalledWith(configuration);
           });
 
           it('calls doAction with the configuration when the button is clicked', () => {
             spyOn(component, 'doAction');
-            const button = fixture.debugElement.query(By.css(selector));
+            button = fixture.debugElement.query(By.css(selector));
             button.nativeElement.click();
             expect(component.doAction).toHaveBeenCalledWith(configuration);
           });
@@ -336,9 +324,9 @@ describe('CustomerDetailsDialog', () => {
   });
 
   describe('mobile', () => {
-    beforeEach( () => {
+    beforeEach(() => {
       TestBed.configureTestingModule({
-        imports: [ HttpClientTestingModule],
+        imports: [HttpClientTestingModule],
         declarations: [
           CustomerDetailsDialogComponent, PhonePipe, ImageUrlPipe, MarkdownFormatterPipe
         ],
@@ -347,8 +335,8 @@ describe('CustomerDetailsDialog', () => {
           { provide: MatDialog, useClass: MockMatDialog },
           { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobileTrue },
           { provide: ElectronService, useClass: MockElectronService },
-          { provide: ClientContext, useValue: {}},
-          { provide: CLIENTCONTEXT, useClass: TimeZoneContext}
+          { provide: ClientContext, useValue: {} },
+          { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
         ],
         schemas: [
           NO_ERRORS_SCHEMA,
@@ -356,7 +344,8 @@ describe('CustomerDetailsDialog', () => {
       }).compileComponents();
       fixture = TestBed.createComponent(CustomerDetailsDialogComponent);
       component = fixture.componentInstance;
-      component.screen = { customer,
+      component.screen = {
+        customer,
         rewardTabEnabled: true,
         rewardHistoryTabEnabled: true
       } as CustomerDetailsDialogInterface;
@@ -403,9 +392,9 @@ describe('CustomerDetailsDialog', () => {
   });
 
   describe('non-mobile', () => {
-    beforeEach( () => {
+    beforeEach(() => {
       TestBed.configureTestingModule({
-        imports: [ HttpClientTestingModule],
+        imports: [HttpClientTestingModule],
         declarations: [
           CustomerDetailsDialogComponent, PhonePipe, ImageUrlPipe, MarkdownFormatterPipe
         ],
@@ -414,8 +403,8 @@ describe('CustomerDetailsDialog', () => {
           { provide: MatDialog, useClass: MockMatDialog },
           { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobileFalse },
           { provide: ElectronService, useClass: MockElectronService },
-          { provide: ClientContext, useValue: {}},
-          { provide: CLIENTCONTEXT, useClass: TimeZoneContext}
+          { provide: ClientContext, useValue: {} },
+          { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
         ],
         schemas: [
           NO_ERRORS_SCHEMA,
@@ -423,7 +412,8 @@ describe('CustomerDetailsDialog', () => {
       }).compileComponents();
       fixture = TestBed.createComponent(CustomerDetailsDialogComponent);
       component = fixture.componentInstance;
-      component.screen = { customer,
+      component.screen = {
+        customer,
         rewardTabEnabled: true,
         rewardHistoryTabEnabled: true
       } as CustomerDetailsDialogInterface;

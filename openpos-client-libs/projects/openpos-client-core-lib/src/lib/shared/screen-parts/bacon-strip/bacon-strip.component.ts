@@ -1,13 +1,13 @@
-import {MatSidenav} from '@angular/material/sidenav';
-import {BaconStripInterface} from './bacon-strip.interface';
-import {ScreenPartComponent} from '../screen-part';
-import {Component, EventEmitter, Injector, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {ScreenPart} from '../../decorators/screen-part.decorator';
-import {HelpTextService} from '../../../core/help-text/help-text.service';
-import {MediaBreakpoints, OpenposMediaService} from '../../../core/media/openpos-media.service';
-import {Observable} from 'rxjs';
-import {KeyPressProvider} from '../../providers/keypress.provider';
-import {Configuration} from '../../../configuration/configuration';
+import { MatSidenav } from '@angular/material/sidenav';
+import { BaconStripInterface } from './bacon-strip.interface';
+import { ScreenPartComponent } from '../screen-part';
+import { Component, EventEmitter, Injector, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { ScreenPart } from '../../decorators/screen-part.decorator';
+import { HelpTextService } from '../../../core/help-text/help-text.service';
+import { MediaBreakpoints, OpenposMediaService } from '../../../core/media/openpos-media.service';
+import { Observable } from 'rxjs';
+import { KeyPressProvider } from '../../providers/keypress.provider';
+import { CONFIGURATION } from '../../../configuration/configuration';
 
 @ScreenPart({
     name: 'baconStrip'
@@ -41,8 +41,12 @@ export class BaconStripComponent extends ScreenPartComponent<BaconStripInterface
     isMobile: Observable<boolean>;
 
     searchExpanded = false;
-    constructor(injector: Injector, public helpTextService: HelpTextService, private media: OpenposMediaService,
-                protected keyPresses: KeyPressProvider) {
+    constructor(
+        injector: Injector,
+        public helpTextService: HelpTextService,
+        private media: OpenposMediaService,
+        protected keyPresses: KeyPressProvider
+    ) {
         super(injector);
 
         this.isMobile = media.observe(new Map([
@@ -55,15 +59,15 @@ export class BaconStripComponent extends ScreenPartComponent<BaconStripInterface
         ]));
 
         this.subscriptions.add(
-          this.keyPresses.subscribe( 'Escape', 100, (event: KeyboardEvent) => {
-            // ignore repeats and check configuration
-            if ( event.repeat || event.type !== 'keydown' || !Configuration.enableKeybinds) {
-              return;
-            }
-            if ( event.type === 'keydown' && this.screenData.actions) {
-              this.buttonClick();
-            }
-          })
+            this.keyPresses.subscribe('Escape', 100, (event: KeyboardEvent) => {
+                // ignore repeats and check configuration
+                if (event.repeat || event.type !== 'keydown' || !CONFIGURATION.enableKeybinds) {
+                    return;
+                }
+                if (event.type === 'keydown' && this.screenData.actions) {
+                    this.buttonClick();
+                }
+            })
         );
     }
 

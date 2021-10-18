@@ -1,28 +1,28 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core'
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import {HttpClientTestingModule} from '@angular/common/http/testing';
-import {Observable, of, Subscription} from 'rxjs';
-import {MediaBreakpoints, OpenposMediaService} from '../../../core/media/openpos-media.service';
-import {ElectronService} from 'ngx-electron';
-import {CLIENTCONTEXT} from '../../../core/client-context/client-context-provider.interface';
-import {TimeZoneContext} from '../../../core/client-context/time-zone-context';
-import {ActionService} from '../../../core/actions/action.service';
-import {KeyPressProvider} from '../../providers/keypress.provider';
-import {RewardsHistoryLineItemComponent} from './rewards-history-line-item.component';
-import {RewardHistory, RewardsHistoryLineItemComponentInterface} from './rewards-history-line-item.interface';
-import {validateDoesNotExist, validateExist, validateIcon, validateText} from '../../../utilites/test-utils';
-import {By} from '@angular/platform-browser';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { Observable, of, Subscription } from 'rxjs';
+import { MediaBreakpoints, OpenposMediaService } from '../../../core/media/openpos-media.service';
+import { ElectronService } from 'ngx-electron';
+import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provider.interface';
+import { TimeZoneContext } from '../../../core/client-context/time-zone-context';
+import { ActionService } from '../../../core/actions/action.service';
+import { KeyPressProvider } from '../../providers/keypress.provider';
+import { RewardsHistoryLineItemComponent } from './rewards-history-line-item.component';
+import { RewardHistory, RewardsHistoryLineItemComponentInterface } from './rewards-history-line-item.interface';
+import { validateDoesNotExist, validateExist, validateIcon, validateText } from '../../../utilites/test-utils';
+import { By } from '@angular/platform-browser';
 
-class MockActionService {};
-class MockMatDialog {};
+class MockActionService { }
+class MockMatDialog { }
 class MockKeyPressProvider {
     subscribe(): Subscription {
         return new Subscription();
     }
-};
-class MockElectronService {};
-class ClientContext {};
+}
+class MockElectronService { }
+class ClientContext { }
 
 describe('RewardsHistoryLineItemComponent', () => {
     let component: RewardsHistoryLineItemComponent;
@@ -31,18 +31,18 @@ describe('RewardsHistoryLineItemComponent', () => {
         observe(): Observable<boolean> {
             return of(false);
         }
-    };
+    }
 
     class MockOpenposMediaServiceMobileTrue {
         observe(): Observable<boolean> {
             return of(true);
         }
-    };
+    }
 
     describe('shared', () => {
-        beforeEach( () => {
+        beforeEach(() => {
             TestBed.configureTestingModule({
-                imports: [ HttpClientTestingModule],
+                imports: [HttpClientTestingModule],
                 declarations: [
                     RewardsHistoryLineItemComponent
                 ],
@@ -52,8 +52,8 @@ describe('RewardsHistoryLineItemComponent', () => {
                     { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobileFalse },
                     { provide: KeyPressProvider, useClass: MockKeyPressProvider },
                     { provide: ElectronService, useClass: MockElectronService },
-                    { provide: ClientContext, useValue: {}},
-                    { provide: CLIENTCONTEXT, useClass: TimeZoneContext}
+                    { provide: ClientContext, useValue: {} },
+                    { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
                 ],
                 schemas: [
                     NO_ERRORS_SCHEMA,
@@ -79,21 +79,21 @@ describe('RewardsHistoryLineItemComponent', () => {
 
         describe('component', () => {
             describe('initIsMobile', () => {
-               it('sets the values for isMobile', () => {
-                   const media: OpenposMediaService = TestBed.inject(OpenposMediaService);
-                   spyOn(media, 'observe');
+                it('sets the values for isMobile', () => {
+                    const media: OpenposMediaService = TestBed.inject(OpenposMediaService);
+                    spyOn(media, 'observe');
 
-                   component.initIsMobile();
+                    component.initIsMobile();
 
-                   expect(media.observe).toHaveBeenCalledWith(new Map([
-                       [MediaBreakpoints.MOBILE_PORTRAIT, true],
-                       [MediaBreakpoints.MOBILE_LANDSCAPE, true],
-                       [MediaBreakpoints.TABLET_PORTRAIT, true],
-                       [MediaBreakpoints.TABLET_LANDSCAPE, false],
-                       [MediaBreakpoints.DESKTOP_PORTRAIT, false],
-                       [MediaBreakpoints.DESKTOP_LANDSCAPE, false]
-                   ]));
-               });
+                    expect(media.observe).toHaveBeenCalledWith(new Map([
+                        [MediaBreakpoints.MOBILE_PORTRAIT, true],
+                        [MediaBreakpoints.MOBILE_LANDSCAPE, true],
+                        [MediaBreakpoints.TABLET_PORTRAIT, true],
+                        [MediaBreakpoints.TABLET_LANDSCAPE, false],
+                        [MediaBreakpoints.DESKTOP_PORTRAIT, false],
+                        [MediaBreakpoints.DESKTOP_LANDSCAPE, false]
+                    ]));
+                });
             });
         });
 
@@ -112,7 +112,7 @@ describe('RewardsHistoryLineItemComponent', () => {
 
                     const nameElement = fixture.debugElement.query(By.css('.details .name'));
                     expect(nameElement.nativeElement.classList).toContain('expired');
-                })
+                });
 
                 describe('expiration', () => {
                     describe('when there is an expiration date', () => {
@@ -130,12 +130,12 @@ describe('RewardsHistoryLineItemComponent', () => {
 
                     describe('when there is no expiration date', () => {
                         beforeEach(() => {
-                           component.reward.expirationDate = undefined;
-                           fixture.detectChanges();
+                            component.reward.expirationDate = undefined;
+                            fixture.detectChanges();
                         });
 
                         it('does not display the expiration section', () => {
-                           validateDoesNotExist(fixture, '.expiration');
+                            validateDoesNotExist(fixture, '.expiration');
                         });
                     });
                 });
@@ -164,12 +164,12 @@ describe('RewardsHistoryLineItemComponent', () => {
             });
 
             describe('status', () => {
-               it('shows the redeemedLabel when the reward is redeemed', () => {
-                   component.screenData.redeemedLabel = 'redeemed label';
+                it('shows the redeemedLabel when the reward is redeemed', () => {
+                    component.screenData.redeemedLabel = 'redeemed label';
                     component.reward.redeemed = true;
                     fixture.detectChanges();
                     validateText(fixture, '.status', component.screenData.redeemedLabel);
-               });
+                });
 
                 it('shows the expiredLabel when the reward is not redeemed', () => {
                     component.screenData.expiredLabel = 'expired label';
@@ -182,9 +182,9 @@ describe('RewardsHistoryLineItemComponent', () => {
     });
 
     describe('mobile', () => {
-        beforeEach( () => {
+        beforeEach(() => {
             TestBed.configureTestingModule({
-                imports: [ HttpClientTestingModule],
+                imports: [HttpClientTestingModule],
                 declarations: [
                     RewardsHistoryLineItemComponent
                 ],
@@ -194,8 +194,8 @@ describe('RewardsHistoryLineItemComponent', () => {
                     { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobileTrue },
                     { provide: KeyPressProvider, useClass: MockKeyPressProvider },
                     { provide: ElectronService, useClass: MockElectronService },
-                    { provide: ClientContext, useValue: {}},
-                    { provide: CLIENTCONTEXT, useClass: TimeZoneContext}
+                    { provide: ClientContext, useValue: {} },
+                    { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
                 ],
                 schemas: [
                     NO_ERRORS_SCHEMA,
@@ -227,9 +227,9 @@ describe('RewardsHistoryLineItemComponent', () => {
     });
 
     describe('non-mobile', () => {
-        beforeEach( () => {
+        beforeEach(() => {
             TestBed.configureTestingModule({
-                imports: [ HttpClientTestingModule],
+                imports: [HttpClientTestingModule],
                 declarations: [
                     RewardsHistoryLineItemComponent
                 ],
@@ -239,8 +239,8 @@ describe('RewardsHistoryLineItemComponent', () => {
                     { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobileFalse },
                     { provide: KeyPressProvider, useClass: MockKeyPressProvider },
                     { provide: ElectronService, useClass: MockElectronService },
-                    { provide: ClientContext, useValue: {}},
-                    { provide: CLIENTCONTEXT, useClass: TimeZoneContext}
+                    { provide: ClientContext, useValue: {} },
+                    { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
                 ],
                 schemas: [
                     NO_ERRORS_SCHEMA,

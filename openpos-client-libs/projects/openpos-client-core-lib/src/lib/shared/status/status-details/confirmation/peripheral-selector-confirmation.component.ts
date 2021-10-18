@@ -1,6 +1,6 @@
-import { Component, Inject } from "@angular/core";
-import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
-import { PeripheralSelectionService, PeripheralCategory, PeripheralDevice } from '../../../../core/peripherals/peripheral-selection.service';
+import { Component, Inject } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { PeripheralSelectionService, PeripheralDevice } from '../../../../core/peripherals/peripheral-selection.service';
 
 export interface PeripheralSelectorConfirmationDialogData {
     device: PeripheralDevice;

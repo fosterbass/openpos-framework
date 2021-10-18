@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { ILocationProvider } from './location-provider.interface';
 import { ILocationData } from './location-data.interface';
-import { Configuration } from '../../configuration/configuration';
+import { CONFIGURATION } from '../../configuration/configuration';
 
 interface GoogleGeocodeResponse {
     results: GoogleGeocodeResult[];
@@ -37,10 +37,10 @@ export class LocationProviderDefault implements ILocationProvider {
     }
 
     getCurrentLocation(coordinateBuffer: number): Observable<ILocationData> {
-        if (navigator.geolocation && Configuration.googleApiKey) {
+        if (navigator.geolocation && CONFIGURATION.googleApiKey) {
             let zipCode = '';
-            let  countryName = '';
-            const previous = {latitude: 0, longitude: 0};
+            let countryName = '';
+            const previous = { latitude: 0, longitude: 0 };
             const buffer = coordinateBuffer;
             navigator.geolocation.watchPosition((position) => {
                 const lat = position.coords.latitude;
@@ -51,7 +51,7 @@ export class LocationProviderDefault implements ILocationProvider {
                     previous.longitude = long;
                     const latlong = lat + ',' + long;
                     console.log('calling google maps geocode api');
-                    this.reverseGeocode(Configuration.googleApiKey, latlong)
+                    this.reverseGeocode(CONFIGURATION.googleApiKey, latlong)
                         .then((response) => {
                             console.log(response.results[0].address_components);
                             for (const addressComponent of response.results[0].address_components) {

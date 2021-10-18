@@ -1,11 +1,11 @@
-import {Component, Injector, OnInit} from '@angular/core';
-import {ScreenComponent} from '../../shared/decorators/screen-component.decorator';
-import {SimulatedPeripheralService} from '../../core/services/simulated-peripheral-service';
-import {PosScreen} from '../pos-screen/pos-screen.component';
-import {SimulatedPeripheralInterface} from './simulated-peripheral.interface';
-import {DomSanitizer, SafeHtml, SafeResourceUrl} from '@angular/platform-browser';
-import {PersonalizationService} from "../../core/personalization/personalization.service";
-import {DiscoveryService} from "../../core/discovery/discovery.service";
+import { Component, Injector, OnInit } from '@angular/core';
+import { ScreenComponent } from '../../shared/decorators/screen-component.decorator';
+import { SimulatedPeripheralService } from '../../core/services/simulated-peripheral-service';
+import { PosScreenDirective } from '../pos-screen/pos-screen.component';
+import { SimulatedPeripheralInterface } from './simulated-peripheral.interface';
+import { DomSanitizer, SafeHtml, SafeResourceUrl } from '@angular/platform-browser';
+import { PersonalizationService } from '../../core/personalization/personalization.service';
+import { DiscoveryService } from '../../core/discovery/discovery.service';
 
 @ScreenComponent({
     name: 'SimulatedPeripheral'
@@ -15,16 +15,20 @@ import {DiscoveryService} from "../../core/discovery/discovery.service";
     templateUrl: './simulated-peripheral-viewer.component.html',
     styleUrls: ['./simulated-peripheral-viewer.component.scss']
 })
-export class SimulatedPeripheralViewerComponent extends PosScreen<SimulatedPeripheralInterface> implements OnInit {
+export class SimulatedPeripheralViewerComponent extends PosScreenDirective<SimulatedPeripheralInterface> implements OnInit {
 
     receiptUrl: SafeResourceUrl;
     receiptsUrlHistory = new Array<SafeResourceUrl>();
     readonly receiptsUrlHistoryMaxLength = 128;
     currentReceiptUrlIndex = -1;
 
-    constructor(injector: Injector, private simulatedPeripheralService : SimulatedPeripheralService,
-                private domSanitizer : DomSanitizer, private personalizationService : PersonalizationService,
-                private discoveryService : DiscoveryService) {
+    constructor(
+        injector: Injector,
+        private simulatedPeripheralService: SimulatedPeripheralService,
+        private domSanitizer: DomSanitizer,
+        private personalizationService: PersonalizationService,
+        private discoveryService: DiscoveryService
+    ) {
         super(injector);
     }
 
@@ -32,7 +36,7 @@ export class SimulatedPeripheralViewerComponent extends PosScreen<SimulatedPerip
         this.subscriptions.add(this.simulatedPeripheralService.getReceiptData().subscribe(m => this.updateReceiptUrl(m)));
     }
 
-    updateReceiptUrl(deviceToken : string) {
+    updateReceiptUrl(deviceToken: string) {
         if (deviceToken) {
             const url = `${this.discoveryService.getServerBaseURL()}/document/previewDocument/${deviceToken}`;
             this.receiptUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(url);
@@ -40,7 +44,7 @@ export class SimulatedPeripheralViewerComponent extends PosScreen<SimulatedPerip
         }
     }
 
-    addReceiptUrlToHistory(receiptUrl : SafeResourceUrl) {
+    addReceiptUrlToHistory(receiptUrl: SafeResourceUrl) {
         if (this.receiptsUrlHistory.length >= this.receiptsUrlHistoryMaxLength) {
             this.receiptsUrlHistory.shift();
         }

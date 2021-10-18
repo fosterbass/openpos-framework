@@ -4,7 +4,7 @@ import { MatKeyboardComponent } from '../components/keyboard/keyboard.component'
 import { MatKeyboardRef } from '../classes/keyboard-ref.class';
 import { MatKeyboardService } from '../services/keyboard.service';
 import { SessionService } from '../../core/services/session.service';
-import { Configuration } from '../../configuration/configuration';
+import { CONFIGURATION } from '../../configuration/configuration';
 import { IMessageHandler } from '../../core/interfaces/message-handler.interface';
 
 @Directive({
@@ -55,7 +55,7 @@ export class KeyboardDirective implements OnDestroy, IMessageHandler<any> {
 
     @HostListener('focus', [''])
     public _showKeyboard() {
-        if (Configuration.useOnScreenKeyboard) {
+        if (CONFIGURATION.useOnScreenKeyboard) {
 
             this.keyboardRef = this.keyboardService.open(this.keyboardLayout, {
                 darkTheme: true,

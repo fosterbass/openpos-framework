@@ -2,7 +2,9 @@
 import { Directive } from '@angular/core';
 
 @Directive({
+    // tslint:disable-next-line: directive-selector
     selector: 'input',
+    // tslint:disable-next-line: no-host-metadata-property
     host: {
         autocomplete: 'off',
         autocorrect: 'off',
@@ -11,5 +13,6 @@ import { Directive } from '@angular/core';
     }
 })
 export class DisableAutoCompleteDirective {
+
     constructor() { }
 }

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ScreenComponent } from '../../shared/decorators/screen-component.decorator';
-import { PosScreen } from '../pos-screen/pos-screen.component';
+import { PosScreenDirective } from '../pos-screen/pos-screen.component';
 import { PromptWithInfoInterface } from './prompt-with-info.interface';
 
 /**
@@ -14,7 +14,7 @@ import { PromptWithInfoInterface } from './prompt-with-info.interface';
   templateUrl: './prompt-with-info-screen.component.html',
   styleUrls: ['./prompt-with-info-screen.component.scss']
 })
-export class PromptWithInfoScreenComponent extends PosScreen<PromptWithInfoInterface> {
+export class PromptWithInfoScreenComponent extends PosScreenDirective<PromptWithInfoInterface> {
 
   buildScreen() {
   }

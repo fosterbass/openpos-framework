@@ -1,6 +1,6 @@
 import { Component, ViewChild, AfterViewChecked, ElementRef, Injector } from '@angular/core';
 import { ISellItem } from '../../core/interfaces/sell-item.interface';
-import { PosScreen } from '../../screens-with-parts/pos-screen/pos-screen.component';
+import { PosScreenDirective } from '../../screens-with-parts/pos-screen/pos-screen.component';
 import { ScreenComponent } from '../../shared/decorators/screen-component.decorator';
 import { DeviceService } from '../../core/services/device.service';
 import { Observable } from 'rxjs';
@@ -15,7 +15,7 @@ import { map } from 'rxjs/operators';
     templateUrl: './self-checkout-sale.component.html',
     styleUrls: ['./self-checkout-sale.component.scss']
 })
-export class SelfCheckoutSaleComponent extends PosScreen<any> implements AfterViewChecked {
+export class SelfCheckoutSaleComponent extends PosScreenDirective<any> implements AfterViewChecked {
     @ViewChild('scrollList', { read: ElementRef, static: true }) private scrollList: ElementRef;
     @ViewChild('scrollList', { static: true }) private saleItemCardList: SaleItemCardListComponent;
 

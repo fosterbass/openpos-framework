@@ -1,9 +1,9 @@
-import {Component, Inject, OnDestroy} from '@angular/core';
-import {Observable, Subject} from 'rxjs';
-import {takeUntil, tap} from 'rxjs/operators';
-import {ActionService} from '../actions/action.service';
-import {LockScreenMessage} from '../messages/lock-screen-message';
-import {LOCK_SCREEN_DATA} from './lock-screen-data';
+import { Component, Inject, OnDestroy } from '@angular/core';
+import { Observable, Subject } from 'rxjs';
+import { takeUntil, tap } from 'rxjs/operators';
+import { ActionService } from '../actions/action.service';
+import { LockScreenMessage } from '../messages/lock-screen-message';
+import { LOCK_SCREEN_DATA } from './lock-screen-data';
 
 @Component({
   selector: 'app-lock-screen',
@@ -20,12 +20,12 @@ export class LockScreenComponent implements OnDestroy {
   destroy = new Subject();
 
   constructor(
-      @Inject(LOCK_SCREEN_DATA) data: Observable<LockScreenMessage>,
-      private actionService: ActionService) {
-      data.pipe(
-          tap( message => this.data = message),
-          takeUntil(this.destroy)
-      ).subscribe();
+    @Inject(LOCK_SCREEN_DATA) data: Observable<LockScreenMessage>,
+    private actionService: ActionService) {
+    data.pipe(
+      tap(message => this.data = message),
+      takeUntil(this.destroy)
+    ).subscribe();
   }
 
   submit($event: any) {
@@ -43,7 +43,7 @@ export class LockScreenComponent implements OnDestroy {
   }
 
   doOverride() {
-    this.actionService.doAction(this.data.overrideAction, {username: this.username, password: this.password});
+    this.actionService.doAction(this.data.overrideAction, { username: this.username, password: this.password });
   }
 
   toggleOverride() {

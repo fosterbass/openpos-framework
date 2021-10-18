@@ -19,10 +19,10 @@ export class CommerceServerSink implements OnDestroy {
         discoveryService: DiscoveryService,
         configurationService: ConfigurationService
     ) {
-        this.consoleSubscription = combineLatest(
+        this.consoleSubscription = combineLatest([
             configurationService.getConfiguration<ServerLoggerConfiguration>('server-logger'),
             discoveryService.getDeviceAppApiServerBaseUrl$(),
-        ).pipe(
+        ]).pipe(
             map(settings => ({
                 config: settings[0],
                 apiUrl: settings[1] + '/clientlogs'

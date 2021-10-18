@@ -1,4 +1,4 @@
-import { Configuration } from './../../configuration/configuration';
+import { CONFIGURATION } from './../../configuration/configuration';
 import { ConfigurationService } from './configuration.service';
 import { SessionService } from './session.service';
 import { TestBed } from '@angular/core/testing';
@@ -36,82 +36,82 @@ describe('ConfigurationService', () => {
 
     });
 
-    it('test mapping of response string property to Configuration boolean property', () => {
-        const originalValue = Configuration.mimicScroll;
-        Configuration.mimicScroll = false;
+    it('test mapping of response string property to CONFIGURATION boolean property', () => {
+        const originalValue = CONFIGURATION.mimicScroll;
+        CONFIGURATION.mimicScroll = false;
         // tslint:disable-next-line:no-string-literal
         testUiConfigMsg['mimicScroll'] = 'true';
 
         getTestScheduler().flush();
-        expect(Configuration.mimicScroll).toEqual(true);
-        Configuration.mimicScroll = originalValue;
+        expect(CONFIGURATION.mimicScroll).toEqual(true);
+        CONFIGURATION.mimicScroll = originalValue;
     });
 
-    it('test mapping of response boolean property to Configuration string property', () => {
-        const originalValue = Configuration.compatibilityVersion;
-        Configuration.compatibilityVersion = 'false';
+    it('test mapping of response boolean property to CONFIGURATION string property', () => {
+        const originalValue = CONFIGURATION.compatibilityVersion;
+        CONFIGURATION.compatibilityVersion = 'false';
         // tslint:disable-next-line:no-string-literal
         testUiConfigMsg['compatibilityVersion'] = true;
 
         getTestScheduler().flush();
-        expect(Configuration.compatibilityVersion).toEqual('true');
-        Configuration.compatibilityVersion = originalValue;
+        expect(CONFIGURATION.compatibilityVersion).toEqual('true');
+        CONFIGURATION.compatibilityVersion = originalValue;
     });
 
-    it('test mapping of response string property to Configuration number property', () => {
-        const originalValue = Configuration.keepAliveMillis;
-        Configuration.keepAliveMillis = 1000;
+    it('test mapping of response string property to CONFIGURATION number property', () => {
+        const originalValue = CONFIGURATION.keepAliveMillis;
+        CONFIGURATION.keepAliveMillis = 1000;
         // tslint:disable-next-line:no-string-literal
         testUiConfigMsg['keepAliveMillis'] = '1000';
 
         getTestScheduler().flush();
-        expect(Configuration.keepAliveMillis).toEqual(1000);
-        Configuration.keepAliveMillis = originalValue;
+        expect(CONFIGURATION.keepAliveMillis).toEqual(1000);
+        CONFIGURATION.keepAliveMillis = originalValue;
     });
 
-    it('test mapping of response number property to Configuration string property', () => {
-        const originalValue = Configuration.compatibilityVersion;
-        Configuration.compatibilityVersion = '2';
+    it('test mapping of response number property to CONFIGURATION string property', () => {
+        const originalValue = CONFIGURATION.compatibilityVersion;
+        CONFIGURATION.compatibilityVersion = '2';
         // tslint:disable-next-line:no-string-literal
         testUiConfigMsg['compatibilityVersion'] = 1;
 
         getTestScheduler().flush();
-        expect(Configuration.compatibilityVersion).toEqual('1');
-        Configuration.compatibilityVersion = originalValue;
+        expect(CONFIGURATION.compatibilityVersion).toEqual('1');
+        CONFIGURATION.compatibilityVersion = originalValue;
     });
 
-    it('test mapping of response string property to Configuration string property', () => {
-        const originalValue = Configuration.compatibilityVersion;
-        Configuration.compatibilityVersion = '2';
+    it('test mapping of response string property to CONFIGURATION string property', () => {
+        const originalValue = CONFIGURATION.compatibilityVersion;
+        CONFIGURATION.compatibilityVersion = '2';
         // tslint:disable-next-line:no-string-literal
         testUiConfigMsg['compatibilityVersion'] = '1';
 
         getTestScheduler().flush();
-        expect(Configuration.compatibilityVersion).toEqual('1');
-        Configuration.compatibilityVersion = originalValue;
+        expect(CONFIGURATION.compatibilityVersion).toEqual('1');
+        CONFIGURATION.compatibilityVersion = originalValue;
     });
 
-    it('test mapping of invalid response string property to Configuration number property', () => {
-        const originalValue = Configuration.mimicScroll;
-        Configuration.mimicScroll = false;
-        const propValueBeforeTest = Configuration.keepAliveMillis;
+    it('test mapping of invalid response string property to CONFIGURATION number property', () => {
+        const originalValue = CONFIGURATION.mimicScroll;
+        CONFIGURATION.mimicScroll = false;
+        const propValueBeforeTest = CONFIGURATION.keepAliveMillis;
         // tslint:disable-next-line:no-string-literal
         testUiConfigMsg['keepAliveMillis'] = 'foo';
 
         getTestScheduler().flush();
-        expect(Configuration.keepAliveMillis).toEqual(propValueBeforeTest);
-        Configuration.mimicScroll = originalValue;
+        expect(CONFIGURATION.keepAliveMillis).toEqual(propValueBeforeTest);
+        CONFIGURATION.mimicScroll = originalValue;
     });
 
-    it('test mapping of invalid response string property to Configuration boolean property', () => {
-        const originalValue = Configuration.mimicScroll;
-        Configuration.mimicScroll = false;
-        const propValueBeforeTest = Configuration.mimicScroll;
+    it('test mapping of invalid response string property to CONFIGURATION boolean property', () => {
+        const originalValue = CONFIGURATION.mimicScroll;
+        CONFIGURATION.mimicScroll = false;
+        const propValueBeforeTest = CONFIGURATION.mimicScroll;
         // tslint:disable-next-line:no-string-literal
         testUiConfigMsg['mimicScroll'] = 'foo';
 
         getTestScheduler().flush();
-        expect(Configuration.mimicScroll).toEqual(propValueBeforeTest);
-        Configuration.mimicScroll = originalValue;
+        expect(CONFIGURATION.mimicScroll).toEqual(propValueBeforeTest);
+        CONFIGURATION.mimicScroll = originalValue;
     });
 });

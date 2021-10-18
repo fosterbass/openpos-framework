@@ -1,14 +1,24 @@
-import { OnDestroy, Component, Input, Output, EventEmitter, ContentChild, TemplateRef, ElementRef, OnInit,
-    ViewChildren, AfterViewInit } from '@angular/core';
+import {
+    OnDestroy,
+    Component,
+    Input,
+    Output,
+    EventEmitter,
+    ContentChild,
+    TemplateRef,
+    ElementRef,
+    OnInit,
+    ViewChildren,
+    AfterViewInit,
+    QueryList
+} from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { ISelectableListData } from './selectable-list-data.interface';
 import { KeyPressProvider } from '../../providers/keypress.provider';
-import { Configuration } from '../../../configuration/configuration';
+import { CONFIGURATION } from '../../../configuration/configuration';
 import { SelectionMode } from '../../../core/interfaces/selection-mode.enum';
 import { SessionService } from '../../../core/services/session.service';
 import { ActionService } from '../../../core/actions/action.service';
-
-import type { QueryList } from '@angular/core';
 
 export class SelectableItemListComponentConfiguration {
     numItemsPerPage: number;
@@ -41,7 +51,7 @@ export class SelectableItemListComponent<ItemType> implements OnDestroy, OnInit,
     }
 
     @Input()
-    set selectedItem( item: ItemType ) {
+    set selectedItem(item: ItemType) {
         this._selectedItem = item;
         this.updateKeySubscriptions();
     }
@@ -51,7 +61,7 @@ export class SelectableItemListComponent<ItemType> implements OnDestroy, OnInit,
     @Output() selectedItemChange = new EventEmitter<number>();
 
     @Input()
-    set selectedItemList( itemList: ItemType[] ) {
+    set selectedItemList(itemList: ItemType[]) {
         this._selectedItemList = itemList;
         this.updateKeySubscriptions();
     }
@@ -89,23 +99,23 @@ export class SelectableItemListComponent<ItemType> implements OnDestroy, OnInit,
             this.updateKeySubscriptions();
         }));
 
-        this.subscriptions.add(this.keyPresses.subscribe( 'ArrowDown', 1, event => {
+        this.subscriptions.add(this.keyPresses.subscribe('ArrowDown', 1, event => {
             // ignore repeats and check configuration
-            if ( event.repeat || !Configuration.enableKeybinds || !this.keyboardControl ) {
+            if (event.repeat || !CONFIGURATION.enableKeybinds || !this.keyboardControl) {
                 return;
             }
-            if ( event.type === 'keydown') {
+            if (event.type === 'keydown') {
                 this.handleArrowKey(event);
             }
         }));
 
         this.subscriptions.add(
-            this.keyPresses.subscribe( 'ArrowUp', 1, event => {
+            this.keyPresses.subscribe('ArrowUp', 1, event => {
                 // ignore repeats and check configuration
-                if ( event.repeat || !Configuration.enableKeybinds || !this.keyboardControl ) {
+                if (event.repeat || !CONFIGURATION.enableKeybinds || !this.keyboardControl) {
                     return;
                 }
-                if ( event.type === 'keydown') {
+                if (event.type === 'keydown') {
                     this.handleArrowKey(event);
                 }
             })
@@ -113,7 +123,7 @@ export class SelectableItemListComponent<ItemType> implements OnDestroy, OnInit,
 
         this.subscriptions.add(
             this.keyPresses.subscribe('ArrowRight', 2, event => {
-                if (event.repeat || !Configuration.enableKeybinds || !this.keyboardControl) {
+                if (event.repeat || !CONFIGURATION.enableKeybinds || !this.keyboardControl) {
                     return;
                 }
                 if (event.type === 'keydown') {
@@ -126,7 +136,7 @@ export class SelectableItemListComponent<ItemType> implements OnDestroy, OnInit,
 
         this.subscriptions.add(
             this.keyPresses.subscribe('ArrowLeft', 2, event => {
-                if (event.repeat || !Configuration.enableKeybinds || !this.keyboardControl) {
+                if (event.repeat || !CONFIGURATION.enableKeybinds || !this.keyboardControl) {
                     return;
                 }
                 if (event.type === 'keydown') {
@@ -141,7 +151,7 @@ export class SelectableItemListComponent<ItemType> implements OnDestroy, OnInit,
     private updateKeySubscriptions() {
         if (((this.selectedItemList && this.selectedItemList.length) || this.selectedItem) && !this.selectedItemSubscription) {
             this.buildKeySubscriptions();
-        } else if ( !((this.selectedItemList  && this.selectedItemList.length) || this.selectedItem) && this.selectedItemSubscription ) {
+        } else if (!((this.selectedItemList && this.selectedItemList.length) || this.selectedItem) && this.selectedItemSubscription) {
             this.selectedItemSubscription.unsubscribe();
             this.selectedItemSubscription = null;
         }
@@ -149,12 +159,12 @@ export class SelectableItemListComponent<ItemType> implements OnDestroy, OnInit,
 
     private buildKeySubscriptions() {
         this.selectedItemSubscription =
-            this.keyPresses.subscribe( 'Escape', 1, event => {
+            this.keyPresses.subscribe('Escape', 1, event => {
                 // ignore repeats and check configuration
-                if ( event.repeat || !Configuration.enableKeybinds || !this.keyboardControl ) {
+                if (event.repeat || !CONFIGURATION.enableKeybinds || !this.keyboardControl) {
                     return;
                 }
-                if ( event.type === 'keydown') {
+                if (event.type === 'keydown') {
                     this.handleEscape(event);
                 }
             });
@@ -200,7 +210,7 @@ export class SelectableItemListComponent<ItemType> implements OnDestroy, OnInit,
         if (this.items) {
             if (this.items.size === this.configuration.totalNumberOfItems) {
                 this.itemsToShow = Array.from(this.items.values()).slice((this.currentPage - 1) *
-                this.configuration.numItemsPerPage, this.configuration.numItemsPerPage * this.currentPage);
+                    this.configuration.numItemsPerPage, this.configuration.numItemsPerPage * this.currentPage);
             } else if (this.isPageSavedInMap()) {
                 this.itemsToShow = this.itemPageMap.get(this.currentPage);
                 if (this.disabledItemPageMap && this.disabledItemPageMap.get(this.currentPage) !== undefined
@@ -242,7 +252,7 @@ export class SelectableItemListComponent<ItemType> implements OnDestroy, OnInit,
                             break;
                     }
                 }
-            } else if (this.defaultSelect && this.useDefaultSelectIndexToStart &&  this.itemsToShow.length === 1) {
+            } else if (this.defaultSelect && this.useDefaultSelectIndexToStart && this.itemsToShow.length === 1) {
                 this.scrollToIndex = 0;
                 const originalItemIndex = this.scrollToIndex + ((this.currentPage - 1) * this.configuration.numItemsPerPage);
                 if (!this.disabledItems.get(originalItemIndex)) {
@@ -269,7 +279,7 @@ export class SelectableItemListComponent<ItemType> implements OnDestroy, OnInit,
         if (this.isPageSavedInMap() || !this.configuration.fetchDataAction) {
             this.updateResultsToShow();
         } else {
-            this.actionService.doAction({action: this.configuration.fetchDataAction, doNotBlockForResponse: true}, this.currentPage);
+            this.actionService.doAction({ action: this.configuration.fetchDataAction, doNotBlockForResponse: true }, this.currentPage);
         }
     }
 
@@ -279,7 +289,7 @@ export class SelectableItemListComponent<ItemType> implements OnDestroy, OnInit,
         if (this.isPageSavedInMap() || !this.configuration.fetchDataAction) {
             this.updateResultsToShow();
         } else {
-            this.actionService.doAction({action: this.configuration.fetchDataAction, doNotBlockForResponse: true}, this.currentPage);
+            this.actionService.doAction({ action: this.configuration.fetchDataAction, doNotBlockForResponse: true }, this.currentPage);
         }
     }
 
@@ -321,7 +331,7 @@ export class SelectableItemListComponent<ItemType> implements OnDestroy, OnInit,
             indexToView -= Math.trunc(index / this.configuration.numItemsPerPage) * this.configuration.numItemsPerPage;
         }
         if (this.itemsRef && this.itemsRef.toArray()[indexToView]) {
-            this.itemsRef.toArray()[indexToView].nativeElement.scrollIntoView({block: 'center'});
+            this.itemsRef.toArray()[indexToView].nativeElement.scrollIntoView({ block: 'center' });
         }
     }
 
@@ -362,11 +372,11 @@ export class SelectableItemListComponent<ItemType> implements OnDestroy, OnInit,
         let bound = false;
         let direction = 1;
         if (event.key === 'ArrowDown') {
-          direction = 1;
+            direction = 1;
         } else if (event.key === 'ArrowUp') {
-          direction = -1;
+            direction = -1;
         } else {
-          return;
+            return;
         }
         // debugger;
         const itemIndexToSelect = -1;
@@ -374,7 +384,7 @@ export class SelectableItemListComponent<ItemType> implements OnDestroy, OnInit,
         switch (this.configuration.selectionMode) {
             case SelectionMode.Single:
                 let currentListIndex = this.itemsToShow.findIndex(item => item === this.selectedItem);
-                if (currentListIndex === -1  && direction === -1) {
+                if (currentListIndex === -1 && direction === -1) {
                     return; // only allow key down to start selecting on the list.
                 }
                 let newIndex = currentListIndex + direction;
@@ -433,13 +443,13 @@ export class SelectableItemListComponent<ItemType> implements OnDestroy, OnInit,
         }
 
         if (itemIndexToSelect > -1) {
-          bound = true;
-          this.selectedItem = this.itemsToShow[itemIndexToSelect];
-          this.selectedItemList = [this.itemsToShow[itemIndexToSelect]];
+            bound = true;
+            this.selectedItem = this.itemsToShow[itemIndexToSelect];
+            this.selectedItemList = [this.itemsToShow[itemIndexToSelect]];
         }
 
         if (bound) {
-          event.preventDefault();
+            event.preventDefault();
         }
     }
 

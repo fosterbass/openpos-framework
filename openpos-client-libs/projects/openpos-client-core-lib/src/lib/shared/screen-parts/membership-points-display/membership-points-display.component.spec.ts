@@ -1,36 +1,35 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core'
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import {HttpClientTestingModule} from '@angular/common/http/testing';
-import {Subscription} from 'rxjs';
-import {ElectronService} from 'ngx-electron';
-import {CLIENTCONTEXT} from '../../../core/client-context/client-context-provider.interface';
-import {TimeZoneContext} from '../../../core/client-context/time-zone-context';
-import {ActionService} from '../../../core/actions/action.service';
-import {KeyPressProvider} from '../../providers/keypress.provider';
-import {validateDoesNotExist, validateExist, validateIcon, validateText} from '../../../utilites/test-utils';
-import {By} from '@angular/platform-browser';
-import {MembershipPointsDisplayComponentInterface} from "./membership-points-display.interface";
-import {MembershipPointsDisplayComponent} from "./membership-points-display.component";
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { Subscription } from 'rxjs';
+import { ElectronService } from 'ngx-electron';
+import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provider.interface';
+import { TimeZoneContext } from '../../../core/client-context/time-zone-context';
+import { ActionService } from '../../../core/actions/action.service';
+import { KeyPressProvider } from '../../providers/keypress.provider';
+import { validateIcon, validateText } from '../../../utilites/test-utils';
+import { MembershipPointsDisplayComponentInterface } from './membership-points-display.interface';
+import { MembershipPointsDisplayComponent } from './membership-points-display.component';
 
-class MockActionService {};
-class MockMatDialog {};
+class MockActionService { }
+class MockMatDialog { }
 class MockKeyPressProvider {
     subscribe(): Subscription {
         return new Subscription();
     }
-};
-class MockElectronService {};
-class ClientContext {};
+}
+class MockElectronService { }
+class ClientContext { }
 
 describe('MembershipPointsDisplayComponent', () => {
     let component: MembershipPointsDisplayComponent;
     let fixture: ComponentFixture<MembershipPointsDisplayComponent>;
 
     describe('shared', () => {
-        beforeEach( () => {
+        beforeEach(() => {
             TestBed.configureTestingModule({
-                imports: [ HttpClientTestingModule],
+                imports: [HttpClientTestingModule],
                 declarations: [
                     MembershipPointsDisplayComponent
                 ],
@@ -39,8 +38,8 @@ describe('MembershipPointsDisplayComponent', () => {
                     { provide: MatDialog, useClass: MockMatDialog },
                     { provide: KeyPressProvider, useClass: MockKeyPressProvider },
                     { provide: ElectronService, useClass: MockElectronService },
-                    { provide: ClientContext, useValue: {}},
-                    { provide: CLIENTCONTEXT, useClass: TimeZoneContext}
+                    { provide: ClientContext, useValue: {} },
+                    { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
                 ],
                 schemas: [
                     NO_ERRORS_SCHEMA,
@@ -69,17 +68,16 @@ describe('MembershipPointsDisplayComponent', () => {
 
         describe('template', () => {
             it('has an icon that uses screenData.membershipPointsIcon', () => {
-               validateIcon(fixture, '.icon app-icon', component.screenData.membershipPointsIcon);
+                validateIcon(fixture, '.icon app-icon', component.screenData.membershipPointsIcon);
             });
             describe('details', () => {
                 it('displays the loyaltyProgramName, loyaltyPoints of the customer, and the unit of the rewards program', () => {
-                    const expectedValue =   component.screenData.loyaltyProgramNameLabel + ': ' +
-                                            component.screenData.customer.loyaltyPoints + ' ' +
-                                            component.screenData.pointsLabel;
+                    const expectedValue = component.screenData.loyaltyProgramNameLabel + ': ' +
+                        component.screenData.customer.loyaltyPoints + ' ' +
+                        component.screenData.pointsLabel;
                     validateText(fixture, '.details', expectedValue);
-                })
+                });
             });
         });
     });
-
 });

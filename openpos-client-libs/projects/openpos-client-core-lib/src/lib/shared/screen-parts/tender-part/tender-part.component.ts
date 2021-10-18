@@ -2,10 +2,10 @@ import { Component } from '@angular/core';
 import { TenderPartInterface } from './tender-part.interface';
 import { ScreenPart } from '../../decorators/screen-part.decorator';
 import { ScreenPartComponent } from '../screen-part';
-import {IActionItem} from '../../../core/actions/action-item.interface';
-import {takeUntil} from 'rxjs/operators';
+import { IActionItem } from '../../../core/actions/action-item.interface';
+import { takeUntil } from 'rxjs/operators';
 import { ITender } from './tender.interface';
-import { Configuration } from '../../../configuration/configuration';
+import { CONFIGURATION } from '../../../configuration/configuration';
 
 @ScreenPart({
     name: 'TenderPart'
@@ -18,8 +18,8 @@ import { Configuration } from '../../../configuration/configuration';
 export class TenderPartComponent extends ScreenPartComponent<TenderPartInterface> {
     alternateSubmitActions: IActionItem[] = [];
     alternateSubmitActionNames: string[] = [];
-    amountCss: string = '';
-    isRoundUpAvailable: boolean = false;
+    amountCss = '';
+    isRoundUpAvailable = false;
 
     screenDataUpdated() {
         if (this.screenData.amountDue && parseFloat(this.screenData.amountDue.amount) < 0) {
@@ -31,8 +31,7 @@ export class TenderPartComponent extends ScreenPartComponent<TenderPartInterface
 
         this.isRoundUpAvailable = this.screenData.roundUpAvailable;
 
-        if (this.screenData.roundUpButton)
-        {
+        if (this.screenData.roundUpButton) {
             this.keyPressProvider.globalSubscribe(this.screenData.roundUpButton).pipe(
                 takeUntil(this.destroyed$)
             ).subscribe(action => this.doAction(action));
@@ -62,15 +61,13 @@ export class TenderPartComponent extends ScreenPartComponent<TenderPartInterface
         this.doAction(tender.voidButton, index);
     }
 
-    roundUp()
-    {
-        if (this.isRoundUpAvailable && this.screenData.roundUpButton)
-        {
+    roundUp() {
+        if (this.isRoundUpAvailable && this.screenData.roundUpButton) {
             this.doAction(this.screenData.roundUpButton.action);
         }
     }
 
     public keybindsEnabled(): boolean {
-        return Configuration.enableKeybinds && !!this.screenData.roundUpButton.keybindDisplayName;
+        return CONFIGURATION.enableKeybinds && !!this.screenData.roundUpButton.keybindDisplayName;
     }
 }

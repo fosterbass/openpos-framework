@@ -12,6 +12,7 @@ export class AudioConsolePlugin implements IPlatformPlugin {
     }
 
     initialize(): Observable<string> {
+        // tslint:disable-next-line: no-string-literal
         console['playAudio'] = request => this.playSound(request);
         return of('[AudioConsolePlugin]: Added "playAudio" method to console. Usage: console.playSound("sad-trombone") or console.playSound({sound: "sad-trombone", loop: true})');
     }

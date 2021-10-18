@@ -1,10 +1,10 @@
-import {Component, Injector} from '@angular/core';
-import {FormControl} from '@angular/forms';
-import {CustomerDetailsDialogInterface, CustomerItemHistoryFilter} from './customer-details-dialog.interface';
-import {DialogComponent} from '../../../shared/decorators/dialog-component.decorator';
-import {PosScreen} from '../../pos-screen/pos-screen.component';
-import {Observable} from 'rxjs';
-import {MediaBreakpoints, OpenposMediaService} from '../../../core/media/openpos-media.service';
+import { Component, Injector } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { CustomerDetailsDialogInterface, CustomerItemHistoryFilter } from './customer-details-dialog.interface';
+import { DialogComponent } from '../../../shared/decorators/dialog-component.decorator';
+import { PosScreenDirective } from '../../pos-screen/pos-screen.component';
+import { Observable } from 'rxjs';
+import { MediaBreakpoints, OpenposMediaService } from '../../../core/media/openpos-media.service';
 
 @DialogComponent({
   name: 'CustomerDetailsDialog'
@@ -14,13 +14,13 @@ import {MediaBreakpoints, OpenposMediaService} from '../../../core/media/openpos
   templateUrl: './customer-details-dialog.component.html',
   styleUrls: ['./customer-details-dialog.component.scss']
 })
-export class CustomerDetailsDialogComponent extends PosScreen<CustomerDetailsDialogInterface> {
+export class CustomerDetailsDialogComponent extends PosScreenDirective<CustomerDetailsDialogInterface> {
   isMobile: Observable<boolean>;
 
   readonly itemsHistoryFilterController = new ItemsHistoryFilterController(this);
 
   constructor(
-    injector: Injector, 
+    injector: Injector,
     private media: OpenposMediaService
   ) {
     super(injector);
@@ -42,8 +42,8 @@ export class CustomerDetailsDialogComponent extends PosScreen<CustomerDetailsDia
     this.itemsHistoryFilterController.build();
   }
 
-  getRewardsLabel() : string {
-    return this.screen.rewardsLabel + ((this.screen.customer.rewards) ? ' (' + this.screen.customer.rewards.length + ')': '');
+  getRewardsLabel(): string {
+    return this.screen.rewardsLabel + ((this.screen.customer.rewards) ? ' (' + this.screen.customer.rewards.length + ')' : '');
   }
 }
 
@@ -56,7 +56,7 @@ class ItemsHistoryFilterController {
     return this._parent.screen.itemHistoryFilter;
   }
 
-  constructor(private readonly _parent: CustomerDetailsDialogComponent) {}
+  constructor(private readonly _parent: CustomerDetailsDialogComponent) { }
 
   fromDateFilterChanged(value: Date) {
     this.doItemHistoryFilterAction({ ...this.serverState, fromDate: value.toISOString() });
@@ -65,7 +65,7 @@ class ItemsHistoryFilterController {
   toDateFilterChanged(value: Date) {
     this.doItemHistoryFilterAction({ ...this.serverState, toDate: value.toISOString() });
   }
-  
+
   onFilterKeyPress(event: KeyboardEvent) {
     if (event.key === 'Enter') {
       if (event.target instanceof HTMLInputElement) {
@@ -77,7 +77,7 @@ class ItemsHistoryFilterController {
 
   filterItemHistory(value?: string): void {
     value = value || this.textFilter.value;
-    this.doItemHistoryFilterAction({...this.serverState, text: value});
+    this.doItemHistoryFilterAction({ ...this.serverState, text: value });
   }
 
   build() {

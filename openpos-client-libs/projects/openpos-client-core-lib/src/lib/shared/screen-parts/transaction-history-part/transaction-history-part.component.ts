@@ -1,11 +1,11 @@
-import {Component} from '@angular/core';
-import {ITransactionSummary} from '../../components/transaction-summary/transaction-summary.interface';
-import {ScreenPart} from '../../decorators/screen-part.decorator';
-import {ScreenPartComponent} from '../screen-part';
-import {IActionItem} from '../../../core/actions/action-item.interface';
-import {MediaBreakpoints} from '../../../core/media/openpos-media.service';
-import {takeUntil} from 'rxjs/operators';
-import {merge} from 'rxjs';
+import { Component, OnInit } from '@angular/core';
+import { ITransactionSummary } from '../../components/transaction-summary/transaction-summary.interface';
+import { ScreenPart } from '../../decorators/screen-part.decorator';
+import { ScreenPartComponent } from '../screen-part';
+import { IActionItem } from '../../../core/actions/action-item.interface';
+import { MediaBreakpoints } from '../../../core/media/openpos-media.service';
+import { takeUntil } from 'rxjs/operators';
+import { merge } from 'rxjs';
 
 
 @ScreenPart({
@@ -16,7 +16,8 @@ import {merge} from 'rxjs';
   templateUrl: './transaction-history-part.component.html',
   styleUrls: ['./transaction-history-part.component.scss']
 })
-export class TransactionHistoryPartComponent extends ScreenPartComponent<ITransactionSummary> {
+export class TransactionHistoryPartComponent extends ScreenPartComponent<ITransactionSummary> implements OnInit {
+
   ngOnInit(): void {
     super.ngOnInit();
 
@@ -35,9 +36,9 @@ export class TransactionHistoryPartComponent extends ScreenPartComponent<ITransa
 
   screenDataUpdated() {
     this.keyPressProvider.globalSubscribe(this.screenData.actions)
-        .pipe(
-            takeUntil(merge(this.destroyed$, this.beforeScreenDataUpdated$))
-        ).subscribe(action => this.doAction(action, this.screenData));
+      .pipe(
+        takeUntil(merge(this.destroyed$, this.beforeScreenDataUpdated$))
+      ).subscribe(action => this.doAction(action, this.screenData));
   }
 
   onClick(actionItem: IActionItem): void {

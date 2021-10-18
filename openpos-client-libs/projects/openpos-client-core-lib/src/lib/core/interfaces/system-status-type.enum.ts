@@ -1,5 +1,5 @@
 
 export enum SystemStatusType {
-    Online= 'Online',
+    Online = 'Online',
     Offline = 'Offline'
 }

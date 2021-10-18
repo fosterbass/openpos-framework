@@ -13,11 +13,10 @@ export class MinValueValidator implements IValidator {
             value = value.replace(',', '');
         }
         return Number(value) >= Number(this.spec.minimumValue) ? null : {
-            // tslint:disable-next-line:object-literal-key-quotes
-            'minvalue': {
+            minvalue: {
                 valid: false
             }
-        } as any;
+        };
     }
 }
 

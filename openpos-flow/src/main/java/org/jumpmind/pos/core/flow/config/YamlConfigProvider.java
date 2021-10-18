@@ -157,7 +157,7 @@ public class YamlConfigProvider implements IFlowConfigProvider {
     protected List<YamlFlowConfig> loadYamlResource(String appId, String path, Resource resource) {
         log.info("Loading flow config from {} for {}", resource.toString(), appId);
         try {
-            return loadYamlResource(appId, resource.getInputStream(), resource.getFilename().endsWith("-flow-ext.yml"));
+            return loadYamlResource(appId, resource.getInputStream(), resource.getFilename() != null && resource.getFilename().endsWith("-flow-ext.yml"));
         } catch (Exception ex) {
             throw new FlowException(String.format("Failed while loading resource %s", resource), ex);
         }
@@ -173,8 +173,6 @@ public class YamlConfigProvider implements IFlowConfigProvider {
         existingFlowConfigs.addAll(flowConfigs);
 
         // inherit config scope down through child sub flows
-        existingFlowConfigs.forEach(f -> updateSubflowsWithParentConfigScope(f));
-
+        existingFlowConfigs.forEach(this::updateSubflowsWithParentConfigScope);
     }
-
 }

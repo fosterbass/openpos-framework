@@ -1,7 +1,7 @@
 import { Component, Injector, HostListener } from '@angular/core';
 
 import { IActionItem } from '../../core/actions/action-item.interface';
-import { PosScreen } from '../../screens-with-parts/pos-screen/pos-screen.component';
+import { PosScreenDirective } from '../../screens-with-parts/pos-screen/pos-screen.component';
 import { ScreenComponent } from '../../shared/decorators/screen-component.decorator';
 
 @ScreenComponent({
@@ -13,7 +13,7 @@ import { ScreenComponent } from '../../shared/decorators/screen-component.decora
     styleUrls: ['./self-checkout-home.component.scss']
 
 })
-export class SelfCheckoutHomeComponent extends PosScreen<any> {
+export class SelfCheckoutHomeComponent extends PosScreenDirective<any> {
 
     public menuItems: IActionItem[];
     private actionSent = false;

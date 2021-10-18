@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject, merge, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, merge, Observable, Subject, Subscriber, TeardownLogic } from 'rxjs';
 import { filter, map, skip, switchMap, take, takeUntil } from 'rxjs/operators';
 import { SessionService } from '../services/session.service';
 import { MessageTypes } from '../messages/message-types';
@@ -25,16 +25,17 @@ export class AudioService implements OnDestroy {
     audioGroups: { [group: string]: AudioGroup } = {};
 
     beforePlay$ = new Subject<AudioPlayRequest>();
-    playing$ = new BehaviorSubject<AudioPlayRequest>({audio: null, request: null});
+    playing$ = new BehaviorSubject<AudioPlayRequest>({ audio: null, request: null });
     audioMessage$ = new Subject<AudioMessage>();
 
     waitForDialogQueue: AudioPlayRequest[] = [];
 
-    constructor(private sessionService: SessionService,
-                private dialogService: DialogService,
-                private personalizationTokenService: PersonalizationTokenService,
-                private audioRepositoryService: AudioRepositoryService) {
-    }
+    constructor(
+        private sessionService: SessionService,
+        private dialogService: DialogService,
+        private personalizationTokenService: PersonalizationTokenService,
+        private audioRepositoryService: AudioRepositoryService
+    ) { }
 
     ngOnDestroy() {
         this.destroyed$.next();
@@ -100,9 +101,9 @@ export class AudioService implements OnDestroy {
 
         audio$.pipe(
             take(1)
-        ).subscribe(audio => this.onAudioReady({audio, request: actualRequest}));
+        ).subscribe(audio => this.onAudioReady({ audio, request: actualRequest }));
 
-        return audio$.pipe(map(audio => ({audio, request: actualRequest})));
+        return audio$.pipe(map(audio => ({ audio, request: actualRequest })));
     }
 
     publishPlaySoundRequest(request: AudioRequest): Observable<AudioPlayRequest> {
@@ -114,7 +115,7 @@ export class AudioService implements OnDestroy {
         const audioMessage$ = this.audioMessage$.pipe(
             filter(message => {
                 // Update "autoplay" and "url" to match the original request when checking the hashes
-                const messageRequest = {...message.request};
+                const messageRequest = { ...message.request };
                 messageRequest.autoplay = false;
                 messageRequest.url = null;
                 return AudioUtil.getAudioRequestHash(messageRequest) === actualRequestHash;
@@ -130,7 +131,7 @@ export class AudioService implements OnDestroy {
 
         this.sessionService.publish('Play', 'Audio', actualRequest);
 
-        return Observable.create((subscriber: Subject<AudioPlayRequest>) => {
+        return new Observable((subscriber: Subscriber<AudioPlayRequest>): TeardownLogic => {
             audioMessage$.subscribe(playRequest => {
                 subscriber.next(playRequest);
                 subscriber.complete();
@@ -178,7 +179,7 @@ export class AudioService implements OnDestroy {
 
     makeSound(playRequest: AudioPlayRequest): void {
         const audio = playRequest.audio;
-        const request = {...playRequest.request};
+        const request = { ...playRequest.request };
 
         request.url = this.personalizationTokenService.replaceTokens(request.url);
 
@@ -200,7 +201,7 @@ export class AudioService implements OnDestroy {
         Object.keys(this.audioGroups)
             // If there's no group then stop all groups
             .filter(key => !group || key === group)
-            .map(group => this.audioGroups[group])
+            .map(audioGroup => this.audioGroups[audioGroup])
             .forEach(audioGroup => {
                 const audioListInGroup = Object.keys(audioGroup).map(key => audioGroup[key]);
                 // Stop all of the audio in this group
@@ -251,7 +252,7 @@ export class AudioService implements OnDestroy {
         console.log('[AudioService]: Received message', message);
 
         this.audioMessage$.next(message);
-        const request = {...message.request};
+        const request = { ...message.request };
 
         if (this.dialogService.isDialogOpening()) {
             request.waitForDialog = true;

@@ -17,7 +17,7 @@ export class PrinterService {
     private readonly _selectedPrinter: IPrinter;
 
     constructor(
-        @Optional() @Inject(PRINTERS) printers: Array<IPrinter>, 
+        @Optional() @Inject(PRINTERS) printers: Array<IPrinter>,
         sessionService: SessionService,
 
         // browser printer will be used as fallback if no other printers are avaialable.

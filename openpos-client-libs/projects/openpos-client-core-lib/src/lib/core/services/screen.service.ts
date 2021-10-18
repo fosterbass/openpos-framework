@@ -1,7 +1,6 @@
 import { Injectable, Type, ComponentFactoryResolver, ComponentFactory } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { SessionService } from './session.service';
 import { IScreen } from '../../shared/components/dynamic-screen/screen.interface';
 import { PersonalizationService } from '../personalization/personalization.service';
 import { DiscoveryService } from '../discovery/discovery.service';
@@ -13,10 +12,12 @@ export class ScreenService {
 
     static screens = new Map<string, Type<IScreen>>();
 
-    constructor(private componentFactoryResolver: ComponentFactoryResolver, private http: HttpClient,
+    constructor(
+        private componentFactoryResolver: ComponentFactoryResolver,
+        private http: HttpClient,
         private personalization: PersonalizationService,
-        private session: SessionService,
-        private discovery: DiscoveryService) { }
+        private discovery: DiscoveryService
+    ) { }
 
     public addScreen(name: string, type: Type<IScreen>): void {
         if (type === null) {
@@ -57,9 +58,9 @@ export class ScreenService {
             + this.personalization.getDeviceId$().getValue() + '/control/'
             + fieldId;
 
-        const httpParams = {};
+        const httpParams: any = {};
         if (searchTerm) {
-            httpParams['searchTerm'] = searchTerm;
+            httpParams.searchTerm = searchTerm;
         }
         console.info(`Requesting field values from the server using url: ${url}, params: '${JSON.stringify(httpParams)}'`);
         return this.http.get(url, { params: httpParams });

@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
-import {LockScreenService} from '../../../core/lock-screen/lock-screen.service';
-import {OpenposMediaService} from '../../../core/media/openpos-media.service';
-import {PersonalizationService} from '../../../core/personalization/personalization.service';
-import {PrinterService} from '../../../core/platform-plugins/printers/printer.service';
-import {FetchMessageService} from '../../../core/services/fetch-message.service';
-import {LocaleService} from '../../../core/services/locale.service';
-import {LocationService} from '../../../core/services/location.service';
-import {DialogService} from "../../../core/services/dialog.service";
+import { LockScreenService } from '../../../core/lock-screen/lock-screen.service';
+import { OpenposMediaService } from '../../../core/media/openpos-media.service';
+import { PersonalizationService } from '../../../core/personalization/personalization.service';
+import { PrinterService } from '../../../core/platform-plugins/printers/printer.service';
+import { FetchMessageService } from '../../../core/services/fetch-message.service';
+import { LocaleService } from '../../../core/services/locale.service';
+import { LocationService } from '../../../core/services/location.service';
+import { DialogService } from '../../../core/services/dialog.service';
 
 @Component({
     selector: 'app-openpos-root',

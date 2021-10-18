@@ -33,7 +33,7 @@ export class BasicBaconStripComponent extends ScreenPartComponent<BasicBaconStri
   screenDataUpdated() { }
 
   handleClick() {
-    if(this.screenData.actions && this.screenData.actions.length === 1) {
+    if (this.screenData.actions && this.screenData.actions.length === 1) {
       this.doAction(this.screenData.actions[0]);
     }
   }

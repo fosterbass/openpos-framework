@@ -1,6 +1,6 @@
 import { Component, Output, EventEmitter, OnDestroy, OnInit, ElementRef } from '@angular/core';
-import { interval, merge, Observable, Subject, Subscription, throwError } from 'rxjs';
-import { delay, distinctUntilChanged, map, takeWhile, tap } from 'rxjs/operators';
+import { interval, merge, Observable, Subscription, throwError } from 'rxjs';
+import { delay, distinctUntilChanged, map, takeWhile } from 'rxjs/operators';
 
 import { ScanData, ScannerViewRef } from './scanner';
 
@@ -20,7 +20,7 @@ import { BarcodeScanner } from './barcode-scanner.service';
 })
 export class ImageScannerComponent implements OnInit, OnDestroy, ScannerViewRef {
     @Output() readonly scanChanged = new EventEmitter<boolean>();
-    @Output() readonly onScan = new EventEmitter<ScanData>();
+    @Output() readonly scan = new EventEmitter<ScanData>();
 
     get element(): HTMLElement {
         return this._elementRef.nativeElement;
@@ -37,6 +37,43 @@ export class ImageScannerComponent implements OnInit, OnDestroy, ScannerViewRef 
         private _scanners: BarcodeScanner
     ) { }
 
+    private static _makeObservableListener(
+        subscribe: (e: () => void) => void,
+        unsubscribe: (e: () => void) => void
+    ): Observable<void> {
+        return new Observable(observer => {
+            const callbackFn = () => {
+                observer.next();
+            };
+
+            subscribe(callbackFn);
+
+            return () => {
+                unsubscribe(callbackFn);
+            };
+        });
+    }
+
+    private static _getScrollParent(element: HTMLElement, includeHidden: boolean): HTMLElement {
+        let style = getComputedStyle(element);
+        const excludeStaticParent = style.position === 'absolute';
+        const overflowRegex = includeHidden ? /(auto|scroll|hidden)/ : /(auto|scroll)/;
+
+        if (style.position === 'fixed') {
+            return document.body;
+        }
+        for (let parent = element; parent !== undefined; (parent = parent.parentElement)) {
+            style = getComputedStyle(parent);
+            if (excludeStaticParent && style.position === 'static') {
+                continue;
+            }
+            if (overflowRegex.test(style.overflow + style.overflowY + style.overflowX)) {
+                return parent;
+            }
+        }
+
+        return document.body;
+    }
     ngOnInit() {
         this._destroyed = false;
 
@@ -59,7 +96,7 @@ export class ImageScannerComponent implements OnInit, OnDestroy, ScannerViewRef 
                         height: box.height
                     };
                 }),
-                distinctUntilChanged((x, y) => 
+                distinctUntilChanged((x, y) =>
                     x.left === y.left
                     && x.top === y.top
                     && x.width === y.width
@@ -94,7 +131,7 @@ export class ImageScannerComponent implements OnInit, OnDestroy, ScannerViewRef 
         this._scanSubscription = this._scanners.beginImageScanning(this)
             .subscribe({
                 next: data => {
-                    this.onScan.emit(data);
+                    this.scan.emit(data);
                 },
                 error: e => {
                     console.log('unexpected error durring image scanning', e);
@@ -109,7 +146,7 @@ export class ImageScannerComponent implements OnInit, OnDestroy, ScannerViewRef 
             });
     }
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         if (this._scanSubscription) {
             this._scanSubscription.unsubscribe();
         }
@@ -123,39 +160,5 @@ export class ImageScannerComponent implements OnInit, OnDestroy, ScannerViewRef 
         }
 
         return this._viewChanges;
-    }
-
-    private static _makeObservableListener(
-        subscribe: (e: () => void) => void,
-        unsubscribe: (e: () => void) => void
-    ): Observable<void> {
-        return new Observable(observer => {
-            const callbackFn = () => {
-                observer.next();
-            };
-
-            subscribe(callbackFn);
-
-            return () => {
-                unsubscribe(callbackFn);
-            };
-        });
-    }
-
-    private static _getScrollParent(element: HTMLElement, includeHidden: boolean): HTMLElement {
-        var style = getComputedStyle(element);
-        var excludeStaticParent = style.position === "absolute";
-        var overflowRegex = includeHidden ? /(auto|scroll|hidden)/ : /(auto|scroll)/;
-    
-        if (style.position === "fixed") return document.body;
-        for (var parent = element; (parent = parent.parentElement);) {
-            style = getComputedStyle(parent);
-            if (excludeStaticParent && style.position === "static") {
-                continue;
-            }
-            if (overflowRegex.test(style.overflow + style.overflowY + style.overflowX)) return parent;
-        }
-    
-        return document.body;
     }
 }

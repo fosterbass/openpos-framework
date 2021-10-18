@@ -8,7 +8,7 @@ import { MessageProvider } from '../providers/message.provider';
 import { ActionService } from '../../core/actions/action.service';
 import { SessionService } from '../../core/services/session.service';
 import { OpenposMediaService } from '../../core/media/openpos-media.service';
-import {KeyPressProvider} from '../providers/keypress.provider';
+import { KeyPressProvider } from '../providers/keypress.provider';
 
 interface TestPartInterface extends IAbstractScreen {
     testProperty: string;
@@ -23,8 +23,8 @@ interface TestPartInterface extends IAbstractScreen {
 class TestPartComponent extends ScreenPartComponent<TestPartInterface> {
 
     ctorWasCalled: boolean;
-    constructor( injector: Injector) {
-        super( injector );
+    constructor(injector: Injector) {
+        super(injector);
         this.ctorWasCalled = true;
     }
     screenDataUpdated() {
@@ -38,13 +38,16 @@ describe('ScreenPart', () => {
         const messageProviderSpy = jasmine.createSpyObj('MessageProvider', ['getScopedMessages$', 'getAllMessages$']);
         const actionServiceSpy = jasmine.createSpyObj('ActionService', ['doAction']);
 
-        messageProviderSpy.getScopedMessages$.and.returnValue(cold('---x|', {x: testScreen}));
-        messageProviderSpy.getAllMessages$.and.returnValue(cold('---x|', {x: testScreen}));
+        messageProviderSpy.getScopedMessages$.and.returnValue(cold('---x|', { x: testScreen }));
+        messageProviderSpy.getAllMessages$.and.returnValue(cold('---x|', { x: testScreen }));
         TestBed.configureTestingModule({
-            declarations: [ TestPartComponent ],
+            declarations: [TestPartComponent],
             providers: [
-                { provide: OpenposMediaService, useValue: jasmine.createSpyObj('OpenposMediaService', ['observe', 'mediaObservableFromMap'])},
-                { provide: SessionService, useValue: jasmine.createSpyObj('SessionService', ['sendMessage'])},
+                {
+                    provide: OpenposMediaService,
+                    useValue: jasmine.createSpyObj('OpenposMediaService', ['observe', 'mediaObservableFromMap'])
+                },
+                { provide: SessionService, useValue: jasmine.createSpyObj('SessionService', ['sendMessage']) },
                 { provide: MessageProvider, useValue: messageProviderSpy },
                 { provide: ActionService, useValue: actionServiceSpy },
                 { provide: KeyPressProvider, useValue: {} }

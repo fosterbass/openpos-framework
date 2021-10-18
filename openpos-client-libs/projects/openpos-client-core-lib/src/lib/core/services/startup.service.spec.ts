@@ -11,7 +11,6 @@ import { StartupFailedComponent } from '../startup/startup-failed.component';
 import { Subscription } from 'rxjs';
 
 describe('StartupService', () => {
-
     let startupService: StartupService;
     let matDialog: jasmine.SpyObj<MatDialog>;
     let matDialogRef: jasmine.SpyObj<MatDialogRef<any>>;
@@ -44,7 +43,7 @@ describe('StartupService', () => {
             ]
         }).compileComponents();
 
-        AppInjector.Instance = TestBed.inject(Injector);
+        AppInjector.instance = TestBed.inject(Injector);
         startupService = TestBed.inject(StartupService);
         matDialog = TestBed.inject(MatDialog) as jasmine.SpyObj<MatDialog>;
         matDialog.open.and.returnValue(matDialogRefSpy);
@@ -87,7 +86,6 @@ describe('StartupService', () => {
             expect(resultMessages).toBe('');
             expect(result).toBeTruthy();
         });
-
         it('should run all deduped tasks in order and return true', async () => {
             // add tasks
             addTask({ name: 'TestTask1', order: 100, execute: () => cold('--x|', { x: 'Test1' }) });
@@ -104,7 +102,6 @@ describe('StartupService', () => {
             expect(resultMessages).toBe('TestTask2: Test2TestTask1: Test3');
             expect(result).toBeTruthy();
         });
-
         it('should not run any tasks after one fails', async () => {
             // add tasks
             addTask({ name: 'TestTask1', order: 100, execute: () => cold('--x|', { x: 'Test1' }) });
@@ -132,5 +129,4 @@ describe('StartupService', () => {
             });
         });
     });
-
 });

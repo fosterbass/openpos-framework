@@ -1,7 +1,7 @@
 import { Component, Injector } from '@angular/core';
 import { TransactionSearchInterface } from './transaction-search.interface';
 import { ScreenComponent } from '../../shared/decorators/screen-component.decorator';
-import { PosScreen } from '../pos-screen/pos-screen.component';
+import { PosScreenDirective } from '../pos-screen/pos-screen.component';
 import { TransactionSearchMode } from './transaction-search-mode.enum';
 import { IDynamicFormPartEventArg } from '../../shared/screen-parts/dynamic-form-part/dynamic-form-part-event-arg.interface';
 import { IForm } from '../../core/interfaces/form.interface';
@@ -18,7 +18,7 @@ import {IActionItem} from '../../core/actions/action-item.interface';
   templateUrl: './transaction-search.component.html',
   styleUrls: ['./transaction-search.component.scss']
 })
-export class TransactionSearchComponent extends PosScreen<TransactionSearchInterface> {
+export class TransactionSearchComponent extends PosScreenDirective<TransactionSearchInterface> {
   searchAllParamsForm: IForm;
   resultsCount: number;
   TransactionSearchMode = TransactionSearchMode;

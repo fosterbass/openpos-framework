@@ -37,10 +37,12 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterVie
   valuesSubscription: Subscription;
   private barcodeEventSubscription: Subscription;
 
-  // tslint:disable-next-line:no-output-on-prefix
-  @Output() onFieldChanged = new EventEmitter<IFormElement>();
+  @Output() changed = new EventEmitter<IFormElement>();
 
   public values: Array<string> = [];
+
+  private numericFields = ['NumericText', 'Money', 'Phone', 'PostalCode', 'Percent', 'PercentInt', 'Income', 'Decimal', 'Counter', 'Time'];
+  private specialCaseFields = ['ToggleButton', 'Checkbox', 'AutoComplete', 'Counter', 'DatePartChooser', 'Time', 'Radio', 'SliderToggle'];
 
   public focus(): void {
     if (this.field) {
@@ -58,11 +60,12 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterVie
     return false;
   }
 
-  constructor(public session: SessionService,
-              public screenService: ScreenService,
-              protected dialog: MatDialog,
-              private pluginService: OldPluginService) {
-  }
+  constructor(
+    public session: SessionService,
+    public screenService: ScreenService,
+    protected dialog: MatDialog,
+    private pluginService: OldPluginService
+  ) { }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (!changes.formField || !changes.formGroup) {
@@ -76,22 +79,22 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterVie
     this.controlName = this.formField.id;
 
     if (this.formField.disabled) {
-        this.formGroup.controls[this.controlName].disable();
+      this.formGroup.controls[this.controlName].disable();
     }
 
     if (this.formField.inputType === 'ComboBox' || this.formField.inputType === 'SubmitOptionList' ||
-      this.formField.inputType === 'ToggleButton' || this.formField.inputType === 'PopTart' ) {
+      this.formField.inputType === 'ToggleButton' || this.formField.inputType === 'PopTart') {
       let getValuesFromServer = true;
       if ('dynamicListEnabled' in this.formField) {
-          // if dynamicListEnabled property is provided, we will observe its value
-          const dynFormFld = this.formField as any;
-          getValuesFromServer = dynFormFld.dynamicListEnabled;
+        // if dynamicListEnabled property is provided, we will observe its value
+        const dynFormFld = this.formField as any;
+        getValuesFromServer = dynFormFld.dynamicListEnabled;
       }
 
       if (getValuesFromServer) {
         this.valuesSubscription = this.screenService.getFieldValues(this.formField.id).subscribe((data) => {
-            this.values = data;
-            console.info('asynchronously received ' + this.values.length + ' items for ' + this.formField.id);
+          this.values = data;
+          console.info('asynchronously received ' + this.values.length + ' items for ' + this.formField.id);
         });
       } else {
         this.values = this.formField.values;
@@ -106,22 +109,22 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterVie
     }
 
     if (this.formField.scanEnabled) {
-        this.pluginService.getPluginWithOptions('barcodeScannerPlugin', true, {waitForCordovaInit: true}).then(plugin => {
-            // the onBarcodeScanned will only emit an event when client code passes a scan
-            // event to the plugin.  This won't be called for cordova barcodescanner plugin
-            // camera-based scan events.  It should only be used for third party scan events
-            // which come from other sources such as a scan device
-            this.barcodeEventSubscription = (plugin as BarcodeScannerPlugin).onBarcodeScanned.subscribe({
-                next: (scan: Scan) => {
-                    console.info(`dynamic-form-field '${this.formField.id}' got scan event: ${scan.value}`);
-                    if (this.field.focused) {
-                        this.setFieldValue(this.formField.id, scan.value);
-                    }
-                }
-            });
-            console.info(`dynamic-form-field '${this.formField.id}' is subscribed for barcode scan events`);
+      this.pluginService.getPluginWithOptions('barcodeScannerPlugin', true, { waitForCordovaInit: true }).then(plugin => {
+        // the onBarcodeScanned will only emit an event when client code passes a scan
+        // event to the plugin.  This won't be called for cordova barcodescanner plugin
+        // camera-based scan events.  It should only be used for third party scan events
+        // which come from other sources such as a scan device
+        this.barcodeEventSubscription = (plugin as BarcodeScannerPlugin).onBarcodeScanned.subscribe({
+          next: (scan: Scan) => {
+            console.info(`dynamic-form-field '${this.formField.id}' got scan event: ${scan.value}`);
+            if (this.field.focused) {
+              this.setFieldValue(this.formField.id, scan.value);
+            }
+          }
+        });
+        console.info(`dynamic-form-field '${this.formField.id}' is subscribed for barcode scan events`);
 
-        }).catch( error => console.info(`Failed to get barcodeScannerPlugin.  Reason: ${error}`) );
+      }).catch(error => console.info(`Failed to get barcodeScannerPlugin.  Reason: ${error}`));
 
     }
   }
@@ -140,13 +143,13 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterVie
     }
 
     if (this.barcodeEventSubscription) {
-        this.barcodeEventSubscription.unsubscribe();
+      this.barcodeEventSubscription.unsubscribe();
     }
   }
 
   isNumericField(): boolean {
-    return (['NumericText', 'Money', 'Phone', 'PostalCode', 'Percent', 'PercentInt', 'Income', 'Decimal', 'Counter', 'Time'].indexOf(this.formField.inputType) >= 0
-        || this.formField.keyboardPreference === 'Numeric');
+    return (this.numericFields.indexOf(this.formField.inputType) >= 0
+      || this.formField.keyboardPreference === 'Numeric');
   }
 
   onClick(event, formField: IFormElement) {
@@ -157,12 +160,12 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterVie
   }
 
   onFormElementChanged(formElement: IFormElement): void {
-    this.onFieldChanged.emit(formElement);
+    this.changed.emit(formElement);
   }
 
   onRadioElementChanged(event, formElement: IFormElement): void {
     formElement.selectedIndex = formElement.values.indexOf(event.value);
-    this.onFieldChanged.emit(formElement);
+    this.changed.emit(formElement);
   }
 
   getFormFieldMask(): ITextMask {
@@ -182,7 +185,7 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterVie
         searchable: (this.formField as IPopTartField).searchable,
         disableClose: false,
         autoFocus: false
-     }
+      }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -207,17 +210,17 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterVie
 
   isDateInput(): boolean {
     return this.formField.inputType && this.formField.inputType !== 'DatePartChooser' &&
-       this.formField.inputType.toLowerCase().indexOf('date') >= 0;
+      this.formField.inputType.toLowerCase().indexOf('date') >= 0;
   }
 
   isSpecialCaseInput(): boolean {
-    return ['ToggleButton', 'Checkbox', 'AutoComplete', 'Counter', 'DatePartChooser', 'Time', 'Radio', 'SliderToggle'].indexOf(this.formField.inputType) >= 0 ||
-        this.isDateInput();
+    return this.specialCaseFields.indexOf(this.formField.inputType) >= 0 ||
+      this.isDateInput();
   }
 
   isScanAllowed(): boolean {
-    return this.formField.scanEnabled && ! this.formField.disabled &&
-        ['NumericText', 'AlphanumericText'].indexOf(this.formField.inputType) >= 0;
+    return this.formField.scanEnabled && !this.formField.disabled &&
+      ['NumericText', 'AlphanumericText'].indexOf(this.formField.inputType) >= 0;
   }
 
   /**
@@ -227,19 +230,19 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterVie
    */
   onScan(formField: IFormElement): void {
     this.pluginService.getDevicePlugin('barcodeScannerPlugin').then(plugin =>
-        plugin.processRequest(
-          {requestId: 'scan', deviceId: 'barcode-scanner', type: null, subType: null, payload: null},
-          (scan) => {
-            if (scan instanceof Scan && ! scan.cancelled) {
-                console.info(`Scan value of '${scan.value}' received for field '${formField.id}'`);
-                this.setFieldValue(formField.id, scan.value);
-            }
-          },
-          (error) => {
-            console.info('Scanning failed: ' + error);
+      plugin.processRequest(
+        { requestId: 'scan', deviceId: 'barcode-scanner', type: null, subType: null, payload: null },
+        (scan) => {
+          if (scan instanceof Scan && !scan.cancelled) {
+            console.info(`Scan value of '${scan.value}' received for field '${formField.id}'`);
+            this.setFieldValue(formField.id, scan.value);
           }
-        )
-    ).catch( error => console.info(`Scanning failed: ${error}`));
+        },
+        (error) => {
+          console.info('Scanning failed: ' + error);
+        }
+      )
+    ).catch(error => console.info(`Scanning failed: ${error}`));
   }
 
   private setFieldValue(fieldId: string, value: any) {
@@ -250,12 +253,12 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterVie
 
   onPaste(event: ClipboardEvent): boolean {
     let maxLength = this.formField.maxLength;
-    let pastedText = event.clipboardData.getData('text');
+    const pastedText = event.clipboardData.getData('text');
     // Decreasing expected maxLength for money fields as such fields will be prepopulated with '$' sign
     if (this.formField.inputType === 'Money') {
       maxLength--;
       // In case pasted text doesn't contain '.' symbol - decreasing expected length as final amount will be split by '.'
-      if (!pastedText.includes(".")) {
+      if (!pastedText.includes('.')) {
         maxLength--;
       }
     }

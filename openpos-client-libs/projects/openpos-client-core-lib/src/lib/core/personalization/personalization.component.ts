@@ -1,8 +1,7 @@
 import { Component, Inject, OnInit, Optional } from '@angular/core';
-import {FormBuilder, FormGroup, Validators, AbstractControl, AsyncValidatorFn, ValidationErrors} from '@angular/forms';
-import {Router} from '@angular/router';
-import {Observable, of} from 'rxjs';
-import {catchError, map} from 'rxjs/operators';
+import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { IScreen } from '../../shared/components/dynamic-screen/screen.interface';
 import { PersonalizationService } from './personalization.service';
 import { PersonalizationConfigResponse } from './personalization-config-response.interface';
@@ -30,7 +29,7 @@ export class PersonalizationComponent implements IScreen, OnInit {
     lastFormGroup: FormGroup;
     clientResponse: any;
     serverResponse: PersonalizationConfigResponse;
-    availableDevices: {key:string, value:string}[];
+    availableDevices: { key: string, value: string }[];
     clientTimeout: any;
     serverTimeout: any;
     errorMessage: string;
@@ -45,7 +44,7 @@ export class PersonalizationComponent implements IScreen, OnInit {
         private discoveryService: DiscoveryService,
         private matDialog: MatDialog,
         @Inject(MAT_DIALOG_DATA) @Optional() private data?: { serverAddress?: string, serverPort?: string, appId?: string }
-    ) {}
+    ) { }
 
     show(screen: any): void {
     }
@@ -59,9 +58,9 @@ export class PersonalizationComponent implements IScreen, OnInit {
         if (this.data && this.data.serverPort) {
             this.appServerPort = this.data.serverPort;
         } else {
-            this.appServerPort = window.location.port 
-                ? window.location.port 
-                : this.serverIsSSL ? '443': '';
+            this.appServerPort = window.location.port
+                ? window.location.port
+                : this.serverIsSSL ? '443' : '';
         }
 
         if (this.navigateExternal && localStorage.getItem('clientUrl')) {
@@ -93,20 +92,22 @@ export class PersonalizationComponent implements IScreen, OnInit {
                 devicePattern = this.serverResponse.devicePattern;
             }
 
-            if( this.serverResponse.loadedAppIds) {
+            if (this.serverResponse.loadedAppIds) {
                 this.appIds = this.serverResponse.loadedAppIds;
             }
 
-            if(this.serverResponse.availableDevices){
+            if (this.serverResponse.availableDevices) {
                 this.availableDevices = [];
                 const availableDeviceMap = this.serverResponse.availableDevices;
                 Object.entries(availableDeviceMap).forEach(entry => {
-                    let key = entry[0];
-                    let value = entry[1];
-                    this.availableDevices.push({key, value});
+                    const key = entry[0];
+                    const value = entry[1];
+                    this.availableDevices.push({ key, value });
                 });
                 this.availableDevices.sort((deviceOne, deviceTwo) =>
-                    (deviceOne.value > deviceTwo.value) ? 1 : (deviceOne.value === deviceTwo.value) ? ((deviceOne.key > deviceTwo.key) ? 1 : -1) : -1 );
+                    (deviceOne.value > deviceTwo.value) ? 1 :
+                        (deviceOne.value === deviceTwo.value) ?
+                            ((deviceOne.key > deviceTwo.key) ? 1 : -1) : -1);
             } else {
                 this.manualPersonalization = true;
             }
@@ -129,7 +130,7 @@ export class PersonalizationComponent implements IScreen, OnInit {
         } else {
             const formGroup = {
                 device: ['', [Validators.required]]
-            }
+            };
 
             this.thirdFormGroup = this.formBuilder.group(formGroup);
         }
@@ -183,15 +184,15 @@ export class PersonalizationComponent implements IScreen, OnInit {
             }
         }
 
-        let server = this.secondFormGroup.get('serverName').value;
-        let port = this.secondFormGroup.get('serverPort').value;
+        const server = this.secondFormGroup.get('serverName').value;
+        const port = this.secondFormGroup.get('serverPort').value;
         if (this.openposMgmtServerPresent && this.discoveryResponse && this.discoveryResponse.success) {
             personalizationProperties.set(PersonalizationService.OPENPOS_MANAGED_SERVER_PROPERTY, 'true');
         }
 
-        if( this.manualPersonalization ){
-            console.log(`DeviceID:${this.thirdFormGroup.get('deviceId').value}`)
-            return  this.personalizationService.personalize(
+        if (this.manualPersonalization) {
+            console.log(`DeviceID:${this.thirdFormGroup.get('deviceId').value}`);
+            return this.personalizationService.personalize(
                 server,
                 port,
                 this.thirdFormGroup.get('deviceId').value,
@@ -207,9 +208,6 @@ export class PersonalizationComponent implements IScreen, OnInit {
                 this.secondFormGroup.get('sslEnabled').value
             );
         }
-
-
-
     }
 
     public discoveryBack() {
@@ -221,15 +219,15 @@ export class PersonalizationComponent implements IScreen, OnInit {
         return this.discoveryStatus === DiscoveryStatus.Completed;
     }
     isDiscoveryInProgress(): boolean {
-        return this.discoveryStatus === DiscoveryStatus.InProgress
+        return this.discoveryStatus === DiscoveryStatus.InProgress;
     }
     public discoveryCompleted() {
         this.discoveryStatus = DiscoveryStatus.Completed;
     }
 
     public getDiscoveryResponseErrorMessage(): string {
-        return (typeof this.discoveryResponse.message === 'string') ? 
-            this.discoveryResponse.message : 
+        return (typeof this.discoveryResponse.message === 'string') ?
+            this.discoveryResponse.message :
             JSON.stringify(this.discoveryResponse.message);
     }
 
@@ -239,22 +237,22 @@ export class PersonalizationComponent implements IScreen, OnInit {
 
             this.discoveryResponse = await this.discoveryService.discoverDeviceProcess({
                 server: this.secondFormGroup.get('serverName').value,
-                port: this.secondFormGroup.get('serverPort').value, 
+                port: this.secondFormGroup.get('serverPort').value,
                 deviceId: this.thirdFormGroup.get('deviceId').value,
                 sslEnabled: this.secondFormGroup.get('sslEnabled').value,
                 maxWaitMillis: 90000
             });
             if (this.discoveryResponse && this.discoveryResponse.success) {
                 this.personalizationService.requestPersonalizationConfig(
-                    this.discoveryResponse.host, 
+                    this.discoveryResponse.host,
                     this.discoveryResponse.port,
                     this.secondFormGroup.get('sslEnabled').value
-                ).subscribe( {
+                ).subscribe({
                     next: result => {
                         this.updateLastFormGroup();
                         this.discoveryStatus = DiscoveryStatus.Completed;
                     },
-                    error: error  => {
+                    error: error => {
                         this.discoveryStatus = DiscoveryStatus.Failed;
                         this.discoveryResponse.success = false;
                         this.discoveryResponse.message = `Personalization request failed with error: ${error}`;
@@ -282,7 +280,7 @@ export class PersonalizationComponent implements IScreen, OnInit {
                     console.warn(error);
                     this.errorMessage = `Personalization request failed`;
                 }
-                });
+            });
 
         }
     }
@@ -313,7 +311,7 @@ export class PersonalizationComponent implements IScreen, OnInit {
     }
 
 
-    serverValidator = (control: AbstractControl): Observable<ValidationErrors|null> => {
+    serverValidator = (control: AbstractControl): Observable<ValidationErrors | null> => {
         clearTimeout(this.serverTimeout);
         const serverName = control.get('serverName').value;
         const serverPort = control.get('serverPort').value;
@@ -321,7 +319,7 @@ export class PersonalizationComponent implements IScreen, OnInit {
 
         return this.personalizationService.requestPersonalizationConfig(serverName, serverPort, sslEnabled)
             .pipe(
-                map( response => {
+                map(response => {
                     this.serverResponse = response;
                     this.updateThirdFormGroup();
                     this.updateLastFormGroup();
@@ -329,10 +327,10 @@ export class PersonalizationComponent implements IScreen, OnInit {
                 }),
                 catchError(error => {
                     console.warn(`Personalization request failed with error: ${JSON.stringify(error)}`);
-                    return of({'message': `${serverName}:${serverPort}`});
+                    return of({ message: `${serverName}:${serverPort}` });
                 })
             );
 
-        };
+    }
 }
 

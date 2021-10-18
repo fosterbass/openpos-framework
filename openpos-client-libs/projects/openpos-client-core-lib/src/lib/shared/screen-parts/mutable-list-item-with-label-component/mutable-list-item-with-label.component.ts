@@ -1,14 +1,15 @@
-import {Component, EventEmitter, Injector, Input, Output} from '@angular/core';
-import {ScreenPartComponent} from "../screen-part";
-import {MutableListItemWithLabelComponentInterface} from "./mutable-list-item-with-label.interface";
-import {FormGroup} from "@angular/forms";
-import {IFormElement} from "../../../core/interfaces/form-field.interface";
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ScreenPartComponent } from '../screen-part';
+import { MutableListItemWithLabelComponentInterface } from './mutable-list-item-with-label.interface';
+import { FormGroup } from '@angular/forms';
+import { IFormElement } from '../../../core/interfaces/form-field.interface';
 
 
 @Component({
     selector: 'app-mutable-list-item-with-label',
     templateUrl: './mutable-list-item-with-label.component.html',
-    styleUrls: ['./mutable-list-item-with-label.component.scss']})
+    styleUrls: ['./mutable-list-item-with-label.component.scss']
+})
 export class MutableListItemWithLabelComponent extends ScreenPartComponent<MutableListItemWithLabelComponentInterface>{
 
     @Input()
@@ -26,8 +27,7 @@ export class MutableListItemWithLabelComponent extends ScreenPartComponent<Mutab
     @Input()
     isOnly: boolean;
 
-    @Output()
-    onFieldChanged = new EventEmitter<IFormElement>();
+    @Output() fieldChanged = new EventEmitter<IFormElement>();
     @Output()
     add = new EventEmitter<IFormElement>();
     @Output()

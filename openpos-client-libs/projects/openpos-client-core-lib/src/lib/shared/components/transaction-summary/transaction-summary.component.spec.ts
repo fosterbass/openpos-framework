@@ -10,11 +10,11 @@ import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provi
 import { TimeZoneContext } from '../../../core/client-context/time-zone-context';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
-class MockActionService {}
-class MockMatDialog {};
-class MockElectronService {};
-class ClientContext {};
-class MockOpenposMediaService {};
+class MockActionService { }
+class MockMatDialog { }
+class MockElectronService { }
+class ClientContext { }
+class MockOpenposMediaService { }
 
 describe('TransactionSummaryComponent', () => {
   let component: TransactionSummaryComponent;
@@ -34,8 +34,8 @@ describe('TransactionSummaryComponent', () => {
         { provide: MatDialog, useClass: MockMatDialog },
         { provide: OpenposMediaService, useClass: MockOpenposMediaService },
         { provide: ElectronService, useClass: MockElectronService },
-        { provide: ClientContext, useValue: {}},
-        { provide: CLIENTCONTEXT, useClass: TimeZoneContext}
+        { provide: ClientContext, useValue: {} },
+        { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
       ]
     }).compileComponents();
   });

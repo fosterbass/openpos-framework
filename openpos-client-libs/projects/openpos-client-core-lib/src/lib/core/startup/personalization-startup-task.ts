@@ -7,7 +7,7 @@ import {
     take,
     timeout,
     first,
-    flatMap,
+    mergeMap,
     last
 } from 'rxjs/operators';
 import { IStartupTask } from './startup-task.interface';
@@ -99,7 +99,8 @@ export class PersonalizationStartupTask implements IStartupTask {
             )
         ).pipe(
             retryWhen(errors => errors.pipe(
-                switchMap(() => interval(1000), (error, time) => `${error} \n Retry in ${5 - time}`),
+                switchMap(() => interval(1000)),
+                map((error, time) => `${error} \n Retry in ${5 - time}`),
             ))
         );
     }
@@ -142,7 +143,7 @@ export class PersonalizationStartupTask implements IStartupTask {
     private attemptAutoPersonalize(startupData: StartupTaskData, serviceConfig: ZeroconfService, deviceName: string): Observable<string> {
         return this.personalization.getAutoPersonalizationParameters(deviceName, serviceConfig)
             .pipe(
-                flatMap(info => {
+                mergeMap(info => {
                     if (info) {
                         const params = info.personalizationParams;
                         let paramsMap: Map<string, string>;
@@ -247,7 +248,7 @@ function lastOrElse<T, R>(valueProject: (value: R) => Observable<T>, e: Observab
             next: value => {
                 path = valueProject(value);
             },
-            error: () => {}
+            error: () => { }
         });
 
         const pathSubscription = path.subscribe({

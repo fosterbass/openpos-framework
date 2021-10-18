@@ -5,10 +5,8 @@ import { catchError, map, mergeMap, switchMap, take, timeout } from 'rxjs/operat
 import { ScanditCapacitorMessage } from '../../../messages/scandit-capacitor-message';
 import { ConfigurationService } from '../../../services/configuration.service';
 import { IPlatformPlugin } from '../../platform-plugin.interface';
-
 import { ImageScanner, ScannerViewRef, ScanData } from '../scanner';
-
-import { Scandit } from './scandit-plugin.capacitor';
+import { scandit } from './scandit-plugin.capacitor';
 
 @Injectable({
     providedIn: 'root'
@@ -32,7 +30,7 @@ export class ScanditCapacitorImageScanner implements ImageScanner, IPlatformPlug
             timeout(10000),
             switchMap((config: ScanditCapacitorMessage) => {
                 if (config.licenseKey) {
-                    return of(Scandit.initialize({
+                    return of(scandit.initialize({
                         apiKey: config.licenseKey
                     }));
                 }
@@ -57,13 +55,13 @@ export class ScanditCapacitorImageScanner implements ImageScanner, IPlatformPlug
         }
 
         return new Observable(observer => {
-            Scandit.addView();
+            scandit.addView();
 
             const updateViewSub = view.viewChanges().pipe(
-                mergeMap(d => Scandit.updateView(d))
+                mergeMap(d => scandit.updateView(d))
             ).subscribe();
 
-            const handle = Scandit.addListener('scan', (e) => {
+            const handle = scandit.addListener('scan', (e) => {
                 observer.next({
                     type: e.symbology,
                     data: e.data
@@ -73,7 +71,7 @@ export class ScanditCapacitorImageScanner implements ImageScanner, IPlatformPlug
             return () => {
                 handle.remove();
                 updateViewSub.unsubscribe();
-                Scandit.removeView();
+                scandit.removeView();
             };
         });
     }

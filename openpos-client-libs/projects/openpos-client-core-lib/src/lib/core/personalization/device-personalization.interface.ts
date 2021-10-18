@@ -1,4 +1,4 @@
-import {ServerLocation} from './server-location';
+import { ServerLocation } from './server-location';
 
 export interface AutoPersonalizationParametersResponse {
     deviceName: string;

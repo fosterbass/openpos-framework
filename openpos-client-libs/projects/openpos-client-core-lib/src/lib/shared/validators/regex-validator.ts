@@ -17,7 +17,7 @@ export class RegexValidator implements IValidator {
                 pattern: {
                     valid: false
                 }
-            } as any;
+            };
         } else {
             return null;
         }

@@ -1,5 +1,5 @@
-import { Subscription } from "rxjs";
-import { ConsoleMessage, ConsoleScraper, LogLevel, SupportedConsoleMethods } from "./console-scraper.service";
+import { Subscription } from 'rxjs';
+import { ConsoleMessage, ConsoleScraper, LogLevel, SupportedConsoleMethods } from './console-scraper.service';
 
 describe('ConsoleScraperService', () => {
     function methodToLogLevel(method: SupportedConsoleMethods): LogLevel {
@@ -27,7 +27,7 @@ describe('ConsoleScraperService', () => {
         return logLevel;
     }
 
-    let supportedMethods: Array<SupportedConsoleMethods> = [
+    const supportedMethods: Array<SupportedConsoleMethods> = [
         'debug',
         'error',
         'info',
@@ -35,7 +35,7 @@ describe('ConsoleScraperService', () => {
         'warn'
     ];
 
-    let originalConsoleMethods = {};
+    const originalConsoleMethods = {};
 
     supportedMethods.forEach(method => {
         originalConsoleMethods[method] = console[method];
@@ -90,11 +90,11 @@ describe('ConsoleScraperService', () => {
         });
 
         it('allows for objects as arguments', () => {
-            assertMessage('{"test":42}', { test: 42 });
+            assertMessage(`{"test":42}`, { test: 42 });
         });
 
         it('serializes multiple arguments', () => {
-            assertMessage('test; {"test":42}', 'test', { test: 42 });
+            assertMessage(`test; {"test":42}`, 'test', { test: 42 });
         });
 
         it('handles no argument values', () => {
@@ -102,7 +102,7 @@ describe('ConsoleScraperService', () => {
                 console[method]();
 
                 expect(lastMessage).toBeUndefined();
-            })
+            });
         });
 
         it('handles null arguments', () => {

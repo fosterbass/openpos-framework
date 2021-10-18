@@ -1,14 +1,14 @@
-import {Injectable} from '@angular/core';
-import {SessionService} from './session.service';
-import {CloseToastMessage, IToastScreen, ToastType} from '../interfaces/toast-screen.interface';
-import {ActiveToast, ToastrService} from 'ngx-toastr';
-import {ToastComponent} from "../../shared/components/toast/toast.component";
+import { Injectable } from '@angular/core';
+import { SessionService } from './session.service';
+import { CloseToastMessage, IToastScreen, ToastType } from '../interfaces/toast-screen.interface';
+import { ActiveToast, ToastrService } from 'ngx-toastr';
+import { ToastComponent } from '../../shared/components/toast/toast.component';
 
 @Injectable({
     providedIn: 'root',
 })
 export class ToastService {
-    persistedToasts = new Map<String, ActiveToast<any>>();
+    persistedToasts = new Map<string, ActiveToast<any>>();
 
     constructor(private sessionService: SessionService, private toastrService: ToastrService) {
         sessionService.getMessages('Toast').subscribe(m => this.showMessage(m));

@@ -14,7 +14,6 @@ describe('NewRelic Sink', () => {
     let messages: Subject<ConsoleMessage>;
     let configurationService: jasmine.SpyObj<ConfigurationService>;
     let personalizationService: jasmine.SpyObj<PersonalizationService>;
-    let sessionService: jasmine.SpyObj<SessionService>;
     let screenMessages: Subject<{ type: string, screenType: string }>;
     let capacitorService: jasmine.SpyObj<CapacitorService>;
 
@@ -33,13 +32,13 @@ describe('NewRelic Sink', () => {
         messages = new Subject<ConsoleMessage>();
         screenMessages = new Subject<{ type: string, screenType: string }>();
 
-        let scraper = {
+        const scraper = {
             messages$: messages
         };
 
-        let sessionService = {
+        const sessionService = {
             screenMessage$: screenMessages
-        }
+        };
 
         configuration = new Subject<NewRelicLoggerConfig>();
 
@@ -79,7 +78,7 @@ describe('NewRelic Sink', () => {
     });
 
     it('creates', fakeAsync(() => {
-        let config = new NewRelicLoggerConfig();
+        const config = new NewRelicLoggerConfig();
         config.apiKey = 'TESTAPIKEY';
         config.enabled = true;
 
@@ -106,11 +105,11 @@ describe('NewRelic Sink', () => {
         expect(req.request.headers.get('Api-Key')).toEqual('TESTAPIKEY');
         expect(req.request.headers.get('Content-Type')).toEqual('application/json');
 
-        let payload = req.request.body as NewRelicMessageGroup[];
+        const payload = req.request.body as NewRelicMessageGroup[];
 
         expect(payload.length).toBe(1);
 
-        let gp = payload[0];
+        const gp = payload[0];
 
         expect(gp.logs.length).toBe(1);
         expect(gp.logs[0].message).toEqual('testing');

@@ -11,7 +11,7 @@ export class ToggleButtonComponent {
     value: string;
 
     @Input()
-    get selected() : boolean {
+    get selected(): boolean {
         return this._selected;
     }
 

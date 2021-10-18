@@ -3,7 +3,7 @@ import { SaleTotalPanelInterface } from './sale-total-panel.interface';
 import { ScreenPart } from '../../decorators/screen-part.decorator';
 import { ScreenPartComponent } from '../screen-part';
 import { IActionItem } from '../../../core/actions/action-item.interface';
-import { Configuration } from '../../../configuration/configuration';
+import { CONFIGURATION } from '../../../configuration/configuration';
 import { MediaBreakpoints, OpenposMediaService } from '../../../core/media/openpos-media.service';
 import { LoyaltySignupService } from '../../../core/services/loyalty-signup.service';
 import { Observable } from 'rxjs';
@@ -38,8 +38,7 @@ export class SaleTotalPanelComponent extends ScreenPartComponent<SaleTotalPanelI
     public glowPulseRepeatTrigger = true;
     public gradientInnerGlowRepeatTrigger = true;
 
-    constructor(injector: Injector, media: OpenposMediaService,
-                private loyaltySignupService: LoyaltySignupService) {
+    constructor(injector: Injector, media: OpenposMediaService, private loyaltySignupService: LoyaltySignupService) {
         super(injector);
         this.isMobile$ = media.observe(new Map([
             [MediaBreakpoints.MOBILE_PORTRAIT, true],
@@ -69,7 +68,7 @@ export class SaleTotalPanelComponent extends ScreenPartComponent<SaleTotalPanelI
     }
 
     public keybindsEnabled(menuItem: IActionItem): boolean {
-        return Configuration.enableKeybinds && !!menuItem.keybind && menuItem.keybind !== 'Enter';
+        return CONFIGURATION.enableKeybinds && !!menuItem.keybind && menuItem.keybind !== 'Enter';
     }
 
     public doMenuItemAction(menuItem: IActionItem): void {
@@ -77,11 +76,11 @@ export class SaleTotalPanelComponent extends ScreenPartComponent<SaleTotalPanelI
     }
 
     public isMissingCustomerInfo(): boolean {
-        return this.screenData.customerMissingInfoEnabled && this.screenData.customerMissingInfo
+        return this.screenData.customerMissingInfoEnabled && this.screenData.customerMissingInfo;
     }
 
     public repeatGlowPulse(): void {
-        this.glowPulseRepeatTrigger = !this.glowPulseRepeatTrigger
+        this.glowPulseRepeatTrigger = !this.glowPulseRepeatTrigger;
     }
 
     public repeatGradientInnerGlow(): void {

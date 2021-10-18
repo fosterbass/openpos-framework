@@ -6,8 +6,8 @@ describe('PagerComponent', () => {
 
     let pagerComponent: PagerComponent;
     let fixture: ComponentFixture<PagerComponent>;
-    
-    beforeEach( () => {
+
+    beforeEach(() => {
         TestBed.configureTestingModule({
             declarations: [
                 PagerComponent,
@@ -18,7 +18,7 @@ describe('PagerComponent', () => {
 
         fixture = TestBed.createComponent(PagerComponent);
         pagerComponent = fixture.componentInstance;
-        
+
     });
 
     describe('constructor', () => {
@@ -99,11 +99,11 @@ describe('PagerComponent', () => {
             expect(pagerComponent.currentPage).toBe(1);
         }));
     });
-    
+
 
 });
 
-describe("PagerComponent - Wrapped", () => {
+describe('PagerComponent - Wrapped', () => {
     describe('ngAfterContentInit', () => {
         let wrapperFixture: ComponentFixture<TestPagerWrapperComponent>;
         let wrappedPagerComponent: PagerComponent;
@@ -116,12 +116,12 @@ describe("PagerComponent - Wrapped", () => {
                 ]
             }).compileComponents();
             wrapperFixture = TestBed.createComponent(TestPagerWrapperComponent);
-             wrappedPagerComponent = wrapperFixture.componentInstance.myPager;
+            wrappedPagerComponent = wrapperFixture.componentInstance.myPager;
         });
-        
+
         it('should setup the page state', () => {
             wrapperFixture.detectChanges();
-            wrappedPagerComponent.ngAfterContentInit()
+            wrappedPagerComponent.ngAfterContentInit();
             expect(wrappedPagerComponent.currentIndex).toBe(5);
             expect(wrappedPagerComponent.currentPage).toBe(2);
             expect(wrappedPagerComponent.totalPages).toBe(4);
@@ -130,10 +130,10 @@ describe("PagerComponent - Wrapped", () => {
             expect(wrappedPagerComponent.currentIndex).toBe(15);
             expect(wrappedPagerComponent.currentPage).toBe(4);
             expect(wrappedPagerComponent.totalPages).toBe(4);
-            
-            
+
+
         });
-    
+
         it('should ignore out of bounds pages', () => {
             wrapperFixture.detectChanges();
             wrappedPagerComponent.currentPage = 5;
@@ -154,7 +154,7 @@ class MockIconComponent {
 }
 
 @Component({
-    selector: 'test-page',
+    selector: 'app-test-page',
     template: `
     <app-pager [pageSize]="5" [currentPage]="index">
         <ng-template *ngFor="let number of numbers" #pagerItem>
@@ -164,6 +164,6 @@ class MockIconComponent {
 })
 class TestPagerWrapperComponent {
     @ViewChild(PagerComponent, { static: true }) myPager;
-    numbers = Array(17).fill(0).map((x,i) => i);
+    numbers = Array(17).fill(0).map((x, i) => i);
     public index = 2;
 }

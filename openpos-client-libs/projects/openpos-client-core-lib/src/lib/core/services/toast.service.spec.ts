@@ -3,14 +3,12 @@ import { SessionService } from './session.service';
 import { ToastService } from './toast.service';
 import { of } from 'rxjs';
 import { Injector } from '@angular/core';
-import {CloseToastMessage, IToastScreen, ToastType} from '../interfaces/toast-screen.interface';
+import { CloseToastMessage, IToastScreen, ToastType } from '../interfaces/toast-screen.interface';
 import { AppInjector } from '../app-injector';
-import {ActiveToast, ToastrService} from 'ngx-toastr';
-import {ToastComponent} from "../../shared/components/toast/toast.component";
-
+import { ActiveToast, ToastrService } from 'ngx-toastr';
+import { ToastComponent } from '../../shared/components/toast/toast.component';
 
 describe('ToastService', () => {
-
     let sessionServiceSpy: jasmine.SpyObj<SessionService>;
     let toastrServiceSpy: jasmine.SpyObj<ToastrService>;
 
@@ -52,12 +50,12 @@ describe('ToastService', () => {
             ]
         });
 
-        AppInjector.Instance = TestBed.inject(Injector);
+        AppInjector.instance = TestBed.inject(Injector);
         sessionServiceSpy = TestBed.inject(SessionService) as jasmine.SpyObj<SessionService>;
         sessionServiceSpy.getMessages.and.returnValue(of(testToast));
 
         toastrServiceSpy = TestBed.inject(ToastrService) as jasmine.SpyObj<ToastrService>;
-        toastrServiceSpy.show.and.returnValue({ toastRef: { componentInstance: {}}} as ActiveToast<{}>)
+        toastrServiceSpy.show.and.returnValue({ toastRef: { componentInstance: {} } } as ActiveToast<{}>);
 
         toastService = TestBed.inject(ToastService);
 
@@ -67,18 +65,18 @@ describe('ToastService', () => {
         it('should call ToastrService.show when called', () => {
             expect(toastrServiceSpy.show.calls.count).toBeTruthy();
             expect(toastrServiceSpy.show).toHaveBeenCalledWith(
-                    testToast.message,
-                    null,
-                    {
-                        timeOut: 2500,
-                        extendedTimeOut: 2500,
-                        disableTimeOut: false,
-                        tapToDismiss: true,
-                        positionClass: 'toast-top-center',
-                        toastClass: 'ngx-toastr app-toast-success',
-                        toastComponent: ToastComponent
-                    },
-                );
+                testToast.message,
+                null,
+                {
+                    timeOut: 2500,
+                    extendedTimeOut: 2500,
+                    disableTimeOut: false,
+                    tapToDismiss: true,
+                    positionClass: 'toast-top-center',
+                    toastClass: 'ngx-toastr app-toast-success',
+                    toastComponent: ToastComponent
+                },
+            );
         });
 
         it('should save persisted messages', () => {

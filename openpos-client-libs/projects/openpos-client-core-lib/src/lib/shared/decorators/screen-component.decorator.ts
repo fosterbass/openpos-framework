@@ -6,7 +6,7 @@ export interface ScreenProps {
 }
 
 export function ScreenComponent(config: ScreenProps) {
-    return function <T extends Type<any>>(target: T) {
+    return <T extends Type<any>>(target: T) => {
         ScreenService.screens.set(config.name, target);
     };
 }

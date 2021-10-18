@@ -1,13 +1,13 @@
-import {ActionService} from '../../actions/action.service';
+import { ActionService } from '../../actions/action.service';
 import { ScreenDirective } from './../../../shared/directives/screen.directive';
 import { IScreen } from '../../../shared/components/dynamic-screen/screen.interface';
 import { Component, OnDestroy, ViewChild, ComponentRef, ComponentFactory, Injector } from '@angular/core';
 import { ScreenCreatorService } from '../../services/screen-creator.service';
 
 @Component({
-  selector: 'app-dialog-content',
-  templateUrl: './dialog-content.component.html',
-  styleUrls: ['./dialog-content.component.scss'],
+    selector: 'app-dialog-content',
+    templateUrl: './dialog-content.component.html',
+    styleUrls: ['./dialog-content.component.scss'],
     providers: [ActionService]
 })
 export class DialogContentComponent implements OnDestroy, IScreen {
@@ -19,7 +19,7 @@ export class DialogContentComponent implements OnDestroy, IScreen {
 
     private content: IScreen;
 
-    constructor( private screenCreator: ScreenCreatorService ) {
+    constructor(private screenCreator: ScreenCreatorService) {
     }
 
     public installScreen(screenComponentFactory: ComponentFactory<IScreen>): void {

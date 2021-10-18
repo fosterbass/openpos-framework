@@ -37,7 +37,7 @@
             </div>
 
             <div class="barcode-scanner" *ngIf="showScanner">
-                <app-image-scanner (onScan)="onBarcodeScanned($event)" (scanChanged)="showScanner = $event">
+                <app-image-scanner (scan)="onBarcodeScanned($event)" (scanChanged)="showScanner = $event">
                 </app-image-scanner>
             </div>
         </div>

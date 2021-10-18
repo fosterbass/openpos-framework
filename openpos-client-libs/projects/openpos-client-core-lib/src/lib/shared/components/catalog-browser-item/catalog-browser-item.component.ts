@@ -23,7 +23,7 @@ export class CatalogBrowserItemComponent implements OnInit {
 
     // @ViewChild('itemImg') itemImage: Element;
 
-    constructor(@Inject(forwardRef(() => DiscoveryService))private discovery: DiscoveryService) {
+    constructor(@Inject(forwardRef(() => DiscoveryService)) private discovery: DiscoveryService) {
     }
 
     ngOnInit(): void {
@@ -31,17 +31,17 @@ export class CatalogBrowserItemComponent implements OnInit {
 
         if (this.loadFailImgSrc) {
             this._loadFailImgSrcUrl = this.loadFailImgSrc;
-            if (! this.loadFailImgSrc.startsWith('http')) {
+            if (!this.loadFailImgSrc.startsWith('http')) {
                 this._loadFailImgSrcUrl = `${this.discovery.getServerBaseURL()}/${this.loadFailImgSrc}`;
             }
         }
 
         if (this.showImage()) {
-            this.imageSrc = (<IUrlMenuItem>this.item.menuItems[0]).url;
-            imageTimer = setTimeout( () => {
+            this.imageSrc = (this.item.menuItems[0] as IUrlMenuItem).url;
+            imageTimer = setTimeout(() => {
                 this.imageSrc = this._loadFailImgSrcUrl;
                 this.imageLoaded = false;
-                },
+            },
                 2000
             );
 
@@ -55,11 +55,11 @@ export class CatalogBrowserItemComponent implements OnInit {
     }
 
     showImage(): boolean {
-        if (this.item.menuItems[0] && ! this.item.menuItems[0].hasOwnProperty('url')) {
+        if (this.item.menuItems[0] && !this.item.menuItems[0].hasOwnProperty('url')) {
             return false;
         }
 
-        if (! (<IUrlMenuItem>this.item.menuItems[0]).url ) {
+        if (!(this.item.menuItems[0] as IUrlMenuItem).url) {
             return this.item.description === null;
         }
         return true;

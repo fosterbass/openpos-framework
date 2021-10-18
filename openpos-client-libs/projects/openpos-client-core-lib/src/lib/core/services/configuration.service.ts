@@ -2,7 +2,7 @@ import { IVersion } from './../interfaces/version.interface';
 import { VERSIONS } from './../../version';
 import { Injectable } from '@angular/core';
 import { SessionService } from './session.service';
-import { Configuration } from './../../configuration/configuration';
+import { CONFIGURATION } from './../../configuration/configuration';
 import { distinct, filter, map } from 'rxjs/operators';
 import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
 import { ConfigChangedMessage } from '../messages/config-changed-message';
@@ -50,18 +50,18 @@ export class ConfigurationService {
 
     protected mapConfig(response: any) {
         for (const p of Object.keys(response)) {
-            if (Configuration.hasOwnProperty(p)) {
-                const configPropertyType = typeof Configuration[p];
+            if (CONFIGURATION.hasOwnProperty(p)) {
+                const configPropertyType = typeof CONFIGURATION[p];
                 const responsePropertyType = typeof response[p];
                 try {
                     if (configPropertyType !== responsePropertyType) {
                         if (configPropertyType === 'string') {
-                            Configuration[p] = response[p].toString();
+                            CONFIGURATION[p] = response[p].toString();
                         } else {
-                            Configuration[p] = JSON.parse(response[p]);
+                            CONFIGURATION[p] = JSON.parse(response[p]);
                         }
                     } else {
-                        Configuration[p] = response[p];
+                        CONFIGURATION[p] = response[p];
                     }
                 } catch (e) {
                     console.warn(`Failed to convert configuration response property '${p}' with value [${response[p]}] ` +

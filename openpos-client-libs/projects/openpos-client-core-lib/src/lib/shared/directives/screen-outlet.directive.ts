@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { Subscription } from 'rxjs';
-import {PersonalizationService} from '../../core/personalization/personalization.service';
+import { PersonalizationService } from '../../core/personalization/personalization.service';
 import { ScreenService } from '../../core/services/screen.service';
 import { SessionService } from '../../core/services/session.service';
 import { ConfigurationService } from '../../core/services/configuration.service';
@@ -23,7 +23,7 @@ import { LifeCycleTypeGuards } from '../../core/life-cycle-interfaces/lifecycle-
 import { ScreenCreatorService } from '../../core/services/screen-creator.service';
 import { FocusService } from '../../core/focus/focus.service';
 import { filter } from 'rxjs/operators';
-import {MessageProvider} from "../providers/message.provider";
+import { MessageProvider } from '../providers/message.provider';
 
 // tslint:disable-next-line:directive-selector
 @Directive({ selector: '[openposScreenOutlet]' })
@@ -37,7 +37,7 @@ export class OpenposScreenOutletDirective implements OnInit, OnDestroy {
     private screenName: string;
     private screenId: string;
 
-    //public classes = '';
+    // public classes = '';
 
     public currentTheme: string;
 
@@ -63,9 +63,11 @@ export class OpenposScreenOutletDirective implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         console.log('the screen outlet is being ng initialized');
-        this.subscriptions.add(this.session.screenMessage$.subscribe((message) => this.handle(message)));
-        this.subscriptions.add(this.session.getMessages(MessageTypes.LIFE_CYCLE_EVENT).subscribe(message => this.handleLifeCycleEvent(message)));
-        this.subscriptions.add(this.configurationService.theme$.subscribe( theme => {
+        this.subscriptions.add(this.session.screenMessage$.subscribe((message) =>
+            this.handle(message)));
+        this.subscriptions.add(this.session.getMessages(MessageTypes.LIFE_CYCLE_EVENT)
+            .subscribe(message => this.handleLifeCycleEvent(message)));
+        this.subscriptions.add(this.configurationService.theme$.subscribe(theme => {
             this.updateTheme(theme);
         }));
 
@@ -98,15 +100,15 @@ export class OpenposScreenOutletDirective implements OnInit, OnDestroy {
         }
     }
 
-    private handleLifeCycleEvent( message: LifeCycleMessage ) {
-        switch ( message.eventType ) {
+    private handleLifeCycleEvent(message: LifeCycleMessage) {
+        switch (message.eventType) {
             case LifeCycleEvents.DialogClosing:
-                if ( LifeCycleTypeGuards.handlesBecomingActive(this.componentRef.instance) ) {
+                if (LifeCycleTypeGuards.handlesBecomingActive(this.componentRef.instance)) {
                     this.componentRef.instance.onBecomingActive();
                 }
                 break;
             case LifeCycleEvents.DialogOpening:
-                if ( LifeCycleTypeGuards.handlesLeavingActive(this.componentRef.instance) ) {
+                if (LifeCycleTypeGuards.handlesLeavingActive(this.componentRef.instance)) {
                     this.componentRef.instance.onLeavingActive();
                 }
                 break;
@@ -115,8 +117,8 @@ export class OpenposScreenOutletDirective implements OnInit, OnDestroy {
 
     protected async updateScreen(screen: any) {
         console.log('Handling screen: ', screen);
-        if ( this.dialogService.isDialogOpen() ) {
-            console.log('Try closing open dialog')
+        if (this.dialogService.isDialogOpen()) {
+            console.log('Try closing open dialog');
             // Close any open dialogs
             await this.dialogService.closeDialog();
             this.focusService.restoreInitialFocus();
@@ -150,7 +152,7 @@ export class OpenposScreenOutletDirective implements OnInit, OnDestroy {
 
             // Create our screen component
             const componentFactory = this.screenService.resolveScreen(this.screenTypeName, this.currentTheme);
-            this.componentRef = this.screenCreator.createScreenComponent(componentFactory, this.viewContainerRef );
+            this.componentRef = this.screenCreator.createScreenComponent(componentFactory, this.viewContainerRef);
 
             trap = true;
         }
@@ -171,46 +173,46 @@ export class OpenposScreenOutletDirective implements OnInit, OnDestroy {
             });
         }
 
-        this.updateClazzes( this.personalizationClazzes, this.personalizationClazzes);
-        this.updateClazzes( this.themeClazzes, this.themeClazzes);
+        this.updateClazzes(this.personalizationClazzes, this.personalizationClazzes);
+        this.updateClazzes(this.themeClazzes, this.themeClazzes);
 
         // Output the componentRef and screen to the training-wrapper
         this.componentEmitter.emit({ componentRef: this.componentRef, screen });
-        this.session.sendMessage( new LifeCycleMessage(LifeCycleEvents.ScreenUpdated, screen));
+        this.session.sendMessage(new LifeCycleMessage(LifeCycleEvents.ScreenUpdated, screen));
 
     }
 
     protected updateTheme(theme: string) {
         console.info('updating theme to ' + theme);
 
-        let clazzes = !!theme ? theme.split(' ') : [];
+        const clazzes = !!theme ? theme.split(' ') : [];
         this.updateClazzes(this.themeClazzes, clazzes);
         this.themeClazzes = clazzes;
     }
 
-    private updatePersonalizationProperties( properties: Map<string, string>){
-        let clazzes = [];
-        properties.forEach( (value, key) => {
-            clazzes.push( `personalization-${key}-${value}`);
+    private updatePersonalizationProperties(properties: Map<string, string>) {
+        const clazzes = [];
+        properties.forEach((value, key) => {
+            clazzes.push(`personalization-${key}-${value}`);
         });
         this.updateClazzes(this.personalizationClazzes, clazzes);
         this.personalizationClazzes = clazzes;
     }
 
-    private updateClazzes( oldClazzes: string[], newClazzes: string[]){
-        //remove old classes
-        oldClazzes.forEach( clazz => {
+    private updateClazzes(oldClazzes: string[], newClazzes: string[]) {
+        // remove old classes
+        oldClazzes.forEach(clazz => {
             this.overlayContainer.getContainerElement().classList.remove(clazz);
-            if( this.componentRef ){
+            if (this.componentRef) {
                 const parent = this.renderer.parentNode(this.componentRef.location.nativeElement);
                 this.renderer.removeClass(parent, clazz);
             }
         });
 
-        //add new classes
-        newClazzes.forEach( clazz => {
+        // add new classes
+        newClazzes.forEach(clazz => {
             this.overlayContainer.getContainerElement().classList.add(clazz);
-            if( this.componentRef ){
+            if (this.componentRef) {
                 const parent = this.renderer.parentNode(this.componentRef.location.nativeElement);
                 this.renderer.addClass(parent, clazz);
             }

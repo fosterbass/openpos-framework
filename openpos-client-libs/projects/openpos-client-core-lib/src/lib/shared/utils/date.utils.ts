@@ -2,7 +2,7 @@ export class DateUtils {
     /**
      * Returns the relative positions of the date parts within the given date pattern.
      * E.g., for YYYY/MM/DD, returns yearPos = 0, monthPos = 1, dayOfMonthPos = 2
-     * @param dateFormatPattern 
+     * dateFormatPattern
      */
     static datePartPositions(dateFormatPattern: string): DatePartPositions {
         const formatUpper = dateFormatPattern.toUpperCase().replace(/\//g, '');
@@ -29,10 +29,9 @@ export class DateUtils {
      * @param year 1, 2, or 4 digit year
      */
     static normalizeDateYear(month: number, dayOfMonth: number, year: number): number {
-//                console.log(`year: ${year}, month: ${month}, dayOfMonth: ${dayOfMonth}`);
         let returnYear = year;
         const strYear = year + '';
-        if (strYear.length === 1 || strYear.length === 2 ) {
+        if (strYear.length === 1 || strYear.length === 2) {
             const curDate = new Date();
             const curYear = curDate.getFullYear();
             // Make assumptions about year in same way that Java SimpleDateFormat does

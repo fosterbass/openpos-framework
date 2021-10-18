@@ -1,5 +1,5 @@
 import { IMaskSpec } from '../../shared/textmask';
-import {IActionItem} from '../actions/action-item.interface';
+import { IActionItem } from '../actions/action-item.interface';
 import { IConfirmationDialog } from '../actions/confirmation-dialog.interface';
 import { ValidatorFn } from '@angular/forms';
 export interface IFormElement {

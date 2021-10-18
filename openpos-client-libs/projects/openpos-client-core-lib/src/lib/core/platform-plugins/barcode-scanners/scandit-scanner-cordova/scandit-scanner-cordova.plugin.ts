@@ -10,7 +10,7 @@ import { ImageScanner, ScanData, ScannerViewRef } from '../scanner';
 declare var Scandit: any;
 @Injectable()
 export class ScanditScannerCordovaPlugin implements ImageScanner, IPlatformPlugin {
-    private readonly scandit$: Observable<{context, capture, camera, viewfinder}>;
+    private readonly scandit$: Observable<{ context, capture, camera, viewfinder }>;
 
     constructor(sessionService: SessionService) {
         const scanditSession = sessionService.getMessages('ConfigChanged').pipe(
@@ -79,12 +79,29 @@ export class ScanditScannerCordovaPlugin implements ImageScanner, IPlatformPlugi
                 };
             }),
             publishReplay(1)
-        ) as ConnectableObservable<{context, capture, camera, viewfinder}>;
+        ) as ConnectableObservable<{ context, capture, camera, viewfinder }>;
 
         // make it hot so we can start capturing changes.
         scanditSession.connect();
 
         this.scandit$ = scanditSession;
+    }
+
+    private static getViewfinderType(type?: 'Laser' | 'Rectangular' | 'Spotlight'): any | null {
+        if (type) {
+            switch (type) {
+                case 'Laser':
+                    console.log('Scandit Setting Laserline ViewFinder');
+                    return new Scandit.LaserlineViewfinder();
+                case 'Rectangular':
+                    console.log('Scandit Setting Rectangular ViewFinder');
+                    return new Scandit.RectangularViewfinder();
+                case 'Spotlight':
+                    console.log('Scandit Setting Spotlight ViewFinder');
+                    return new Scandit.SpotlightViewfinder();
+            }
+        }
+        return null;
     }
 
     beginScanning(view: ScannerViewRef): Observable<ScanData> {
@@ -96,13 +113,16 @@ export class ScanditScannerCordovaPlugin implements ImageScanner, IPlatformPlugi
                     didScan: (barcodeCapture, session) => {
                         barcodeCapture.isEnabled = false;
 
-                        const scanData = <ScanData> {
-                            type: ScanditBarcodeUtils.convertToOpenposType(session.newlyRecognizedBarcodes[0].symbology, session.newlyRecognizedBarcodes[0].data),
+                        const scanData = {
+                            type: ScanditBarcodeUtils.convertToOpenposType(
+                                session.newlyRecognizedBarcodes[0].symbology,
+                                session.newlyRecognizedBarcodes[0].data
+                            ),
                             data: session.newlyRecognizedBarcodes[0].data
                         };
 
                         // Scandit adds a leading 0 to UPCA scans
-                        if (scanData.type == 'UPCA') {
+                        if (scanData.type === 'UPCA') {
                             scanData.data = scanData.data.substring(1);
                         }
 
@@ -144,24 +164,7 @@ export class ScanditScannerCordovaPlugin implements ImageScanner, IPlatformPlugi
     }
 
     pluginPresent(): boolean {
+        // tslint:disable-next-line: no-string-literal
         return window['Scandit'];
-    }
-
-    private static getViewfinderType(type?: 'Laser' | 'Rectangular' | 'Spotlight'): any | null {
-        if (type) {
-            switch (type) {
-                case 'Laser':
-                    console.log('Scandit Setting Laserline ViewFinder');
-                    return new Scandit.LaserlineViewfinder();
-                case 'Rectangular':
-                    console.log('Scandit Setting Rectangular ViewFinder');
-                    return new Scandit.RectangularViewfinder();
-                case 'Spotlight':
-                    console.log('Scandit Setting Spotlight ViewFinder');
-                    return new Scandit.SpotlightViewfinder();
-            }
-        }
-
-        return null;
     }
 }

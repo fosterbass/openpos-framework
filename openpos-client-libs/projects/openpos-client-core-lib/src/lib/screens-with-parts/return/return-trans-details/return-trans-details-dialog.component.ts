@@ -1,15 +1,15 @@
-import { Configuration } from '../../../configuration/configuration';
+import { CONFIGURATION } from '../../../configuration/configuration';
 import { IActionItem } from '../../../core/actions/action-item.interface';
 import { SelectionMode } from '../../../core/interfaces/selection-mode.enum';
 import { ISellItem } from '../../../core/interfaces/sell-item.interface';
-import {Component} from '@angular/core';
+import { Component } from '@angular/core';
 import { DialogComponent } from '../../../shared/decorators/dialog-component.decorator';
 import { SelectableItemListComponentConfiguration } from '../../../shared/components/selectable-item-list/selectable-item-list.component';
 import { ReturnTransDetailsInterface } from './return-trans-detals.interface';
-import { PosScreen } from '../../pos-screen/pos-screen.component';
+import { PosScreenDirective } from '../../pos-screen/pos-screen.component';
 import { Observable } from 'rxjs';
 import { ISelectableListData } from '../../../shared/components/selectable-item-list/selectable-list-data.interface';
-import {ICheckboxField} from "../../../core/interfaces/form-field.interface";
+import { ICheckboxField } from '../../../core/interfaces/form-field.interface';
 
 @DialogComponent({
     name: 'ReturnTransDetailDialog'
@@ -19,7 +19,7 @@ import {ICheckboxField} from "../../../core/interfaces/form-field.interface";
     templateUrl: './return-trans-details-dialog.component.html',
     styleUrls: ['./return-trans-details-dialog.component.scss']
 })
-export class ReturnTransDetailsDialogComponent extends PosScreen<ReturnTransDetailsInterface>  {
+export class ReturnTransDetailsDialogComponent extends PosScreenDirective<ReturnTransDetailsInterface>  {
     listData: Observable<ISelectableListData<ISellItem>>;
     listConfig: SelectableItemListComponentConfiguration;
     selectionButton: IActionItem;
@@ -69,6 +69,6 @@ export class ReturnTransDetailsDialogComponent extends PosScreen<ReturnTransDeta
     }
 
     public keybindsEnabled(menuItem: IActionItem): boolean {
-        return Configuration.enableKeybinds && menuItem.keybind && menuItem.keybind !== 'Enter';
+        return CONFIGURATION.enableKeybinds && menuItem.keybind && menuItem.keybind !== 'Enter';
     }
 }

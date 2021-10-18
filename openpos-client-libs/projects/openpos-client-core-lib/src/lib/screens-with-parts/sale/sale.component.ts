@@ -1,18 +1,17 @@
-import { AfterViewInit, ChangeDetectorRef, Component, Injector, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, Injector, ViewChild } from '@angular/core';
 import { SaleInterface } from './sale.interface';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
-import { PosScreen } from '../pos-screen/pos-screen.component';
+import { PosScreenDirective } from '../pos-screen/pos-screen.component';
 import { ScreenComponent } from '../../shared/decorators/screen-component.decorator';
 import { ITotal } from '../../core/interfaces/total.interface';
-
 import { merge, Observable, Subject, Subscription } from 'rxjs';
 import { IActionItem } from '../../core/actions/action-item.interface';
 import { MediaBreakpoints, OpenposMediaService } from '../../core/media/openpos-media.service';
-import { Configuration } from './../../configuration/configuration';
+import { CONFIGURATION } from './../../configuration/configuration';
 import { MobileSaleOrdersSheetComponent } from './mobile-sale-orders-sheet/mobile-sale-orders-sheet.component';
 import { KeyPressProvider } from '../../shared/providers/keypress.provider';
-import { delay, filter, takeUntil, tap } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { SaleItemCardListComponent } from '../../shared/screen-parts/sale-item-card-list/sale-item-card-list.component';
 import { ISellItem } from '../../core/interfaces/sell-item.interface';
 
@@ -25,12 +24,11 @@ import { ISellItem } from '../../core/interfaces/sell-item.interface';
     templateUrl: './sale.component.html',
     styleUrls: ['./sale.component.scss']
 })
-export class SaleComponent extends PosScreen<SaleInterface> {
+export class SaleComponent extends PosScreenDirective<SaleInterface> {
     @ViewChild('scrollList') private saleItemCardList: SaleItemCardListComponent;
 
     isMobile$: Observable<boolean>;
     totals: ITotal[];
-    Configuration = Configuration;
     initialized = false;
     removeOrderAction: IActionItem;
     buildScreen$ = new Subject();
@@ -38,12 +36,14 @@ export class SaleComponent extends PosScreen<SaleInterface> {
     sidenavOpened = false;
     isEmpty = true;
 
-    constructor(protected dialog: MatDialog,
-                injector: Injector,
-                media: OpenposMediaService,
-                private bottomSheet: MatBottomSheet,
-                private keyPressProvider: KeyPressProvider,
-                private changeDetectorRef: ChangeDetectorRef) {
+    constructor(
+        protected dialog: MatDialog,
+        injector: Injector,
+        media: OpenposMediaService,
+        private bottomSheet: MatBottomSheet,
+        private keyPressProvider: KeyPressProvider,
+        private changeDetectorRef: ChangeDetectorRef
+        ) {
         super(injector);
         this.isMobile$ = media.observe(new Map([
             [MediaBreakpoints.MOBILE_PORTRAIT, true],
@@ -92,7 +92,7 @@ export class SaleComponent extends PosScreen<SaleInterface> {
     openSheet(): void {
         console.log('Entering openSheet()');
         const ref = this.bottomSheet.open(MobileSaleOrdersSheetComponent,
-            {data: this.screen, panelClass: 'sheet'});
+            { data: this.screen, panelClass: 'sheet' });
         this.subscriptions.add(new Subscription(() => ref.dismiss()));
         this.subscriptions.add(ref.afterDismissed().subscribe(item => {
             if (item !== undefined && item !== null) {

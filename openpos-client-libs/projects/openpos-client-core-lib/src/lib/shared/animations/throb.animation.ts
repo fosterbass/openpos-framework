@@ -11,9 +11,9 @@ import {
 } from '@angular/animations';
 
 export const throbSteps = [
-    style({transform: 'scale(1)', offset: 0}),
-    style({transform: 'scale(1.3)', offset: .5}),
-    style({transform: 'scale(1)', offset: 1})
+    style({ transform: 'scale(1)', offset: 0 }),
+    style({ transform: 'scale(1.3)', offset: .5 }),
+    style({ transform: 'scale(1)', offset: 1 })
 ];
 
 export const throbAnimation = animation([
@@ -32,7 +32,7 @@ export const throbTrigger = trigger('throb', [
             throbAnimation,
             // Angular blocks child animations while a parent's animations are running,
             // so they need to be manually triggered
-            query('@*', animateChild(), {optional: true})
+            query('@*', animateChild(), { optional: true })
         ])
     )
 ]);

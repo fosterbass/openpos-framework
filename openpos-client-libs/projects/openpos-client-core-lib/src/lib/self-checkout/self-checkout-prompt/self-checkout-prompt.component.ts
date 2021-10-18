@@ -3,7 +3,7 @@ import { Component, ViewChild } from '@angular/core';
 import { ScreenComponent } from '../../shared/decorators/screen-component.decorator';
 import { IOptionItem } from '../../core/interfaces/option-item.interface';
 import { SelfCheckoutPromptInterface } from './self-checkout-prompt.interface';
-import { PosScreen } from '../../screens-with-parts/pos-screen/pos-screen.component';
+import { PosScreenDirective } from '../../screens-with-parts/pos-screen/pos-screen.component';
 import { PromptFormPartComponent } from '../../shared/screen-parts/prompt-form-part/prompt-form-part.component';
 
 
@@ -15,7 +15,7 @@ import { PromptFormPartComponent } from '../../shared/screen-parts/prompt-form-p
     templateUrl: './self-checkout-prompt.component.html',
     styleUrls: ['./self-checkout-prompt.component.scss']
 })
-export class SelfCheckoutPromptComponent extends PosScreen<SelfCheckoutPromptInterface> {
+export class SelfCheckoutPromptComponent extends PosScreenDirective<SelfCheckoutPromptInterface> {
 
     @ViewChild(PromptFormPartComponent, { static: true }) private promptForm: PromptFormPartComponent;
     public optionItems: IOptionItem[];

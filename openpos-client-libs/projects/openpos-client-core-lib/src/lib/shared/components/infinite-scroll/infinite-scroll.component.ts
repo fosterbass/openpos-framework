@@ -1,6 +1,6 @@
-import {Component, ElementRef, Input, OnInit, Renderer2, TemplateRef} from '@angular/core';
-import {UIDataMessageService} from '../../../core/ui-data-message/ui-data-message.service';
-import {InfiniteScrollDatasource} from './infinite-scroll-datasource';
+import { Component, ElementRef, Input, OnInit, Renderer2, TemplateRef } from '@angular/core';
+import { UIDataMessageService } from '../../../core/ui-data-message/ui-data-message.service';
+import { InfiniteScrollDatasource } from './infinite-scroll-datasource';
 
 /**
  * This component uses the UIDataMessageService to implement 'Infinite Scroll'. When the viewable area gets close to the
@@ -30,7 +30,7 @@ export class InfiniteScrollComponent<T> implements OnInit {
    * the buffer we fetch more
    */
   @Input()
-  dataLoadBuffer: number = 1;
+  dataLoadBuffer = 1;
 
   /**
    * Template to apply to each item
@@ -40,7 +40,7 @@ export class InfiniteScrollComponent<T> implements OnInit {
 
   /**
    * Template to use when there are no items
-    */
+   */
   @Input()
   noItemsTemplate: TemplateRef<T>;
 
@@ -52,7 +52,7 @@ export class InfiniteScrollComponent<T> implements OnInit {
 
   /**
    * How far away from the edge of the viewable area do we render content.
-    */
+   */
   @Input()
   virtualScrollMaxBufferPx: number;
 
@@ -71,21 +71,21 @@ export class InfiniteScrollComponent<T> implements OnInit {
 
   dataSource: InfiniteScrollDatasource<T>;
 
-  constructor( private dataMessageService: UIDataMessageService, private el: ElementRef, private renderer: Renderer2 ) {
+  constructor(private dataMessageService: UIDataMessageService, private el: ElementRef, private renderer: Renderer2) {
 
   }
 
   ngOnInit(): void {
     this.dataSource = new InfiniteScrollDatasource<T>(
-        this.dataMessageService.getData$(this.dataKey),
-        () => this.dataMessageService.requestMoreData(this.dataKey),
-        this.dataLoadBuffer);
-    this.dataSource.dataLoaded.subscribe( loaded => {
-      if( loaded ){
+      this.dataMessageService.getData$(this.dataKey),
+      () => this.dataMessageService.requestMoreData(this.dataKey),
+      this.dataLoadBuffer);
+    this.dataSource.dataLoaded.subscribe(loaded => {
+      if (loaded) {
         this.renderer.addClass(this.el.nativeElement, 'data-loaded');
       } else {
         this.renderer.removeClass(this.el.nativeElement, 'data-loaded');
       }
-    })
+    });
   }
 }

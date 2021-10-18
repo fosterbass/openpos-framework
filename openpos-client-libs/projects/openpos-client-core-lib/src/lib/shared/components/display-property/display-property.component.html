@@ -1,25 +1,25 @@
 <ng-container [ngSwitch]="alignmentType">
-    <div    *ngSwitchCase="DisplayPropertyAlignment.column" 
+    <div    *ngSwitchCase="displayPropertyAlignment.column" 
             class="display-property column"
             gdAreas="label value"
             gdColumns="1fr 1fr">
         <span gdArea="label" class="display-property-label column">{{property.label}}</span>
         <span gdArea="value" *ngIf="property.value" class="display-property-value column">{{property.value | valueFormatter: property.valueFormatter}}</span>
     </div>
-    <div *ngSwitchCase="DisplayPropertyAlignment.column_end" 
+    <div *ngSwitchCase="displayPropertyAlignment.column_end" 
         class="display-property column"
         gdAreas="label value"
         gdColumns="1fr auto">
         <span gdArea="label" class="display-property-label vertical">{{property.label}}</span>
         <span gdArea="value" *ngIf="property.value"  class="display-property-value vertical">{{property.value | valueFormatter: property.valueFormatter}}</span>
     </div>
-    <div *ngSwitchCase="DisplayPropertyAlignment.vertical" 
+    <div *ngSwitchCase="displayPropertyAlignment.vertical" 
         class="display-property vertical"
         gdAreas="label | value">
         <span gdArea="label" class="display-property-label vertical">{{property.label}}</span>
         <span gdArea="value" *ngIf="property.value"  class="display-property-value vertical">{{property.value | valueFormatter: property.valueFormatter}}</span>
     </div>
-    <div *ngSwitchCase="DisplayPropertyAlignment.colon" 
+    <div *ngSwitchCase="displayPropertyAlignment.colon" 
             class="display-property colon"
             gdAreas="label value"
             gdGap="4px"
@@ -27,7 +27,7 @@
         <span gdArea="label" class="display-property-label colon">{{property.label}}</span>
         <span gdArea="value" *ngIf="property.value"  class="display-property-value colon">{{property.value | valueFormatter: property.valueFormatter}}</span>
     </div>
-    <div    *ngSwitchCase="DisplayPropertyAlignment.jagged"
+    <div    *ngSwitchCase="displayPropertyAlignment.jagged"
             class="display-property jagged"
             gdAreas="label value"
             gdColumns="auto 1fr"

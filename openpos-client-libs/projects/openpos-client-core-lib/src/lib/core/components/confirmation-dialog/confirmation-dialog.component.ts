@@ -1,5 +1,5 @@
-import {Component, HostListener} from '@angular/core';
-import {IConfirmationDialog} from '../../actions/confirmation-dialog.interface';
+import { Component, HostListener } from '@angular/core';
+import { IConfirmationDialog } from '../../actions/confirmation-dialog.interface';
 import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({

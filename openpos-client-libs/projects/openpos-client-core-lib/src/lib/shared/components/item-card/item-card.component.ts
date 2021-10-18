@@ -4,11 +4,10 @@ import { SessionService } from '../../../core/services/session.service';
 import { IActionItem } from '../../../core/actions/action-item.interface';
 import { ActionService } from '../../../core/actions/action.service';
 import { Subscription } from 'rxjs';
-import { Configuration } from '../../../configuration/configuration';
+import { CONFIGURATION } from '../../../configuration/configuration';
 import { KeyPressProvider } from '../../providers/keypress.provider';
 import { KeyboardClassKey } from '../../../keyboard/enums/keyboard-class-key.enum';
 import { KebabLabelButtonComponent } from '../kebab-label-button/kebab-label-button.component';
-
 
 @Component({
   selector: 'app-item-card',
@@ -17,7 +16,7 @@ import { KebabLabelButtonComponent } from '../kebab-label-button/kebab-label-but
 })
 export class ItemCardComponent implements OnDestroy {
 
-  private _item:ISellItem;
+  private _item: ISellItem;
 
   @Input() set item(item: ISellItem) {
     this._item = item;
@@ -50,17 +49,17 @@ export class ItemCardComponent implements OnDestroy {
   @ViewChild('kebab') kebab: KebabLabelButtonComponent;
   buttonSubscription: Subscription;
 
-  constructor(public actionService: ActionService, public session: SessionService,  protected keyPresses: KeyPressProvider) {
+  constructor(public actionService: ActionService, public session: SessionService, protected keyPresses: KeyPressProvider) {
     this.createSubscription();
   }
 
   public createSubscription() {
-    this.buttonSubscription = this.keyPresses.subscribe( KeyboardClassKey.Space, 1, (event: KeyboardEvent) => {
+    this.buttonSubscription = this.keyPresses.subscribe(KeyboardClassKey.Space, 1, (event: KeyboardEvent) => {
       // ignore repeats and check configuration
-      if ( event.repeat || event.type !== 'keydown' || !Configuration.enableKeybinds) {
+      if (event.repeat || event.type !== 'keydown' || !CONFIGURATION.enableKeybinds) {
         return;
       }
-      if ( event.type === 'keydown' && this.expanded) {
+      if (event.type === 'keydown' && this.expanded) {
         if (this.item.menuItems.length > 1) {
           this.kebab.openKebabMenu();
         } else {
@@ -91,7 +90,7 @@ export class ItemCardComponent implements OnDestroy {
   @HostListener('mouseenter')
   onMouseEnter() {
     if (this.enableHover) {
-     this.hover = true;
+      this.hover = true;
     }
   }
 

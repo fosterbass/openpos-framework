@@ -1,6 +1,6 @@
 import { DialogComponent } from '../../shared/decorators/dialog-component.decorator';
 import { Component } from '@angular/core';
-import { PosScreen } from '../pos-screen/pos-screen.component';
+import { PosScreenDirective } from '../pos-screen/pos-screen.component';
 import { OptionsInterface } from './options.interface';
 
 @DialogComponent({
@@ -11,7 +11,7 @@ import { OptionsInterface } from './options.interface';
   templateUrl: './options-screen-dialog.component.html',
   styleUrls: ['./options-screen-dialog.component.scss']
 })
-export class OptionsScreenDialogComponent extends PosScreen<OptionsInterface> {
+export class OptionsScreenDialogComponent extends PosScreenDirective<OptionsInterface> {
 
   buildScreen() {
   }

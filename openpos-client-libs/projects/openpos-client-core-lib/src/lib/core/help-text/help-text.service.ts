@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, combineLatest} from 'rxjs';
+import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
 import { IMessageHandler } from '../interfaces/message-handler.interface';
 import { SessionService } from '../services/session.service';
 import { map, distinctUntilChanged } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root',
-  })
+})
 export class HelpTextService implements IMessageHandler<any> {
     private opened$: BehaviorSubject<boolean>;
     private text$: BehaviorSubject<string>;
@@ -20,8 +20,10 @@ export class HelpTextService implements IMessageHandler<any> {
         this.text$ = new BehaviorSubject<string>(null);
         this.initialized$ = new BehaviorSubject<boolean>(false);
         this.hasText$ = this.text$.pipe(map(text => !!text));
-        this.available$ = combineLatest(this.hasText$, this.initialized$, (one, two) => one && two);
-        this.showSideNav$ = combineLatest(this.hasText$, this.opened$, (one, two) => one && two);
+        this.available$ = combineLatest([this.hasText$, this.initialized$])
+            .pipe(map((items: boolean[]) => items.every((item: boolean) => item)));
+        this.showSideNav$ = combineLatest([this.hasText$, this.opened$])
+            .pipe(map((items: boolean[]) => items.every((item: boolean) => item)));
     }
 
     handle(message: any) {
@@ -50,19 +52,19 @@ export class HelpTextService implements IMessageHandler<any> {
         this.opened$.next(!this.opened$.getValue());
     }
 
-    public isOpened() : Observable<boolean> {
+    public isOpened(): Observable<boolean> {
         return this.opened$;
     }
 
-    public getText() : Observable<string> {
+    public getText(): Observable<string> {
         return this.text$.pipe(distinctUntilChanged());
     }
 
-    public isAvailable() : Observable<boolean> {
+    public isAvailable(): Observable<boolean> {
         return this.available$;
     }
 
-    public isSideNavViewable() : Observable<boolean> {
+    public isSideNavViewable(): Observable<boolean> {
         return this.showSideNav$;
     }
 }

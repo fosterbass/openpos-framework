@@ -29,25 +29,25 @@ export class DynamicFormControlComponent implements AfterViewInit {
   @Input() submitButton: IActionItem;
 
   constructor(
-      public screenService: ScreenService,
-      private formBuilder: FormBuilder,
-      private actionService: ActionService) {}
+    public screenService: ScreenService,
+    private formBuilder: FormBuilder,
+    private actionService: ActionService) { }
 
   @Input()
   get screenForm(): IForm {
     return this._screenForm;
   }
 
-  set screenForm( screenForm: IForm) {
+  set screenForm(screenForm: IForm) {
     this._screenForm = screenForm;
     this.buttons = new Array<IFormElement>();
 
     this.form = this.formBuilder.group(screenForm);
 
     screenForm.formElements.forEach(element => {
-        if (element.elementType === 'Button') {
+      if (element.elementType === 'Button') {
         this.buttons.push(element);
-        }
+      }
     });
 
   }
@@ -57,7 +57,7 @@ export class DynamicFormControlComponent implements AfterViewInit {
     return this._alternateSubmitActions;
   }
 
-  set alternateSubmitActions( actions: string[] ) {
+  set alternateSubmitActions(actions: string[]) {
     this._alternateSubmitActions = actions;
     if (actions) {
       actions.forEach(action => {
@@ -70,7 +70,7 @@ export class DynamicFormControlComponent implements AfterViewInit {
             // Show errors for each of the fields where necessary
             Object.keys(this.form.controls).forEach(f => {
               const control = this.form.get(f);
-              control.markAsTouched({onlySelf: true});
+              control.markAsTouched({ onlySelf: true });
             });
             throw Error('form is invalid');
           }
@@ -86,13 +86,13 @@ export class DynamicFormControlComponent implements AfterViewInit {
   }
 
   public display(delay: number) {
-    const nonReadonlyChildren = this.children.filter( child => {
-         return child.isReadOnly() === false;
-      });
+    const nonReadonlyChildren = this.children.filter(child => {
+      return child.isReadOnly() === false;
+    });
 
-      if ( nonReadonlyChildren.length > 0 ) {
-        setTimeout(() => nonReadonlyChildren[0].focus(), delay);
-      }
+    if (nonReadonlyChildren.length > 0) {
+      setTimeout(() => nonReadonlyChildren[0].focus(), delay);
+    }
   }
 
   submitForm() {
@@ -100,36 +100,36 @@ export class DynamicFormControlComponent implements AfterViewInit {
       this.formBuilder.buildFormPayload(this.form, this._screenForm);
       this.actionService.doAction(this.submitButton, this._screenForm);
     } else {
-        // Set focus on the first invalid field found
-        const invalidFieldKey = Object.keys(this.form.controls).find(key => {
-            const ctrl: AbstractControl = this.form.get(key);
-            return ctrl.invalid && ctrl.dirty;
-        });
-        if (invalidFieldKey) {
-            const invalidField = this.children.find(f => f.controlName === invalidFieldKey).field;
-            if (invalidField) {
-                const invalidElement = document.getElementById(invalidFieldKey);
-                if (invalidElement) {
-                    invalidElement.scrollIntoView();
-                } else {
-                    invalidField.focus();
-                }
-            }
-        } else {
-            if (this.formErrors.shouldShowErrors()) {
-                const formErrorList = this.formErrors.listOfErrors();
-                if (formErrorList && formErrorList.length > 0) {
-                    document.getElementById('formErrorsWrapper').scrollIntoView();
-                }
-            }
+      // Set focus on the first invalid field found
+      const invalidFieldKey = Object.keys(this.form.controls).find(key => {
+        const ctrl: AbstractControl = this.form.get(key);
+        return ctrl.invalid && ctrl.dirty;
+      });
+      if (invalidFieldKey) {
+        const invalidField = this.children.find(f => f.controlName === invalidFieldKey).field;
+        if (invalidField) {
+          const invalidElement = document.getElementById(invalidFieldKey);
+          if (invalidElement) {
+            invalidElement.scrollIntoView();
+          } else {
+            invalidField.focus();
+          }
         }
+      } else {
+        if (this.formErrors.shouldShowErrors()) {
+          const formErrorList = this.formErrors.listOfErrors();
+          if (formErrorList && formErrorList.length > 0) {
+            document.getElementById('formErrorsWrapper').scrollIntoView();
+          }
+        }
+      }
     }
   }
 
   onFieldChanged(formElement: IFormElement) {
     if (formElement.valueChangedAction) {
-        this.formBuilder.buildFormPayload(this.form, this._screenForm);
-        this.actionService.doAction(formElement.valueChangedAction, this._screenForm );
+      this.formBuilder.buildFormPayload(this.form, this._screenForm);
+      this.actionService.doAction(formElement.valueChangedAction, this._screenForm);
     }
   }
 
@@ -138,4 +138,3 @@ export class DynamicFormControlComponent implements AfterViewInit {
     this.actionService.doAction(actionItem, null);
   }
 }
-

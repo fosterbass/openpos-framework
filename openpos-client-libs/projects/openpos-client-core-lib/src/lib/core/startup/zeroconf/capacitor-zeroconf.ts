@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import * as CAP from '@ionic-native/zeroconf';
-import { Observable, of } from "rxjs";
+import { Observable, of } from 'rxjs';
 import { CapacitorService } from '../../services/capacitor.service';
-import { Zeroconf, ZeroconfResult } from "./zeroconf";
+import { Zeroconf, ZeroconfResult } from './zeroconf';
 
 @Injectable()
 export class CapacitorZeroconf implements Zeroconf {
-    constructor(private capacitorService: CapacitorService) {}
-    
+    constructor(private capacitorService: CapacitorService) { }
+
     isAvailable(): Observable<boolean> {
         return of(this.capacitorService.isRunningInCapacitor());
     }

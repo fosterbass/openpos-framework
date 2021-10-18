@@ -1,6 +1,6 @@
-import {IAbstractScreen} from '../../../core/interfaces/abstract-screen.interface';
-import {IActionItem} from '../../../core/actions/action-item.interface';
-import {CustomerDetails} from '../../../shared/screen-parts/customer-information/customer-information.interface';
+import { IAbstractScreen } from '../../../core/interfaces/abstract-screen.interface';
+import { IActionItem } from '../../../core/actions/action-item.interface';
+import { CustomerDetails } from '../../../shared/screen-parts/customer-information/customer-information.interface';
 
 export interface CustomerDetailsDialogInterface extends IAbstractScreen {
     message: string;

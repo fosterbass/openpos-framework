@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, ConnectableObservable } from 'rxjs';
 import { filter, map, publishBehavior, tap } from 'rxjs/operators';
-
 import { MessageTypes } from '../messages/message-types';
 import { SessionService } from '../services/session.service';
 import { PeripheralDeviceSelectionMessage } from '../messages/peripheral-device-selection';
@@ -24,7 +23,7 @@ export class PeripheralSelectionService {
             map(m => {
                 const devices = m.available;
 
-                return <PeripheralCategory> {
+                return {
                     id: m.category.id,
                     localizationKey: m.category.localizationDisplayKey,
                     icon: m.category.icon,
@@ -49,13 +48,13 @@ export class PeripheralSelectionService {
         let categoryName: string;
         let deviceId: string;
 
-        if (typeof(category) == 'string') {
+        if (typeof category === 'string') {
             categoryName = category as string;
         } else {
             categoryName = (category as PeripheralCategory).id;
         }
 
-        if (typeof(device) == 'string') {
+        if (typeof device === 'string') {
             deviceId = device as string;
         } else {
             deviceId = (device as PeripheralDevice).id;

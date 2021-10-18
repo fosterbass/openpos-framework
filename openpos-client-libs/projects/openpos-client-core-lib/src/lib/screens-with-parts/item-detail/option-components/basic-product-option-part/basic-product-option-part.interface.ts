@@ -1,5 +1,5 @@
-import {IActionItem} from '../../../../core/actions/action-item.interface';
-import {BasicOptionInterface} from './basic-option.interface';
+import { IActionItem } from '../../../../core/actions/action-item.interface';
+import { BasicOptionInterface } from './basic-option.interface';
 
 export interface BasicProductOptionPartInterface {
     optionName: string;

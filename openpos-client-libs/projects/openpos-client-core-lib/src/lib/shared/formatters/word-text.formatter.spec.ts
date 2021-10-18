@@ -1,5 +1,4 @@
-import { WordTextFormatter } from "./word-text.formatter";
-
+import { WordTextFormatter } from './word-text.formatter';
 
 describe('WordTextFormatter Test', () => {
     let formatter: WordTextFormatter;
@@ -11,7 +10,6 @@ describe('WordTextFormatter Test', () => {
         expect(formatter.allowKey('=', '=')).toBe(false);
         expect(formatter.allowKey('!', '!')).toBe(false);
         expect(formatter.allowKey('_', '_')).toBe(false);
-        
     });
 
     it('#ensure WordText characters are accepted as a keypress', () => {

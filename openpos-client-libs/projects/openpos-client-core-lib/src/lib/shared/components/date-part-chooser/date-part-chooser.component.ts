@@ -34,7 +34,7 @@ export class DatePartChooserComponent implements OnInit {
     }
 
     onDateChange($event: any) {
-        this.change.emit({month: this.month, dayOfMonth: this.dayOfMonth, year: this.year});
+        this.change.emit({ month: this.month, dayOfMonth: this.dayOfMonth, year: this.year });
     }
 
     get months() {
@@ -42,7 +42,7 @@ export class DatePartChooserComponent implements OnInit {
     }
 
     lastWeekMonthDays() {
-        return Array.from({length: (this.monthDays - 28)}, (v, k) => k + 29);
+        return Array.from({ length: (this.monthDays - 28) }, (v, k) => k + 29);
     }
 
     get monthDays() {

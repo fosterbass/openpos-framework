@@ -1,7 +1,7 @@
 import { registerPlugin, PluginListenerHandle } from '@capacitor/core';
 import { ScanDataType } from '../scanner';
 
-export const Scandit = registerPlugin<ScanditPlugin>('ScanditNative');
+export const scandit = registerPlugin<ScanditPlugin>('ScanditNative');
 
 export type ScanditEvents = 'scan';
 
@@ -41,12 +41,16 @@ export interface ScanditScanData {
 }
 
 export interface InitializeArguments {
-    apiKey: string
+    apiKey: string;
 }
 
-export interface AddViewArguments { }
+export interface AddViewArguments {
+    [x: string]: any;
+}
 
-export interface RemoveViewArguments { }
+export interface RemoveViewArguments {
+    [x: string]: any;
+}
 
 export interface ScanditViewConstraints {
     left: number;

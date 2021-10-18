@@ -1,33 +1,33 @@
 import { Directive, HostListener, Input, Renderer2, ElementRef, OnDestroy } from '@angular/core';
-import { Configuration } from '../../configuration/configuration';
+import { CONFIGURATION } from '../../configuration/configuration';
 import { SessionService } from '../../core/services/session.service';
-import {fromEvent, merge, Subject} from 'rxjs';
-import {takeUntil, throttleTime} from 'rxjs/operators';
-
+import { fromEvent, merge, Subject } from 'rxjs';
+import { takeUntil, throttleTime } from 'rxjs/operators';
 
 @Directive({
     // tslint:disable-next-line:directive-selector
     selector: '[inactivityMonitor]'
 })
 export class InactivityMonitorDirective implements OnDestroy {
-    private destroyed$ = new Subject();
     static lastKeepAliveFlushTime: number = new Date().getTime();
+    private destroyed$ = new Subject();
     private eventThrottleTime = 500;
 
-    @Input() keepAliveMillis = Configuration.keepAliveMillis;
+    @Input() keepAliveMillis = CONFIGURATION.keepAliveMillis;
 
     constructor(private elRef: ElementRef, public renderer: Renderer2, private session: SessionService) {
-        if (Configuration.useTouchListener) {
+        if (CONFIGURATION.useTouchListener) {
             fromEvent(elRef.nativeElement, 'touchstart')
                 .pipe(takeUntil(this.destroyed$)).subscribe((event: TouchEvent) => this.touchEvent(event));
         }
 
         // Throttle events that can fire very rapidly to prevent too much unnecessary processing
-        const throttledEvents = merge (
+        const throttledEvents = merge(
             // Scroll events don't bubble, so we need to get them top-down to handle them globally
-            fromEvent(window, 'scroll', {capture: true}),
-            // Get mouse move event on capture, instead of bubble, so we'll still be notified if nested components stop propagation of event bubbling
-            fromEvent(window,'mousemove', {capture: true})
+            fromEvent(window, 'scroll', { capture: true }),
+            // Get mouse move event on capture, instead of bubble,
+            // so we'll still be notified if nested components stop propagation of event bubbling
+            fromEvent(window, 'mousemove', { capture: true })
         );
 
         throttledEvents.pipe(

@@ -9,11 +9,10 @@ export class PhoneCAValidator implements IValidator {
 
         if (ctrl.value) {
             return regex.test(ctrl.value) ? null : {
-                // tslint:disable-next-line:object-literal-key-quotes
-                'phone': {
+                phone: {
                     valid: false
                 }
-            } as any;
+            };
         } else {
             return null;
         }

@@ -15,9 +15,8 @@ export function RequireAtLeastOneValidatorFn(group: FormGroup) {
         }
     }
     return {
-        // tslint:disable-next-line:object-literal-key-quotes
-        'requireAtleastOne': {
+        requireAtleastOne: {
             valid: false
         }
-    } as any;
+    };
 }

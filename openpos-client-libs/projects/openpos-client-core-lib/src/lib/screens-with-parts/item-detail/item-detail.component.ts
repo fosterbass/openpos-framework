@@ -4,11 +4,11 @@ import { BuddyStoreInterface } from './buddy-store.interface';
 import { ItemDetailInterface } from './item-detail.interface';
 import { ScreenComponent } from '../../shared/decorators/screen-component.decorator';
 import { Component, Injector, Optional } from '@angular/core';
-import { PosScreen } from '../pos-screen/pos-screen.component';
+import { PosScreenDirective } from '../pos-screen/pos-screen.component';
 import { MediaBreakpoints, OpenposMediaService } from '../../core/media/openpos-media.service';
 import { Observable } from 'rxjs';
-import { BasicProductOptionPart } from './option-components/basic-product-option-part/basic-product-option-part';
-import { SwatchProductOptionPart } from './option-components/swatch-product-option-part/swatch-product-option-part.component';
+import { BasicProductOptionPartComponent } from './option-components/basic-product-option-part/basic-product-option-part';
+import { SwatchProductOptionPartComponent } from './option-components/swatch-product-option-part/swatch-product-option-part.component';
 import { ProductOptionInterface } from './product-option.interface';
 import { OPTION_NAME } from './item-detail-option';
 
@@ -20,7 +20,7 @@ import { OPTION_NAME } from './item-detail-option';
     templateUrl: './item-detail.component.html',
     styleUrls: ['./item-detail.component.scss'],
 })
-export class ItemDetailComponent extends PosScreen<ItemDetailInterface> {
+export class ItemDetailComponent extends PosScreenDirective<ItemDetailInterface> {
     isMobile: Observable<boolean>;
     carouselSize: string;
 
@@ -66,7 +66,7 @@ export class ItemDetailComponent extends PosScreen<ItemDetailInterface> {
 
         this.buddyStores$ = this.dataMessageService.getData$(this.screen.buddyStoreProviderKey);
         this.buddyStoresOnline$ = this.buddyStores$
-            .pipe(map(stores => stores != null && stores != undefined));
+            .pipe(map(stores => stores != null && stores !== undefined));
         this.inventoryMessage$ = this.dataMessageService.getData$(this.screen.inventoryMessageProviderKey)
             .pipe(map(value => value != null ? value[0] : null));
         this.screen.imageUrls = [].concat(this.screen.imageUrls);
@@ -75,9 +75,9 @@ export class ItemDetailComponent extends PosScreen<ItemDetailInterface> {
     getComponentFromOptionType(productOption: ProductOptionInterface) {
         switch (productOption.type) {
             case 'basicProductOption':
-                return BasicProductOptionPart;
+                return BasicProductOptionPartComponent;
             case 'swatchProductOption':
-                return SwatchProductOptionPart;
+                return SwatchProductOptionPartComponent;
         }
 
     }

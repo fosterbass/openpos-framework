@@ -1,10 +1,10 @@
 import { Component, Injector } from '@angular/core';
 import { HomeInterface } from './home.interface';
 import { ScreenComponent } from '../../shared/decorators/screen-component.decorator';
-import { PosScreen } from '../pos-screen/pos-screen.component';
+import { PosScreenDirective } from '../pos-screen/pos-screen.component';
 import { OpenposMediaService, MediaBreakpoints } from '../../core/media/openpos-media.service';
-import { Configuration } from '../../configuration/configuration';
-import { Observable, from, timer } from 'rxjs';
+import { CONFIGURATION } from '../../configuration/configuration';
+import { Observable, timer } from 'rxjs';
 import { IActionItem } from '../../core/actions/action-item.interface';
 import { INotificationItem } from '../../core/interfaces/notification-item.interface';
 import { trigger, state, style, transition, useAnimation } from '@angular/animations';
@@ -20,12 +20,11 @@ import { bounceAnimation } from '../../shared/animations/bounce.animation';
   styleUrls: ['./home.component.scss'],
   animations: [
     trigger('bounce', [
-      // ...
       state('move', style({
         transform: 'translateY(0)'
       })),
       transition('* => move', [
-        useAnimation( bounceAnimation, {
+        useAnimation(bounceAnimation, {
           params: {
             height: '100px',
             time: '2s'
@@ -35,16 +34,16 @@ import { bounceAnimation } from '../../shared/animations/bounce.animation';
     ]),
   ]
 })
-export class HomeComponent extends PosScreen<HomeInterface> {
+export class HomeComponent extends PosScreenDirective<HomeInterface> {
 
-  bounceInterval = timer(5000, 5000).pipe( map( i => i % 2 ? 'down' : 'move'));
+  bounceInterval = timer(5000, 5000).pipe(map(i => i % 2 ? 'down' : 'move'));
   gutterSize: Observable<number>;
   gridColumns: Observable<number>;
   isMobile: Observable<boolean>;
   iconClass: Observable<string>;
   badgeSize: Observable<string>;
 
-  constructor( media: OpenposMediaService, injector: Injector ) {
+  constructor(media: OpenposMediaService, injector: Injector) {
     super(injector);
     this.gridColumns = media.observe(new Map([
       [MediaBreakpoints.MOBILE_PORTRAIT, 1],
@@ -92,10 +91,10 @@ export class HomeComponent extends PosScreen<HomeInterface> {
     ]));
   }
 
-  buildScreen() {}
+  buildScreen() { }
 
   public keybindsEnabled() {
-    return Configuration.enableKeybinds;
+    return CONFIGURATION.enableKeybinds;
   }
 
   public getNotificationForButton(item: IActionItem): INotificationItem {

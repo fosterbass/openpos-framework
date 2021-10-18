@@ -1,5 +1,5 @@
-import {Component, Input, OnDestroy} from '@angular/core';
-import {Subscription} from 'rxjs';
+import { Component, Input, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { SessionService } from '../../../core/services/session.service';
 import { LocationService } from '../../../core/services/location.service';
 import { MatDialogRef, MatDialog } from '@angular/material/dialog';
@@ -11,7 +11,7 @@ import { LocationOverrideDialogComponent } from './location-override-dialog/loca
     styleUrls: ['./location-details.component.scss']
 })
 
-export class LocationDetailsComponent implements OnDestroy{
+export class LocationDetailsComponent implements OnDestroy {
 
     @Input()
     locationOverridePrompt: string;
@@ -44,7 +44,7 @@ export class LocationDetailsComponent implements OnDestroy{
                 }
             });
 
-            this.overrideDialogRef.afterClosed().subscribe( result => {
+            this.overrideDialogRef.afterClosed().subscribe(result => {
                 if (result) {
                     this.locationService.setLocationData(result);
                 }
@@ -53,7 +53,7 @@ export class LocationDetailsComponent implements OnDestroy{
     }
 
     ngOnDestroy(): void {
-        if(this.subscription){
+        if (this.subscription) {
             this.subscription.unsubscribe();
         }
     }

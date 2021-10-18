@@ -6,7 +6,6 @@ import org.jumpmind.pos.devices.model.DevicesRepository;
 import org.jumpmind.pos.persist.ITagProvider;
 import org.jumpmind.pos.util.clientcontext.ClientContext;
 import org.jumpmind.pos.util.event.DeviceConnectedEvent;
-import org.jumpmind.util.AppUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
@@ -17,14 +16,10 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.StreamSupport;
-import java.util.Objects;
 
-import static org.apache.commons.lang3.StringUtils.*;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Slf4j
 @Component
@@ -89,15 +84,9 @@ public class DeviceUpdater implements ApplicationListener<DeviceConnectedEvent> 
             updateDevice(devicesRepository.getDevice(event.getDeviceId()));
             log.info("A device just connected.  Updated the device model in the database. {}-{}", event.getDeviceId(), event.getAppId());
             if (cacheManager != null) {
-                if(Objects.nonNull(cacheManager.getCache("/context/config"))) {
-                    cacheManager.getCache("/context/config").clear();
-                }
-                if(Objects.nonNull(cacheManager.getCache("/devices/device"))) {
-                    cacheManager.getCache("/devices/device").clear();
-                }
-                if(Objects.nonNull(cacheManager.getCache("/context/buttons"))) {
-                    cacheManager.getCache("/context/buttons").clear();
-                }
+                Objects.requireNonNull(cacheManager.getCache("/context/config")).clear();
+                Objects.requireNonNull(cacheManager.getCache("/devices/device")).clear();
+                Objects.requireNonNull(cacheManager.getCache("/context/buttons")).clear();
             }
         } catch (DeviceNotFoundException ex) {
             // ignore

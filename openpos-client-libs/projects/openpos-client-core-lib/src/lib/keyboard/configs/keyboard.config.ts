@@ -15,12 +15,12 @@ export class MatKeyboardConfig {
   /** The length of time in milliseconds to wait before automatically dismissing the keyboard after blur. */
   duration ? = 0;
 
-  /** Enable a dark keyboard **/
+  /** Enable a dark keyboard */
   darkTheme ? = null;
 
-  /** Enable the debug view **/
+  /** Enable the debug view */
   isDebug ? = false;
 
-  /** Enable the debug view **/
+  /** Enable the debug view. */
   ngControl?: NgControl;
 }

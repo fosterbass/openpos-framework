@@ -1,4 +1,3 @@
-
 export interface IDevice {
     deviceId?: string;
     appId?: string;

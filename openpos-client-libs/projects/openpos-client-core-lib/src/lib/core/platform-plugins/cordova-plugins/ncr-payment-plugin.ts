@@ -1,5 +1,5 @@
 import { IPlatformPlugin } from '../platform-plugin.interface';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subscriber } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { SessionService } from '../../services/session.service';
 import { Injectable } from '@angular/core';
@@ -11,7 +11,7 @@ import { MessageTypes } from '../../messages/message-types';
 })
 export class NCRPaymentPlugin implements IPlatformPlugin {
 
-    private NCRCordovaPlugin;
+    private ncrCordovaPlugin;
 
     constructor(private sessionService: SessionService) { }
 
@@ -24,10 +24,10 @@ export class NCRPaymentPlugin implements IPlatformPlugin {
     }
 
     initialize(): Observable<string> {
-        return Observable.create((initialized: Subject<string>) => {
+        return new Observable((initialized: Subscriber<string>) => {
             // tslint:disable-next-line:no-string-literal
-            this.NCRCordovaPlugin = window['NCRCordovaPlugin'];
-            if (!this.NCRCordovaPlugin) {
+            this.ncrCordovaPlugin = window['NCRCordovaPlugin'];
+            if (!this.ncrCordovaPlugin) {
                 initialized.error(`Tried to initialize plugin ${this.name()} which is not present`);
             }
 
@@ -44,7 +44,7 @@ export class NCRPaymentPlugin implements IPlatformPlugin {
 
     forwardMessage(message: any) {
         if (message.action === 'ProcessMessage') {
-            this.NCRCordovaPlugin.processMessage(message.payload,
+            this.ncrCordovaPlugin.processMessage(message.payload,
                 response => { this.handleSuccess(message, response); },
                 response => { this.handleError(message, response); }
             );
@@ -52,7 +52,7 @@ export class NCRPaymentPlugin implements IPlatformPlugin {
     }
 
     handleSuccess(message: any, response: string) {
-        const responseMessage = new ActionMessage('response', true,{ messageId: message.messageId, payload: response, success: true });
+        const responseMessage = new ActionMessage('response', true, { messageId: message.messageId, payload: response, success: true });
         responseMessage.type = MessageTypes.PROXY;
         this.sessionService.sendMessage(responseMessage);
         console.log('SUCCESSFUL RESPONSE: ' + response);

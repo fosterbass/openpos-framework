@@ -13,7 +13,7 @@ export function _applyConfigDefaults(config: MatKeyboardConfig): MatKeyboardConf
 
 /**
  * Applies available layouts.
- * @param layouts
+ * layouts
  */
 export function _applyAvailableLayouts(layouts: IKeyboardLayouts): ILocaleMap {
   const _availableLocales: ILocaleMap = {};

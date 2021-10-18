@@ -1,9 +1,9 @@
-import {Injectable, OnDestroy} from '@angular/core';
-import {MediaObserver} from '@angular/flex-layout';
-import {BreakpointObserver, BreakpointState} from '@angular/cdk/layout';
-import {BehaviorSubject, merge, Observable, Subject} from 'rxjs';
-import {debounceTime, filter, map, startWith, takeUntil, tap} from 'rxjs/operators';
-import {SessionService} from '../services/session.service';
+import { Injectable, OnDestroy } from '@angular/core';
+import { MediaObserver } from '@angular/flex-layout';
+import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
+import { BehaviorSubject, merge, Observable, Subject } from 'rxjs';
+import { debounceTime, filter, map, startWith, takeUntil, tap } from 'rxjs/operators';
+import { SessionService } from '../services/session.service';
 
 export class MediaBreakpoints {
     static MOBILE_PORTRAIT = 'mobile-portrait';
@@ -36,7 +36,7 @@ clientConfiguration:
                'desktop-portrait': '(min-width: 840px) and (orientation: portrait)'
                'desktop-landscape': '(min-width: 1280px) and (orientation: landscape)'
                'small-desktop-portrait': '(min-width: 768px) and (max-width: 768px) and (orientation: portrait)'
-               'small-desktop-landscape': '(min-width: 1366px) and (max-width: 1366px) and (orientation: landscape)'    
+               'small-desktop-landscape': '(min-width: 1366px) and (max-width: 1366px) and (orientation: landscape)'
 `;
 
 /*

@@ -1,7 +1,6 @@
 import { Directive, ElementRef, Output, EventEmitter, AfterViewInit, OnDestroy, Input } from '@angular/core';
-import { Configuration } from '../../configuration/configuration';
+import { CONFIGURATION } from '../../configuration/configuration';
 declare var google: any;
-
 
 @Directive({
     // tslint:disable-next-line:directive-selector
@@ -9,11 +8,11 @@ declare var google: any;
 })
 export class AutoCompleteAddressDirective implements AfterViewInit, OnDestroy {
 
-    @Output() onSelect: EventEmitter<any> = new EventEmitter();
+    @Output() select: EventEmitter<GoogleAddress> = new EventEmitter();
     @Input() minSearchLength = 3;
 
     private element: HTMLInputElement;
-    private loadAPIPromise: Promise<any>;
+    private loadAPIPromise: Promise<void>;
     private listenerAdded = false;
 
     private suggestions: Element;
@@ -28,7 +27,7 @@ export class AutoCompleteAddressDirective implements AfterViewInit, OnDestroy {
         }
     }
 
-    ngAfterViewInit() {
+    ngAfterViewInit(): void {
         if (!this.element) {
             const input = this.elRef.nativeElement.querySelector('input');
             if (input && input instanceof HTMLInputElement) {
@@ -47,36 +46,36 @@ export class AutoCompleteAddressDirective implements AfterViewInit, OnDestroy {
         this.addListener();
     }
 
-    getFormattedAddress(place: any) {
-        const address = {};
+    getFormattedAddress(place: any): GoogleAddress {
+        const address = {} as GoogleAddress;
         if (place) {
             // Formatted Address
-            address['formatted_address'] = place.formatted_address;
+            address.formatted_address = place.formatted_address;
 
             if (place.address_components) {
                 for (const item of place.address_components) {
                     if (item.types) {
                         if (item.types.indexOf('locality') > -1) {
                             // City / US Locality
-                            address['locality'] = item['long_name'];
+                            address.locality = item.long_name;
                         } else if (item.types.indexOf('postal_town') > -1) {
                             // City / Foreign Locality
-                            address['locality'] = item['long_name'];
+                            address.locality = item.long_name;
                         } else if (item.types.indexOf('administrative_area_level_1') > -1) {
                             // State
-                            address['state'] = item['long_name'];
+                            address.state = item.long_name;
                         } else if (item.types.indexOf('street_number') > -1) {
                             // Street Number
-                            address['streetNumber'] = item['short_name'];
+                            address.streetNumber = item.short_name;
                         } else if (item.types.indexOf('route') > -1) {
                             // Street Name / Route
-                            address['streetName'] = item['long_name'];
+                            address.streetName = item.long_name;
                         } else if (item.types.indexOf('country') > -1) {
                             // Country
-                            address['country'] = item['long_name'];
+                            address.country = item.long_name;
                         } else if (item.types.indexOf('postal_code') > -1) {
                             // Postal Code
-                            address['postalCode'] = item['short_name'];
+                            address.postalCode = item.short_name;
                         }
                     }
                 }
@@ -85,8 +84,8 @@ export class AutoCompleteAddressDirective implements AfterViewInit, OnDestroy {
         return address;
     }
 
-    attachScript() {
-        const key = Configuration.googleApiKey;
+    attachScript(): Promise<void> {
+        const key = CONFIGURATION.googleApiKey;
         if (!key) {
             return Promise.reject('No Google API Key provided');
         }
@@ -103,7 +102,7 @@ export class AutoCompleteAddressDirective implements AfterViewInit, OnDestroy {
         script.id = this.SCRIPT_ID;
         script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places&callback=${this.CALLBACK_NAME}`;
 
-        const loadAPI = new Promise<void>((resolve: Function, reject: Function) => {
+        const loadAPI = new Promise<void>((resolve: () => void, reject: (error: Event) => void) => {
             window[this.CALLBACK_NAME] = () => {
                 resolve();
             };
@@ -118,7 +117,7 @@ export class AutoCompleteAddressDirective implements AfterViewInit, OnDestroy {
         return loadAPI;
     }
 
-    handleInputChange() {
+    handleInputChange(): void {
         // This method is a workaround for supporting minimum search length (unsupported by Google API)
         if (this.element.value && this.element.value.length >= this.minSearchLength && !this.listenerAdded) {
             // If the input meets minimum length, add the auto complete listener
@@ -129,7 +128,7 @@ export class AutoCompleteAddressDirective implements AfterViewInit, OnDestroy {
         }
     }
 
-    addListener() {
+    addListener(): void {
         if (this.loadAPIPromise) {
             this.loadAPIPromise.then(() => {
                 console.log('Adding auto complete listener');
@@ -144,7 +143,7 @@ export class AutoCompleteAddressDirective implements AfterViewInit, OnDestroy {
         }
     }
 
-    removeListener() {
+    removeListener(): void {
         console.log('Removing auto complete listener');
         google.maps.event.clearListeners(this.element);
 
@@ -157,7 +156,7 @@ export class AutoCompleteAddressDirective implements AfterViewInit, OnDestroy {
         this.listenerAdded = false;
     }
 
-    showSuggestions() {
+    showSuggestions(): void {
         if (this.suggestions) {
             console.log('Showing search suggestions');
 
@@ -166,7 +165,7 @@ export class AutoCompleteAddressDirective implements AfterViewInit, OnDestroy {
         }
     }
 
-    hideSuggestions() {
+    hideSuggestions(): void {
         // Remove the suggestions box
         const suggestions = document.querySelector('.pac-container');
         if (suggestions) {
@@ -177,7 +176,7 @@ export class AutoCompleteAddressDirective implements AfterViewInit, OnDestroy {
         this.listenerAdded = false;
     }
 
-    initAutoComplete() {
+    initAutoComplete(): void {
         // Restrict search predictions to adresses
         const autocomplete = new google.maps.places.Autocomplete(this.element, { types: ['address'] });
 
@@ -189,7 +188,7 @@ export class AutoCompleteAddressDirective implements AfterViewInit, OnDestroy {
             // Emit the new address object for the updated place
             const place = autocomplete.getPlace();
             const address = this.getFormattedAddress(place);
-            this.onSelect.emit(address);
+            this.select.emit(address);
         });
 
         return autocomplete;
@@ -204,4 +203,14 @@ export class AutoCompleteAddressDirective implements AfterViewInit, OnDestroy {
         this.listenerAdded = false;
     }
 
+}
+
+export interface GoogleAddress {
+    formatted_address: string;
+    locality: string;
+    state: string;
+    streetNumber: string;
+    streetName: string;
+    country: string;
+    postalCode: string;
 }
