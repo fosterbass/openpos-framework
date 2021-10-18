@@ -244,6 +244,10 @@ public class WrapperConfig {
         return new File(pendingFileLocation);
     }
 
+    public String getBuisnessUnitId() {
+        return getProperty(properties, "wrapper.buisnessunitid", null);
+    }
+
     String expandWildcard(String classPath) {
         int index = classPath.indexOf("*");
         if (index != -1) {
@@ -320,7 +324,7 @@ public class WrapperConfig {
         return properties;
     }
 
-    private final Pattern expressionPattern = Pattern.compile("\\$\\{(?<expression>[\\w\\+\\-\\/\\*\\(\\)\\s\\'\\\"]+)\\}");
+    private final Pattern expressionPattern = Pattern.compile("\\$\\{(?<expression>[\\w\\+\\-\\/\\*\\(\\)\\s\\'\\\"\\.\\,]+)\\}");
     String doTokenReplacementOnValue(String value) {
         final Matcher matcher = expressionPattern.matcher(value);
 

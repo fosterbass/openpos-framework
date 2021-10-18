@@ -11,6 +11,10 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -21,6 +25,9 @@ import org.jumpmind.pos.wrapper.Constants.Status;
 
 import com.sun.jna.Platform;
 import org.update4j.Archive;
+import org.update4j.Configuration;
+import org.update4j.UpdateOptions;
+import org.update4j.service.UpdateHandler;
 
 public abstract class WrapperService {
 
@@ -54,6 +61,8 @@ public abstract class WrapperService {
         if (isRunning()) {
             throw new WrapperException(Constants.RC_SERVER_ALREADY_RUNNING, 0, "Server is already running");
         }
+
+        tryAutoUpdate();
 
         System.out.println("Waiting for server to start");
         ArrayList<String> cmdLine = getWrapperCommand("exec");
@@ -421,21 +430,76 @@ public abstract class WrapperService {
             return;
         }
 
-// todo: need installation id which depends on some configuration scripting.
-//        String endpoint = StringUtils.stripEnd(server, "/");
-//        endpoint += "/update/installation/" + INSTALLATIONDEVICEID;
-//
-//
-//        final URL url;
-//
-//        try {
-//            url = new URL(endpoint);
-//        } catch (MalformedURLException ex) {
-//            System.err.println("invalid url '" + endpoint + "'; cannot update from server...");
-//            return;
-//        }
-//
-//        System.out.println("looking for updates at '" + endpoint + "'");
+        String deviceId = config.getBuisnessUnitId();
+
+        if (deviceId == null) {
+            return;
+        }
+
+        String endpoint = StringUtils.stripEnd(server, "/");
+        endpoint += "/update/installation/" + deviceId;
+
+
+        final URL url;
+
+        try {
+            url = new URL(endpoint);
+        } catch (MalformedURLException ex) {
+            System.err.println("invalid url '" + endpoint + "'; cannot update from server...");
+            return;
+        }
+
+        System.out.println("looking for updates at '" + endpoint + "'");
+
+        final URLConnection connection;
+
+        try {
+            connection = url.openConnection();
+        } catch (IOException ignored) {
+            System.err.println("failed to download update from server");
+            return;
+        }
+
+        connection.setConnectTimeout(10 * 1000);
+        connection.setReadTimeout(10 * 1000);
+
+        Configuration configuration;
+
+        try {
+            try (final InputStreamReader reader = new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8)) {
+                configuration = Configuration.read(reader);
+            }
+
+            configuration = configuration.sync(config.getWorkingDirectory().toPath());
+
+            if (!configuration.requiresUpdate()) {
+                return;
+            }
+        } catch (IOException ignored) {
+            System.err.println("failed to download update manifest");
+            return;
+        }
+
+        final Path tempFile;
+
+        try {
+            tempFile = Files.createTempFile("jmc", ".zip");
+        } catch (IOException ignored) {
+            System.err.println("failed to install update; cannot create temp file where update will be download to");
+            return;
+        }
+
+        // let update4js create the file otherwise it won't download anything
+        tempFile.toFile().delete();
+
+        configuration.update(UpdateOptions.archive(tempFile).updateHandler(new UpdateHandler() {
+        }));
+
+        try {
+            Archive.read(tempFile).install(true);
+        } catch (IOException ex) {
+            System.err.println("failed to install update: " + ex.getMessage());
+        }
     }
 
     private static String getStackTrace(Throwable throwable) {
