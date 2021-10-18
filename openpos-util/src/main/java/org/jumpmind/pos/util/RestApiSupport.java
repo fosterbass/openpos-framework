@@ -131,7 +131,7 @@ public final class RestApiSupport {
     public static boolean isLegacyClient(final HttpServletRequest request) {
         String jmcVersion = request.getHeader("ClientContext-version.nu-commerce");
         if (jmcVersion == null || jmcVersion.isEmpty()) {
-            log.warn("request is missing ClientContext-version.nu-commerce header");
+            log.debug("request is missing ClientContext-version.nu-commerce header");
             return false;
         }
         String[] parts = jmcVersion.split("\\.");
