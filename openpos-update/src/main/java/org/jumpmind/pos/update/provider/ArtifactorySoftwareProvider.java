@@ -1,27 +1,29 @@
 package org.jumpmind.pos.update.provider;
 
-import com.google.cloud.storage.Blob;
-import com.google.cloud.storage.StorageOptions;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jfrog.artifactory.client.Artifactory;
 import org.jfrog.artifactory.client.ArtifactoryClientBuilder;
-import org.jfrog.artifactory.client.ArtifactoryRequest;
-import org.jfrog.artifactory.client.impl.ArtifactoryRequestImpl;
 import org.jfrog.artifactory.client.model.Folder;
+import org.jfrog.artifactory.client.model.Item;
 import org.jumpmind.pos.update.UpdateModule;
 import org.jumpmind.pos.update.versioning.Version;
 import org.jumpmind.pos.update.versioning.Versioning;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -31,27 +33,27 @@ import java.util.stream.Collectors;
 @Profile(UpdateModule.NAME)
 @Component
 @Lazy
+@Slf4j
 public class ArtifactorySoftwareProvider implements ISoftwareProvider{
 
-    @Value("${openpos.update.artifactory.url}")
+    @Value("${openpos.update.artifactorySoftwareProvider.url}")
     String artifactoryUrl;
     
-    @Value("${openpos.update.artifactory.repositoryName}")
+    @Value("${openpos.update.artifactorySoftwareProvider.repositoryName}")
     String repositoryName;
     
-    @Value("{openpos.update.artifactory.pathToFolder}")
+    @Value("${openpos.update.artifactorySoftwareProvider.pathToFolder}")
     String pathToFolder;
 
-    @Value("${openpos.update.googleCloudStorageSoftwareProvider.namePattern}")
+    @Value("${openpos.update.artifactorySoftwareProvider.namePattern}")
     String fileNamePattern;
 
-    @Value("${openpos.update.fileSystemSoftwareProvider.namePatternIgnoreCase:false}")
+    @Value("${openpos.update.artifactorySoftwareProvider.namePatternIgnoreCase:false}")
     boolean fileNamePatternIgnoresCase;
 
     Artifactory artifactory;
 
     private Pattern compiledFileNamePattern;
-
 
     @Autowired
     Versioning versionFactory;
@@ -73,20 +75,37 @@ public class ArtifactorySoftwareProvider implements ISoftwareProvider{
     @Override
     public List<Version> getAvailableVersions() {
         Folder folder = artifactory.repository(repositoryName).folder(pathToFolder).info();
-        return folder.getChildren().stream().map(item -> getVersionFromFile(item.getName())).collect(Collectors.toList());
+        return folder.getChildren().stream().map(item -> getVersionFromName(item.getName())).collect(Collectors.toList());
     }
 
     @Override
     public Version getLatestVersion() {
-        return getAvailableVersions().stream().max(Comparator.naturalOrder()).orElse(null);
+        return getAvailableVersions().stream()
+                .filter(version -> version != null)
+                .max(Comparator.naturalOrder())
+                .orElse(null);
     }
 
     @Override
+    @Cacheable("softwareVersion")
     public Path getSoftwareVersion(Version version) {
+        Folder folder = artifactory.repository(repositoryName).folder(pathToFolder).info();
+        Item softwareItem = folder.getChildren().stream().filter(item -> version.equals(getVersionFromName(item.getName()))).findFirst().orElse(null);
+        if( softwareItem != null ){
+            try {
+                Path tempPath = Paths.get(tempDirectory, softwareItem.getName());
+                OutputStream outStream = new FileOutputStream(tempPath.toFile());
+                log.info("Downloading " + version.getVersionString() + " to " + tempPath);
+                IOUtils.copy(artifactory.repository(repositoryName).download(pathToFolder + softwareItem.getUri()).doDownload(), outStream);
+                return tempPath;
+            } catch (IOException exception){
+                log.error("Error saving to temp directory", exception);
+            }
+        }
         return null;
     }
 
-    private Version getVersionFromFile(String name){
+    private Version getVersionFromName(String name){
         Version resultingVersion = null;
 
         if (StringUtils.isNotEmpty(fileNamePattern)) {
