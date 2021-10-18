@@ -138,9 +138,14 @@ public class ScreenService implements IScreenService, IActionListener {
                     IOUtils.closeQuietly(in);
                 }
             } else {
+                logger.warn("Resource not found for deviceId/appId: {}/{}. Resource: '{}'",
+                        deviceId, appId, contentPath);
                 response.setStatus(HttpStatus.NOT_FOUND.value());
             }
             stateManagerContainer.setCurrentStateManager(null);
+        } else {
+            logger.warn("No stateManager found for deviceId/appId: {}/{}. Won't be able to get requested resource: '{}'",
+                    deviceId, appId, contentPath);
         }
     }
 
@@ -158,6 +163,8 @@ public class ScreenService implements IScreenService, IActionListener {
             result = getComponentValues(appId, deviceId, controlId, getLastDialog(appId, deviceId), searchTerm, sizeLimit);
         }
         if (result == null) {
+            logger.warn("Last screen or dialog not found for deviceId/appId: {}/{}. StateManager: {}",
+                    deviceId, appId, stateManagerContainer.retrieve(appId, deviceId));
             result = "[]";
         }
         return result;
@@ -187,7 +194,7 @@ public class ScreenService implements IScreenService, IActionListener {
                 } catch (IOException e) {
                     throw new RuntimeException("Error while serializing the component values.", e);
                 }
-                result = new String(out.toByteArray());
+                result = out.toString();
                 logger.info("Responding to request to load component values {} {} {} with {} values", appId, deviceId, controlId,
                         valueList.size());
             } else {
