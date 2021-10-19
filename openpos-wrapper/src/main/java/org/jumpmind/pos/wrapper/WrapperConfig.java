@@ -278,32 +278,30 @@ public class WrapperConfig {
      */
     Map<String, ArrayList<String>> getProperties(String filename) throws IOException {
         HashMap<String, ArrayList<String>> map = new HashMap<>();
-        BufferedReader reader = new BufferedReader(new FileReader(filename));
-        String line = null;
 
-        while ((line = reader.readLine()) != null) {
-            if (!line.matches("^\\s*#.*") && !line.matches("\\s*")) {
-                int index = line.indexOf("=");
-                if (index != -1) {
-                    String name = line.substring(0, index).trim();
-                    String value = line.substring(index + 1).trim();
-                    if (name.matches(".*\\d{1,2}")) {
-                        name = name.substring(0, name.lastIndexOf("."));
+        try (FileReader fileReader = new FileReader(filename); BufferedReader reader = new BufferedReader(fileReader)) {
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                if (!line.matches("^\\s*#.*") && !line.matches("\\s*")) {
+                    int index = line.indexOf("=");
+                    if (index != -1) {
+                        String name = line.substring(0, index).trim();
+                        String value = line.substring(index + 1).trim();
+
+                        if (name.matches(".*\\d{1,2}")) {
+                            name = name.substring(0, name.lastIndexOf("."));
+                        }
+
+                        ArrayList<String> values = map.computeIfAbsent(name, k -> new ArrayList<>());
+
+                        values.add(doTokenReplacementOnValue(value));
                     }
-                    ArrayList<String> values = map.get(name);
-                    if (values == null) {
-                        values = new ArrayList<String>();
-                        map.put(name, values);
-                    }
-
-
-                    values.add(doTokenReplacementOnValue(value));
                 }
             }
+
+            return map;
         }
-        reader.close();
-        
-        return map;
     }
 
     Properties loadEnvProperties() {

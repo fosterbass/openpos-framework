@@ -13,8 +13,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -28,6 +27,7 @@ import org.update4j.Archive;
 import org.update4j.Configuration;
 import org.update4j.UpdateOptions;
 import org.update4j.service.UpdateHandler;
+import org.update4j.util.FileUtils;
 
 public abstract class WrapperService {
 
@@ -310,6 +310,23 @@ public abstract class WrapperService {
         }
     }
 
+    public void installUpdate(String updateFile) {
+        if (isInstalled()) {
+            stop();
+        } else {
+            System.err.println("auto update currently only supported from services");
+            return;
+        }
+
+        try {
+            Archive.read(updateFile).install();
+        } catch (IOException ex) {
+            System.err.println("failed to install update at: " + updateFile);
+        }
+
+        start();
+    }
+
     public boolean isRunning() {
         return isPidRunning(readPidFromFile(config.getWrapperPidFile())) || isPidRunning(readPidFromFile(config.getServerPidFile()));
     }
@@ -402,6 +419,53 @@ public abstract class WrapperService {
     protected void updateStatus(Status status) {
     }
 
+    private void doUpdateInstall(File updateFile) {
+        System.out.println("installing pending update...");
+
+        final File jarFile = new File(WrapperService.class.getProtectionDomain()
+                .getCodeSource()
+                .getLocation()
+                .getPath());
+
+        final File jarDirectory = jarFile.getParentFile();
+
+        final File libCpyDir = new File("./tmp/updatelibcpy");
+
+        // copy all of the libs to a temp directory that we'll move execution over to.
+        if (libCpyDir.exists() && libCpyDir.delete() && libCpyDir.mkdirs()) {
+            try {
+                Files.walk(jarDirectory.toPath()).forEach(f -> {
+                    final Path to = Paths.get(libCpyDir.toString(), f.toString().substring(jarDirectory.toString().length()));
+
+                    try {
+                        Files.copy(f, to, StandardCopyOption.REPLACE_EXISTING);
+                    } catch (IOException ignored) {
+                    }
+                });
+            } catch (IOException ignored) {
+                return;
+            }
+
+            try {
+                new ProcessBuilder()
+                        .command(
+                                config.getJavaCommand(),
+                                "-classpath ./tmp/updatelibcpy/*",
+                                "org.jumpmind.pos.wrapper.ServiceWrapper",
+                                "install-update",
+                                "\"" + config.configFile + "\"",
+                                "\"" + updateFile.getAbsolutePath() + "\""
+                        )
+                        .directory(config.getWorkingDirectory())
+                        .start();
+            } catch (IOException ex) {
+                return;
+            }
+
+            System.exit(0);
+        }
+    }
+
     protected final void tryAutoUpdate() {
         if (config == null || !config.isAutoUpdateEnabled()) {
             System.out.println("auto-update disabled; skipping...");
@@ -411,17 +475,8 @@ public abstract class WrapperService {
         final File pendingUpdateFile = config.getPendingUpdateFile();
 
         if (pendingUpdateFile != null && pendingUpdateFile.exists()) {
-            System.out.println("installing pending update...");
-
-            try {
-                Archive.read(pendingUpdateFile.getPath()).install(true);
-                System.out.println("pending update installed!");
-                return;
-            } catch (IOException ex) {
-                System.err.println("failed to open pending update: " + ex.getMessage());
-
-                // fallthrough and let's try the update from the server
-            }
+            doUpdateInstall(pendingUpdateFile);
+            return;
         }
 
         final String server = config.getAutoUpdateServer();
@@ -495,11 +550,7 @@ public abstract class WrapperService {
         configuration.update(UpdateOptions.archive(tempFile).updateHandler(new UpdateHandler() {
         }));
 
-        try {
-            Archive.read(tempFile).install(true);
-        } catch (IOException ex) {
-            System.err.println("failed to install update: " + ex.getMessage());
-        }
+        doUpdateInstall(tempFile.toFile());
     }
 
     private static String getStackTrace(Throwable throwable) {
