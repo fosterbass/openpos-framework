@@ -1,15 +1,14 @@
-import { Component, Injector, OnDestroy } from '@angular/core';
+import { Component, Injector } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { CustomerDetailsDialogInterface, CustomerItemHistoryFilter } from './customer-details-dialog.interface';
 import { DialogComponent } from '../../../shared/decorators/dialog-component.decorator';
-import { PosScreen } from '../../pos-screen/pos-screen.component';
 import { Observable } from 'rxjs';
 import { MediaBreakpoints, OpenposMediaService } from '../../../core/media/openpos-media.service';
 import { IActionItem } from '../../../core/actions/action-item.interface';
-import { Configuration } from '../../../configuration/configuration';
+import { CONFIGURATION } from '../../../configuration/configuration';
 import { KeyPressProvider } from '../../../shared/providers/keypress.provider';
-import { ActionService } from '../../../core/actions/action.service';
 import { MatTabChangeEvent } from '@angular/material/tabs';
+import { PosScreenDirective } from '../../pos-screen/pos-screen.component';
 
 @DialogComponent({
   name: 'CustomerDetailsDialog'
@@ -88,7 +87,7 @@ export class CustomerDetailsDialogComponent extends PosScreenDirective<CustomerD
   }
 
   public keybindsEnabled(menuItem: IActionItem): boolean {
-    return Configuration.enableKeybinds && !!menuItem.keybind && menuItem.keybind !== 'Enter';
+    return CONFIGURATION.enableKeybinds && !!menuItem.keybind && menuItem.keybind !== 'Enter';
   }
 }
 

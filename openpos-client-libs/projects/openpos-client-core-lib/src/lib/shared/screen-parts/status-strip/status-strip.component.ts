@@ -16,7 +16,7 @@ import { ScreenPart } from '../../decorators/screen-part.decorator';
 export class StatusStripComponent extends ScreenPartComponent<StatusStripInterface> {
 
     @Input()
-    showTimestamps: boolean = true;
+    showTimestamps = true;
 
     date = interval(1000).pipe(map(() => Date.now()));
     timer = interval(1000).pipe(map(() => {

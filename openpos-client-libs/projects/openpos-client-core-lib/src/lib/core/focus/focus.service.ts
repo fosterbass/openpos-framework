@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { FocusTrap, ConfigurableFocusTrapFactory } from '@angular/cdk/a11y';
+import { ConfigurableFocusTrap, ConfigurableFocusTrapFactory } from '@angular/cdk/a11y';
 
 @Injectable({
     providedIn: 'root',
 })
 export class FocusService {
 
-    private focusTrap: FocusTrap;
+    private focusTrap: ConfigurableFocusTrap;
 
     constructor(private focusTrapFactory: ConfigurableFocusTrapFactory) { }
 

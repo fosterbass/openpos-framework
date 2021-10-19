@@ -14,7 +14,6 @@ import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provi
 import { TimeZoneContext } from '../../../core/client-context/time-zone-context';
 import { Observable, of, Subscription } from 'rxjs';
 import { MediaBreakpoints, OpenposMediaService } from '../../../core/media/openpos-media.service';
-import { Reward } from '../../../shared/screen-parts/rewards-line-item/rewards-line-item.interface';
 import { ImageUrlPipe } from '../../../shared/pipes/image-url.pipe';
 import { MarkdownFormatterPipe } from '../../../shared/pipes/markdown-formatter.pipe';
 import {KeyPressProvider} from '../../../shared/providers/keypress.provider';

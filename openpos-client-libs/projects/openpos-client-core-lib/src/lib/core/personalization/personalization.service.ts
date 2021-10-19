@@ -1,12 +1,11 @@
 import { Injectable, Inject, Optional } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { PersonalizationConfigResponse } from './personalization-config-response.interface';
-import { BehaviorSubject, Observable,throwError, zip, merge } from 'rxjs';
-import { catchError, filter, map, take, tap , timeout } from 'rxjs/operators';
+import { BehaviorSubject, Observable, throwError, zip, merge } from 'rxjs';
+import { catchError, filter, map, take, tap, timeout } from 'rxjs/operators';
 import { PersonalizationRequest } from './personalization-request';
 import { PersonalizationResponse } from './personalization-response.interface';
 import { AutoPersonalizationParametersResponse } from './device-personalization.interface';
-import { ZeroconfService } from '@ionic-native/zeroconf';
 import { CONFIGURATION } from '../../configuration/configuration';
 
 import { Storage } from '../storage/storage.service';
@@ -133,7 +132,7 @@ export class PersonalizationService {
         const protocol = this.sslEnabled$.getValue() ? 'https://' : 'http://';
         url += protocol + url;
 
-        return this.http.get<AutoPersonalizationParametersResponse>(url, { params: { deviceName: deviceName }})
+        return this.http.get<AutoPersonalizationParametersResponse>(url, { params: { deviceName } })
             .pipe(
                 timeout(CONFIGURATION.autoPersonalizationRequestTimeoutMillis),
                 tap(response => {

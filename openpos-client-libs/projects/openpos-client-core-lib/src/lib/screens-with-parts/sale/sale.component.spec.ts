@@ -13,8 +13,8 @@ import { TimeZoneContext } from '../../core/client-context/time-zone-context';
 import { CLIENTCONTEXT } from '../../core/client-context/client-context-provider.interface';
 import { SaleInterface } from './sale.interface';
 import { Subscription, Observable, of } from 'rxjs';
-import {validateDoesNotExist, validateExist} from "../../utilites/test-utils";
-import {ISellItem} from "../../core/interfaces/sell-item.interface";
+import { validateDoesNotExist, validateExist } from '../../utilites/test-utils';
+import { ISellItem } from '../../core/interfaces/sell-item.interface';
 
 class MockMatDialog { }
 class MockActionService { }
@@ -83,20 +83,20 @@ describe('SaleComponent', () => {
     describe('mobile', () => {
         class MockOpenposMediaServiceMobile {
             observe(): Observable<boolean> { return of(true); }
-        };
-        beforeEach( () => {
+        }
+        beforeEach(() => {
             TestBed.configureTestingModule({
                 imports: [HttpClientTestingModule],
                 declarations: [SaleComponent, ImageUrlPipe],
                 providers: [
                     { provide: ActionService, useClass: MockActionService },
-                    { provide: MatDialog, useClass: MockMatDialog},
+                    { provide: MatDialog, useClass: MockMatDialog },
                     { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobile },
-                    { provide: MatBottomSheet, useClass: MockMatBottomSheet},
+                    { provide: MatBottomSheet, useClass: MockMatBottomSheet },
                     { provide: KeyPressProvider, useClass: MockKeyPressProvider },
                     { provide: ElectronService, useClass: MockElectronService },
-                    { provide: ClientContext, useValue: {}},
-                    { provide: CLIENTCONTEXT, useClass: TimeZoneContext}
+                    { provide: ClientContext, useValue: {} },
+                    { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
                 ],
                 schemas: [NO_ERRORS_SCHEMA]
             }).compileComponents();
@@ -105,7 +105,7 @@ describe('SaleComponent', () => {
             component.items = of([{} as ISellItem]);
             component.screen = {} as SaleInterface;
             component.screen.orders = [];
-            openposMediaSerivce = TestBed.get(OpenposMediaService);
+            openposMediaSerivce = TestBed.inject(OpenposMediaService);
             fixture.detectChanges();
         });
 

@@ -121,7 +121,7 @@ describe('RewardsHistoryLineItemComponent', () => {
                         beforeEach(() => {
                             component.reward.redeemedDate = undefined;
                             fixture.detectChanges();
-                         });
+                        });
 
                         it('renders the access_time icon', () => {
                             validateIcon(fixture, '.details .expiration-redemption app-icon', 'access_time');
@@ -137,13 +137,13 @@ describe('RewardsHistoryLineItemComponent', () => {
 
                     describe('when there is no expiration date', () => {
                         beforeEach(() => {
-                           component.reward.expirationDate = undefined;
-                           component.reward.redeemedDate = undefined;
-                           fixture.detectChanges();
+                            component.reward.expirationDate = undefined;
+                            component.reward.redeemedDate = undefined;
+                            fixture.detectChanges();
                         });
 
                         it('does not display the expiration section', () => {
-                           validateDoesNotExist(fixture, '.expiration-redemption');
+                            validateDoesNotExist(fixture, '.expiration-redemption');
                         });
                     });
 
@@ -151,7 +151,7 @@ describe('RewardsHistoryLineItemComponent', () => {
                         beforeEach(() => {
                             component.reward.expirationDate = undefined;
                             fixture.detectChanges();
-                         });
+                        });
 
                         it('renders the check_decagram_outline icon', () => {
                             validateIcon(fixture, '.details .expiration-redemption app-icon', 'check_decagram_outline');
@@ -167,13 +167,13 @@ describe('RewardsHistoryLineItemComponent', () => {
 
                     describe('when there is no redeemed date', () => {
                         beforeEach(() => {
-                           component.reward.redeemedDate = undefined;
-                           component.reward.expirationDate = undefined;
-                           fixture.detectChanges();
+                            component.reward.redeemedDate = undefined;
+                            component.reward.expirationDate = undefined;
+                            fixture.detectChanges();
                         });
 
                         it('does not display the redemption section', () => {
-                           validateDoesNotExist(fixture, '.expiration-redemption');
+                            validateDoesNotExist(fixture, '.expiration-redemption');
                         });
                     });
                 });
@@ -206,9 +206,9 @@ describe('RewardsHistoryLineItemComponent', () => {
 
                 describe('when reward has a percent amount', () => {
                     beforeEach(() => {
-                      component.reward.rewardType = 'PCT';
-                      component.reward.reward = .5;
-                      fixture.detectChanges();
+                        component.reward.rewardType = 'PCT';
+                        component.reward.reward = .5;
+                        fixture.detectChanges();
                     });
 
                     it('does not render the app-currency-text', () => {
@@ -230,7 +230,7 @@ describe('RewardsHistoryLineItemComponent', () => {
                     validateText(fixture, '.status', component.screenData.redeemedLabel);
                 });
 
-               it('shows the expiredLabel when the reward is not redeemed', () => {
+                it('shows the expiredLabel when the reward is not redeemed', () => {
                     component.screenData.expiredLabel = 'expired label';
                     component.reward.redeemed = false;
                     fixture.detectChanges();

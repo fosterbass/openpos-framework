@@ -1,6 +1,13 @@
 import {
-  Component, ViewChild, AfterViewInit, OnInit, OnChanges, OnDestroy,
-  Output, Input, EventEmitter, SimpleChanges
+  Component,
+  ViewChild,
+  AfterViewInit,
+  OnChanges,
+  OnDestroy,
+  Output,
+  Input,
+  EventEmitter,
+  SimpleChanges
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatInput } from '@angular/material/input';
@@ -135,7 +142,7 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterVie
         this.formGroup.get(this.formField.id).setValue(this.formField.value);
       }
     }
-    if(this.formField.preValidate) {
+    if (this.formField.preValidate) {
       this.field.ngControl.control.markAsDirty();
     }
   }

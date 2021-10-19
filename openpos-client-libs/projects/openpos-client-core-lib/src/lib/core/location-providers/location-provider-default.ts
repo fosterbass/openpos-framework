@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { ILocationProvider } from './location-provider.interface';
+import { ILocationProvider, LocationProviderConfigChanged } from './location-provider.interface';
 import { ILocationData } from './location-data.interface';
 import { CONFIGURATION } from '../../configuration/configuration';
 import { ConfigurationService } from '../services/configuration.service';
@@ -31,11 +31,11 @@ export class LocationProviderDefault implements ILocationProvider {
     constructor(private http: HttpClient, private configurationService: ConfigurationService) {
         this.configurationService.getConfiguration('uiConfig')
             .pipe(filter(config => Object.keys(config).includes('googleApiKey')), take(1))
-            .subscribe(config => {
+            .subscribe((config: LocationProviderConfigChanged) => {
                 if (this.coordinateBuffer != null) {
-                    this.getCurrentLocation(this.coordinateBuffer, config['googleApiKey']);
+                    this.getCurrentLocation(this.coordinateBuffer, config.googleApiKey);
                 }
-            })
+            });
     }
 
     getProviderName(): string {

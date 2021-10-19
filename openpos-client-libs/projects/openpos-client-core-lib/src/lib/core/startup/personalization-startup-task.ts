@@ -22,7 +22,7 @@ import { PersonalizationComponent } from '../personalization/personalization.com
 import { Zeroconf, ZeroconfService, ZEROCONF_TOKEN } from './zeroconf/zeroconf';
 import { Inject } from '@angular/core';
 import { Optional } from '@angular/core';
-import {Configuration} from "../../configuration/configuration";
+import {CONFIGURATION} from '../../configuration/configuration';
 
 @Injectable({
     providedIn: 'root',
@@ -133,7 +133,7 @@ export class PersonalizationStartupTask implements IStartupTask {
                             return concat(
                                 of('failed to auto personalize; attempting with auto-personalization hostname'),
                                 this.personalizeWithHostname(data, provider)
-                            )
+                            );
                         })
                     )
                 );
@@ -142,16 +142,16 @@ export class PersonalizationStartupTask implements IStartupTask {
     }
 
     personalizeWithHostname(data: StartupTaskData, provider: Zeroconf): Observable<string> {
-        const servicePath = Configuration.autoPersonalizationServicePath;
+        const servicePath = CONFIGURATION.autoPersonalizationServicePath;
         if (!!servicePath) {
             return concat(
-                of("Attempting to retrieve personalization params via hostname"),
+                of('Attempting to retrieve personalization params via hostname'),
                 provider.deviceName().pipe(
-                    flatMap(deviceName => this.attemptAutoPersonalize(data, Configuration.autoPersonalizationServicePath, deviceName)),
+                    mergeMap(deviceName => this.attemptAutoPersonalize(data, CONFIGURATION.autoPersonalizationServicePath, deviceName)),
                     catchError(e => {
                         console.error('failed to auto personalize', e);
                         return this.doStandardPersonalization(data);
-                    })),
+                    }))
             );
         } else {
             return this.doStandardPersonalization(data);
