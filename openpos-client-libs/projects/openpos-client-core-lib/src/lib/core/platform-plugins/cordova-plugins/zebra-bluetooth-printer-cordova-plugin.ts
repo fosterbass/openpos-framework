@@ -46,8 +46,10 @@ export class ZebraBluetoothPrinterCordovaPlugin implements IPlatformPlugin {
                             observer.complete();
                         },
                         (err) => {
-                            console.info(`[ZebraBluetoothPrinterCordovaPlugin] failed to connect to Zebra printer over bluetooth: ${err}`);
-                            observer.error(`ZebraBluetoothPrinterCordovaPlugin failed to connect to Zebra printer over bluetooth: ${err}`);
+                            console.error(`[ZebraBluetoothPrinterCordovaPlugin] failed to connect to Zebra printer over bluetooth: ${err}`);
+                            // Just go ahead and complete so that startup is not failed completely.  Printing will
+                            // fail at runtime.
+                            observer.complete();
                         }
                     );
 
