@@ -1,7 +1,7 @@
 import { VERSIONS } from './../../version';
 import { ILoading } from './../interfaces/loading.interface';
 
-import { Configuration } from './../../configuration/configuration';
+import { CONFIGURATION } from './../../configuration/configuration';
 import { IMessageHandler } from './../interfaces/message-handler.interface';
 import { PersonalizationService } from '../personalization/personalization.service';
 
@@ -239,7 +239,7 @@ export class SessionService implements IMessageHandler<any> {
         const headers = {
             authToken: this.authToken,
             deviceToken: this.personalization.getDeviceToken$().getValue(),
-            compatibilityVersion: Configuration.compatibilityVersion,
+            compatibilityVersion: CONFIGURATION.compatibilityVersion,
             appId: this.personalization.getAppId$().getValue(),
             deviceId: this.personalization.getDeviceId$().getValue(),
             queryParams: JSON.stringify(this.queryParams),
@@ -393,14 +393,14 @@ export class SessionService implements IMessageHandler<any> {
             template: { dialog: true, type: 'BlankWithBar' },
             dialogProperties: { closeable: false },
             title: 'Incompatible Versions',
-            message: Configuration.incompatibleVersionMessage.split('\n')
+            message: CONFIGURATION.incompatibleVersionMessage.split('\n')
         };
     }
 
     private isMessageVersionValid(message: Message): boolean {
-        const valid = message.headers.compatibilityVersion === Configuration.compatibilityVersion;
+        const valid = message.headers.compatibilityVersion === CONFIGURATION.compatibilityVersion;
         if (!valid) {
-            console.info(`INCOMPATIBLE VERSIONS. Client compatibilityVersion: ${Configuration.compatibilityVersion}, ` +
+            console.info(`INCOMPATIBLE VERSIONS. Client compatibilityVersion: ${CONFIGURATION.compatibilityVersion}, ` +
                 `server compatibilityVersion: ${message.headers.compatibilityVersion}`);
         }
         return valid;
@@ -530,7 +530,7 @@ export class SessionService implements IMessageHandler<any> {
         if (deviceId) {
             console.info(`Publishing action '${actionString}' of type '${type}' to server...`);
             this.stompService.publish('/app/action/device/' + deviceId,
-                JSON.stringify({ name: actionString, type, data: payload, doNotBlockForResponse: doNotBlockForResponse }));
+                JSON.stringify({ name: actionString, type, data: payload, doNotBlockForResponse }));
             return true;
         } else {
             console.info(`Can't publish action '${actionString}' of type '${type}' ` +

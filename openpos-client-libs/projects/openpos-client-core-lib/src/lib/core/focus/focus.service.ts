@@ -1,15 +1,14 @@
 import { Injectable } from '@angular/core';
-import { FocusTrap, FocusTrapFactory } from '@angular/cdk/a11y';
+import { ConfigurableFocusTrap, ConfigurableFocusTrapFactory } from '@angular/cdk/a11y';
 
 @Injectable({
     providedIn: 'root',
 })
 export class FocusService {
 
-    private focusTrap: FocusTrap;
+    private focusTrap: ConfigurableFocusTrap;
 
-    constructor(private focusTrapFactory: FocusTrapFactory)  {
-    }
+    constructor(private focusTrapFactory: ConfigurableFocusTrapFactory) { }
 
     destroy() {
         if (!!this.focusTrap) {
@@ -35,7 +34,7 @@ export class FocusService {
     }
 
     blurCurrentElement() {
-        if( document.activeElement instanceof HTMLElement){
+        if (document.activeElement instanceof HTMLElement) {
             document.activeElement.blur();
         }
     }

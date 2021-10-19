@@ -1,6 +1,6 @@
 import { BannerInterface, MessageType } from './banner.interface';
 import { ScreenPartComponent } from '../screen-part';
-import {Component, Injector} from '@angular/core';
+import { Component, Injector } from '@angular/core';
 import { ScreenPart } from '../../decorators/screen-part.decorator';
 
 @ScreenPart({

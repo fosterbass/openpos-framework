@@ -8,7 +8,7 @@ import { STORAGE_CONTAINERS, StorageContainer } from './storage-container';
     providedIn: 'root'
 })
 export class Storage {
-    private readonly container$: Observable<StorageContainer>
+    private readonly container$: Observable<StorageContainer>;
 
     constructor(
         @Inject(STORAGE_CONTAINERS) @Optional() containers: StorageContainer[],

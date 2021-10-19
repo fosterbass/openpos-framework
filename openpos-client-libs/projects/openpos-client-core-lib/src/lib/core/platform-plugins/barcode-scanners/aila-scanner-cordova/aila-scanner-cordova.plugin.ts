@@ -1,16 +1,13 @@
 import { Injectable } from '@angular/core';
-
 import { concat, Observable, of, throwError } from 'rxjs';
 import { map, repeat } from 'rxjs/operators';
-
 import { IPlatformPlugin } from '../../platform-plugin.interface';
 import { Scanner, ScanData } from '../scanner';
-
 import { AilaBarcodeUtils } from './aila-to-openpos-barcode-type';
 
 @Injectable()
 export class AilaScannerCordovaPlugin implements IPlatformPlugin, Scanner {
-    private AilaCordovaPlugin;
+    private ailaCordovaPlugin;
 
     name(): string {
         return 'AilaCordovaPlugin';
@@ -21,27 +18,27 @@ export class AilaScannerCordovaPlugin implements IPlatformPlugin, Scanner {
     }
 
     initialize(): Observable<string> {
-        return Observable.create(observer => {
+        return new Observable(observer => {
             // tslint:disable-next-line:no-string-literal
-            this.AilaCordovaPlugin = window['AilaCordovaPlugin'];
-            if ( !this.AilaCordovaPlugin ) {
+            this.ailaCordovaPlugin = window['AilaCordovaPlugin'];
+            if (!this.ailaCordovaPlugin) {
                 observer.error(`Tried to initialize plugin ${this.name()} which is not present`);
             }
 
-            (this.AilaCordovaPlugin.setConfig(
-                    true,
-                    'PadlocScanScanningModeContinuous',
-                    'PadlocScanMotionDetectionModeOn',
-                    'PadlocScanBeepModeOn',
-                    'PadlocScanCardDetectionModeOn',
-                    ['PadlocScanCodeTypeUPCEAN', 'PadlocScanCodeTypeQR', 'PadlocScanCodeType128', 'PadlocScanCodeType39', 
-                    'PadlocScanCodeType2of5', 'PadlocScanCodeTypePDF417', 'PadlocScanCodeTypeDataBar', 'PadlocScanCodeTypeDataMatrix', 
+            (this.ailaCordovaPlugin.setConfig(
+                true,
+                'PadlocScanScanningModeContinuous',
+                'PadlocScanMotionDetectionModeOn',
+                'PadlocScanBeepModeOn',
+                'PadlocScanCardDetectionModeOn',
+                ['PadlocScanCodeTypeUPCEAN', 'PadlocScanCodeTypeQR', 'PadlocScanCodeType128', 'PadlocScanCodeType39',
+                    'PadlocScanCodeType2of5', 'PadlocScanCodeTypePDF417', 'PadlocScanCodeTypeDataBar', 'PadlocScanCodeTypeDataMatrix',
                     'PadlocScanCodeTypeCodaBar'],
-                    'PadlocScanDebugLevelWarn') as Promise<any>)
-                .then(this.AilaCordovaPlugin.init())
+                'PadlocScanDebugLevelWarn') as Promise<any>)
+                .then(this.ailaCordovaPlugin.init())
                 .then(() => {
-                     console.log('AilaCordovaPlugins initialized and configured successfully');
-                     observer.complete();
+                    console.log('AilaCordovaPlugins initialized and configured successfully');
+                    observer.complete();
                 })
                 .catch(error => {
                     console.log(`AilaCordovaPlugins failed to initialize ${error}`);
@@ -51,19 +48,19 @@ export class AilaScannerCordovaPlugin implements IPlatformPlugin, Scanner {
     }
 
     beginScanning(): Observable<ScanData> {
-        if (!this.AilaCordovaPlugin) {
+        if (!this.ailaCordovaPlugin) {
             return throwError(`Tried to start scanning with ${this.name()} which is not loaded`);
         }
 
         return concat(
-            of(this.AilaCordovaPlugin.starScan()),
+            of(this.ailaCordovaPlugin.starScan()),
             new Observable<ScanData>(observer => {
-                const dataSubscription = of(this.AilaCordovaPlugin.getNextScan()).pipe(
+                const dataSubscription = of(this.ailaCordovaPlugin.getNextScan()).pipe(
                     repeat(),
                     map(aila => {
                         const type = aila[0];
                         const data = aila[1];
-        
+
                         return { type: AilaBarcodeUtils.convertToOpenposType(type, data.length), data };
                     })
                 ).subscribe({
@@ -73,7 +70,7 @@ export class AilaScannerCordovaPlugin implements IPlatformPlugin, Scanner {
 
                 return () => {
                     dataSubscription.unsubscribe();
-                    this.AilaCordovaPlugin.stopScanning();
+                    this.ailaCordovaPlugin.stopScanning();
                 };
             })
         );

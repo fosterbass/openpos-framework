@@ -1,5 +1,5 @@
-import {CollectionViewer, DataSource} from '@angular/cdk/collections';
-import {BehaviorSubject, Observable, Subscription} from 'rxjs';
+import { CollectionViewer, DataSource } from '@angular/cdk/collections';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 
 export class InfiniteScrollDatasource<T> extends DataSource<T> {
 
@@ -9,10 +9,10 @@ export class InfiniteScrollDatasource<T> extends DataSource<T> {
     private dataStream = new BehaviorSubject<(T | undefined)[]>([]);
     private readonly moreData: () => void;
 
-    constructor( data: Observable<T[]>, moreData: () => void, private dataLoadBuffer: number) {
+    constructor(data: Observable<T[]>, moreData: () => void, private dataLoadBuffer: number) {
         super();
         this.moreData = moreData;
-        this.subscription.add(data.subscribe( d => {
+        this.subscription.add(data.subscribe(d => {
 
             this.dataLoaded.next(d && d.length > 0);
 

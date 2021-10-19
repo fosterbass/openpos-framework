@@ -5,8 +5,8 @@ export interface DialogProps {
     name: string;
 }
 
-export function DialogComponent( config: DialogProps ) {
-    return function(target) {
+export function DialogComponent(config: DialogProps) {
+    return (target) => {
         DialogService.dialogs.set(config.name, target);
     };
 }

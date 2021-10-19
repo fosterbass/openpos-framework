@@ -88,7 +88,7 @@ export * from './lib/core/oldplugins/scan';
 
 export * from './lib/core/platform-plugins/barcode-scanners/barcode-scanner.service';
 export * from './lib/core/platform-plugins/cordova-plugins/android-content-provider-plugin';
-export * from './lib/core/startup/plugin-startup-task'
+export * from './lib/core/startup/plugin-startup-task';
 export * from './lib/core/messages/single-sign-on-message';
 
 export * from './lib/core/services/app-version';
@@ -425,4 +425,3 @@ export * from './lib/shared/pipes/localized-date-no-time.pipe';
 export * from './lib/shared/components/rounded-input/rounded-input.component';
 export * from './lib/shared/screen-parts/prompt-button-row/prompt-button-row.component';
 export * from './lib/shared/directives/stay-focused.directive';
-// 

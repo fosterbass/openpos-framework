@@ -15,6 +15,7 @@ import {fromEvent, merge, Subject, timer} from 'rxjs';
 import {audit, filter, takeUntil} from 'rxjs/operators';
 
 @Directive({
+    // tslint:disable-next-line: directive-selector
     selector: '[fitText]',
 })
 export class FitTextDirective implements AfterViewInit, OnChanges, OnDestroy {
@@ -105,7 +106,7 @@ export class FitTextDirective implements AfterViewInit, OnChanges, OnDestroy {
         // Calculate the new font size using the ratio of available width to content width.
         // This isn't exact, so the "fit()" method will call this method until the max font size
         // is found. On average, it takes 2-3 tries.
-        let newFontSize = (this.availableWidth / this.contentWidth) * this.currentFontSize;
+        const newFontSize = (this.availableWidth / this.contentWidth) * this.currentFontSize;
 
         // Update the current font size, while keeping it within bounds of min/max values
         this.currentFontSize = Math.min(

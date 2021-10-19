@@ -1,29 +1,29 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core'
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import {HttpClientTestingModule} from '@angular/common/http/testing';
-import {Observable, of, Subscription} from 'rxjs';
-import {MediaBreakpoints, OpenposMediaService} from '../../../core/media/openpos-media.service';
-import {RewardsLineItemComponent} from './rewards-line-item.component';
-import {ElectronService} from 'ngx-electron';
-import {CLIENTCONTEXT} from '../../../core/client-context/client-context-provider.interface';
-import {TimeZoneContext} from '../../../core/client-context/time-zone-context';
-import {ActionService} from '../../../core/actions/action.service';
-import {KeyPressProvider} from '../../providers/keypress.provider';
-import {validateDoesNotExist, validateExist, validateIcon, validateText} from '../../../utilites/test-utils';
-import {IActionItem} from '../../../core/actions/action-item.interface';
-import {By} from '@angular/platform-browser';
-import {Reward, RewardsLineItemComponentInterface} from './rewards-line-item.interface';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { Observable, of, Subscription } from 'rxjs';
+import { MediaBreakpoints, OpenposMediaService } from '../../../core/media/openpos-media.service';
+import { RewardsLineItemComponent } from './rewards-line-item.component';
+import { ElectronService } from 'ngx-electron';
+import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provider.interface';
+import { TimeZoneContext } from '../../../core/client-context/time-zone-context';
+import { ActionService } from '../../../core/actions/action.service';
+import { KeyPressProvider } from '../../providers/keypress.provider';
+import { validateDoesNotExist, validateExist, validateIcon, validateText } from '../../../utilites/test-utils';
+import { IActionItem } from '../../../core/actions/action-item.interface';
+import { By } from '@angular/platform-browser';
+import { Reward, RewardsLineItemComponentInterface } from './rewards-line-item.interface';
 
-class MockActionService {}
-class MockMatDialog {}
+class MockActionService { }
+class MockMatDialog { }
 class MockKeyPressProvider {
     subscribe(): Subscription {
         return new Subscription();
     }
 }
-class MockElectronService {}
-class ClientContext {}
+class MockElectronService { }
+class ClientContext { }
 
 describe('RewardsLineItemComponent', () => {
     let component: RewardsLineItemComponent;
@@ -33,7 +33,6 @@ describe('RewardsLineItemComponent', () => {
             return of(false);
         }
     }
-
     class MockOpenposMediaServiceMobileTrue {
         observe(): Observable<boolean> {
             return of(true);
@@ -41,9 +40,9 @@ describe('RewardsLineItemComponent', () => {
     }
 
     describe('shared', () => {
-        beforeEach( () => {
+        beforeEach(() => {
             TestBed.configureTestingModule({
-                imports: [ HttpClientTestingModule],
+                imports: [HttpClientTestingModule],
                 declarations: [
                     RewardsLineItemComponent
                 ],
@@ -53,8 +52,8 @@ describe('RewardsLineItemComponent', () => {
                     { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobileFalse },
                     { provide: KeyPressProvider, useClass: MockKeyPressProvider },
                     { provide: ElectronService, useClass: MockElectronService },
-                    { provide: ClientContext, useValue: {}},
-                    { provide: CLIENTCONTEXT, useClass: TimeZoneContext}
+                    { provide: ClientContext, useValue: {} },
+                    { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
                 ],
                 schemas: [
                     NO_ERRORS_SCHEMA,
@@ -80,21 +79,21 @@ describe('RewardsLineItemComponent', () => {
 
         describe('component', () => {
             describe('initIsMobile', () => {
-               it('sets the values for isMobile', () => {
-                   const media: OpenposMediaService = TestBed.inject(OpenposMediaService);
-                   spyOn(media, 'observe');
+                it('sets the values for isMobile', () => {
+                    const media: OpenposMediaService = TestBed.inject(OpenposMediaService);
+                    spyOn(media, 'observe');
 
-                   component.initIsMobile();
+                    component.initIsMobile();
 
-                   expect(media.observe).toHaveBeenCalledWith(new Map([
-                       [MediaBreakpoints.MOBILE_PORTRAIT, true],
-                       [MediaBreakpoints.MOBILE_LANDSCAPE, true],
-                       [MediaBreakpoints.TABLET_PORTRAIT, true],
-                       [MediaBreakpoints.TABLET_LANDSCAPE, false],
-                       [MediaBreakpoints.DESKTOP_PORTRAIT, false],
-                       [MediaBreakpoints.DESKTOP_LANDSCAPE, false]
-                   ]));
-               });
+                    expect(media.observe).toHaveBeenCalledWith(new Map([
+                        [MediaBreakpoints.MOBILE_PORTRAIT, true],
+                        [MediaBreakpoints.MOBILE_LANDSCAPE, true],
+                        [MediaBreakpoints.TABLET_PORTRAIT, true],
+                        [MediaBreakpoints.TABLET_LANDSCAPE, false],
+                        [MediaBreakpoints.DESKTOP_PORTRAIT, false],
+                        [MediaBreakpoints.DESKTOP_LANDSCAPE, false]
+                    ]));
+                });
             });
         });
 
@@ -199,7 +198,7 @@ describe('RewardsLineItemComponent', () => {
             describe('apply button', () => {
                 beforeEach(() => {
                     component.reward.promotionId = '123';
-                    component.reward.actionButton = {title: 'a title', enabled: true} as IActionItem;
+                    component.reward.actionButton = { title: 'a title', enabled: true } as IActionItem;
                     component.reward.actionIcon = 'chevron_right';
                     fixture.detectChanges();
                 });
@@ -248,9 +247,9 @@ describe('RewardsLineItemComponent', () => {
     });
 
     describe('mobile', () => {
-        beforeEach( () => {
+        beforeEach(() => {
             TestBed.configureTestingModule({
-                imports: [ HttpClientTestingModule],
+                imports: [HttpClientTestingModule],
                 declarations: [
                     RewardsLineItemComponent
                 ],
@@ -260,8 +259,8 @@ describe('RewardsLineItemComponent', () => {
                     { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobileTrue },
                     { provide: KeyPressProvider, useClass: MockKeyPressProvider },
                     { provide: ElectronService, useClass: MockElectronService },
-                    { provide: ClientContext, useValue: {}},
-                    { provide: CLIENTCONTEXT, useClass: TimeZoneContext}
+                    { provide: ClientContext, useValue: {} },
+                    { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
                 ],
                 schemas: [
                     NO_ERRORS_SCHEMA,
@@ -281,8 +280,8 @@ describe('RewardsLineItemComponent', () => {
         });
         describe('template', () => {
             it('has the mobile-reward-line-item-wrapper class and not the reward-line-item-wrapper', () => {
-               validateExist(fixture, '.mobile-reward-line-item-wrapper');
-               validateDoesNotExist(fixture, '.reward-line-item-wrapper');
+                validateExist(fixture, '.mobile-reward-line-item-wrapper');
+                validateDoesNotExist(fixture, '.reward-line-item-wrapper');
             });
 
             it('does not render the loyalty-icon', () => {
@@ -292,9 +291,9 @@ describe('RewardsLineItemComponent', () => {
     });
 
     describe('non-mobile', () => {
-        beforeEach( () => {
+        beforeEach(() => {
             TestBed.configureTestingModule({
-                imports: [ HttpClientTestingModule],
+                imports: [HttpClientTestingModule],
                 declarations: [
                     RewardsLineItemComponent
                 ],
@@ -304,8 +303,8 @@ describe('RewardsLineItemComponent', () => {
                     { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobileFalse },
                     { provide: KeyPressProvider, useClass: MockKeyPressProvider },
                     { provide: ElectronService, useClass: MockElectronService },
-                    { provide: ClientContext, useValue: {}},
-                    { provide: CLIENTCONTEXT, useClass: TimeZoneContext}
+                    { provide: ClientContext, useValue: {} },
+                    { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
                 ],
                 schemas: [
                     NO_ERRORS_SCHEMA,
@@ -329,8 +328,8 @@ describe('RewardsLineItemComponent', () => {
                 validateDoesNotExist(fixture, '.mobile-reward-line-item-wrapper');
             });
             it('renders the loyalty-icon', () => {
-               validateExist(fixture, '.loyalty-icon');
-               validateIcon(fixture, '.loyalty-icon app-icon', 'loyalty');
+                validateExist(fixture, '.loyalty-icon');
+                validateIcon(fixture, '.loyalty-icon app-icon', 'loyalty');
             });
         });
     });

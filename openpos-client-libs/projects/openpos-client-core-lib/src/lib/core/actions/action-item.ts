@@ -11,5 +11,5 @@ export class ActionItem implements IActionItem {
     buttonSize?: string;
     fontSize?: string;
 
-    constructor(public action: string) {}
+    constructor(public action: string) { }
 }

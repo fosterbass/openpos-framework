@@ -1,4 +1,4 @@
-import {FocusService} from '../../../core/focus/focus.service';
+import { FocusService } from '../../../core/focus/focus.service';
 import { ScreenPart } from '../../decorators/screen-part.decorator';
 import { Component, OnInit, OnDestroy, Injector } from '@angular/core';
 import { ScreenPartComponent } from '../screen-part';
@@ -50,9 +50,11 @@ export class ScanPartComponent extends ScreenPartComponent<ScanInterface> implem
                 if (this.screenData.scanActionName) {
                     // Do this so that we complete any changes we've already made
                     this.focusService.blurCurrentElement();
-                    // The setTimeout here makes sure that everything the event chain of the blur above finishes before the scan action executes because
-                    // the timeout queues this up until the microqueue is drained. the timeout of 1 is to make sure that it gets queued after any other timeout - 0's
-                    setTimeout(() => this.doAction({ action: this.screenData.scanActionName, queueIfBlocked: true }, scanData),1);
+                    // The setTimeout here makes sure that everything the event chain of
+                    // the blur above finishes before the scan action executes because
+                    // the timeout queues this up until the microqueue is drained. the
+                    // timeout of 1 is to make sure that it gets queued after any other timeout - 0's
+                    setTimeout(() => this.doAction({ action: this.screenData.scanActionName, queueIfBlocked: true }, scanData), 1);
                 }
             });
         }

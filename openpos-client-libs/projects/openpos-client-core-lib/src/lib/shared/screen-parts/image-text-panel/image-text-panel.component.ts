@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { ScreenPart } from '../../decorators/screen-part.decorator';
 import { ScreenPartComponent } from '../screen-part';
 import { IActionItem } from '../../../core/actions/action-item.interface';
-import { Configuration } from '../../../configuration/configuration';
+import { CONFIGURATION } from '../../../configuration/configuration';
 import { ImageTextPanelInterface } from './image-text-panel.interface';
 
 

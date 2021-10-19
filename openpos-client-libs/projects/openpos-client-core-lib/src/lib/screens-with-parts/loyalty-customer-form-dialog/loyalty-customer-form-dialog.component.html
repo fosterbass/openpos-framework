@@ -14,15 +14,15 @@
                                 </div>
                                 <div class="names">
                                     <app-dynamic-form-field *ngIf="firstNameField" [formGroup]="screen.formGroup" [formField]="firstNameField"
-                                                            (onFieldChanged)="onFieldChanged($event)"></app-dynamic-form-field>
+                                                            (changed)="onFieldChanged($event)"></app-dynamic-form-field>
                                     <app-dynamic-form-field *ngIf="lastNameField" [formGroup]="screen.formGroup" [formField]="lastNameField"
-                                                            (onFieldChanged)="onFieldChanged($event)"></app-dynamic-form-field>
+                                                            (changed)="onFieldChanged($event)"></app-dynamic-form-field>
                                 </div>
                             </div>
                             <div class="contact" *ngIf="emailField || emailFields || phoneField || phoneFields">
                                 <div *ngIf="emailField && emailFields.length === 0" class="email">
                                     <app-icon matPrefix [iconName]="screen.emailIcon" iconClass="material-icons sm"></app-icon>
-                                    <app-dynamic-form-field [formGroup]="screen.formGroup" [formField]="emailField" (onFieldChanged)="onFieldChanged($event)"></app-dynamic-form-field>
+                                    <app-dynamic-form-field [formGroup]="screen.formGroup" [formField]="emailField" (changed)="onFieldChanged($event)"></app-dynamic-form-field>
                                 </div>
                                 <div *ngIf="emailFields.length > 0">
                                     <div class="email-list" *ngFor="let emailField of emailFields; let i = index; first as isFirst; last as isLast;">
@@ -33,7 +33,7 @@
                                                                         [isFirst]="isFirst"
                                                                         [isLast]="isLast"
                                                                         [isOnly]="emailFields.length == 1"
-                                                                        (onFieldChanged)="onFieldChanged($event)"
+                                                                        (fieldChanged)="onFieldChanged($event)"
                                                                         (add)="doAction(screen.addEmail, i)"
                                                                         (remove)="doAction(screen.removeEmail, i)">
                                         </app-mutable-list-item-with-label>
@@ -42,7 +42,7 @@
 
                                 <div *ngIf="phoneField && phoneFields.length === 0" class="phone">
                                     <app-icon matPrefix [iconName]="screen.phoneIcon" iconClass="material-icons sm"></app-icon>
-                                    <app-dynamic-form-field [formGroup]="screen.formGroup" [formField]="phoneField" (onFieldChanged)="onFieldChanged($event)"></app-dynamic-form-field>
+                                    <app-dynamic-form-field [formGroup]="screen.formGroup" [formField]="phoneField" (changed)="onFieldChanged($event)"></app-dynamic-form-field>
                                 </div>
                                 <div *ngIf="phoneFields.length > 0">
 
@@ -54,7 +54,7 @@
                                                                         [isFirst]="isFirst"
                                                                         [isLast]="isLast"
                                                                         [isOnly]="phoneFields.length == 1"
-                                                                        (onFieldChanged)="onFieldChanged($event)"
+                                                                        (fieldChanged)="onFieldChanged($event)"
                                                                         (add)="doAction(screen.addPhone, screen.form)"
                                                                         (remove)="doAction(screen.removePhone, i)">
                                         </app-mutable-list-item-with-label>
@@ -68,7 +68,7 @@
                                                             class="extra-form-field"
                                                             [formGroup]="screen.formGroup"
                                                             [formField]="formElement"
-                                                            (onFieldChanged)="onFieldChanged($event)"></app-dynamic-form-field>
+                                                            (changed)="onFieldChanged($event)"></app-dynamic-form-field>
                                 </ng-container>
                             </div>
                         </div>
@@ -90,7 +90,7 @@
                                                             class="extra-form-field"
                                                             [formGroup]="screen.formGroup"
                                                             [formField]="formElement"
-                                                            (onFieldChanged)="onFieldChanged($event)"></app-dynamic-form-field>
+                                                            (changed)="onFieldChanged($event)"></app-dynamic-form-field>
                                 </ng-container>
                             </div>
                         </div>
@@ -100,26 +100,26 @@
                                     <app-icon matPrefix [iconName]="screen.locationIcon" iconClass="material-icons sm"></app-icon>
                                 </div>
                                 <app-dynamic-form-field class="line1" *ngIf="line1Field" [formGroup]="screen.formGroup" [formField]="line1Field"
-                                                        (onFieldChanged)="onFieldChanged($event)"></app-dynamic-form-field>
+                                                        (changed)="onFieldChanged($event)"></app-dynamic-form-field>
                                 <app-dynamic-form-field class="line2" *ngIf="line2Field" [formGroup]="screen.formGroup" [formField]="line2Field"
-                                                        (onFieldChanged)="onFieldChanged($event)"></app-dynamic-form-field>
+                                                        (changed)="onFieldChanged($event)"></app-dynamic-form-field>
                                 <div class="cityStateZip">
                                     <app-dynamic-form-field class="city" *ngIf="cityField" [formGroup]="screen.formGroup" [formField]="cityField"
-                                                            (onFieldChanged)="onFieldChanged($event)"></app-dynamic-form-field>
+                                                            (changed)="onFieldChanged($event)"></app-dynamic-form-field>
                                     <app-dynamic-form-field class="state" *ngIf="stateField" [formGroup]="screen.formGroup" [formField]="stateField"
-                                                            (onFieldChanged)="onFieldChanged($event)"></app-dynamic-form-field>
+                                                            (changed)="onFieldChanged($event)"></app-dynamic-form-field>
                                     <app-dynamic-form-field class="postalCode" *ngIf="postalCodeField" [formGroup]="screen.formGroup" [formField]="postalCodeField"
-                                                            (onFieldChanged)="onFieldChanged($event)"></app-dynamic-form-field>
+                                                            (changed)="onFieldChanged($event)"></app-dynamic-form-field>
                                 </div>
                                 <app-dynamic-form-field class="country" *ngIf="countryField" [formGroup]="screen.formGroup" [formField]="countryField"
-                                                        (onFieldChanged)="onFieldChanged($event)"></app-dynamic-form-field>
+                                                        (changed)="onFieldChanged($event)"></app-dynamic-form-field>
                             </div>
                         </ng-template>
                         <ng-template #loyaltySection>
                             <div class="loyalty-and-membership">
                                 <div class="loyalty-number" *ngIf="loyaltyNumberField">
                                     <app-icon matPrefix [iconName]="screen.loyaltyNumberIcon" iconClass="material-icons sm"></app-icon>
-                                    <app-dynamic-form-field [formGroup]="screen.formGroup" [formField]="loyaltyNumberField" (onFieldChanged)="onFieldChanged($event)"></app-dynamic-form-field>
+                                    <app-dynamic-form-field [formGroup]="screen.formGroup" [formField]="loyaltyNumberField" (changed)="onFieldChanged($event)"></app-dynamic-form-field>
                                 </div>
                                 <div *ngIf="screen.membershipEnabled && screen.isStructuredForm" class="memberships">
                                     <div *ngIf="screen.memberships && screen.memberships.length">

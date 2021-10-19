@@ -13,11 +13,10 @@ export class MaxValueValidator implements IValidator {
             value = value.replace(',', '');
         }
         return Number(value) <= Number(this.spec.maximumValue) ? null : {
-            // tslint:disable-next-line:object-literal-key-quotes
-            'maxvalue': {
+            maxvalue: {
                 valid: false
             }
-        } as any;
+        };
     }
 }
 

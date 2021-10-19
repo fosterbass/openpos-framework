@@ -15,10 +15,8 @@ export const FORMATTED_INPUT_VALUE_ACCESSOR: any = {
     selector: 'input[formatterName]',
     providers: [FORMATTED_INPUT_VALUE_ACCESSOR]
 })
-// tslint:disable-next-line:directive-class-suffix
 export class InputFormatterDirective implements ControlValueAccessor {
 
-    // tslint:disable-next-line:variable-name
     private _formatterName: string;
 
     private formatter: IFormatter;
@@ -26,9 +24,12 @@ export class InputFormatterDirective implements ControlValueAccessor {
     onChange = (value: string) => { };
     onTouched = () => { };
 
-    constructor(private renderer: Renderer2, private elRef: ElementRef, private formatterService: FormattersService,
-                private platform: Platform) {
-    }
+    constructor(
+        private renderer: Renderer2,
+        private elRef: ElementRef,
+        private formatterService: FormattersService,
+        private platform: Platform
+    ) { }
 
     @Input()
     set formatterName(formatterName: string) {
@@ -124,6 +125,7 @@ export class InputFormatterDirective implements ControlValueAccessor {
 
         // Ask the formatter to validate the addition either with the key or new value
         if (!this.formatter.allowKey(key, this.formatter.unFormatValue(newValue)) && key !== 'Enter') {
+            // tslint:disable-next-line: deprecation
             event.preventDefault();
         }
     }

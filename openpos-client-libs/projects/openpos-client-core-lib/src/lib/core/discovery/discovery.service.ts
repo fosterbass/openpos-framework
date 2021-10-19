@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { PersonalizationService } from '../personalization/personalization.service';
 import { DiscoveryResponse } from './discovery-response.interface';
-import {timeout, catchError, distinctUntilChanged} from 'rxjs/operators';
-import {of, BehaviorSubject, Observable, combineLatest} from 'rxjs';
+import { timeout, catchError, distinctUntilChanged } from 'rxjs/operators';
+import { of, BehaviorSubject, Observable, combineLatest } from 'rxjs';
 import { DiscoveryParams } from './discovery-params.interface';
 
 @Injectable({
@@ -17,26 +17,32 @@ export class DiscoveryService {
     private apiServerBaseUrl$ = new BehaviorSubject<string>(null);
     private deviceAppApiServerBaseUrl$ = new BehaviorSubject<string>(null);
 
-    constructor(protected personalization: PersonalizationService,
-                private http: HttpClient) {
+    constructor(
+        protected personalization: PersonalizationService,
+        private http: HttpClient
+    ) {
 
-        combineLatest(  personalization.getSslEnabled$(),
-                        personalization.getServerName$(),
-                        personalization.getServerPort$(),
-                        personalization.getAppId$(),
-                        personalization.getDeviceId$()
-        ).subscribe(([sslEnabled, serverName, serverPort, appId, deviceId]) =>
+        combineLatest([
+            personalization.getSslEnabled$(),
+            personalization.getServerName$(),
+            personalization.getServerPort$(),
+            personalization.getAppId$(),
+            personalization.getDeviceId$()
+        ]).subscribe(([sslEnabled, serverName, serverPort, appId, deviceId]) =>
             this.updateServerBaseUrl(serverName, serverPort, sslEnabled, appId, deviceId));
 
-        combineLatest(  personalization.getAppId$().pipe(distinctUntilChanged()),
-                        personalization.getDeviceId$()
-            ).subscribe( ([appId, deviceId]) => this.deviceAppApiServerBaseUrl$.next(this.getDeviceAppApiServerBaseUrl(appId, deviceId)));
+        combineLatest([
+            personalization.getAppId$().pipe(distinctUntilChanged()),
+            personalization.getDeviceId$()
+        ]).subscribe(([appId, deviceId]) => this.deviceAppApiServerBaseUrl$.next(this.getDeviceAppApiServerBaseUrl(appId, deviceId)));
 
-        combineLatest(  personalization.getIsManagedServer$(),
-                        personalization.getSslEnabled$(),
-                        personalization.getServerName$(),
-                        personalization.getServerPort$()
-            ).subscribe( ([isManagedServer, sslEnabled, serverName, serverPort]) => this.updateWebsocketUrl(isManagedServer, sslEnabled, serverName, serverPort));
+        combineLatest([
+            personalization.getIsManagedServer$(),
+            personalization.getSslEnabled$(),
+            personalization.getServerName$(),
+            personalization.getServerPort$()
+        ]).subscribe(([isManagedServer, sslEnabled, serverName, serverPort]) =>
+            this.updateWebsocketUrl(isManagedServer, sslEnabled, serverName, serverPort));
     }
 
     public async isManagementServerAlive(): Promise<boolean> {
@@ -44,7 +50,7 @@ export class DiscoveryService {
         if (this.personalization.getIsManagedServer$().getValue()) {
             const url = `http${this.personalization.getSslEnabled$().getValue() ? 's' : ''}` +
                 `://${this.personalization.getServerName$().getValue()}:${this.personalization.getServerPort$().getValue()}/ping`;
-            const httpResult = await this.http.get(url, {responseType: 'text'})
+            const httpResult = await this.http.get(url, { responseType: 'text' })
                 .pipe(timeout(1000),
                     catchError(e => {
                         return of(false);
@@ -61,12 +67,18 @@ export class DiscoveryService {
 
     private makeParams(params?: DiscoveryParams): DiscoveryParams {
         return {
-            server: params && typeof params.server !== 'undefined' ? params.server : this.personalization.getServerName$().getValue(),
-            port: params && typeof params.port !== 'undefined' ? params.port : this.personalization.getServerPort$().getValue(),
-            deviceId: params && typeof params.deviceId !== 'undefined' ? params.deviceId : this.personalization.getDeviceId$().getValue(),
-            sslEnabled: params && typeof params.sslEnabled !== 'undefined' ? params.sslEnabled : this.personalization.getSslEnabled$().getValue(),
-            appId: params && typeof params.appId !== 'undefined' ? params.appId : null,
-            maxWaitMillis: params && typeof params.maxWaitMillis !== 'undefined' ? params.maxWaitMillis : 90000
+            server: params && typeof params.server !== 'undefined' ?
+                params.server : this.personalization.getServerName$().getValue(),
+            port: params && typeof params.port !== 'undefined' ?
+                params.port : this.personalization.getServerPort$().getValue(),
+            deviceId: params && typeof params.deviceId !== 'undefined' ?
+                params.deviceId : this.personalization.getDeviceId$().getValue(),
+            sslEnabled: params && typeof params.sslEnabled !== 'undefined' ?
+                params.sslEnabled : this.personalization.getSslEnabled$().getValue(),
+            appId: params && typeof params.appId !== 'undefined' ?
+                params.appId : null,
+            maxWaitMillis: params && typeof params.maxWaitMillis !== 'undefined' ?
+                params.maxWaitMillis : 90000
         };
     }
     public async discoverDeviceProcess(parameters?: DiscoveryParams): Promise<DiscoveryResponse> {
@@ -86,7 +98,7 @@ export class DiscoveryService {
                 .toPromise();
             if (httpResult) {
                 if (httpResult.hasOwnProperty('success')) {
-                    if (! httpResult.success) {
+                    if (!httpResult.success) {
                         console.log('Discovery FAILED with url: ' + url);
                     }
                 } else {
@@ -110,7 +122,7 @@ export class DiscoveryService {
             }
         } catch (error) {
             discoveryError = error;
-            discoveryError['success'] = false;
+            discoveryError.success = false;
             return discoveryError;
         }
     }
@@ -122,8 +134,10 @@ export class DiscoveryService {
         return this.serverBaseUrl;
     }
 
-    private updateServerBaseUrl( serverName: string, serverPort: string, sslEnabled: boolean, appId: string, deviceId: string) {
-        if( !serverName || !serverPort || !appId || !deviceId ) return;
+    private updateServerBaseUrl(serverName: string, serverPort: string, sslEnabled: boolean, appId: string, deviceId: string) {
+        if (!serverName || !serverPort || !appId || !deviceId) {
+            return;
+        }
 
         const protocol = sslEnabled ? 'https' : 'http';
         this.serverBaseUrl = `${protocol}://${serverName}` +
@@ -154,7 +168,7 @@ export class DiscoveryService {
         return `${this.getServerBaseURL()}/api`;
     }
 
-    private updateWebsocketUrl( isManageServer: boolean, sslEnabled: boolean, serverName: string, serverPort: string) {
+    private updateWebsocketUrl(isManageServer: boolean, sslEnabled: boolean, serverName: string, serverPort: string) {
         if (isManageServer) {
             console.debug(`webSocketUrl isn't set yet for the managed server`);
         } else {

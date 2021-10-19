@@ -7,7 +7,7 @@ import {
     take,
     timeout,
     first,
-    flatMap,
+    mergeMap,
     last
 } from 'rxjs/operators';
 import { IStartupTask } from './startup-task.interface';
@@ -22,7 +22,7 @@ import { PersonalizationComponent } from '../personalization/personalization.com
 import { Zeroconf, ZeroconfService, ZEROCONF_TOKEN } from './zeroconf/zeroconf';
 import { Inject } from '@angular/core';
 import { Optional } from '@angular/core';
-import {Configuration} from "../../configuration/configuration";
+import {CONFIGURATION} from '../../configuration/configuration';
 
 @Injectable({
     providedIn: 'root',
@@ -100,7 +100,8 @@ export class PersonalizationStartupTask implements IStartupTask {
             )
         ).pipe(
             retryWhen(errors => errors.pipe(
-                switchMap(() => interval(1000), (error, time) => `${error} \n Retry in ${5 - time}`),
+                switchMap(() => interval(1000)),
+                map((error, time) => `${error} \n Retry in ${5 - time}`),
             ))
         );
     }
@@ -132,7 +133,7 @@ export class PersonalizationStartupTask implements IStartupTask {
                             return concat(
                                 of('failed to auto personalize; attempting with auto-personalization hostname'),
                                 this.personalizeWithHostname(data, provider)
-                            )
+                            );
                         })
                     )
                 );
@@ -141,16 +142,16 @@ export class PersonalizationStartupTask implements IStartupTask {
     }
 
     personalizeWithHostname(data: StartupTaskData, provider: Zeroconf): Observable<string> {
-        const servicePath = Configuration.autoPersonalizationServicePath;
+        const servicePath = CONFIGURATION.autoPersonalizationServicePath;
         if (!!servicePath) {
             return concat(
-                of("Attempting to retrieve personalization params via hostname"),
+                of('Attempting to retrieve personalization params via hostname'),
                 provider.deviceName().pipe(
-                    flatMap(deviceName => this.attemptAutoPersonalize(data, Configuration.autoPersonalizationServicePath, deviceName)),
+                    mergeMap(deviceName => this.attemptAutoPersonalize(data, CONFIGURATION.autoPersonalizationServicePath, deviceName)),
                     catchError(e => {
                         console.error('failed to auto personalize', e);
                         return this.doStandardPersonalization(data);
-                    })),
+                    }))
             );
         } else {
             return this.doStandardPersonalization(data);
@@ -160,7 +161,7 @@ export class PersonalizationStartupTask implements IStartupTask {
     private attemptAutoPersonalize(startupData: StartupTaskData, url: string, deviceName: string): Observable<string> {
         return this.personalization.getAutoPersonalizationParameters(deviceName, url)
             .pipe(
-                flatMap(info => {
+                mergeMap(info => {
                     if (info) {
                         const params = info.personalizationParams;
                         let paramsMap: Map<string, string>;
@@ -269,7 +270,7 @@ function lastOrElse<T, R>(valueProject: (value: R) => Observable<T>, e: Observab
             next: value => {
                 path = valueProject(value);
             },
-            error: () => {}
+            error: () => { }
         });
 
         const pathSubscription = path.subscribe({

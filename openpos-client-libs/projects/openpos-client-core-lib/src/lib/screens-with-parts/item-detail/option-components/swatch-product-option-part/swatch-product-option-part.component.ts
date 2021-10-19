@@ -1,10 +1,10 @@
-import {Component, Inject, Injector, OnInit, Optional} from '@angular/core';
-import {ScreenPart} from '../../../../shared/decorators/screen-part.decorator';
-import {ScreenPartComponent} from '../../../../shared/screen-parts/screen-part';
-import {OPTION_NAME} from '../../item-detail-option';
-import {SwatchProductOptionPartInterface} from './swatch-product-option-part.interface';
+import { Component, Inject, Injector, OnInit, Optional } from '@angular/core';
+import { ScreenPart } from '../../../../shared/decorators/screen-part.decorator';
+import { ScreenPartComponent } from '../../../../shared/screen-parts/screen-part';
+import { OPTION_NAME } from '../../item-detail-option';
+import { SwatchProductOptionPartInterface } from './swatch-product-option-part.interface';
 
-@ScreenPart( {
+@ScreenPart({
     name: 'swatchProductOption'
 })
 @Component({
@@ -12,24 +12,24 @@ import {SwatchProductOptionPartInterface} from './swatch-product-option-part.int
     templateUrl: './swatch-product-option-part.component.html',
     styleUrls: ['./swatch-product-option-part.scss']
 })
-export class SwatchProductOptionPart extends ScreenPartComponent<SwatchProductOptionPartInterface> implements OnInit {
+export class SwatchProductOptionPartComponent extends ScreenPartComponent<SwatchProductOptionPartInterface> implements OnInit {
     selectedOptionName: string;
     useImageSwatch = true;
-    
-    constructor( @Optional() injector: Injector, @Optional() @Inject(OPTION_NAME) private optionName: string ) {
+
+    constructor(@Optional() injector: Injector, @Optional() @Inject(OPTION_NAME) private optionName: string) {
         super(injector);
     }
 
-    
-    ngOnInit(): void{
+
+    ngOnInit(): void {
         this.screenPartName = 'swatchProductOption' + this.optionName;
         super.ngOnInit();
     }
 
     screenDataUpdated() {
         if (this.screenData && this.screenData.swatches) {
-            let swatch = this.screenData.swatches.find(value => value.id === this.screenData.selectedOption);
-            
+            const swatch = this.screenData.swatches.find(value => value.id === this.screenData.selectedOption);
+
             if (swatch) {
                 this.selectedOptionName = swatch.name;
             } else {
@@ -39,11 +39,11 @@ export class SwatchProductOptionPart extends ScreenPartComponent<SwatchProductOp
             this.selectedOptionName = '';
         }
 
-        console.log(this.selectedOptionName)
+        console.log(this.selectedOptionName);
     }
-    
-    selectOption(swatchId: string){
-        console.log("selected", swatchId);
+
+    selectOption(swatchId: string) {
+        console.log('selected', swatchId);
         this.doAction(this.screenData.selectOptionAction, swatchId);
     }
 

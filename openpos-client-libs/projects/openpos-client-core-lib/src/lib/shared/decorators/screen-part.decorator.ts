@@ -5,7 +5,7 @@ export interface ScreenPartProps {
 }
 
 export function ScreenPart(config: ScreenPartProps) {
-    return function <T extends Type<any>>(target: T) {
-        target.prototype['screenPartName'] = config.name
+    return <T extends Type<any>>(target: T) => {
+        target.prototype.screenPartName = config.name;
     };
 }

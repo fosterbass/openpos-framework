@@ -1,6 +1,6 @@
 import { Injectable, Injector, ComponentRef } from '@angular/core';
 import { Overlay, OverlayConfig, OverlayRef } from '@angular/cdk/overlay';
-import { ComponentPortal, PortalInjector } from '@angular/cdk/portal';
+import { ComponentPortal } from '@angular/cdk/portal';
 import { TrainingOverlayRef } from '../../shared/components/training-dialog/training-overlay-ref';
 import { TrainingWrapperComponent } from '../../shared/components/training-dialog/training-wrapper.component';
 
@@ -42,13 +42,9 @@ export class TrainingOverlayService {
     return containerRef.instance;
   }
 
-  private createInjector(dialogRef: TrainingOverlayRef): PortalInjector {
-    const injectionTokens = new WeakMap();
-
-    // Pass the dialogRef to the TrainingWrapperComponent
-    injectionTokens.set(TrainingOverlayRef, dialogRef);
-
-    return new PortalInjector(this.injector, injectionTokens);
+  private createInjector(dialogRef: TrainingOverlayRef): Injector {
+    const providers = [{ provide: TrainingOverlayRef, useValue: dialogRef }];
+    return Injector.create({ providers, parent: this.injector });
   }
 
   private getOverlayConfig(): OverlayConfig {

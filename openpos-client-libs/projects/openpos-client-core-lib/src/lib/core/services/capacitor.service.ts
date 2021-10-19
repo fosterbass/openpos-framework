@@ -1,8 +1,8 @@
-import {Injectable} from '@angular/core';
-import {Capacitor} from "@capacitor/core";
-import {Device, DeviceInfo} from '@capacitor/device';
-import {from, Observable} from "rxjs";
-import {map} from "rxjs/operators";
+import { Injectable } from '@angular/core';
+import { Capacitor } from '@capacitor/core';
+import { Device, DeviceInfo } from '@capacitor/device';
+import { from, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root',
@@ -10,7 +10,7 @@ import {map} from "rxjs/operators";
 export class CapacitorService {
 
     public isRunningInCapacitor(): boolean {
-        return Capacitor.isNative;
+        return Capacitor.isNativePlatform();
     }
 
     public isPluginAvailable(plugin: string): boolean {
@@ -23,5 +23,3 @@ export class CapacitorService {
         );
     }
 }
-
-

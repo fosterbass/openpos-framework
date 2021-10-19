@@ -1,9 +1,8 @@
-import { Directive, HostListener, Renderer2, ElementRef, OnDestroy } from '@angular/core';
+import { Directive, Renderer2, ElementRef, OnDestroy } from '@angular/core';
 import 'hammerjs';
 import 'hammer-timejs';
-import { Subscription } from 'rxjs';
 import { SessionService } from '../../core/services/session.service';
-import { Configuration } from '../../configuration/configuration';
+import { CONFIGURATION } from '../../configuration/configuration';
 
 @Directive({
     // tslint:disable-next-line:directive-selector
@@ -11,12 +10,10 @@ import { Configuration } from '../../configuration/configuration';
 })
 export class MimicScrollDirective implements OnDestroy {
 
-    private screenSubscription: Subscription;
-    private screen: any;
     private unlistenMethod = () => { };
 
     constructor(private elRef: ElementRef, public session: SessionService, public renderer: Renderer2) {
-        if (Configuration.mimicScroll) {
+        if (CONFIGURATION.mimicScroll) {
             this.unlistenMethod = this.renderer.listen(elRef.nativeElement, 'panmove', (event) => {
                 this.elRef.nativeElement.scrollTop -= event.deltaY / 10;
             });

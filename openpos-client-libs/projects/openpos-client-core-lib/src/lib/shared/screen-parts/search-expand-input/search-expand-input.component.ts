@@ -37,8 +37,11 @@ export class SearchExpandInputComponent extends ScreenPartComponent<ScanOrSearch
     private softwareTrigger = new Subject<void>();
 
     constructor(
-        private injector: Injector, public devices: DeviceService, mediaService: OpenposMediaService,
-        private scannerService: BarcodeScanner) {
+        private injector: Injector,
+        public devices: DeviceService,
+        mediaService: OpenposMediaService,
+        private scannerService: BarcodeScanner
+    ) {
         super(injector);
         const mobileMap = new Map([
             [MediaBreakpoints.MOBILE_PORTRAIT, true],
@@ -73,9 +76,10 @@ export class SearchExpandInputComponent extends ScreenPartComponent<ScanOrSearch
 
     private registerScanner() {
         if (typeof this.scanServiceSubscription === 'undefined' || this.scanServiceSubscription === null) {
-            this.scanServiceSubscription = this.scannerService.beginScanning({softwareTrigger: this.softwareTrigger}).subscribe(scanData => {
-                this.actionService.doAction(this.screenData.scanAction, scanData);
-            });
+            this.scanServiceSubscription = this.scannerService.beginScanning({ softwareTrigger: this.softwareTrigger })
+                .subscribe(scanData => {
+                    this.actionService.doAction(this.screenData.scanAction, scanData);
+                });
         }
     }
 

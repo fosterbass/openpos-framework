@@ -1,4 +1,4 @@
 export interface HelpText {
-    id: string
+    id: string;
     text: string;
 }

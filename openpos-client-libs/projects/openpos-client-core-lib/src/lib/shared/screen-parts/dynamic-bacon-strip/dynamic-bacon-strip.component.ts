@@ -4,8 +4,6 @@ import { ScreenPart } from '../../decorators/screen-part.decorator';
 import { ScreenPartComponent } from '../screen-part';
 import { Observable } from 'rxjs';
 import { OpenposMediaService, MediaBreakpoints } from '../../../core/media/openpos-media.service';
-import {BaconStripInterface} from "../bacon-strip/bacon-strip.interface";
-
 
 @ScreenPart({
   name: 'dynamicBaconStrip'
@@ -34,7 +32,7 @@ export class DynamicBaconStripComponent extends ScreenPartComponent<DynamicBacon
   screenDataUpdated() { }
 
   handleClick() {
-    if(this.screenData.actions && this.screenData.actions.length === 1) {
+    if (this.screenData.actions && this.screenData.actions.length === 1) {
       this.doAction(this.screenData.actions[0]);
     }
   }

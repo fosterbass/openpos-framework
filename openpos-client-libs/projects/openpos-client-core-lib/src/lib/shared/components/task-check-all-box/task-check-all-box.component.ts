@@ -1,6 +1,6 @@
-import {ChangeDetectorRef, Component, EventEmitter, Input, Output} from '@angular/core';
-import {TaskListManagerService} from '../task-list/task-list-manager.service';
-import {TaskCheckAllStateEnum} from './task-check-all-state.enum';
+import { ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
+import { TaskListManagerService } from '../task-list/task-list-manager.service';
+import { TaskCheckAllStateEnum } from './task-check-all-state.enum';
 
 @Component({
   selector: 'app-task-check-all-box',
@@ -17,23 +17,23 @@ export class TaskCheckAllBoxComponent {
   TaskCheckAllStateEnum = TaskCheckAllStateEnum;
 
   private _state = TaskCheckAllStateEnum.NoneChecked;
-  private _stateChanged =  new EventEmitter<TaskCheckAllStateEnum>();
+  private _stateChanged = new EventEmitter<TaskCheckAllStateEnum>();
 
-  constructor( taskListManager: TaskListManagerService, private cd: ChangeDetectorRef ) {
-    if( taskListManager) {
+  constructor(taskListManager: TaskListManagerService, private cd: ChangeDetectorRef) {
+    if (taskListManager) {
       taskListManager.registerCheckAllBox(this);
     }
   }
 
   @Input()
-  allActionName: string = 'All';
+  allActionName = 'All';
 
   @Input()
-  noneActionName: string = 'None';
+  noneActionName = 'None';
 
   @Input()
-  set state( value: TaskCheckAllStateEnum) {
-    if( value !== this._state) {
+  set state(value: TaskCheckAllStateEnum) {
+    if (value !== this._state) {
       this._state = value;
       this._stateChanged.emit(this._state);
       this.cd.detectChanges();
@@ -48,8 +48,8 @@ export class TaskCheckAllBoxComponent {
     return this._stateChanged;
   }
 
-  onClick( newState?: TaskCheckAllStateEnum) {
-    if( !!newState ) {
+  onClick(newState?: TaskCheckAllStateEnum) {
+    if (!!newState) {
       this.state = newState;
     } else {
       switch (this.state) {

@@ -35,8 +35,8 @@ export class StartupService implements CanActivate {
         // This might not be the best way but it's the best I could come up with for now.
         // This allows task defined in the core module to be overridden by vendor specific modules
         // for example overriding the personalization task
-        if ( tasks ) {
-            tasks.forEach( task => this.dedupedTasks.set(task.name, task));
+        if (tasks) {
+            tasks.forEach(task => this.dedupedTasks.set(task.name, task));
         }
     }
 
@@ -47,11 +47,11 @@ export class StartupService implements CanActivate {
 
         // The reality is that we will probably always have atleast 2 tasks (personalize and subscribe to stomp)
         // But to be safe we will check first
-        if ( this.dedupedTasks.size < 1 ) {
+        if (this.dedupedTasks.size < 1) {
             return of(true);
         }
 
-        if ( this.startupComponent ) {
+        if (this.startupComponent) {
             this.startupDialogRef = this.matDialog.open(
                 this.startupComponent,
                 {
@@ -64,20 +64,18 @@ export class StartupService implements CanActivate {
         }
 
         const list = Array.from(this.dedupedTasks.values());
-        list.sort((a, b) => a.order - b.order );
+        list.sort((a, b) => a.order - b.order);
         this.logTaskOrder(list);
 
         this.dedupedTasks.forEach(t => console.log(`found task ${t.name}`));
 
         // Get an array of task observables and attach task name to messages and errors
         const tasks = list.map(task => concat(
-                //of(`running task - ${task.name}`),
-                task.execute({ route, state }).pipe(
-                    map(message => `${task.name}: ${message}`),
-                    catchError(error => throwError(`${task.name}: ${error}`))
-                ),
-                //of(`finished running task - ${task.name}`)
-            )
+            task.execute({ route, state }).pipe(
+                map(message => `${task.name}: ${message}`),
+                catchError(error => throwError(`${task.name}: ${error}`))
+            ),
+        )
         );
 
         // Run all tasks in order
@@ -90,7 +88,7 @@ export class StartupService implements CanActivate {
                 error: (error) => {
                     observer.next(false);
                     console.error('Startup failed');
-                    this.handleError( error );
+                    this.handleError(error);
                 },
                 complete: () => {
                     console.info('All Startup Tasks completed successfully');
@@ -109,15 +107,15 @@ export class StartupService implements CanActivate {
         });
     }
 
-    private handleMessage( message: string ) {
+    private handleMessage(message: string) {
         this.startupTaskMessages$.next(message);
         console.info(message);
         this.allMessages.push(message);
     }
 
-    private handleError( error: string ) {
+    private handleError(error: string) {
         console.error(error);
-        if ( this.failedTask ) {
+        if (this.failedTask) {
             this.failedTask.execute().subscribe(
                 {
                     next: (message) => this.handleMessage(message),
@@ -126,7 +124,7 @@ export class StartupService implements CanActivate {
                 }
             );
         } else {
-            this.showFailure( error );
+            this.showFailure(error);
         }
     }
 
@@ -134,27 +132,27 @@ export class StartupService implements CanActivate {
         console.info(`The following startup tasks will run: ${tasks.map(t => `${t.name}(${t.order})`).join(', ')}`);
     }
 
-    private showFailure( error: string ) {
-        if ( this.startupDialogRef ) {
+    private showFailure(error: string) {
+        if (this.startupDialogRef) {
             this.startupDialogRef.close();
         }
 
-        if ( this.startupFailedComponent ) {
+        if (this.startupFailedComponent) {
             const startupFailedRef = this.matDialog.open(
                 this.startupFailedComponent, {
-                    disableClose: true,
-                    hasBackdrop: false,
-                    width: '80%',
-                    height: '80%',
-                    data: {
-                        error: error,
-                        messages: this.allMessages
-                    },
-                    panelClass: 'openpos-default-theme'
-                }
+                disableClose: true,
+                hasBackdrop: false,
+                width: '80%',
+                height: '80%',
+                data: {
+                    error,
+                    messages: this.allMessages
+                },
+                panelClass: 'openpos-default-theme'
+            }
             );
             const startupFailedCompInst = startupFailedRef.componentInstance;
-            startupFailedRef.afterClosed().subscribe( () => {
+            startupFailedRef.afterClosed().subscribe(() => {
                 if (startupFailedCompInst) {
                     if (startupFailedCompInst.appReloadOnCloseEnabled) {
                         location.href = this.startupRouteUrl;

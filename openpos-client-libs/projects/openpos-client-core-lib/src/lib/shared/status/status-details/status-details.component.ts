@@ -2,11 +2,10 @@ import { Component } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
-
 import { StatusMessage } from '../status.message';
 import { StatusService } from '../status.service';
 import { PeripheralSelectionService, PeripheralCategory } from '../../../core/peripherals/peripheral-selection.service';
-import { PeripheralSelectorComponent, PeripheralSelectorDialogData } from './selector/peripheral-selector.component';
+import { PeripheralSelectorComponent } from './selector/peripheral-selector.component';
 
 @Component({
     templateUrl: './status-details.component.html',
@@ -18,7 +17,7 @@ export class StatusDetailsComponent {
     private _openSelectorDialog?: MatDialogRef<PeripheralSelectorComponent>;
 
     constructor(
-        status: StatusService, 
+        status: StatusService,
         public peripheralSelection: PeripheralSelectionService,
         private dialog: MatDialog,
         private dialogRef: MatDialogRef<PeripheralSelectorComponent>
@@ -30,9 +29,7 @@ export class StatusDetailsComponent {
 
     onChangeSelectedPeripheral(category: PeripheralCategory) {
         this._openSelectorDialog = this.dialog.open(PeripheralSelectorComponent, {
-            data: <PeripheralSelectorDialogData> {
-                category: category
-            },
+            data: { category },
             width: '75%'
         });
 

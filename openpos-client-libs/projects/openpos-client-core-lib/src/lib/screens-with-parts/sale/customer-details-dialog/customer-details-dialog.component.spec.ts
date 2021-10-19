@@ -1,19 +1,19 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import {CustomerDetailsDialogComponent} from './customer-details-dialog.component';
-import {CustomerDetailsDialogInterface} from './customer-details-dialog.interface';
-import {ActionService} from '../../../core/actions/action.service';
-import {validateDoesNotExist, validateExist, validateText} from '../../../utilites/test-utils';
-import {By} from '@angular/platform-browser';
-import {IActionItem} from '../../../core/actions/action-item.interface';
-import {PhonePipe} from '../../../shared/pipes/phone.pipe';
+import { CustomerDetailsDialogComponent } from './customer-details-dialog.component';
+import { CustomerDetailsDialogInterface } from './customer-details-dialog.interface';
+import { ActionService } from '../../../core/actions/action.service';
+import { validateDoesNotExist, validateExist, validateText } from '../../../utilites/test-utils';
+import { By } from '@angular/platform-browser';
+import { IActionItem } from '../../../core/actions/action-item.interface';
+import { PhonePipe } from '../../../shared/pipes/phone.pipe';
 import { MatDialog } from '@angular/material/dialog';
-import {HttpClientTestingModule} from '@angular/common/http/testing';
-import {ElectronService} from 'ngx-electron';
-import {CLIENTCONTEXT} from '../../../core/client-context/client-context-provider.interface';
-import {TimeZoneContext} from '../../../core/client-context/time-zone-context';
-import {Observable, of, Subscription} from 'rxjs';
-import {MediaBreakpoints, OpenposMediaService} from '../../../core/media/openpos-media.service';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { ElectronService } from 'ngx-electron';
+import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provider.interface';
+import { TimeZoneContext } from '../../../core/client-context/time-zone-context';
+import { Observable, of, Subscription } from 'rxjs';
+import { MediaBreakpoints, OpenposMediaService } from '../../../core/media/openpos-media.service';
 import { ImageUrlPipe } from '../../../shared/pipes/image-url.pipe';
 import { MarkdownFormatterPipe } from '../../../shared/pipes/markdown-formatter.pipe';
 import {KeyPressProvider} from '../../../shared/providers/keypress.provider';
@@ -23,10 +23,10 @@ class MockKeyPressProvider {
     return new Subscription();
   }
 }
-class MockActionService {}
-class MockMatDialog {}
-class MockElectronService {}
-class ClientContext {}
+class MockActionService { }
+class MockMatDialog { }
+class MockElectronService { }
+class ClientContext { }
 
 describe('CustomerDetailsDialog', () => {
   let component: CustomerDetailsDialogComponent;
@@ -60,9 +60,9 @@ describe('CustomerDetailsDialog', () => {
   });
 
   describe('shared', () => {
-    beforeEach( () => {
+    beforeEach(() => {
       TestBed.configureTestingModule({
-        imports: [ HttpClientTestingModule],
+        imports: [HttpClientTestingModule],
         declarations: [
           CustomerDetailsDialogComponent, PhonePipe, ImageUrlPipe, MarkdownFormatterPipe
         ],
@@ -72,8 +72,8 @@ describe('CustomerDetailsDialog', () => {
           { provide: MatDialog, useClass: MockMatDialog },
           { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobileFalse },
           { provide: ElectronService, useClass: MockElectronService },
-          { provide: ClientContext, useValue: {}},
-          { provide: CLIENTCONTEXT, useClass: TimeZoneContext}
+          { provide: ClientContext, useValue: {} },
+          { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
         ],
         schemas: [
           NO_ERRORS_SCHEMA,
@@ -81,7 +81,8 @@ describe('CustomerDetailsDialog', () => {
       }).compileComponents();
       fixture = TestBed.createComponent(CustomerDetailsDialogComponent);
       component = fixture.componentInstance;
-      component.screen = { customer,
+      component.screen = {
+        customer,
         rewardTabEnabled: true,
         rewardHistoryTabEnabled: true
       } as CustomerDetailsDialogInterface;
@@ -229,10 +230,6 @@ describe('CustomerDetailsDialog', () => {
             validateDoesNotExist(fixture, selector);
           });
 
-          // it('displays the configured text', () => {
-          //   expect(button.nativeElement.innerText).toContain(configuration.title);
-          // });
-
           it('calls doAction with the configuration when an actionClick event is triggered', () => {
             spyOn(component, 'doAction');
             button = fixture.debugElement.query(By.css(selector));
@@ -273,10 +270,6 @@ describe('CustomerDetailsDialog', () => {
             fixture.detectChanges();
             validateDoesNotExist(fixture, selector);
           });
-
-          // it('displays the configured text', () => {
-          //   expect(button.nativeElement.innerText).toContain(configuration.title);
-          // });
 
           it('calls doAction with the configuration when an actionClick event is triggered', () => {
             spyOn(component, 'doAction');
@@ -319,10 +312,6 @@ describe('CustomerDetailsDialog', () => {
             validateDoesNotExist(fixture, selector);
           });
 
-          // it('displays the configured text', () => {
-          //   expect(button.nativeElement.innerText).toContain(configuration.title);
-          // });
-
           it('calls doAction with the configuration when an actionClick event is triggered', () => {
             spyOn(component, 'doAction');
             button = fixture.debugElement.query(By.css(selector));
@@ -342,9 +331,9 @@ describe('CustomerDetailsDialog', () => {
   });
 
   describe('mobile', () => {
-    beforeEach( () => {
+    beforeEach(() => {
       TestBed.configureTestingModule({
-        imports: [ HttpClientTestingModule],
+        imports: [HttpClientTestingModule],
         declarations: [
           CustomerDetailsDialogComponent, PhonePipe, ImageUrlPipe, MarkdownFormatterPipe
         ],
@@ -354,8 +343,8 @@ describe('CustomerDetailsDialog', () => {
           { provide: MatDialog, useClass: MockMatDialog },
           { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobileTrue },
           { provide: ElectronService, useClass: MockElectronService },
-          { provide: ClientContext, useValue: {}},
-          { provide: CLIENTCONTEXT, useClass: TimeZoneContext}
+          { provide: ClientContext, useValue: {} },
+          { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
         ],
         schemas: [
           NO_ERRORS_SCHEMA,
@@ -363,7 +352,8 @@ describe('CustomerDetailsDialog', () => {
       }).compileComponents();
       fixture = TestBed.createComponent(CustomerDetailsDialogComponent);
       component = fixture.componentInstance;
-      component.screen = { customer,
+      component.screen = {
+        customer,
         rewardTabEnabled: true,
         rewardHistoryTabEnabled: true
       } as CustomerDetailsDialogInterface;
@@ -424,9 +414,9 @@ describe('CustomerDetailsDialog', () => {
   });
 
   describe('non-mobile', () => {
-    beforeEach( () => {
+    beforeEach(() => {
       TestBed.configureTestingModule({
-        imports: [ HttpClientTestingModule],
+        imports: [HttpClientTestingModule],
         declarations: [
           CustomerDetailsDialogComponent, PhonePipe, ImageUrlPipe, MarkdownFormatterPipe
         ],
@@ -436,8 +426,8 @@ describe('CustomerDetailsDialog', () => {
           { provide: MatDialog, useClass: MockMatDialog },
           { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobileFalse },
           { provide: ElectronService, useClass: MockElectronService },
-          { provide: ClientContext, useValue: {}},
-          { provide: CLIENTCONTEXT, useClass: TimeZoneContext}
+          { provide: ClientContext, useValue: {} },
+          { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
         ],
         schemas: [
           NO_ERRORS_SCHEMA,
@@ -445,7 +435,8 @@ describe('CustomerDetailsDialog', () => {
       }).compileComponents();
       fixture = TestBed.createComponent(CustomerDetailsDialogComponent);
       component = fixture.componentInstance;
-      component.screen = { customer,
+      component.screen = {
+        customer,
         rewardTabEnabled: true,
         rewardHistoryTabEnabled: true
       } as CustomerDetailsDialogInterface;

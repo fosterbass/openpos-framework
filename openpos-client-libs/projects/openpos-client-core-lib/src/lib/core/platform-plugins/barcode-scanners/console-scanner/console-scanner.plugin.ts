@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-
 import { Scanner, ScanData, ScanDataType } from '../scanner';
 
 declare global {
@@ -19,14 +18,14 @@ export class ConsoleScannerPlugin implements Scanner {
     constructor() {
         console.scan = (type, value) => {
             this.scanSubject.next({
-                type: type, 
+                type,
                 data: value
             });
         };
 
         console.scanData = (scanData: ScanData) => {
             this.scanSubject.next({ rawData: scanData.rawData, data: scanData.data, rawType: scanData.rawType, type: scanData.type });
-        }
+        };
     }
 
     beginScanning(): Observable<ScanData> {

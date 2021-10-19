@@ -14,10 +14,10 @@ export class StatusDetailsDialog {
         private session: SessionService,
         private dialog: MatDialog,
         public statusDetailsService: StatusDetailsService,
-    ) { 
+    ) {
         this.session.getMessages(MessageTypes.CLOSE_STATUS_DETAILS).subscribe(() => { this.closeDetails(); });
     }
- 
+
     public openDetails() {
         if (this.detailsDialog) {
             return;
@@ -27,7 +27,7 @@ export class StatusDetailsDialog {
             take(1),
             filter(isDetailsNotEmpty => isDetailsNotEmpty),
             map(() => {
-                this.detailsDialog = this.dialog.open(StatusDetailsComponent, { minWidth: '75%' })
+                this.detailsDialog = this.dialog.open(StatusDetailsComponent, { minWidth: '75%' });
                 return this.detailsDialog;
             }),
             mergeMap(dialog => dialog.afterClosed())

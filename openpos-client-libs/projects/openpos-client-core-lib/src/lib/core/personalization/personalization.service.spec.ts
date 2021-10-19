@@ -1,20 +1,19 @@
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {TestBed} from '@angular/core/testing';
-import {PersonalizationConfigResponse} from './personalization-config-response.interface';
-import {PersonalizationParameter} from './personalization-parameter.interface';
-import {PersonalizationResponse} from './personalization-response.interface';
-import {PersonalizationService} from './personalization.service';
-import set = Reflect.set;
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
+import { PersonalizationConfigResponse } from './personalization-config-response.interface';
+import { PersonalizationParameter } from './personalization-parameter.interface';
+import { PersonalizationResponse } from './personalization-response.interface';
+import { PersonalizationService } from './personalization.service';
 
-describe("PersonalizationService", () => {
+describe('PersonalizationService', () => {
 
     let httpMock: HttpTestingController;
     let personalizationService: PersonalizationService;
 
 
-    function setup(){
+    function setup() {
         TestBed.configureTestingModule({
-            imports: [ HttpClientTestingModule ],
+            imports: [HttpClientTestingModule],
             providers: [PersonalizationService]
         });
 
@@ -23,14 +22,13 @@ describe("PersonalizationService", () => {
         personalizationService = TestBed.inject(PersonalizationService);
     }
 
-    function cleanup(){
-        localStorage.clear()
+    function cleanup() {
+        localStorage.clear();
     }
 
 
-    describe('personalizeFromSavedSession', () =>{
-
-        it( 'should send personalization request with device token from local storage', () => {
+    describe('personalizeFromSavedSession', () => {
+        it('should send personalization request with device token from local storage', () => {
 
             cleanup();
 
@@ -40,17 +38,17 @@ describe("PersonalizationService", () => {
 
             setup();
 
-            personalizationService.personalizeFromSavedSession().subscribe( result => {
-               expect(result).toBe('Personalization successful');
-               expect(personalizationService.getDeviceId$().getValue()).toBe('11111-111');
-               expect(personalizationService.getAppId$().getValue()).toBe('pos');
+            personalizationService.personalizeFromSavedSession().subscribe(result => {
+                expect(result).toBe('Personalization successful');
+                expect(personalizationService.getDeviceId$().getValue()).toBe('11111-111');
+                expect(personalizationService.getAppId$().getValue()).toBe('pos');
             });
 
-            let req = httpMock.expectOne('http://server:6140/rest/devices/personalize');
+            const req = httpMock.expectOne('http://server:6140/rest/devices/personalize');
 
             expect(req.request.method).toBe('POST');
 
-            let resp = {
+            const resp = {
                 authToken: 'MY_TOKEN',
                 deviceModel: {
                     deviceId: '11111-111',
@@ -58,13 +56,11 @@ describe("PersonalizationService", () => {
                 }
             } as PersonalizationResponse;
 
-            req.flush(resp)
+            req.flush(resp);
 
             httpMock.verify();
-
         });
-
-        it( 'should send personalization request with device token from local storage over ssl', () => {
+        it('should send personalization request with device token from local storage over ssl', () => {
 
             cleanup();
 
@@ -75,17 +71,17 @@ describe("PersonalizationService", () => {
 
             setup();
 
-            personalizationService.personalizeFromSavedSession().subscribe( result => {
+            personalizationService.personalizeFromSavedSession().subscribe(result => {
                 expect(result).toBe('Personalization successful');
                 expect(personalizationService.getDeviceId$().getValue()).toBe('11111-111');
                 expect(personalizationService.getAppId$().getValue()).toBe('pos');
             });
 
-            let req = httpMock.expectOne('https://server:6140/rest/devices/personalize');
+            const req = httpMock.expectOne('https://server:6140/rest/devices/personalize');
 
             expect(req.request.method).toBe('POST');
 
-            let resp = {
+            const resp = {
                 authToken: 'MY_TOKEN',
                 deviceModel: {
                     deviceId: '11111-111',
@@ -93,14 +89,13 @@ describe("PersonalizationService", () => {
                 }
             } as PersonalizationResponse;
 
-            req.flush(resp)
+            req.flush(resp);
 
             httpMock.verify();
-
         });
 
-        it( 'should throw error if there is no cached token',() => {
-            cleanup();
+        it('should throw error if there is no cached token', () => {
+           cleanup();
            setup();
 
            personalizationService.personalizeFromSavedSession().subscribe({
@@ -113,15 +108,15 @@ describe("PersonalizationService", () => {
 
     });
 
-    describe( 'personalize', () => {
-       it('should send personalization request to server and save response', done => {
+    describe('personalize', () => {
+        it('should send personalization request to server and save response', done => {
             cleanup();
             setup();
 
-            let params = new Map<string, string>();
+            const params = new Map<string, string>();
             params.set('deviceType', 'register');
 
-            personalizationService.personalize('server', '6140', '22222-222', 'pos', params, false).subscribe( result => {
+            personalizationService.personalize('server', '6140', '22222-222', 'pos', params, false).subscribe(result => {
                 expect(result).toBe('Personalization successful');
                 expect(personalizationService.getAppId$().getValue()).toBe('pos');
                 expect(personalizationService.getDeviceId$().getValue()).toBe('22222-222');
@@ -134,27 +129,26 @@ describe("PersonalizationService", () => {
                 done();
             });
 
-            let req = httpMock.expectOne('http://server:6140/rest/devices/personalize');
+            const req = httpMock.expectOne('http://server:6140/rest/devices/personalize');
 
-            let resp = {
-               authToken: 'MY_TOKEN',
-               deviceModel: {
-                   deviceId: '22222-222',
-                   appId: 'pos'
-               }
+            const resp = {
+                authToken: 'MY_TOKEN',
+                deviceModel: {
+                    deviceId: '22222-222',
+                    appId: 'pos'
+                }
             } as PersonalizationResponse;
             req.flush(resp);
             httpMock.verify();
-       });
-
+        });
         it('should send personalization request to server and save response over ssl', () => {
             cleanup();
             setup();
 
-            let params = new Map<string, string>();
+            const params = new Map<string, string>();
             params.set('deviceType', 'register');
 
-            personalizationService.personalize('server', '6140', '22222-222', 'pos', params, true).subscribe( result => {
+            personalizationService.personalize('server', '6140', '22222-222', 'pos', params, true).subscribe(result => {
                 expect(result).toBe('Personalization successful');
                 expect(personalizationService.getAppId$().getValue()).toBe('pos');
                 expect(personalizationService.getDeviceId$().getValue()).toBe('22222-222');
@@ -166,9 +160,9 @@ describe("PersonalizationService", () => {
                 expect(localStorage.getItem('serverPort')).toBe('6140');
             });
 
-            let req = httpMock.expectOne('https://server:6140/rest/devices/personalize');
+            const req = httpMock.expectOne('https://server:6140/rest/devices/personalize');
 
-            let resp = {
+            const resp = {
                 authToken: 'MY_TOKEN',
                 deviceModel: {
                     deviceId: '22222-222',
@@ -190,14 +184,13 @@ describe("PersonalizationService", () => {
             personalizationService.dePersonalize();
             expect(localStorage.getItem('serverName')).toBeNull();
             expect(localStorage.getItem('serverPort')).toBeNull();
-            expect(localStorage.getItem( 'deviceToken')).toBeNull();
+            expect(localStorage.getItem('deviceToken')).toBeNull();
             expect(localStorage.getItem('theme')).toBeNull();
             expect(localStorage.getItem('sslEnabled')).toBeNull();
         });
-
     });
 
-    describe( 'requestPersonalizationConfig', () => {
+    describe('requestPersonalizationConfig', () => {
 
         it('should request personalization config', () => {
             cleanup();
@@ -207,14 +200,14 @@ describe("PersonalizationService", () => {
                 expect(result.devicePattern).toBe('pattern');
             });
 
-            let req = httpMock.expectOne('http://server:6140/rest/devices/personalizationConfig');
+            const req = httpMock.expectOne('http://server:6140/rest/devices/personalizationConfig');
 
             expect(req.request.method).toBe('GET');
 
-            let resp = {
+            const resp = {
                 devicePattern: 'pattern',
                 parameters: [
-                    { label: 'Device Type', property: 'deviceType', defaultValue: 'default'} as PersonalizationParameter,
+                    { label: 'Device Type', property: 'deviceType', defaultValue: 'default' } as PersonalizationParameter,
                 ]
             } as PersonalizationConfigResponse;
 
@@ -222,7 +215,6 @@ describe("PersonalizationService", () => {
 
             httpMock.verify();
         });
-
         it('should request personalization config over ssl', () => {
             cleanup();
             setup();
@@ -231,14 +223,14 @@ describe("PersonalizationService", () => {
                 expect(result.devicePattern).toBe('pattern');
             });
 
-            let req = httpMock.expectOne('https://server:6140/rest/devices/personalizationConfig');
+            const req = httpMock.expectOne('https://server:6140/rest/devices/personalizationConfig');
 
             expect(req.request.method).toBe('GET');
 
-            let resp = {
+            const resp = {
                 devicePattern: 'pattern',
                 parameters: [
-                    { label: 'Device Type', property: 'deviceType', defaultValue: 'default'} as PersonalizationParameter,
+                    { label: 'Device Type', property: 'deviceType', defaultValue: 'default' } as PersonalizationParameter,
                 ]
             } as PersonalizationConfigResponse;
 
@@ -246,7 +238,5 @@ describe("PersonalizationService", () => {
 
             httpMock.verify();
         });
-
-
     });
 });

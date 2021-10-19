@@ -10,7 +10,7 @@ export class DecimalFormatter implements IFormatter {
     }
 
     formatValue(value: string): string {
-        if (!value && value != '0') {
+        if (!value && value !== '0') {
             return '';
         } else {
             return value;

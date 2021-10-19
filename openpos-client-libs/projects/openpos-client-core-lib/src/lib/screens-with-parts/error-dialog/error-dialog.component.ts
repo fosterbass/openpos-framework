@@ -1,7 +1,7 @@
-import {Component, Injector} from '@angular/core';
-import {DialogComponent} from '../../shared/decorators/dialog-component.decorator';
-import {PosScreen} from '../pos-screen/pos-screen.component';
-import {ErrorDialogInterface} from "./error-dialog.interface";
+import { Component, Injector } from '@angular/core';
+import { DialogComponent } from '../../shared/decorators/dialog-component.decorator';
+import { PosScreenDirective } from '../pos-screen/pos-screen.component';
+import { ErrorDialogInterface } from './error-dialog.interface';
 
 @DialogComponent({
     name: 'ErrorDialog'
@@ -11,16 +11,11 @@ import {ErrorDialogInterface} from "./error-dialog.interface";
     templateUrl: './error-dialog.component.html',
     styleUrls: ['./error-dialog.component.scss']
 })
-export class ErrorDialogComponent extends PosScreen<ErrorDialogInterface> {
+export class ErrorDialogComponent extends PosScreenDirective<ErrorDialogInterface> {
 
     constructor(injector: Injector) {
         super(injector);
     }
 
-    buildScreen() {
-    }
-
-
-
-
+    buildScreen() { }
 }

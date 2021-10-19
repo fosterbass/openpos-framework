@@ -1,8 +1,6 @@
 import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
 import { FormControl } from '@angular/forms';
-
 import { BehaviorSubject } from 'rxjs';
-
 import { MAT_KEYBOARD_DEADKEYS } from '../../configs/keyboard-deadkey.config';
 import { MAT_KEYBOARD_ICONS } from '../../configs/keyboard-icons.config';
 import { KeyboardClassKey } from '../../enums/keyboard-class-key.enum';
@@ -144,8 +142,10 @@ export class MatKeyboardKeyComponent implements OnInit {
   }
 
   // Inject dependencies
-  constructor(@Inject(MAT_KEYBOARD_DEADKEYS) private _deadkeys: IKeyboardDeadkeys,
-    @Inject(MAT_KEYBOARD_ICONS) private _icons: IKeyboardIcons) { }
+  constructor(
+    @Inject(MAT_KEYBOARD_DEADKEYS) private _deadkeys: IKeyboardDeadkeys,
+    @Inject(MAT_KEYBOARD_ICONS) private _icons: IKeyboardIcons
+  ) { }
 
   ngOnInit() {
     // read the deadkeys
@@ -258,6 +258,7 @@ export class MatKeyboardKeyComponent implements OnInit {
       // IE
       this.input.nativeElement.focus();
 
+      // tslint:disable-next-line: no-string-literal
       return (window.document['selection'] as any).createRange().text.length;
     }
   }
@@ -275,8 +276,10 @@ export class MatKeyboardKeyComponent implements OnInit {
     } else if ('selection' in window.document) {
       // IE
       this.input.nativeElement.focus();
+      // tslint:disable: no-string-literal
       const sel = (window.document['selection'] as any).createRange();
       const selLen = (window.document['selection'] as any).createRange().text.length;
+      // tslint:enable: no-string-literal
       sel.moveStart('character', -this.control.value.length);
 
       return sel.text.length - selLen;

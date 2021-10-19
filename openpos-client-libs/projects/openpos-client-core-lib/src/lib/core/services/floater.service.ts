@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root',
@@ -13,12 +14,12 @@ export class FloaterService {
         this.floatStatus$ = new BehaviorSubject<boolean>(false);
     }
 
-    flushFloater(floater: BehaviorSubject<boolean>){
+    flushFloater(floater: BehaviorSubject<boolean>) {
         this.floaterList.splice(this.floaterList.indexOf(floater), 1);
         this.buildFloater();
     }
 
-    pushFloater(floater: BehaviorSubject<boolean>){
+    pushFloater(floater: BehaviorSubject<boolean>) {
         this.floaterList.push(floater);
         this.buildFloater();
     }
@@ -28,12 +29,11 @@ export class FloaterService {
         return this.floatStatus$;
     }
 
-    buildFloater(){
-        this.isFloater$ = combineLatest(...(this.floaterList.map(f=>f.asObservable())), (...args) => {
-            return args.reduce((x,y) =>  x || y);
-       });
-       this.isFloater$.subscribe((isFloating) => {
+    buildFloater() {
+        this.isFloater$ = combineLatest(this.floaterList.map(f => f.asObservable()))
+            .pipe(map((args) => args.reduce((x, y) => x || y)));
+        this.isFloater$.subscribe((isFloating) => {
             this.floatStatus$.next(isFloating);
-       });
+        });
     }
 }

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { PosScreen } from '../../screens-with-parts/pos-screen/pos-screen.component';
+import { PosScreenDirective } from '../../screens-with-parts/pos-screen/pos-screen.component';
 import { SelfCheckoutOptionsInterface } from './self-checkout-options.interface';
 import { ScreenComponent } from '../../shared/decorators/screen-component.decorator';
 
@@ -12,7 +12,7 @@ import { ScreenComponent } from '../../shared/decorators/screen-component.decora
     templateUrl: './self-checkout-options.component.html',
     styleUrls: ['./self-checkout-options.component.scss']
 })
-export class SelfCheckoutOptionsComponent extends PosScreen<SelfCheckoutOptionsInterface> {
+export class SelfCheckoutOptionsComponent extends PosScreenDirective<SelfCheckoutOptionsInterface> {
 
     buildScreen() {
     }

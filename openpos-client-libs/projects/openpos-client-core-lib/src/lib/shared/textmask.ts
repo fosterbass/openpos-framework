@@ -35,9 +35,9 @@ export interface INumberMaskSpec extends IMaskSpec {
  * Thin wrapper around text-mask's javascript interface
  */
 export interface ITextMask {
-    mask: ((string|RegExp)[] | (() => any)); // Array of strings/RegExs or function
+    mask: ((string | RegExp)[] | (() => any)); // Array of strings/RegExs or function
     guide: boolean;
-    pipe: Function;
+    pipe: () => void;
 }
 
 /**
@@ -46,18 +46,18 @@ export interface ITextMask {
 export class TextMask implements ITextMask {
     public static NO_MASK: TextMask = new TextMask(() => false);
 
-    mask: ((string|RegExp)[] | (() => any));
+    mask: ((string | RegExp)[] | (() => any));
     guide: boolean;
-    pipe: Function;
+    pipe;
 
-    constructor(mask?: (string|RegExp)[] | (() => any)) {
+    constructor(mask?: (string | RegExp)[] | (() => any)) {
         this.mask = mask;
     }
 
     static instance(maskSpec: IMaskSpec): TextMask {
         const inst: TextMask = new TextMask();
         if (maskSpec.type === 'GenericMask') {
-            const genericMaskSpec = <IGenericMaskSpec> maskSpec;
+            const genericMaskSpec = maskSpec as IGenericMaskSpec;
             inst.mask = [];
             for (const elem of genericMaskSpec.mask) {
                 inst.mask.push(inst.toTextMaskElement(elem));
@@ -67,13 +67,13 @@ export class TextMask implements ITextMask {
                 inst.pipe = Pipes.instance.getPipe(genericMaskSpec.pipeName);
             }
         } else if (maskSpec.type === 'NumberMask') {
-            const numMaskSpec = <INumberMaskSpec> maskSpec;
+            const numMaskSpec = maskSpec as INumberMaskSpec;
             inst.mask = createNumberMask(numMaskSpec);
         }
         return inst;
     }
 
-    protected toTextMaskElement(elem: IMaskElement): string|RegExp {
+    protected toTextMaskElement(elem: IMaskElement): string | RegExp {
         if (elem.type === 'String') {
             return elem.value;
         } else if (elem.type === 'RegExp') {
@@ -88,9 +88,9 @@ export class TextMask implements ITextMask {
  */
 class Pipes {
     private static _instance: Pipes;
-    private pipeMap: Map<string, Function> = new Map<string, Function>();
+    private pipeMap: Map<string, (conformedValue, config) => void> = new Map();
 
-    private toUpper: Function = (conformedValue, config) => {
+    private toUpper(conformedValue, config) {
         return conformedValue.toUpperCase();
     }
 
@@ -103,8 +103,7 @@ class Pipes {
         return this._instance || (this._instance = new this());
     }
 
-    public getPipe(pipeName: string): Function {
+    public getPipe(pipeName: string): (conformedValue, config) => void {
         return this.pipeMap.get(pipeName);
     }
-
 }

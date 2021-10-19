@@ -41,7 +41,7 @@ export class StatusBarComponent {
       map(statusMap => Array.from(statusMap.values()))
     );
 
-    this.line1$ = combineLatest(
+    this.line1$ = combineLatest([
       this.systemInfo$,
       peripheralSelectionService.peripheralCategories$.pipe(
         switchMap(categories => combineLatest(
@@ -49,35 +49,35 @@ export class StatusBarComponent {
             cat => {
               const split = cat.localizationKey.split(':');
 
-              if (split.length !=2) {
-                return of({ displayName: cat.localizationKey, ...cat});
+              if (split.length !== 2) {
+                return of({ displayName: cat.localizationKey, ...cat });
               }
 
               return locale.getString(split[0], split[1]).pipe(
-                map(r => (<CategoryWithName>{
+                map(r => ({
                   displayName: r,
                   ...cat
                 }))
-              )
+              );
             }
           )
         )),
         publishBehavior(new Array<CategoryWithName>()),
         refCount()
       )
-    ).pipe(
+    ]).pipe(
       map(results => {
         let l = results[0].line1;
         const i = results[1];
 
         i.forEach((value) => {
-          let dn = "Not Selected";
+          let dn = 'Not Selected';
 
           if (value.selectedDevice && value.selectedDevice.displayName) {
             dn = value.selectedDevice.displayName;
           }
 
-          l += " | " + value.displayName + " " + dn;
+          l += ' | ' + value.displayName + ' ' + dn;
         });
 
         return l;

@@ -1,8 +1,8 @@
-import {TestBed} from '@angular/core/testing';
-import {cold, getTestScheduler} from 'jasmine-marbles';
-import {UIDataMessage} from '../messages/ui-data-message';
-import {MessageTypes} from '../messages/message-types';
-import {SessionService} from '../services/session.service';
+import { TestBed } from '@angular/core/testing';
+import { cold, getTestScheduler } from 'jasmine-marbles';
+import { UIDataMessage } from '../messages/ui-data-message';
+import { MessageTypes } from '../messages/message-types';
+import { SessionService } from '../services/session.service';
 
 import { UIDataMessageService } from './ui-data-message.service';
 
@@ -12,34 +12,36 @@ describe('UIDataMessageService', () => {
     let input;
     let results;
 
-    beforeEach( () => {
+    beforeEach(() => {
         const sessionSpy = jasmine.createSpyObj('SessionService', ['getMessages']);
         TestBed.configureTestingModule({
             providers: [
                 UIDataMessageService,
-                {provide: SessionService, useValue: sessionSpy},
+                { provide: SessionService, useValue: sessionSpy },
             ]
         });
-        
-        (TestBed.inject(SessionService) as jasmine.SpyObj<SessionService>).getMessages.and.callFake( type => type === MessageTypes.DATA ? input : subscribe );
-        subscribe = cold( 's');
+
+        (TestBed.inject(SessionService) as jasmine.SpyObj<SessionService>)
+            .getMessages.and.callFake(type => type === MessageTypes.DATA ? input : subscribe);
+        subscribe = cold('s');
         results = [];
 
     });
 
     function subscribeToSut() {
-        let sut = TestBed.inject(UIDataMessageService);
+        const sut = TestBed.inject(UIDataMessageService);
 
         getTestScheduler().flush();
 
-        sut.getData$('ItemSearchResults').subscribe( v => {
+        sut.getData$('ItemSearchResults').subscribe(v => {
             results.push(...v);
         });
     }
 
     it('should accumulate messages with matching series id', () => {
 
-        let values = {  x: new UIDataMessage<string[]>('ItemSearchResults', 1, ['123', '321']),
+        const values = {
+            x: new UIDataMessage<string[]>('ItemSearchResults', 1, ['123', '321']),
             y: new UIDataMessage<string[]>('ItemSearchResults', 1, ['456', '654']),
             z: new UIDataMessage<string[]>('ItemSearchResults', 1, ['789', '987']),
             a: ['123', '321', '456', '654', '789', '987']
@@ -51,10 +53,10 @@ describe('UIDataMessageService', () => {
 
         expect(results).toEqual(values.a);
     });
+    it('should drop old results if series changes', () => {
 
-    it( 'should drop old results if series changes', () => {
-
-        let values = {  x: new UIDataMessage<string[]>('ItemSearchResults', 1, ['123', '321', '678']),
+        const values = {
+            x: new UIDataMessage<string[]>('ItemSearchResults', 1, ['123', '321', '678']),
             y: new UIDataMessage<string[]>('ItemSearchResults', 1, ['456']),
             z: new UIDataMessage<string[]>('ItemSearchResults', 2, ['789', '987']),
             a: ['789', '987']
@@ -66,9 +68,9 @@ describe('UIDataMessageService', () => {
 
         expect(results).toEqual(values.a);
     });
-
-    it( 'should remove listener if series is -1', () => {
-        let values = {  x: new UIDataMessage<string[]>('ItemSearchResults', 1, ['123', '321']),
+    it('should remove listener if series is -1', () => {
+        const values = {
+            x: new UIDataMessage<string[]>('ItemSearchResults', 1, ['123', '321']),
             y: new UIDataMessage<string[]>('ItemSearchResults', -1, []),
             z: new UIDataMessage<string[]>('ItemSearchResults', 1, ['789', '987']),
             a: ['789', '987']
@@ -80,22 +82,21 @@ describe('UIDataMessageService', () => {
 
         expect(results).toEqual(values.a);
     });
+    it('should delete cache on session connect', () => {
 
-    it( 'should delete cache on session connect', ()=> {
-
-        let values = {  x: new UIDataMessage<string[]>('ItemSearchResults', 1, ['123', '321']),
+        const values = {
+            x: new UIDataMessage<string[]>('ItemSearchResults', 1, ['123', '321']),
             y: new UIDataMessage<string[]>('ItemSearchResults', 1, ['456', '654']),
             z: new UIDataMessage<string[]>('ItemSearchResults', 1, ['789', '987']),
             a: ['789', '987']
         };
 
         input = cold('-x-y-z--|', values);
-        subscribe = cold( '----s');
+        subscribe = cold('----s');
 
         subscribeToSut();
 
         expect(results).toEqual(values.a);
 
     });
-
 });

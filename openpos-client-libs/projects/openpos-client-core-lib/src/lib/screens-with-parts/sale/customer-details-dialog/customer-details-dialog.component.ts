@@ -1,15 +1,14 @@
-import {Component, Injector, OnDestroy} from '@angular/core';
-import {FormControl} from '@angular/forms';
-import {CustomerDetailsDialogInterface, CustomerItemHistoryFilter} from './customer-details-dialog.interface';
-import {DialogComponent} from '../../../shared/decorators/dialog-component.decorator';
-import {PosScreen} from '../../pos-screen/pos-screen.component';
-import {Observable} from 'rxjs';
-import {MediaBreakpoints, OpenposMediaService} from '../../../core/media/openpos-media.service';
-import {IActionItem} from '../../../core/actions/action-item.interface';
-import {Configuration} from '../../../configuration/configuration';
-import {KeyPressProvider} from '../../../shared/providers/keypress.provider';
-import {ActionService} from '../../../core/actions/action.service';
+import { Component, Injector } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { CustomerDetailsDialogInterface, CustomerItemHistoryFilter } from './customer-details-dialog.interface';
+import { DialogComponent } from '../../../shared/decorators/dialog-component.decorator';
+import { Observable } from 'rxjs';
+import { MediaBreakpoints, OpenposMediaService } from '../../../core/media/openpos-media.service';
+import { IActionItem } from '../../../core/actions/action-item.interface';
+import { CONFIGURATION } from '../../../configuration/configuration';
+import { KeyPressProvider } from '../../../shared/providers/keypress.provider';
 import { MatTabChangeEvent } from '@angular/material/tabs';
+import { PosScreenDirective } from '../../pos-screen/pos-screen.component';
 
 @DialogComponent({
   name: 'CustomerDetailsDialog'
@@ -19,7 +18,7 @@ import { MatTabChangeEvent } from '@angular/material/tabs';
   templateUrl: './customer-details-dialog.component.html',
   styleUrls: ['./customer-details-dialog.component.scss']
 })
-export class CustomerDetailsDialogComponent extends PosScreen<CustomerDetailsDialogInterface> implements OnDestroy {
+export class CustomerDetailsDialogComponent extends PosScreenDirective<CustomerDetailsDialogInterface> {
 
   changedToRewardTab = true;
   changedToRewardHistoryTab = false;
@@ -28,10 +27,11 @@ export class CustomerDetailsDialogComponent extends PosScreen<CustomerDetailsDia
   isMobile: Observable<boolean>;
   readonly itemsHistoryFilterController = new ItemsHistoryFilterController(this);
 
-  constructor(injector: Injector,
-              public actionService: ActionService,
-              private media: OpenposMediaService,
-              protected keyPresses: KeyPressProvider) {
+  constructor(
+    injector: Injector,
+    private media: OpenposMediaService,
+    protected keyPresses: KeyPressProvider
+  ) {
     super(injector);
     this.initIsMobile();
   }
@@ -87,7 +87,7 @@ export class CustomerDetailsDialogComponent extends PosScreen<CustomerDetailsDia
   }
 
   public keybindsEnabled(menuItem: IActionItem): boolean {
-    return Configuration.enableKeybinds && !!menuItem.keybind && menuItem.keybind !== 'Enter';
+    return CONFIGURATION.enableKeybinds && !!menuItem.keybind && menuItem.keybind !== 'Enter';
   }
 }
 
@@ -100,7 +100,7 @@ class ItemsHistoryFilterController {
     return this._parent.screen.itemHistoryFilter;
   }
 
-  constructor(private readonly _parent: CustomerDetailsDialogComponent) {}
+  constructor(private readonly _parent: CustomerDetailsDialogComponent) { }
 
   fromDateFilterChanged(value: Date) {
     this.doItemHistoryFilterAction({ ...this.serverState, fromDate: value.toISOString() });
@@ -121,7 +121,7 @@ class ItemsHistoryFilterController {
 
   filterItemHistory(value?: string): void {
     value = value || this.textFilter.value;
-    this.doItemHistoryFilterAction({...this.serverState, text: value});
+    this.doItemHistoryFilterAction({ ...this.serverState, text: value });
   }
 
   build() {

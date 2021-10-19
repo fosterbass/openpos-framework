@@ -14,7 +14,7 @@ export class MoneyFormatter implements IFormatter {
 
     formatValue(value: string): string {
 
-        if (!value && value != '0') {
+        if (!value && value !== '0') {
             return '';
         }
 
@@ -26,8 +26,10 @@ export class MoneyFormatter implements IFormatter {
             value = value.replace(',', decimalCharSeparator);
         }
         if (value.length > this.maxLength) {
-            value = value.replace(decimalCharSeparator, "");
-            value = value.slice(0, this.maxLength - decimalCharLength) + decimalCharSeparator + value.slice(this.maxLength - decimalCharLength);
+            value = value.replace(decimalCharSeparator, '');
+            value = value.slice(0, this.maxLength - decimalCharLength) +
+                decimalCharSeparator +
+                value.slice(this.maxLength - decimalCharLength);
         }
 
         const i = value.toString().indexOf(decimalCharSeparator);

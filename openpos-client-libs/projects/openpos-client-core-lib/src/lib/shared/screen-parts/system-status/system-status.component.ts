@@ -2,7 +2,7 @@ import { ISystemStatus } from '../../../core/interfaces/system-status.interface'
 import { ScreenPartComponent } from '../screen-part';
 import { Component, Injector } from '@angular/core';
 import { ScreenPart } from '../../decorators/screen-part.decorator';
-import { Configuration } from '../../../configuration/configuration';
+import { CONFIGURATION } from '../../../configuration/configuration';
 import { SystemStatusType } from '../../../core/interfaces/system-status-type.enum';
 import { SystemStatusDialogComponent } from '../../components/system-status/system-status-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -25,8 +25,8 @@ export class SystemStatusComponent extends ScreenPartComponent<ISystemStatus> {
     }
 
     showRegisterStatus(): boolean {
-        if (this.screenData && Configuration.showRegisterStatus) {
-            return Configuration.offlineOnlyRegisterStatus ?
+        if (this.screenData && CONFIGURATION.showRegisterStatus) {
+            return CONFIGURATION.offlineOnlyRegisterStatus ?
                 this.screenData.overallSystemStatus === SystemStatusType.Offline : true;
         } else {
             return false;
@@ -34,7 +34,7 @@ export class SystemStatusComponent extends ScreenPartComponent<ISystemStatus> {
     }
 
     onRegisterStatusClick(): void {
-        if (Configuration.clickableRegisterStatus) {
+        if (CONFIGURATION.clickableRegisterStatus) {
             const dialogRef = this.dialog.open(SystemStatusDialogComponent, {
                 width: '40%',
                 data: {
@@ -46,7 +46,7 @@ export class SystemStatusComponent extends ScreenPartComponent<ISystemStatus> {
                 }
             });
 
-            this.subscriptions.add(dialogRef.afterClosed().subscribe(result => {}));
+            this.subscriptions.add(dialogRef.afterClosed().subscribe(result => { }));
         }
     }
 }

@@ -6,10 +6,9 @@ export class GiftCodeValidator implements IValidator {
 
     validationFunc: ValidatorFn = (ctrl: FormControl) => {
         return ctrl.value && ctrl.value.length > 2 ? null : {
-            // tslint:disable-next-line:object-literal-key-quotes
-            'minlength': {
+            minlength: {
                 valid: false
             }
-        } as any;
+        };
     }
 }

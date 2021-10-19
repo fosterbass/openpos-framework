@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { LocaleConstantKey, LocaleConstants } from './locale.constants';
+import { LocaleConstantKey, LOCALE_CONSTANTS } from './locale.constants';
 import { SessionService } from './session.service';
 import { PersonalizationService } from '../personalization/personalization.service';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -77,8 +77,8 @@ export class LocaleService {
     getConstant(key: LocaleConstantKey, locale?: string): any {
         let llocale = locale || this.getLocale();
         llocale = llocale ? llocale.toLowerCase() : null;
-        if (LocaleConstants[key] && llocale) {
-            return LocaleConstants[key][llocale];
+        if (LOCALE_CONSTANTS[key] && llocale) {
+            return LOCALE_CONSTANTS[key][llocale];
         } else {
             return null;
         }

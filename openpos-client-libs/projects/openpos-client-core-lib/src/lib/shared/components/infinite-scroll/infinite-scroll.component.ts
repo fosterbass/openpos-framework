@@ -1,6 +1,6 @@
-import {Component, ElementRef, Input, OnChanges, OnInit, Renderer2, TemplateRef, ViewChild} from '@angular/core';
-import {UIDataMessageService} from '../../../core/ui-data-message/ui-data-message.service';
-import {InfiniteScrollDatasource} from './infinite-scroll-datasource';
+import { Component, ElementRef, Input, OnChanges, OnInit, Renderer2, TemplateRef, ViewChild } from '@angular/core';
+import { UIDataMessageService } from '../../../core/ui-data-message/ui-data-message.service';
+import { InfiniteScrollDatasource } from './infinite-scroll-datasource';
 
 import type { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 
@@ -78,17 +78,17 @@ export class InfiniteScrollComponent<T> implements OnInit, OnChanges {
 
   dataSource: InfiniteScrollDatasource<T>;
 
-  constructor( private dataMessageService: UIDataMessageService, private el: ElementRef, private renderer: Renderer2 ) {
+  constructor(private dataMessageService: UIDataMessageService, private el: ElementRef, private renderer: Renderer2) {
 
   }
 
   ngOnInit(): void {
     this.dataSource = new InfiniteScrollDatasource<T>(
-        this.dataMessageService.getData$(this.dataKey),
-        () => this.dataMessageService.requestMoreData(this.dataKey),
-        this.dataLoadBuffer);
-    this.dataSource.dataLoaded.subscribe( loaded => {
-      if ( loaded ) {
+      this.dataMessageService.getData$(this.dataKey),
+      () => this.dataMessageService.requestMoreData(this.dataKey),
+      this.dataLoadBuffer);
+    this.dataSource.dataLoaded.subscribe(loaded => {
+      if (loaded) {
         this.renderer.addClass(this.el.nativeElement, 'data-loaded');
       } else {
         this.renderer.removeClass(this.el.nativeElement, 'data-loaded');

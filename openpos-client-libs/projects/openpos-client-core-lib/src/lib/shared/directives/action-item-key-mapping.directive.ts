@@ -1,7 +1,7 @@
 import { Directive, Input, Renderer2, ElementRef, OnDestroy, EventEmitter, Output } from '@angular/core';
 import { KeyPressProvider } from '../providers/keypress.provider';
 import { Subscription } from 'rxjs';
-import { Configuration } from '../../configuration/configuration';
+import { CONFIGURATION } from '../../configuration/configuration';
 import { IActionItem } from '../../core/actions/action-item.interface';
 import { ActionService } from '../../core/actions/action.service';
 
@@ -38,7 +38,7 @@ export class ActionItemKeyMappingDirective implements OnDestroy {
 
     handleKeypress(event: KeyboardEvent, item: IActionItem) {
         // ignore repeats
-        if ( event.repeat || !Configuration.enableKeybinds ) {
+        if ( event.repeat || !CONFIGURATION.enableKeybinds ) {
             return;
         }
         if ( event.type === 'keydown') {

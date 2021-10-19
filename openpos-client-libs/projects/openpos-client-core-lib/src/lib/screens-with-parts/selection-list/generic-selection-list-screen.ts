@@ -1,20 +1,21 @@
-import {SelectionListInterface} from "./selection-list.interface";
-import {PosScreen} from "../pos-screen/pos-screen.component";
-import { AfterViewInit, ElementRef, Injector, ViewChildren, Directive } from "@angular/core";
-import {BehaviorSubject, merge, Observable} from "rxjs";
-import {ISelectableListData} from "../../shared/components/selectable-item-list/selectable-list-data.interface";
-import {SelectableItemListComponentConfiguration} from "../../shared/components/selectable-item-list/selectable-item-list.component";
-import {SelectionMode} from "../../core/interfaces/selection-mode.enum";
-import {SessionService} from "../../core/services/session.service";
-import {filter, map} from "rxjs/operators";
-import {IActionItem} from "../../core/actions/action-item.interface";
-import {Configuration} from "../../configuration/configuration";
-import {SelectableItemInterface} from "./selectable-item.interface";
+import { SelectionListInterface } from './selection-list.interface';
+import { PosScreenDirective } from '../pos-screen/pos-screen.component';
+import { AfterViewInit, ElementRef, Injector, ViewChildren, Directive } from '@angular/core';
+import { BehaviorSubject, merge, Observable } from 'rxjs';
+import { ISelectableListData } from '../../shared/components/selectable-item-list/selectable-list-data.interface';
+import { SelectableItemListComponentConfiguration } from '../../shared/components/selectable-item-list/selectable-item-list.component';
+import { SelectionMode } from '../../core/interfaces/selection-mode.enum';
+import { SessionService } from '../../core/services/session.service';
+import { filter, map } from 'rxjs/operators';
+import { IActionItem } from '../../core/actions/action-item.interface';
+import { CONFIGURATION } from '../../configuration/configuration';
+import { SelectableItemInterface } from './selectable-item.interface';
 
 import type { QueryList } from '@angular/core';
 
 @Directive()
-export class GenericSelectionListScreen<T extends SelectableItemInterface> extends PosScreen<SelectionListInterface<T>> implements AfterViewInit {
+export class GenericSelectionListScreenDirective<T extends SelectableItemInterface>
+    extends PosScreenDirective<SelectionListInterface<T>> implements AfterViewInit {
     @ViewChildren('items') private items: QueryList<ElementRef>;
 
     listData: Observable<ISelectableListData<T>>;
@@ -49,7 +50,7 @@ export class GenericSelectionListScreen<T extends SelectableItemInterface> exten
         ), this.screenData$);
     }
 
-    buildScreen() {
+    buildScreen(): void {
         if (this.screen.selectionList && this.screen.selectionList.length > 0) {
             const allItems = new Map<number, T>();
             const allDisabledItems = new Map<number, T>();
@@ -61,9 +62,9 @@ export class GenericSelectionListScreen<T extends SelectableItemInterface> exten
                 }
             }
             this.screenData$.next({
-                    items: allItems,
-                    disabledItems: allDisabledItems,
-                } as ISelectableListData<T>
+                items: allItems,
+                disabledItems: allDisabledItems,
+            } as ISelectableListData<T>
             );
 
             if (this.screen.selectionList && (this.screen.fetchDataAction === undefined || this.screen.fetchDataAction === null)) {
@@ -94,13 +95,13 @@ export class GenericSelectionListScreen<T extends SelectableItemInterface> exten
         this.listConfig.fetchDataAction = this.screen.fetchDataAction;
     }
 
-    ngAfterViewInit() {
+    ngAfterViewInit(): void {
         this.items.changes.subscribe(() => {
             console.log('changed');
         });
     }
 
-    public onItemListChange(event: any[]): void {
+    onItemListChange(event: any[]): void {
         this.indexes = event;
 
         if (this.screen.selectionChangedAction && this.indexes !== this.previousIndexes) {
@@ -109,7 +110,7 @@ export class GenericSelectionListScreen<T extends SelectableItemInterface> exten
         }
     }
 
-    public onItemChange(event: any): void {
+    onItemChange(event: any): void {
         this.index = event;
 
         if (this.screen.selectionChangedAction && this.index !== this.lastSelection) {
@@ -118,19 +119,19 @@ export class GenericSelectionListScreen<T extends SelectableItemInterface> exten
         }
     }
 
-    public doSelectionButtonAction(menuItem: IActionItem) {
+    doSelectionButtonAction(menuItem: IActionItem): void {
         if (!this.isSelectionDisabled()) {
             this.doMenuItemAction(menuItem);
         }
     }
 
-    public doNonSelectionButtonAction(menuItem: IActionItem) {
+    doNonSelectionButtonAction(menuItem: IActionItem): void {
         if (this.isSelectionDisabled() || this.screen.allowNonSelectButtonWhenSelected) {
             this.doMenuItemAction(menuItem);
         }
     }
 
-    protected doMenuItemAction(menuItem: IActionItem) {
+    protected doMenuItemAction(menuItem: IActionItem): void {
         if (this.screen.multiSelect) {
             this.doAction(menuItem, this.indexes);
         } else {
@@ -138,13 +139,11 @@ export class GenericSelectionListScreen<T extends SelectableItemInterface> exten
         }
     }
 
-    public keybindsEnabled(menuItem: IActionItem): boolean {
-        return Configuration.enableKeybinds && menuItem.keybind && menuItem.keybind !== 'Enter';
+    keybindsEnabled(menuItem: IActionItem): boolean {
+        return CONFIGURATION.enableKeybinds && menuItem.keybind && menuItem.keybind !== 'Enter';
     }
 
-    public isSelectionDisabled(): boolean {
+    isSelectionDisabled(): boolean {
         return this.index < 0 && (this.indexes === undefined || this.indexes === null || this.indexes.length === 0);
     }
-
-
 }

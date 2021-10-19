@@ -1,6 +1,17 @@
 import { animate, AnimationEvent, state, style, transition, trigger } from '@angular/animations';
 import { BasePortalOutlet, CdkPortalOutlet, ComponentPortal } from '@angular/cdk/portal';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentRef, EmbeddedViewRef, HostBinding, HostListener, NgZone, OnDestroy, ViewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ComponentRef,
+  EmbeddedViewRef,
+  HostBinding,
+  HostListener,
+  NgZone,
+  OnDestroy,
+  ViewChild
+} from '@angular/core';
 import { AnimationCurves, AnimationDurations } from '@angular/material/core';
 
 import { Subject, Observable } from 'rxjs';
@@ -66,8 +77,10 @@ export class MatKeyboardContainerComponent extends BasePortalOutlet implements O
   // the keyboard configuration
   keyboardConfig: MatKeyboardConfig;
 
-  constructor(private _ngZone: NgZone,
-              private _changeDetectorRef: ChangeDetectorRef) {
+  constructor(
+    private _ngZone: NgZone,
+    private _changeDetectorRef: ChangeDetectorRef
+  ) {
     super();
   }
 

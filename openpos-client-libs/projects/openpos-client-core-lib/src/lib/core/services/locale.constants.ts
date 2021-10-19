@@ -1,31 +1,31 @@
-export type LocaleConstantKey  = 'currencySymbol' | 'currencyCode' | 'displayName' | 'localeIcon';
-export const LocaleConstants = {
-    'currencySymbol' : {
+export type LocaleConstantKey = 'currencySymbol' | 'currencyCode' | 'displayName' | 'localeIcon';
+export const LOCALE_CONSTANTS = {
+    currencySymbol: {
         'en-us': '$',
         'en-ca': '$',
         'fr-us': '$',
         'fr-ca': '$',
-        'default': '$'
+        default: '$'
     },
-    'currencyCode' : {
+    currencyCode: {
         'en-us': 'USD',
         'fr-us': 'USD',
         'en-ca': 'CAD',
         'fr-ca': 'CAD',
-        'default': 'USD'
+        default: 'USD'
     },
-    'displayName' : {
+    displayName: {
         'en-us': 'English',
         'fr-us': 'French',
         'en-ca': 'English',
         'fr-ca': 'French',
-        'default': 'English'
+        default: 'English'
     },
-    'localeIcon' : {
+    localeIcon: {
         'en-us': 'UnitedStates',
         'fr-us': 'France',
         'en-ca': 'Canada',
         'fr-ca': 'France',
-        'default': 'UnitedStates'
+        default: 'UnitedStates'
     }
 };

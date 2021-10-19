@@ -4,7 +4,7 @@ import { ScreenService } from '../core/services/screen.service';
 import { DialogService } from '../core/services/dialog.service';
 import { CustomerDisplayHomeComponent } from './customer-display-home/customer-display-home.component';
 import { CustomerDisplaySaleComponent } from './customer-display-sale/customer-display-sale.component';
-import {CustomerDisplayReturnComponent} from "./customer-display-return/customer-display-return.component";
+import { CustomerDisplayReturnComponent } from './customer-display-return/customer-display-return.component';
 import { SelfCheckoutModule } from '../self-checkout/self-checkout.module';
 
 const screens = [

@@ -1,4 +1,4 @@
-import {IFormatter} from './formatter.interface';
+import { IFormatter } from './formatter.interface';
 
 export class WeightFormatter implements IFormatter {
     static readonly FILTER_REGEX = /^\d*(\.\d{0,2})?$/;
@@ -8,7 +8,7 @@ export class WeightFormatter implements IFormatter {
     }
 
     formatValue(value: string): string {
-        return !value && value != '0' ? '' : value;
+        return !value && value !== '0' ? '' : value;
     }
 
     unFormatValue(value: string): string {

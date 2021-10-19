@@ -8,9 +8,8 @@ import { MaterialModule } from '../material/material.module';
 import { MatKeyboardModule } from '../keyboard/keyboard.module';
 import { TaskCheckAllBoxComponent } from './components/task-check-all-box/task-check-all-box.component';
 import { TaskCheckBoxComponent } from './components/task-check-box/task-check-box.component';
-import { TaskListComponent } from './components/task-list/task-list.component';
+import { TaskListDirective } from './components/task-list/task-list.component';
 import { ResponsiveGridDirective } from './directives/responsive-grid.directive';
-
 import { SafePipe } from './pipes/safe.pipe';
 import { DynamicListControlComponent } from './components/dynamic-list-control/dynamic-list-control.component';
 import { KeyPressSourceDirective } from './directives/keypress-source.directive';
@@ -148,7 +147,7 @@ import { TenderPartComponent } from './screen-parts/tender-part/tender-part.comp
 import { OrderCardComponent } from './components/order-card/order-card.component';
 import { LocalizedDateNoTimePipe } from './pipes/localized-date-no-time.pipe';
 import { BasicBaconStripComponent } from './screen-parts/basic-bacon-strip/basic-bacon-strip.component';
-import { DynamicBaconStripComponent } from "./screen-parts/dynamic-bacon-strip/dynamic-bacon-strip.component";
+import { DynamicBaconStripComponent } from './screen-parts/dynamic-bacon-strip/dynamic-bacon-strip.component';
 import { ButtonActionTimerComponent } from './components/button-action-timer/button-action-timer.component';
 import { ImageTextPanelComponent } from './screen-parts/image-text-panel/image-text-panel.component';
 import { TransactionSummaryComponent } from './components/transaction-summary/transaction-summary.component';
@@ -178,7 +177,7 @@ import { PurchaseHistoryItemComponent } from './screen-parts/purchase-history-it
 import { CustomerInformationComponent } from './screen-parts/customer-information/customer-information.component';
 import { MutableListItemWithLabelComponent } from './screen-parts/mutable-list-item-with-label-component/mutable-list-item-with-label.component';
 import { RewardsHistoryLineItemComponent } from './screen-parts/rewards-history-line-item/rewards-history-line-item.component';
-import { MembershipPointsDisplayComponent } from "./screen-parts/membership-points-display/membership-points-display.component";
+import { MembershipPointsDisplayComponent } from './screen-parts/membership-points-display/membership-points-display.component';
 import { StandbyComponent } from '../screens-with-parts/standby/standby.component';
 import { KioskModeController } from '../core/platform-plugins/kiosk/kiosk-controller.service';
 import { KIOSK_MODE_PLATFORM } from '../core/platform-plugins/kiosk/kiosk-mode-platform';
@@ -289,7 +288,7 @@ const components = [
     ItemCardComponent,
     TaskCheckAllBoxComponent,
     TaskCheckBoxComponent,
-    TaskListComponent,
+    TaskListDirective,
     RoundedInputComponent,
     MobileFooterComponent,
     CarouselComponent,

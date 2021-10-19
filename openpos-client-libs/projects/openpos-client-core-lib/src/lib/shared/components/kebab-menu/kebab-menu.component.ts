@@ -2,7 +2,7 @@ import { KeyPressProvider } from './../../providers/keypress.provider';
 import { Component, Inject, OnDestroy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
-import { Configuration } from '../../../configuration/configuration';
+import { CONFIGURATION } from '../../../configuration/configuration';
 
 @Component({
     selector: 'app-kebab-menu',
@@ -17,13 +17,13 @@ export class KebabMenuComponent implements OnDestroy {
                 public dialogRef: MatDialogRef<KebabMenuComponent>,
                 protected keyPresses: KeyPressProvider) {
 
-        if (Configuration.enableKeybinds) {
+        if (CONFIGURATION.enableKeybinds) {
             this.data.menuItems.forEach(item => {
                 if (!!item.keybind) {
                     this.subscriptions.add(
                         this.keyPresses.subscribe(item.keybind, 100, event => {
                             // ignore repeats
-                            if (event.repeat || !Configuration.enableKeybinds) {
+                            if (event.repeat || !CONFIGURATION.enableKeybinds) {
                                 return;
                             }
                             if (event.type === 'keydown') {

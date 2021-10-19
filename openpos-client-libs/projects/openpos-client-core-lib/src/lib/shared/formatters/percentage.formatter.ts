@@ -6,9 +6,9 @@ export class PercentageFormatter implements IFormatter {
     private static readonly FILTER_REGEX_DECIMAL_MODE = /^100$|^\d{0,2}(\.\d{1,4})?$|^\d{0,2}(\.)?$/;
     private static readonly FILTER_REGEX_INTEGER_MODE = /^100$|^\d{0,2}$/;
 
-    mode: 'decimal'|'integer';
+    mode: 'decimal' | 'integer';
 
-    constructor(mode:string = PercentageFormatter.DECIMAL_MODE) {
+    constructor(mode: string = PercentageFormatter.DECIMAL_MODE) {
         this.mode = mode === PercentageFormatter.DECIMAL_MODE ? 'decimal' : 'integer';
     }
 

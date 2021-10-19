@@ -1,6 +1,5 @@
 import { IStartupTask } from './startup-task.interface';
 import { InjectionToken, Optional, Inject, Injectable } from '@angular/core';
-import { StartupTaskData } from './startup-task-data';
 import { Observable, merge, of, concat, iif } from 'rxjs';
 import { IPlatformInterface } from '../platforms/platform.interface';
 import { StartupTaskNames } from './startup-task-names';
@@ -22,7 +21,7 @@ export class PlatformReadyStartupTask implements IStartupTask {
         return concat(
             of(`${this.platforms.length} platform(s) to try`),
             new Observable<string>(observer => {
-                console.log("platform plugin", this.platforms);
+                console.log('platform plugin', this.platforms);
                 const platformsToRemove = this.platforms.filter(p => !p.platformPresent());
                 platformsToRemove.forEach(p => {
                     observer.next(`removing ${p.getName()}`);

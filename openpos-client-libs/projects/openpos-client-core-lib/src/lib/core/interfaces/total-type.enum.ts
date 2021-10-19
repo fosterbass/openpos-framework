@@ -1,4 +1,4 @@
 export enum TotalType {
-    Amount= 'Amount',
+    Amount = 'Amount',
     Quantity = 'Quantity'
 }

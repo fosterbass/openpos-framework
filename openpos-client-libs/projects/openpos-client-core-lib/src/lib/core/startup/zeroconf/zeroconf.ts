@@ -1,7 +1,7 @@
-import { InjectionToken } from "@angular/core";
-import { Observable } from "rxjs";
+import { InjectionToken } from '@angular/core';
+import { Observable } from 'rxjs';
 
-export const ZEROCONF_TOKEN = new InjectionToken<Array<Zeroconf>>("ZEROCONF");
+export const ZEROCONF_TOKEN = new InjectionToken<Array<Zeroconf>>('ZEROCONF');
 
 export interface Zeroconf {
     watch(type: string, domain: string): Observable<ZeroconfResult>;

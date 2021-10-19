@@ -1,6 +1,5 @@
 import { Component, TemplateRef, ContentChildren, Input, AfterContentInit, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { Subscription } from 'rxjs';
-
 import type { QueryList } from '@angular/core';
 
 @Component({
@@ -18,13 +17,13 @@ export class PagerComponent implements AfterContentInit, OnDestroy {
     totalPages: number;
     currentIndex = 0;
     private subscription: Subscription;
-    
+
 
     ngAfterContentInit(): void {
         this._initialPageSetup();
         if (this.sections) {
-            this.subscription = this.sections.changes.subscribe( () => {
-                    this._resetPageState();
+            this.subscription = this.sections.changes.subscribe(() => {
+                this._resetPageState();
             });
         }
     }
@@ -53,10 +52,10 @@ export class PagerComponent implements AfterContentInit, OnDestroy {
     private _initialPageSetup(): void {
         this.totalPages = Math.ceil(this.sections.length / this.pageSize);
         this.currentIndex = 0;
-        if(this.currentPage != 1){
+        if (this.currentPage !== 1) {
             this.currentPage = this.currentPage > 0 && this.currentPage <= this.totalPages ? this.currentPage : 1;
             this.currentPageChange.emit(this.currentPage);
-            if(this.currentPage != 1){
+            if (this.currentPage !== 1) {
                 this.currentIndex = (this.currentPage - 1) * this.pageSize;
             }
         }

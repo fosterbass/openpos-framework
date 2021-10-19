@@ -10,9 +10,9 @@ export class DebugImageScanner implements ImageScanner {
 
     beginScanning(view: ScannerViewRef): Observable<ScanData> {
         return new Observable(() => {
-            let subscription = view.viewChanges().subscribe({
+            const subscription = view.viewChanges().subscribe({
                 next: value => {
-                    console.log('scanner view container changed', value)
+                    console.log('scanner view container changed', value);
                 }
             });
 

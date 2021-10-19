@@ -1,17 +1,16 @@
 import { Injectable } from '@angular/core';
-import { Capacitor, registerPlugin } from '@capacitor/core';
+import { Capacitor } from '@capacitor/core';
 import { MessageTypes } from '../../../messages/message-types';
-
 import { SessionService } from '../../../services/session.service';
-import { ConfigProvider } from './capacitor-plugin';
+import { configProvider } from './capacitor-plugin';
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class CapacitorPlatformConfigProvider {
     constructor(
         session: SessionService
     ) {
         if (Capacitor.isPluginAvailable('ConfigProvider')) {
-            ConfigProvider.getConfig()
+            configProvider.getConfig()
                 .then(value => {
                     Object.keys(value).forEach(key => {
                         session.sendMessage({
@@ -19,9 +18,9 @@ export class CapacitorPlatformConfigProvider {
                             configType: key,
 
                             ...value[key]
-                        })
+                        });
                     });
                 });
         }
-     }
+    }
 }

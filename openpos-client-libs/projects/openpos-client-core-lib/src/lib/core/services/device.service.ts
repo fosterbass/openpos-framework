@@ -28,10 +28,12 @@ export class DeviceService implements IMessageHandler<any> {
 
     private cameraScanInProgress = false;
 
-    constructor(    protected session: SessionService,
-                    private cordovaService: CordovaService,
-                    public pluginService: OldPluginService,
-                    private fileUploadService: FileUploadService) {
+    constructor(
+        protected session: SessionService,
+        private cordovaService: CordovaService,
+        public pluginService: OldPluginService,
+        private fileUploadService: FileUploadService
+    ) {
 
         // On iOS need to enter into loading state when the app is backgrounded, otherwise
         // user can execute actions as app is coming back to foreground.
@@ -97,7 +99,7 @@ export class DeviceService implements IMessageHandler<any> {
 
     public async isInAppBrowserActive() {
         try {
-            const inAppPlugin = <InAppBrowserPlugin>await this.pluginService.getPlugin('InAppBrowser');
+            const inAppPlugin = await this.pluginService.getPlugin('InAppBrowser') as InAppBrowserPlugin;
             return inAppPlugin.isActive();
         } catch (error) {
             console.info(`InAppBrowser plugin not available. Reason: ${error}`);
@@ -111,7 +113,7 @@ export class DeviceService implements IMessageHandler<any> {
     }
 
     handle(message: any) {
-        if (message && message.type === 'Screen' &&  message.template && !message.template.dialog) {
+        if (message && message.type === 'Screen' && message.template && !message.template.dialog) {
             this.screen = message;
         } else if (message && message.type === 'DeviceRequest') {
             this.onDeviceRequest(message);
@@ -138,7 +140,7 @@ export class DeviceService implements IMessageHandler<any> {
     }
 
     public scan(source?: string) {
-        // TODO: should be able to modify this method to pass in the screen instead of 
+        // TODO: should be able to modify this method to pass in the screen instead of
         // subscribing to all screen updates.  The only place that invokes this method
         // is the scan-something.component.
         if (this.screen.template && this.screen.template.scan &&
@@ -161,7 +163,7 @@ export class DeviceService implements IMessageHandler<any> {
                             if (response instanceof Scan && source && !response.source) {
                                 response.source = source;
                             }
-                            this.session.sendMessage( new ActionMessage('Scan', true, response));
+                            this.session.sendMessage(new ActionMessage('Scan', true, response));
                         }
                         this.cameraScanInProgress = false;
                     },

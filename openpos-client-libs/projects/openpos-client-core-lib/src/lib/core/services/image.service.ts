@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { SessionService } from './session.service';
-import { PersonalizationService } from '../personalization/personalization.service';
 import { filter, map, take } from 'rxjs/operators';
 import { PersonalizationTokenService } from '../personalization/personalization-token.service';
 
@@ -26,10 +25,8 @@ export class ImageService {
         this.session.getMessages('ConfigChanged')
             .pipe(
                 filter(message => message.configType === 'ImageService'),
-                map(res => res["image-not-found"]),
+                map(res => res['image-not-found']),
                 take(1)
             ).subscribe(res => this._imageNotFoundURL = res);
     }
 }
-
-

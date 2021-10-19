@@ -15,11 +15,11 @@ export class KioskModeHandle {
 
     constructor(
         private exitCallback: () => Promise<void>
-    ) {}
+    ) { }
 
     exit(): Promise<void> {
         if (this._hasExited) {
-            console.warn('cannot exit kiosk mode; exit was previously invoked')
+            console.warn('cannot exit kiosk mode; exit was previously invoked');
             return;
         }
 

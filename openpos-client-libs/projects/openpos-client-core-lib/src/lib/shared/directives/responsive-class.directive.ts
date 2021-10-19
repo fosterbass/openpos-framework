@@ -1,9 +1,10 @@
-import {Directive, ElementRef, OnDestroy, OnInit, Renderer2} from '@angular/core';
-import {Subject} from 'rxjs';
-import {OpenposMediaService} from '../../core/media/openpos-media.service';
-import {takeUntil, tap} from "rxjs/operators";
+import { Directive, ElementRef, OnDestroy, OnInit, Renderer2 } from '@angular/core';
+import { Subject } from 'rxjs';
+import { OpenposMediaService } from '../../core/media/openpos-media.service';
+import { takeUntil, tap } from 'rxjs/operators';
 
 @Directive({
+    // tslint:disable-next-line: directive-selector
     selector: '[responsive-class]'
 })
 export class ResponsiveClassDirective implements OnInit, OnDestroy {

@@ -12,11 +12,10 @@ export function PhoneUSValidatorFn(ctrl: FormControl) {
 
     if (ctrl.value) {
         return regex.test(ctrl.value) ? null : {
-            // tslint:disable-next-line:object-literal-key-quotes
-            'phoneUS': {
+            phoneUS: {
                 valid: false
             }
-        } as any;
+        };
     } else {
         return null;
     }

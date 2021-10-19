@@ -1,5 +1,5 @@
 import { Directive, ElementRef } from '@angular/core';
-import { Configuration } from '../../configuration/configuration';
+import { CONFIGURATION } from '../../configuration/configuration';
 
 @Directive({
     // tslint:disable-next-line:directive-selector
@@ -8,7 +8,7 @@ import { Configuration } from '../../configuration/configuration';
 export class AutocompleteDirective {
 
     constructor(public elementRef: ElementRef) {
-        if (!Configuration.enableAutocomplete) {
+        if (!CONFIGURATION.enableAutocomplete) {
             if (elementRef.nativeElement.getAttribute('type') === 'password') {
                 elementRef.nativeElement.setAttribute('autocomplete', 'new-password');
             } else {

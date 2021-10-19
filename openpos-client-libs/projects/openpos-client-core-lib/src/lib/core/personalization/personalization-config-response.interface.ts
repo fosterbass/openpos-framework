@@ -6,6 +6,6 @@ export interface PersonalizationConfigResponse {
     availableDevices?: Map<string, string>;
     loadedAppIds?: string[];
 
-    //If this is from the ManagementServer we will also get these properties
+    // If this is from the ManagementServer we will also get these properties
     openposManagementServer?: boolean;
 }

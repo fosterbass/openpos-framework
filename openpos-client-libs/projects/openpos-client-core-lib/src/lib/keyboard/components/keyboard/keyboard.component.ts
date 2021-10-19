@@ -1,8 +1,6 @@
 import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, HostBinding, HostListener, ViewChildren } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
-
 import { BehaviorSubject, Observable } from 'rxjs';
-
 import { MatKeyboardRef } from '../../classes/keyboard-ref.class';
 import { KeyboardClassKey } from '../../enums/keyboard-class-key.enum';
 import { KeyboardModifier } from '../../enums/keyboard-modifier.enum';
@@ -86,15 +84,15 @@ export class MatKeyboardComponent {
   }
 
   keyboardLayoutClass(): string {
-      if (this.layout && this.layout.name) {
-            return 'keyboard-layout-' + this.layout.name.replace(/\s+/g, '-').toLowerCase();
-      } else {
-          return '';
-      }
+    if (this.layout && this.layout.name) {
+      return 'keyboard-layout-' + this.layout.name.replace(/\s+/g, '-').toLowerCase();
+    } else {
+      return '';
+    }
   }
 
   // inject dependencies
-  constructor() {}
+  constructor() { }
 
   setInputInstance(inputInstance: ElementRef) {
     this._inputInstance$.next(inputInstance);
@@ -113,8 +111,7 @@ export class MatKeyboardComponent {
 
   /**
    * checks if a given key is currently pressed
-   * @param key
-   * @param
+   * key
    */
   isActive(key: (string | KeyboardClassKey)[]): boolean {
     const modifiedKey: string = this.getModifiedKey(key);
@@ -137,7 +134,7 @@ export class MatKeyboardComponent {
 
   /**
    * listens to users keyboard inputs to simulate on virtual keyboard, too
-   * @param event
+   * event
    */
   @HostListener('document:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent) {
@@ -162,7 +159,7 @@ export class MatKeyboardComponent {
 
   /**
    * listens to users keyboard inputs to simulate on virtual keyboard, too
-   * @param event
+   * event
    */
   @HostListener('document:keyup', ['$event'])
   onKeyUp(event: KeyboardEvent) {
@@ -174,10 +171,12 @@ export class MatKeyboardComponent {
       });
 
     // simulate modifier release
-    if (event.key === KeyboardClassKey.Alt && (this._modifier === KeyboardModifier.Alt || this._modifier === KeyboardModifier.ShiftAlt)) {
+    if (event.key === KeyboardClassKey.Alt &&
+      (this._modifier === KeyboardModifier.Alt || this._modifier === KeyboardModifier.ShiftAlt)) {
       this.onAltClick();
     }
-    if (event.key === KeyboardClassKey.Shift && (this._modifier === KeyboardModifier.Shift || this._modifier === KeyboardModifier.ShiftAlt)) {
+    if (event.key === KeyboardClassKey.Shift &&
+      (this._modifier === KeyboardModifier.Shift || this._modifier === KeyboardModifier.ShiftAlt)) {
       this.onShiftClick();
     }
   }
@@ -192,7 +191,7 @@ export class MatKeyboardComponent {
 
   /**
    * simulates clicking `CapsLock` key
-   * @param targetState
+   * targetState
    */
   onCapsClick(targetState = !this._capsLocked) {
     // not implemented

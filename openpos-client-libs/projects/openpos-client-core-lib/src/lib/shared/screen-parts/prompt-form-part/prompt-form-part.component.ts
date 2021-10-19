@@ -4,8 +4,8 @@ import { Validators, FormControl, FormGroup, ValidatorFn } from '@angular/forms'
 import { ValidatorsService } from '../../../core/services/validators.service';
 import { IActionItem } from '../../../core/actions/action-item.interface';
 import { PromptFormPartInterface } from './prompt-form-part.interface';
-import {Configuration} from '../../../configuration/configuration';
-import {merge} from 'rxjs';
+import { CONFIGURATION } from '../../../configuration/configuration';
+import { merge } from 'rxjs';
 
 @Component({
     selector: 'app-prompt-form-part',
@@ -86,7 +86,7 @@ export class PromptFormPartComponent extends ScreenPartComponent<PromptFormPartI
     }
 
     public keybindsEnabled() {
-        return Configuration.enableKeybinds;
+        return CONFIGURATION.enableKeybinds;
     }
 
     ngAfterViewInit(): void {
@@ -101,7 +101,7 @@ export class PromptFormPartComponent extends ScreenPartComponent<PromptFormPartI
         if (this.promptFormGroup.valid && this.options.nativeElement.children.length === 0) {
             const payload = this.promptFormGroup.value[this.inputControlName];
             if (this.screenData.actionButton) {
-                this.doAction({action: this.screenData.actionButton.action}, payload);
+                this.doAction({ action: this.screenData.actionButton.action }, payload);
             }
         }
     }

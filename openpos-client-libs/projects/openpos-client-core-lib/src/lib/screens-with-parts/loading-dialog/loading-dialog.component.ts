@@ -1,7 +1,7 @@
 import { LoadingDialogInterface } from './loading-dialog.interface';
 import { DialogComponent } from '../../shared/decorators/dialog-component.decorator';
 import { Component } from '@angular/core';
-import { PosScreen } from '../pos-screen/pos-screen.component';
+import { PosScreenDirective } from '../pos-screen/pos-screen.component';
 
 @DialogComponent({
     name: 'LoadingDialog',
@@ -11,7 +11,7 @@ import { PosScreen } from '../pos-screen/pos-screen.component';
   templateUrl: './loading-dialog.component.html',
   styleUrls: [ './loading-dialog.component.scss']
 })
-export class LoadingDialogComponent extends PosScreen<LoadingDialogInterface> {
+export class LoadingDialogComponent extends PosScreenDirective<LoadingDialogInterface> {
 
     buildScreen() {
     }

@@ -1,7 +1,7 @@
 import { Component, Injector } from '@angular/core';
 import { TransactionDetailsInterface } from './transaction-details.interface';
 import { ScreenComponent } from '../../shared/decorators/screen-component.decorator';
-import { PosScreen } from '../pos-screen/pos-screen.component';
+import { PosScreenDirective } from '../pos-screen/pos-screen.component';
 import { OpenposMediaService, MediaBreakpoints } from '../../core/media/openpos-media.service';
 import { Observable } from 'rxjs';
 
@@ -13,7 +13,7 @@ import { Observable } from 'rxjs';
   templateUrl: './transaction-details.component.html',
   styleUrls: ['./transaction-details.component.scss']
 })
-export class TransactionDetailsComponent extends PosScreen<TransactionDetailsInterface> {
+export class TransactionDetailsComponent extends PosScreenDirective<TransactionDetailsInterface> {
 
   isMobile: Observable<boolean>;
 

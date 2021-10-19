@@ -1,7 +1,7 @@
-import {Component, Input} from '@angular/core';
-import {ICustomerDetails} from "../../../screens-with-parts/customer-search-result-dialog/customer-search-result-dialog.interface";
-import {Observable} from "rxjs";
-import {MediaBreakpoints, OpenposMediaService} from "../../../core/media/openpos-media.service";
+import { Component, Input } from '@angular/core';
+import { ICustomerDetails } from '../../../screens-with-parts/customer-search-result-dialog/customer-search-result-dialog.interface';
+import { Observable } from 'rxjs';
+import { MediaBreakpoints, OpenposMediaService } from '../../../core/media/openpos-media.service';
 
 @Component({
     selector: 'app-display-customer-lookup',

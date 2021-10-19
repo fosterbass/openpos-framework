@@ -31,7 +31,7 @@ export class DateValidator implements IValidator {
                         date: {
                             valid: false
                         }
-                    } as any;
+                    };
                 }
             }
         }

@@ -1,23 +1,23 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import {ActionService} from '../../../core/actions/action.service';
-import {CustomerInformationComponent} from './customer-information.component';
-import {validateDoesNotExist, validateIcon, validateText} from '../../../utilites/test-utils';
-import {PhonePipe} from '../../pipes/phone.pipe';
-import {FormattersService} from '../../../core/services/formatters.service';
-import {CustomerDetails} from './customer-information.interface';
+import { ActionService } from '../../../core/actions/action.service';
+import { CustomerInformationComponent } from './customer-information.component';
+import { validateDoesNotExist, validateIcon, validateText } from '../../../utilites/test-utils';
+import { PhonePipe } from '../../pipes/phone.pipe';
+import { FormattersService } from '../../../core/services/formatters.service';
+import { CustomerDetails } from './customer-information.interface';
 import { MatDialog } from '@angular/material/dialog';
-import {HttpClientTestingModule} from '@angular/common/http/testing';
-import {ElectronService} from 'ngx-electron';
-import {CLIENTCONTEXT} from '../../../core/client-context/client-context-provider.interface';
-import {TimeZoneContext} from '../../../core/client-context/time-zone-context';
-import {Subscription} from 'rxjs';
-import {KeyPressProvider} from '../../providers/keypress.provider';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { ElectronService } from 'ngx-electron';
+import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provider.interface';
+import { TimeZoneContext } from '../../../core/client-context/time-zone-context';
+import { Subscription } from 'rxjs';
+import { KeyPressProvider } from '../../providers/keypress.provider';
 
-class MockMatDialog {}
-class MockActionService {}
-class ClientContext {}
-class MockElectronService {}
+class MockMatDialog { }
+class MockActionService { }
+class ClientContext { }
+class MockElectronService { }
 class MockKeyPressProvider {
     subscribe(): Subscription {
         return new Subscription();
@@ -28,7 +28,7 @@ describe('CustomerInformationComponent', () => {
     let component: CustomerInformationComponent;
     let fixture: ComponentFixture<CustomerInformationComponent>;
     let customer: CustomerDetails;
-    beforeEach( () => {
+    beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
             declarations: [
@@ -39,8 +39,8 @@ describe('CustomerInformationComponent', () => {
                 { provide: ActionService, useClass: MockActionService },
                 { provide: ElectronService, useClass: MockElectronService },
                 { provide: KeyPressProvider, useClass: MockKeyPressProvider },
-                { provide: ClientContext, useValue: {}},
-                { provide: CLIENTCONTEXT, useClass: TimeZoneContext}
+                { provide: ClientContext, useValue: {} },
+                { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
             ],
             schemas: [
                 NO_ERRORS_SCHEMA,
@@ -157,7 +157,7 @@ describe('CustomerInformationComponent', () => {
             });
 
             describe('line3', () => {
-                it('does not render the "city, " if city is undefined', () => {
+                it(`does not render the 'city, ' if city is undefined`, () => {
                     component.customer.address.city = undefined;
                     fixture.detectChanges();
                     validateDoesNotExist(fixture, '.address .line3 .city');
@@ -169,7 +169,7 @@ describe('CustomerInformationComponent', () => {
                     validateText(fixture, '.address .line3', 'a city, ');
                 });
 
-                it('does not render the "state " if state is undefined', () => {
+                it(`does not render the 'state ' if state is undefined`, () => {
                     component.customer.address.state = undefined;
                     fixture.detectChanges();
                     validateDoesNotExist(fixture, '.address .line3 .state');
@@ -181,7 +181,7 @@ describe('CustomerInformationComponent', () => {
                     validateText(fixture, '.address .line3', 'OH ');
                 });
 
-                it('does not render the "postalCode" if postal code is undefined', () => {
+                it(`does not render the 'postalCode' if postal code is undefined`, () => {
                     component.customer.address.postalCode = undefined;
                     fixture.detectChanges();
                     validateDoesNotExist(fixture, '.address .line3 .postalCode');

@@ -4,7 +4,7 @@ import { MinValueValidator } from './min-value-validator';
 import { MaxValueValidator } from './max-value-validator';
 import { RegexValidator } from './regex-validator';
 
-export const ValidationConstants = {
+export const VALIDATION_CONSTANTS = {
 
     /**
      * Defines the list of validators that can be dynamically created by
@@ -14,9 +14,8 @@ export const ValidationConstants = {
     validators: [
         { name: 'MinValueValidator', validatorClass: MinValueValidator },
         { name: 'MaxValueValidator', validatorClass: MaxValueValidator },
-        { name: 'GT_0',              validatorClass: GreaterThanZeroValidator },
-        { name: 'GTE_0',             validatorClass: GreaterThanEqZeroValidator },
-        { name: 'RegexValidator',    validatorClass: RegexValidator },
+        { name: 'GT_0', validatorClass: GreaterThanZeroValidator },
+        { name: 'GTE_0', validatorClass: GreaterThanEqZeroValidator },
+        { name: 'RegexValidator', validatorClass: RegexValidator },
     ],
-
 };
