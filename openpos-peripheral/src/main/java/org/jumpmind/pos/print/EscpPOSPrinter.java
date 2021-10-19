@@ -1,5 +1,6 @@
 package org.jumpmind.pos.print;
 
+import com.fazecast.jSerialComm.SerialPortTimeoutException;
 import jpos.JposException;
 import jpos.POSPrinterConst;
 import jpos.services.EventCallbacks;
@@ -368,15 +369,22 @@ public class EscpPOSPrinter implements IOpenposPrinter {
 
             getPeripheralConnection().getOut().flush();
             if (getPeripheralConnection().getIn() != null) {
-                Thread.sleep(500);
+                Thread.sleep(1200);
                 int statusByte = getPeripheralConnection().getIn().read();
+                log.info(printerName + " printer returned status: " + statusByte);
+
                 if (statusByte == -1) {
                     throw new PrinterException("Can't read printer status.");
                 }
+
                 return statusByte;
             } else {
+                log.info(printerName + " printer returned status: 0");
                 return 0;
             }
+        } catch (SerialPortTimeoutException ex) {
+            log.info(printerName + " printer force returned status: 0");
+            return 0;
         } catch (Exception ex) {
             if (printerStatusReporter != null) {
                 printerStatusReporter.reportStatus(Status.Error, ex.getMessage());
