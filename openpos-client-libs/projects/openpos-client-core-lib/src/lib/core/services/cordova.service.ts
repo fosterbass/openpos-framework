@@ -23,9 +23,14 @@ export class CordovaService {
                 this._isRunningInCordova = true;
                 this.plugins = cordova.plugins;
                 this.onDeviceReady.next(`deviceready`);
+                document.addEventListener('backbutton', this.onBackKeyDown, false);
             },
             false
         );
+    }
+
+    public onBackKeyDown() {
+        console.info('Back button press ignored');
     }
 
     public isRunningInCordova(): boolean {
