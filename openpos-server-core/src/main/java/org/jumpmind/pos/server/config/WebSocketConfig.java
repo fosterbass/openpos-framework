@@ -29,6 +29,7 @@ import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.*;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 import static org.jumpmind.pos.util.AppUtils.setupLogging;
+
 @Slf4j
 @Configuration
 @EnableWebSocketMessageBroker
@@ -55,7 +56,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Value("${openpos.general.websocket.sendBufferSizeLimit:8192000}")
     int sendBufferSizeLimit;
 
-    @Value("${openpos.logging.messages.enabled:false}")
+    @Value("${openpos.general.logMessagesEnabled:false}")
     boolean loggingEnabled;
 
     Map<String, SessionContext> deviceToSessionMap = Collections.synchronizedMap(new HashMap<>());

@@ -6,10 +6,12 @@ import java.util.*;
 
 import javax.annotation.PostConstruct;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.map.PassiveExpiringMap;
 import org.jumpmind.pos.server.model.Action;
 import org.jumpmind.pos.server.model.CachedMessage;
 import org.jumpmind.pos.server.model.FetchMessage;
+import org.jumpmind.pos.util.DefaultObjectMapper;
 import org.jumpmind.pos.util.web.NotFoundException;
 import org.jumpmind.pos.util.web.ServerException;
 import org.slf4j.Logger;
@@ -31,15 +33,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import springfox.documentation.annotations.ApiIgnore;
 
+@Slf4j
 @ApiIgnore
 @CrossOrigin
 @Controller
 public class MessageService implements IMessageService {
 
-    Logger logger = LoggerFactory.getLogger(getClass());
-    Logger loggerGraphical = LoggerFactory.getLogger(getClass().getName() + ".graphical");
-
-    ObjectMapper mapper = new ObjectMapper();
+    ObjectMapper mapper = DefaultObjectMapper.defaultObjectMapper();
 
     @Autowired
     SimpMessagingTemplate template;
@@ -70,7 +70,7 @@ public class MessageService implements IMessageService {
     @RequestMapping(method = RequestMethod.GET, value = "ping", produces="application/json")
     @ResponseBody
     public String ping() {
-        logger.info("Received a ping request");
+        log.info("Received a ping request");
         return "{ \"pong\": \"true\" }";
     }
 

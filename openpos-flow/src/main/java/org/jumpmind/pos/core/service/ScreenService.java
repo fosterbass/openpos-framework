@@ -1,12 +1,5 @@
 package org.jumpmind.pos.core.service;
 
-import static org.jumpmind.pos.util.BoxLogging.HORIZONTAL_LINE;
-import static org.jumpmind.pos.util.BoxLogging.LOWER_LEFT_CORNER;
-import static org.jumpmind.pos.util.BoxLogging.LOWER_RIGHT_CORNER;
-import static org.jumpmind.pos.util.BoxLogging.UPPER_LEFT_CORNER;
-import static org.jumpmind.pos.util.BoxLogging.UPPER_RIGHT_CORNER;
-import static org.jumpmind.pos.util.BoxLogging.VERITCAL_LINE;
-
 import java.io.*;
 import java.lang.reflect.Field;
 import java.util.*;
@@ -14,6 +7,7 @@ import java.util.*;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -47,17 +41,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import springfox.documentation.annotations.ApiIgnore;
 
+@Slf4j
 @ApiIgnore
 @CrossOrigin
 @Controller
 public class ScreenService implements IScreenService, IActionListener {
-    Logger logger = LoggerFactory.getLogger(getClass());
-    Logger loggerGraphical = LoggerFactory.getLogger(getClass().getName() + ".graphical");
 
     ObjectMapper mapper = DefaultObjectMapper.defaultObjectMapper();
 
@@ -101,7 +93,7 @@ public class ScreenService implements IScreenService, IActionListener {
             @RequestParam(name = "contentPath") String contentPath,
             @RequestParam(name = "provider") String provider) throws IOException {
 
-        logger.debug("Received a request for content: {}", contentPath);
+        log.debug("Received a request for content: {}", contentPath);
 
         IStateManager stateManager = stateManagerContainer.retrieve(deviceId, true);
         if (stateManager != null) {
@@ -151,7 +143,7 @@ public class ScreenService implements IScreenService, IActionListener {
             @PathVariable String controlId,
             @RequestParam(name = "searchTerm", required = false) String searchTerm,
             @RequestParam(name = "sizeLimit", defaultValue = "1000") Integer sizeLimit) {
-        logger.info("Received a request to load component values for {} {} {}", appId, deviceId, controlId);
+        log.info("Received a request to load component values for {} {} {}", appId, deviceId, controlId);
         String result = getComponentValues(appId, deviceId, controlId, getLastScreen(deviceId), searchTerm, sizeLimit);
         if (result == null) {
             result = getComponentValues(appId, deviceId, controlId, getLastDialog(deviceId), searchTerm, sizeLimit);
@@ -187,10 +179,10 @@ public class ScreenService implements IScreenService, IActionListener {
                     throw new RuntimeException("Error while serializing the component values.", e);
                 }
                 result = new String(out.toByteArray());
-                logger.info("Responding to request to load component values {} {} {} with {} values", appId, deviceId, controlId,
+                log.info("Responding to request to load component values {} {} {} with {} values", appId, deviceId, controlId,
                         valueList.size());
             } else {
-                logger.info("Unable to find the valueList for the requested component {} {} {}.", appId, deviceId, controlId);
+                log.info("Unable to find the valueList for the requested component {} {} {}.", appId, deviceId, controlId);
             }
         }
         return result;
@@ -203,7 +195,7 @@ public class ScreenService implements IScreenService, IActionListener {
 
     @Override
     public void actionOccurred(String deviceId, Action action) {
-        logger.trace("actionOccurred -> deviceId: {}, action: {}", deviceId, action != null ? action.getName() : null);
+        log.trace("actionOccurred -> deviceId: {}, action: {}", deviceId, action != null ? action.getName() : null);
         IStateManager stateManager = stateManagerContainer.retrieve(deviceId, true);
         if (stateManager != null) {
             try {
@@ -212,23 +204,23 @@ public class ScreenService implements IScreenService, IActionListener {
                     stateManager.keepAlive();
                 } else if ("Refresh".equals(action.getName())) {
                     UIMessage lastDialog = getLastDialog(deviceId);
-                    logger.info("Received Refresh action from {}", deviceId);
+                    log.info("Received Refresh action from {}", deviceId);
                     showScreen(deviceId, getLastScreen(deviceId));
                     showScreen(deviceId, lastDialog);
                 } else if ( uiDataMessageProviderService.handleAction(action, stateManager.getApplicationState())){
-                    logger.info("Action handled by UIMessageDataProvider from {}\n{}", deviceId, logFormatter.toJsonString(action));
+                    log.info("Action handled by UIMessageDataProvider from {}\n{}", deviceId, logFormatter.toJsonString(action));
                 } else {
                     deserializeForm(stateManager.getApplicationState(), action);
                     action.setOriginatesFromDeviceFlag(true);
                     
                     try {
-                        logger.debug("Posting action {}", action);
+                        log.debug("Posting action {}", action);
                         stateManager.doAction(action);
                     } catch (Throwable ex) {
                         if( errorHandler != null){
                             errorHandler.handleError(stateManager, ex);
                         } else {
-                            logger.error(String.format("Unexpected exception while processing action from %s: %s", deviceId, action), ex);
+                            log.error(String.format("Unexpected exception while processing action from %s: %s", deviceId, action), ex);
                             messageService.sendMessage(deviceId, Toast.createWarningToast(
                                     "The application received an unexpected error. Please report to the appropriate technical personnel"));
                         }
@@ -326,17 +318,17 @@ public class ScreenService implements IScreenService, IActionListener {
                 interceptScreen(deviceId, screen);
             } catch (Exception ex) {
                 if (ex.toString().contains("org.jumpmind.pos.core.screen.ChangeScreen")) {
-                    logger.error(
+                    log.error(
                             "Failed to write screen to JSON. Verify the screen type has been configured by calling setType() on the screen object.",
                             ex);
                 } else {
-                    logger.error("Failed to write screen to JSON", ex);
+                    log.error("Failed to write screen to JSON", ex);
                 }
             }
             if (!stateManager.areAllSessionsAuthenticated()) {
-                logger.warn("Not sending screen because a session is attached that is not authenticated");
+                log.warn("Not sending screen because a session is attached that is not authenticated");
             } else if (!stateManager.areAllSessionsCompatible()) {
-                logger.warn("Not sending screen because a session is attached that is not compatible");
+                log.warn("Not sending screen because a session is attached that is not compatible");
 
             } else {
                 uiDataMessageProviderService.updateProviders(applicationState, uiDataMessageProviders);
@@ -401,12 +393,12 @@ public class ScreenService implements IScreenService, IActionListener {
                     if (Form.isAssignableFrom(action.getData())) {
                         action.setData(form);
                     } else {
-                        logger.trace("Given action data is not actually a form, is instance of {}", 
+                        log.trace("Given action data is not actually a form, is instance of {}",
                             action.getData() != null ? action.getData().getClass().getName() : "?");
                     }
                 }
             } catch (IllegalArgumentException ex) {
-                logger.debug(ex.getMessage(), ex);
+                log.debug(ex.getMessage(), ex);
                 // We should not assume a form will always be returned by
                 // the DynamicFormScreen.
                 // The barcode scanner can also return a value.
