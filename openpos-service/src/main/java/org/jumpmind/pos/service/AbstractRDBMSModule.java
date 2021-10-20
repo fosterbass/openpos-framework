@@ -475,7 +475,7 @@ abstract public class AbstractRDBMSModule extends AbstractServiceFactory impleme
                 getDBSession());
         IDBSchemaListener schemaListener = getDbSchemaListener();
 
-        scripts.executePreInstallScripts(failStartupOnModuleLoadFailure);
+        scripts.executePreInstallScripts();
         schemaListener.beforeSchemaCreate(sessionFactory);
         sessionFactory.createAndUpgrade();
         upgradeDbFromXml();
