@@ -70,8 +70,8 @@ public class DatabaseScriptContainer {
         }
     }
 
-    public void executePreInstallScripts(boolean failOnError) {
-        executeScripts(this.preInstallScripts, failOnError);
+    public void executePreInstallScripts() {
+        executeScripts(this.preInstallScripts, false);
     }
 
     public void executePostInstallScripts(boolean failOnError) {
