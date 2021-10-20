@@ -105,8 +105,10 @@ export class ImageScannerComponent implements OnInit, OnDestroy, ScannerViewRef 
             )
         ];
 
-        let currentElement: HTMLElement = this._elementRef.nativeElement;
-        while (currentElement !== document.body) {
+        let currentElement: HTMLElement = this.element;
+        let depth = 0;
+        while (currentElement !== document.body && depth < 100) {
+            depth++;
             currentElement = ImageScannerComponent._getScrollParent(currentElement, true);
             viewChanges.push(ImageScannerComponent._makeObservableListener(
                 (cb) => currentElement.addEventListener('scroll', cb),
