@@ -1,8 +1,9 @@
 import { Component, Input, OnInit, ElementRef, Renderer2, OnChanges, SimpleChanges } from '@angular/core';
 import { IconService } from '../../../core/services/icon.service';
-import { Observable } from 'rxjs';
+import {Observable, throwError} from 'rxjs';
 import { SafeHtml } from '@angular/platform-browser';
 import { OpenposMediaService, MediaBreakpoints } from '../../../core/media/openpos-media.service';
+import {catchError} from "rxjs/operators";
 
 @Component({
     selector: 'app-icon',
@@ -59,7 +60,12 @@ export class IconComponent implements OnInit, OnChanges {
     }
 
     private renderIcon(previousClasses: string) {
-        this.icon = this.iconService.getIconHtml(this.iconName);
+        this.icon = this.iconService.getIconHtml(this.iconName).pipe(
+            catchError(err => {
+                console.error(`Failed to get icon '${this.iconName}'. Error: ${JSON.stringify(err)}`);
+                return throwError(err);
+            })
+        );
         if (previousClasses) {
             previousClasses.split(' ').forEach(e => this.renderer.removeClass(this.elementRef.nativeElement, e));
         }
