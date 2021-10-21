@@ -1,8 +1,9 @@
-import { Component, ElementRef, Input, OnChanges, OnInit, Renderer2, TemplateRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnChanges, OnInit, Renderer2, TemplateRef, ViewChild, OnDestroy } from '@angular/core';
 import { UIDataMessageService } from '../../../core/ui-data-message/ui-data-message.service';
 import { InfiniteScrollDatasource } from './infinite-scroll-datasource';
 
 import type { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import { Subscription } from 'rxjs';
 
 /**
  * This component uses the UIDataMessageService to implement 'Infinite Scroll'. When the viewable area gets close to the
@@ -13,7 +14,7 @@ import type { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
   templateUrl: './infinite-scroll.component.html',
   styleUrls: ['./infinite-scroll.component.scss']
 })
-export class InfiniteScrollComponent<T> implements OnInit, OnChanges {
+export class InfiniteScrollComponent<T> implements OnInit, OnChanges, OnDestroy {
 
   @ViewChild('viewport') viewport: CdkVirtualScrollViewport;
 
@@ -78,16 +79,23 @@ export class InfiniteScrollComponent<T> implements OnInit, OnChanges {
 
   dataSource: InfiniteScrollDatasource<T>;
 
+  private subscription: Subscription;
+
   constructor(private dataMessageService: UIDataMessageService, private el: ElementRef, private renderer: Renderer2) {
 
   }
 
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+    this.dataSource.destroy();
+  }
+
   ngOnInit(): void {
     this.dataSource = new InfiniteScrollDatasource<T>(
-      this.dataMessageService.getData$(this.dataKey),
-      () => this.dataMessageService.requestMoreData(this.dataKey),
-      this.dataLoadBuffer);
-    this.dataSource.dataLoaded.subscribe(loaded => {
+        this.dataMessageService.getData$(this.dataKey),
+        () => this.dataMessageService.requestMoreData(this.dataKey),
+        this.dataLoadBuffer);
+    this.subscription = this.dataSource.dataLoaded.subscribe(loaded => {
       if (loaded) {
         this.renderer.addClass(this.el.nativeElement, 'data-loaded');
       } else {
