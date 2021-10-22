@@ -1,5 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { SessionService } from '../../core/services/session.service';
+import { Component, OnInit } from '@angular/core';
 import { IConfirmationDialog } from '../../core/actions/confirmation-dialog.interface';
 import { DialogComponent } from '../../shared/decorators/dialog-component.decorator';
 import { IScreen } from '../../shared/components/dynamic-screen/screen.interface';

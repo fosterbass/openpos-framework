@@ -8,6 +8,7 @@ import { MessageTypes } from '../../../core/messages/message-types';
 import { ConfigurationService } from '../../../core/services/configuration.service';
 import { Observable } from 'rxjs';
 import { UIConfigMessage } from '../../../core/messages/ui-config-message';
+import { UIMessage } from '../../../core/messages/ui-message';
 
 @Component({
     selector: 'app-dynamic-screen',
@@ -20,24 +21,29 @@ export class DynamicScreenComponent implements OnInit {
     toastContainer: ToastContainerDirective;
     showWatermark = false;
     watermarkMessage: string;
-    showStatusBar = true;
+    showStatusBarAppId = true;
+    showStatusBarState = true;
+
     constructor(
         private configuration: ConfigurationService,
-        messageProvider: MessageProvider,
+        private messageProvider: MessageProvider,
         private toastrService: ToastrService,
         private sessionService: SessionService
     ) {
-        messageProvider.setMessageType('Screen');
+        this.messageProvider.setMessageType('Screen');
         this.sessionService.getMessages(MessageTypes.WATERMARK).subscribe((message: WatermarkMessage) => {
             this.showWatermark = true;
-            this.watermarkMessage = message.screenMessage;
+            this.watermarkMessage = message?.screenMessage;
         });
         this.sessionService.getMessages(MessageTypes.HIDE_WATERMARK).subscribe(() => {
             this.showWatermark = false;
             this.watermarkMessage = '';
         });
-        this.configuration.getConfiguration<UIConfigMessage>('uiConfig').subscribe(uiConf => {
-            this.showStatusBar = uiConf.showStatusBar === 'true';
+        this.configuration.getConfiguration<UIConfigMessage>('uiConfig').subscribe(uiConfig => {
+            this.showStatusBarAppId = uiConfig?.showStatusBar === 'true';
+        });
+        this.messageProvider.getScopedMessages$<UIMessage>().subscribe(screen => {
+            this.showStatusBarState = screen?.showStatusBar;
         });
     }
 
@@ -45,7 +51,7 @@ export class DynamicScreenComponent implements OnInit {
         this.toastrService.overlayContainer = this.toastContainer;
     }
 
-    public getLocalTheme(): Observable<string> {
+    getLocalTheme(): Observable<string> {
         return this.configuration.theme$;
     }
 }

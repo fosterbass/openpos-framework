@@ -57,7 +57,6 @@ export class DialogService {
         }
 
         if (DialogService.dialogs.get(name)) {
-            // tslint:disable-next-line:max-line-length
             console.info(`replacing registration of dialog for the key of ${name} in the dialog service`);
             DialogService.dialogs.delete(name);
         }
