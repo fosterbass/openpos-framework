@@ -1,6 +1,6 @@
 package org.jumpmind.pos.core.ui.message;
 
 public enum TransactionSearchMode {
-    SaleAndReturn,
-    All
+    SALE_RETURN_NO_SALE,
+    ALL
 }
