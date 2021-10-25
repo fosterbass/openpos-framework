@@ -82,9 +82,9 @@ public class LoggingStateManagerObserver implements IStateManagerObserver {
 
     private String getScreenSequence(UIMessage screen) {
         if (screen.getOptionalProperties() != null && screen.getOptionalProperties().containsKey("sequenceNumber")) {
-            return " seqNo: "+screen.getOptionalProperties().get("sequenceNumber");
+            return " screen seqNo: "+screen.getOptionalProperties().get("sequenceNumber");
         } else {
-            return "seqNo: ?";
+            return "screen seqNo: ?";
         }
     }
 
