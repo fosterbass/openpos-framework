@@ -8,7 +8,8 @@ import {
     Input,
     OnDestroy,
     OnInit,
-    Output
+    Output,
+    ViewChild
 } from '@angular/core';
 import { ScreenPartComponent } from '../screen-part';
 import { ScanOrSearchInterface } from './scan-or-search.interface';
@@ -42,6 +43,9 @@ export class ScanOrSearchComponent extends ScreenPartComponent<ScanOrSearchInter
 
     @HostBinding('class.focusInitial')
     @Input() focusInitial = true;
+
+    @ViewChild('input')
+    keyInput: ElementRef<HTMLInputElement>;
 
     @Output() change: EventEmitter<string> = new EventEmitter<string>();
 
@@ -116,6 +120,8 @@ export class ScanOrSearchComponent extends ScreenPartComponent<ScanOrSearchInter
     }
 
     scan(data: ScanData) {
+        this.keyInput.nativeElement.blur();
+
         this.doAction(this.screenData.scanAction, data);
     }
 
