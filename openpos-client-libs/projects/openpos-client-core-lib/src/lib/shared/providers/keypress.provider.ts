@@ -53,6 +53,7 @@ export class KeyPressProvider implements OnDestroy {
         const actionList = Array.isArray(actions) ? actions : [actions];
 
         actionList
+            .filter(action => action != null)
             .filter(action => action.keybind)
             .forEach(action => {
                 const key = this.getNormalizedKey(action.keybind);
