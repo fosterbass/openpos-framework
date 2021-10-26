@@ -3,19 +3,24 @@ package org.jumpmind.pos.core.flow;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.jumpmind.pos.core.flow.config.FlowUtil;
 import org.jumpmind.pos.server.model.Action;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import static org.jumpmind.pos.core.flow.ActionSyncMessagePropertyStrategy.GLOBAL_SYNC_ID;
+
 // TODO should be called just ActionHandler, need to repackage annotation of the same name.
 @Component
+@AllArgsConstructor
+@NoArgsConstructor
 @org.springframework.context.annotation.Scope("prototype")
+@Slf4j
 public class ActionHandlerImpl {
-
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private IBeforeActionService beforeActionService;
@@ -45,6 +50,26 @@ public class ActionHandlerImpl {
         } else {
             return false;
         }
+    }
+
+    public boolean checkActionSync(IStateManager stateManager, ActionContext actionContext) {
+        if (actionContext.getSyncId() == null
+                || actionContext.getSyncId().equals(GLOBAL_SYNC_ID)
+                || stateManager.getCurrentState() == null) {
+            return true;
+        }
+        String currentStateName = stateManager.getCurrentState().getClass().getSimpleName();
+        boolean syncOk = StringUtils.equals(currentStateName, actionContext.getSyncId());
+        if (!syncOk) {
+            log.warn("Discarding out of sync action: " + actionContext + " - current state is " +
+                    currentStateName + " stateManager.getActionQueueSize()=" + stateManager.getActionQueueSize() );
+            if (stateManager.getActionQueueSize() == 0) {
+                // if there are no subsequently pending actions, refresh the current screen to help
+                // avoid the client getting stuck on the "loading" screen.
+                stateManager.refreshScreen();
+            }
+        }
+        return syncOk;
     }
 
     public boolean canHandleAnyAction(Object state, ActionContext actionContext) {

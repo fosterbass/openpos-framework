@@ -21,20 +21,19 @@
 package org.jumpmind.pos.core.ui;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.List;
 
 @Builder
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class ActionItem implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    
     protected String action;
     protected String title;
 
@@ -58,14 +57,15 @@ public class ActionItem implements Serializable {
     protected String additionalIcon;
     protected String additionalText;
     protected ActionTimer actionTimer;
-
-
-
     protected String additionalStyle;
 
     @JsonIgnore
     @Builder.Default
     protected boolean autoAssignEnabled = true;
+
+    @JsonIgnore
+    @Builder.Default
+    protected boolean globalActionFlag = false;
 
     public final static String FONT_SIZE_XS = "text-xs";
     public final static String FONT_SIZE_SM = "text-sm";
@@ -137,93 +137,6 @@ public class ActionItem implements Serializable {
         this.sensitive = sensitive;
     }
 
-    public ActionItem(String title, String action, String icon, String additionalStyle, boolean enabled) {
-        this();
-        this.action = action;
-        this.title = title;
-        this.enabled = enabled;
-        this.icon = icon;
-        this.additionalStyle = additionalStyle;
-    }
-
-
-    public String getAction() {
-        return action;
-    }
-
-
-    public void setAction(String action) {
-        this.action = action;
-    }
-
-    public ActionItem action(String action) {
-        this.setAction(action);
-        return this;
-    }
-
-
-    public String getTitle() {
-        return title;
-    }
-
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public ActionItem title(String title) {
-        this.setTitle(title);
-        return this;
-    }
-
-    public String getDefaultPayload() {
-        return defaultPayload;
-    }
-
-    public void setDefaultPayload(String defaultPayload) {
-        this.defaultPayload = defaultPayload;
-    }
-
-    public String getIcon() {
-        return icon;
-    }
-
-
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
-
-    public ActionItem icon(String icon) {
-        this.setIcon(icon);
-        return this;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public ActionItem enabled(boolean enabled) {
-        this.setEnabled(enabled);
-        return this;
-    }
-
-    public List<ActionItem> getChildren() {
-        return children;
-    }
-
-    public void setChildren(List<ActionItem> children) {
-        this.children = children;
-    }
-
-    public ActionItem children(List<ActionItem> children) {
-        this.setChildren(children);
-        return this;
-    }
-
     public String getConfirmationMessage() {
         if (this.confirmationDialog != null) {
             return this.confirmationDialog.getMessage();
@@ -233,133 +146,10 @@ public class ActionItem implements Serializable {
     }
 
     public void setConfirmationMessage(String confirmationMessage) {
-
         if (this.confirmationDialog == null) {
             this.confirmationDialog = new ConfirmationDialog();
         }
 
         this.confirmationDialog.setMessage(confirmationMessage);
-    }
-
-    public ActionItem confirmationMessage(String confirmationMessage) {
-        this.setConfirmationMessage(confirmationMessage);
-        return this;
-    }
-
-    public boolean isSensitive() {
-        return sensitive;
-    }
-
-    public void setSensitive(boolean sensitive) {
-        this.sensitive = sensitive;
-    }
-
-    public ActionItem sensitive(boolean sensitive) {
-        this.setSensitive(sensitive);
-        return this;
-    }
-
-    public String getButtonSize() {
-        return buttonSize;
-    }
-
-    public void setButtonSize(String buttonSize) {
-        this.buttonSize = buttonSize;
-    }
-
-    public String getFontSize() {
-        return fontSize;
-    }
-
-    public void setFontSize(String fontSize) {
-        this.fontSize = fontSize;
-    }
-
-
-    public ConfirmationDialog getConfirmationDialog() {
-        return confirmationDialog;
-    }
-
-
-    public void setConfirmationDialog(ConfirmationDialog confirmationDialog) {
-        this.confirmationDialog = confirmationDialog;
-    }
-
-    public boolean isQueueIfBlocked() {
-        return queueIfBlocked;
-    }
-
-    public void setQueueIfBlocked(boolean queueIfBlocked) {
-        this.queueIfBlocked = queueIfBlocked;
-    }
-
-    public String getKeybindDisplayName() {
-        return keybindDisplayName;
-    }
-
-
-    public void setKeybindDisplayName(String keybindDisplayName) {
-        this.keybindDisplayName = keybindDisplayName;
-    }
-
-    public String getKeybind() {
-        return keybind;
-    }
-
-
-    public void setKeybind(String keybind) {
-        this.keybind = keybind;
-    }
-
-    public ActionItem keybind(String keybind) {
-        this.setKeybind(keybind);
-        return this;
-    }
-
-    public boolean isAutoAssignEnabled() {
-        return autoAssignEnabled;
-    }
-
-    public void setAutoAssignEnabled(boolean autoAssignEnabled) {
-        this.autoAssignEnabled = autoAssignEnabled;
-    }
-
-    public boolean getDoNotBlockForResponse() {
-        return doNotBlockForResponse;
-    }
-
-    public void setDoNotBlockForResponse(boolean doNotBlockForResponse) {
-        this.doNotBlockForResponse = doNotBlockForResponse;
-    }
-
-    public ActionTimer getActionTimer() {
-        return actionTimer;
-    }
-
-    public void setActionTimer(ActionTimer actionTimer) {
-        this.actionTimer = actionTimer;
-    }
-
-    public String getAdditionalIcon() {
-        return additionalIcon;
-    }
-
-    public void setAdditionalIcon(String additionalIcon) {
-        this.additionalIcon = additionalIcon;
-    }
-
-    public String getAdditionalText() {
-        return additionalText;
-    }
-
-    public void setAdditionalText(String additionalText) {
-        this.additionalText = additionalText;
-    }
-    public String getAdditionalStyle() {
-        return additionalStyle;
-    }
-
-    public void setAdditionalStyle(String additionalStyle) {
-        this.additionalStyle = additionalStyle;
     }
 }

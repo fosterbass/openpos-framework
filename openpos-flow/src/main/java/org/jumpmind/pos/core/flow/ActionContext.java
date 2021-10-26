@@ -12,9 +12,20 @@ public class ActionContext {
 
     Action action;
     StackTraceElement[] stackTrace;
+    String syncId;
 
     public ActionContext(Action action) {
         this.action = action;
     }
 
+    public ActionContext(Action action, StackTraceElement[] stackTrace) {
+        this.action = action;
+        this.stackTrace = stackTrace;
+    }
+
+    public void parseSyncId() {
+        ActionSyncId actionSyncId = new ActionSyncId(action.getName());
+        action.setName(actionSyncId.getActionName());
+        this.syncId = actionSyncId.getSyncId();
+    }
 }

@@ -77,4 +77,5 @@ public interface IStateManager {
     public Map<String, String> getClientContext();
     public void sendStartupCompleteMessage();
     public void sendPrintMessage(PrintMessage message);
+    public int getActionQueueSize();
 }

@@ -189,6 +189,11 @@ public class StateManager implements IStateManager {
         }
     }
 
+    @Override
+    public int getActionQueueSize() {
+        return actionQueue.size();
+    }
+
     public void init(String appId, String nodeId) {
         this.applicationState.reset(scheduledAnnotationBeanPostProcessor);
         this.applicationState.setAppId(appId);
@@ -716,6 +721,9 @@ public class StateManager implements IStateManager {
         } else {
             actionContext = new ActionContext(action);
         }
+
+        actionContext.parseSyncId();
+        
         boolean offered = actionQueue.offer(actionContext);
         if (!offered) {
             log.warn("StateManager failed to insert action {} into the queue", action);
@@ -734,13 +742,21 @@ public class StateManager implements IStateManager {
         return true;
     }
 
+
     boolean isOnStateManagerThread() {
         return Thread.currentThread().getName().startsWith("StateManager");
     }
 
     protected void processAction(ActionContext actionContext) {
         lastInteractionTime.set(new Date());
+
+        boolean syncOk = actionHandler.checkActionSync(this, actionContext);
+        if (!syncOk) {
+            return;
+        }
+
         Action action = actionContext.getAction();
+
         try {
             // Global action handler takes precedence over all actions (for now)
             Class<?> globalActionHandler = getGlobalActionHandler(action);

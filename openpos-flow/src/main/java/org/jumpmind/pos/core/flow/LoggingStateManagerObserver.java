@@ -46,22 +46,26 @@ public class LoggingStateManagerObserver implements IStateManagerObserver {
 
     @Override
     public void onTransitionStep(ApplicationState applicationState, Transition transition, ITransitionStep currentTransitionStep) {
-        logTranistionStep(transition, currentTransitionStep);
+        logTransitionStep(transition, currentTransitionStep);
     }
 
     @Override
     public void onAction(ApplicationState applicationState, Action action) {
         if (action.isOriginatesFromDeviceFlag() && actionLogger.isInfoEnabled()) {
+            ActionSyncId actionSyncId = new ActionSyncId(action.getName());
+            // this hits early in the action life cycle, so the action name probably still has @StateName on it here.
+            String actionName = actionSyncId.getActionName();
+
             if (actionLogger.isDebugEnabled()) {
                 actionLogger.info("Received action from {}\n{}\n{}",
                         applicationState.getDeviceId(),
-                        String.format(LIGHTNING_AND_THE_THUNDER, action.getName()),
+                        String.format(LIGHTNING_AND_THE_THUNDER, actionName),
                         logFormatter.toJsonString(action));
             } else {
                 actionLogger.info("Received action from {} {}\n{}",
                         applicationState.getDeviceId(),
                         logFormatter.toCompactJsonString(action),
-                        String.format(LIGHTNING_AND_THE_THUNDER, action.getName()));
+                        String.format(LIGHTNING_AND_THE_THUNDER, actionName));
             }
         }
     }
@@ -69,16 +73,26 @@ public class LoggingStateManagerObserver implements IStateManagerObserver {
     @Override
     public void onScreen(ApplicationState applicationState, UIMessage screen) {
         if (screenLogger.isInfoEnabled()) {
-            screenLogger.info("Show screen on device \"" + applicationState.getDeviceId() + "\" (" + screen.getClass().getName() + ")\n"
-                    + drawBox(screen.getId(), screen.getScreenType()));
+            screenLogger.info(new StringBuilder().append("Show screen on device \"").
+                    append(applicationState.getDeviceId()).append("\" (").
+                    append(screen.getClass().getName()).append(")").append(getScreenSequence(screen)).append("\n").
+                    append(drawBox(screen.getId(), screen.getScreenType())).toString());
+        }
+    }
+
+    private String getScreenSequence(UIMessage screen) {
+        if (screen.getOptionalProperties() != null && screen.getOptionalProperties().containsKey("sequenceNumber")) {
+            return " seqNo: "+screen.getOptionalProperties().get("sequenceNumber");
+        } else {
+            return "seqNo: ?";
         }
     }
 
     public void onTransition(ApplicationState applicationState, Transition transition, ITransitionStep currentTransitionStep) {
-        logTranistionStep(transition, currentTransitionStep);
+        logTransitionStep(transition, currentTransitionStep);
     }
 
-    protected void  logStateTransition(Object oldState, Object newState, Action action, String returnAction, SubFlowConfig enterSubState, StateContext exitSubState, ApplicationState applicationState, StateContext resumeSuspendedState) {
+    protected void logStateTransition(Object oldState, Object newState, Action action, String returnAction, SubFlowConfig enterSubState, StateContext exitSubState, ApplicationState applicationState, StateContext resumeSuspendedState) {
         if (oldState == newState) {
             return;
         }
@@ -148,7 +162,7 @@ public class LoggingStateManagerObserver implements IStateManagerObserver {
         }
     }
 
-    public void logTranistionStep(Transition transition, ITransitionStep currentTransitionStep) {
+    public void logTransitionStep(Transition transition, ITransitionStep currentTransitionStep) {
 
         String stepName = currentTransitionStep.getClass().getSimpleName();
         String stepTitle = "Step: " + stepName;
