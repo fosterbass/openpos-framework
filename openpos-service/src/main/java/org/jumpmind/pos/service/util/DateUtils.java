@@ -1,14 +1,19 @@
 package org.jumpmind.pos.service.util;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-
 import org.apache.commons.lang3.StringUtils;
 import org.jumpmind.pos.service.PosServerException;
+import org.jumpmind.pos.util.AppUtils;
+import org.jumpmind.pos.util.clientcontext.ClientContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
+import java.util.Calendar;
+import java.util.Date;
 
 public final class DateUtils {
     private static final Logger logger = LoggerFactory.getLogger(DateUtils.class);
@@ -18,23 +23,22 @@ public final class DateUtils {
     private static final String ISO_DATE_TIME_SECONDS = "yyyy-MM-dd HH:mm:ss";
     private static final String ISO_DATE_TIME_SECONDS_T = "yyyy-MM-dd'T'HH:mm:ss";
     private static final String ISO_DATE = "yyyy-MM-dd";
-    
-    private DateUtils() {
-    }
-    
-    private static String[] FORMATS = new String[] {
+    private static final String[] FORMATS = new String[]{
             ISO_DATE_TIME_MILLIS,
             ISO_DATE_TIME_MILLIS_T,
             ISO_DATE_TIME_SECONDS,
             ISO_DATE_TIME_SECONDS_T,
             ISO_DATE
     };
-    
+
+    private DateUtils() {
+    }
+
     public static Date parseDateTimeISO(String date) {
         if (!StringUtils.isEmpty(date)) {
             Exception originalException = null;
             for (String format : FORMATS) {
-                if (date.length() == format.length() || date.length() == format.length()-2) {                    
+                if (date.length() == format.length() || date.length() == format.length() - 2) {
                     SimpleDateFormat dateFormat = new SimpleDateFormat(format);
                     try {
                         return dateFormat.parse(date);
@@ -44,36 +48,35 @@ public final class DateUtils {
                 }
             }
             if (originalException != null) {
-                throw new PosServerException("Failed to parse date as ISO format: '" + date + "'", originalException);                
-            } else {                
+                throw new PosServerException("Failed to parse date as ISO format: '" + date + "'", originalException);
+            } else {
                 throw new PosServerException("Failed to parse date as ISO format: '" + date + "'");
             }
         } else {
-            return null;            
+            return null;
         }
     }
-    
+
     public static String formatDateTimeISO(Date date) {
         if (date != null) {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat dateFormat = new SimpleDateFormat(ISO_DATE_TIME_SECONDS);
             return dateFormat.format(date);
         } else {
-            return "null";            
+            return "null";
         }
     }
 
     public static long daysBetween(Date date1, Date date2) {
-        Calendar cal1 = Calendar.getInstance(); 
+        Calendar cal1 = Calendar.getInstance();
         cal1.setTime(date1);
-        Calendar cal2 = Calendar.getInstance(); 
+        Calendar cal2 = Calendar.getInstance();
         cal2.setTime(date2);
-        
-        long diffDays = (cal2.getTimeInMillis()-cal1.getTimeInMillis()) / (24 * 60 * 60 * 1000);
-        return diffDays;
+
+        return (cal2.getTimeInMillis() - cal1.getTimeInMillis()) / (24 * 60 * 60 * 1000);
     }
 
     public static String changeFormat(String value, String existingFormat, String newFormat) {
-        if(StringUtils.isBlank(value)) {
+        if (StringUtils.isBlank(value)) {
             return value;
         }
 
@@ -84,5 +87,27 @@ public final class DateUtils {
             logger.warn(String.format("Unable to change format of date '%s' from '%s' to '%s'", value, existingFormat, newFormat), e);
             return value;
         }
+    }
+
+    public static Date getTimezoneOffsetCorrectedDate(Date date, String serverOffsetString, String clientOffsetString) {
+        if (StringUtils.equals(serverOffsetString, clientOffsetString)) {
+            return date;
+        }
+        if (serverOffsetString != null && clientOffsetString != null) {
+            try {
+                ZoneOffset serverOffset = ZoneOffset.of(serverOffsetString);
+                ZoneOffset clientOffset = ZoneOffset.of(clientOffsetString);
+
+                LocalDateTime serverLocalDateTime = date.toInstant().atOffset(serverOffset).toLocalDateTime();
+                LocalDateTime clientLocalDateTime = date.toInstant().atOffset(clientOffset).toLocalDateTime();
+
+                long hoursOffset = ChronoUnit.HOURS.between(clientLocalDateTime, serverLocalDateTime);
+                return Date.from(serverLocalDateTime.minusHours(hoursOffset).toInstant(serverOffset));
+            } catch (Exception e) {
+                logger.warn("Could not convert date using server and client offsets, returning original date");
+                return date;
+            }
+        }
+        return date;
     }
 }
