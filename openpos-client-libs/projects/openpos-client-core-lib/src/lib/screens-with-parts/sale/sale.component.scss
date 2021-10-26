@@ -16,7 +16,8 @@
             padding: 16px;
             display: grid;
             grid-template-columns: auto 1fr 25%;
-            overflow-y: auto;
+            overflow-y: hidden;
+            max-height: 100%;
 
             .orders{
                 display:grid;
