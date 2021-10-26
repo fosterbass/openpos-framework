@@ -1,5 +1,4 @@
 import { Component, Output, EventEmitter, Injector, Input } from '@angular/core';
-import {ActionService} from '../../../core/actions/action.service';
 import { OptionsListInterface } from './options-list.interface';
 import { ScreenPart } from '../../../shared/decorators/screen-part.decorator';
 import { ScreenPartComponent } from '../../../shared/screen-parts/screen-part';
@@ -42,8 +41,12 @@ export class OptionsListComponent extends ScreenPartComponent<OptionsListInterfa
 
     isFirstElementFocused = false;
 
-    constructor( injector: Injector, mediaService: OpenposMediaService, protected dialog: MatDialog,
-                 protected focusService: FocusService) {
+    constructor(
+        injector: Injector,
+        mediaService: OpenposMediaService,
+        protected dialog: MatDialog,
+        protected focusService: FocusService
+    ) {
 
         super(injector);
         this.isMobile = mediaService.observe(new Map([
@@ -75,7 +78,7 @@ export class OptionsListComponent extends ScreenPartComponent<OptionsListInterfa
     }
 
     onOptionClick(actionItem: IActionItem): void {
-        if ( this.optionClick.observers.length > 0 ) {
+        if (this.optionClick.observers.length > 0) {
             this.optionClick.emit(actionItem);
         } else {
             this.doAction(actionItem);

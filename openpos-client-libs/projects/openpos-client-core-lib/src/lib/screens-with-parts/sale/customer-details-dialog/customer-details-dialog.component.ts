@@ -29,8 +29,8 @@ export class CustomerDetailsDialogComponent extends PosScreenDirective<CustomerD
 
   constructor(
     injector: Injector,
-    private media: OpenposMediaService,
-    protected keyPresses: KeyPressProvider
+    protected keyPresses: KeyPressProvider,
+    private media: OpenposMediaService
   ) {
     super(injector);
     this.initIsMobile();
@@ -89,6 +89,7 @@ export class CustomerDetailsDialogComponent extends PosScreenDirective<CustomerD
   public keybindsEnabled(menuItem: IActionItem): boolean {
     return CONFIGURATION.enableKeybinds && !!menuItem.keybind && menuItem.keybind !== 'Enter';
   }
+
 }
 
 class ItemsHistoryFilterController {

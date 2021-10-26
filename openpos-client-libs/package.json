@@ -83,6 +83,7 @@
     "karma-jasmine-html-reporter": "^1.5.0",
     "karma-jsdom-launcher": "^10.0.0",
     "karma-junit-reporter": "^1.2.0",
+    "ng-mocks": "^12.5.0",
     "ng-packagr": "^11.2.4",
     "node-sass": "^4.12.0",
     "protractor": "~7.0.0",

@@ -37,7 +37,6 @@ describe('CustomerDetailsDialog', () => {
       return of(false);
     }
   }
-
   class MockOpenposMediaServiceMobileTrue {
     observe(): Observable<boolean> {
       return of(true);

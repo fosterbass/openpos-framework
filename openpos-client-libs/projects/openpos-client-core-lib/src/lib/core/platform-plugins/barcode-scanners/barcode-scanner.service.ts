@@ -36,6 +36,12 @@ export class BarcodeScanner {
                         const configName = scanner.name();
 
                         if (type === configName) {
+
+                            // don't push a new update through if we're already selecting the same scanner.
+                            if (this._scanner.value === scanner) {
+                                return;
+                            }
+
                             console.log(`using image scanner ${configName}`);
                             this._scanner.next(scanner);
                             return;

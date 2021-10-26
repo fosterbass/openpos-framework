@@ -12,5 +12,6 @@ public class StandbyUIMessage extends UIMessage {
     public StandbyUIMessage() {
         setId("standby");
         setScreenType(UIMessageType.STANDBY);
+        setShowStatusBar(false);
     }
 }

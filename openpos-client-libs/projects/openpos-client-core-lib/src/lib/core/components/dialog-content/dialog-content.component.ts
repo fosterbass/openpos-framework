@@ -1,7 +1,7 @@
 import { ActionService } from '../../actions/action.service';
 import { ScreenDirective } from './../../../shared/directives/screen.directive';
 import { IScreen } from '../../../shared/components/dynamic-screen/screen.interface';
-import { Component, OnDestroy, ViewChild, ComponentRef, ComponentFactory, Injector } from '@angular/core';
+import { Component, OnDestroy, ViewChild, ComponentRef, ComponentFactory } from '@angular/core';
 import { ScreenCreatorService } from '../../services/screen-creator.service';
 
 @Component({

@@ -105,7 +105,6 @@ describe('PersonalizationService', () => {
            httpMock.expectNone('http://server:6140/rest/devices/personalize');
 
         });
-
     });
 
     describe('personalize', () => {

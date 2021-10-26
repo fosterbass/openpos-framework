@@ -158,6 +158,7 @@ describe('RewardsLineItemComponent', () => {
                     beforeEach(() => {
                         component.reward.rewardType = 'PCT';
                         component.reward.reward = .5;
+                        component.reward.promotionId = '123';
                         fixture.detectChanges();
                     });
 
