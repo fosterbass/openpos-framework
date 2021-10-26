@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs/internal/Subscription';
 import { ILocationData } from '../location-providers/location-data.interface';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ActionMessage } from '../messages/action-message';
+import {ConfigurationService} from "./configuration.service";
 
 export const PROVIDERS = new InjectionToken<ILocationProvider[]>('LocationProviders');
 @Injectable({
@@ -19,13 +20,15 @@ export class LocationService implements OnDestroy {
     manualOverride = false;
     availableCountries: string[];
 
-    constructor(public sessionService: SessionService,
+    constructor(private configurationService: ConfigurationService,
+                public sessionService: SessionService,
                 @Optional() @Inject(PROVIDERS) private locationProviders: Array<ILocationProvider>) {
 
         sessionService.getMessages('ConfigChanged').pipe(
-            filter( m => m.configType === 'LocationService'), take(1)
+            filter( m => m.configType === 'LocationService')
         ).subscribe( message => {
             if (message.enabled === 'true') {
+                console.info( `LocationService config received: ${JSON.stringify(message)}`);
                 if (message.countries) {
                     this.availableCountries = message.countries.split(',');
                 }
