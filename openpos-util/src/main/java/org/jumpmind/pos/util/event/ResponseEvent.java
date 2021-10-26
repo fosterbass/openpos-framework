@@ -11,14 +11,16 @@ public class ResponseEvent<T> extends AppEvent {
     String targetDeviceId;
     String targetAppId;
     String request;
+    ResponseEventStatusCode statusCode = ResponseEventStatusCode.OK;
     T payload;
 
     @Builder
-    public ResponseEvent(String deviceId, String appId, String pairedDeviceId, boolean remote, String targetDeviceId, String targetAppId, String request, T payload) {
+    public ResponseEvent(String deviceId, String appId, String pairedDeviceId, boolean remote, String targetDeviceId, String targetAppId, String request, T payload, ResponseEventStatusCode statusCode) {
         super(deviceId, appId, pairedDeviceId, remote);
         this.targetDeviceId = targetDeviceId;
         this.targetAppId = targetAppId;
         this.request = request;
         this.payload = payload;
+        this.statusCode = statusCode;
     }
 }

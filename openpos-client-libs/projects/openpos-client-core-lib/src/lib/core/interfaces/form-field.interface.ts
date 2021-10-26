@@ -47,6 +47,9 @@ export interface IFormElement {
     hideButtons?: boolean;
     readOnly?: boolean;
     preValidate?: boolean;
+    requiredOverridable?: boolean;
+    requiredOverridden?: boolean;
+    overrideLabel?: string;
 }
 
 export interface IDynamicListField {
