@@ -89,6 +89,13 @@ public final class DateUtils {
         }
     }
 
+    /**
+     * Returns the date adjusted from the server timezone to the client timezone
+     * @param date date to be converted
+     * @param serverOffsetString string representation of server timezone offset
+     * @param clientOffsetString string representation of client timezone offset
+     * @return date adjusted from server timezone to client timezone
+     */
     public static Date getTimezoneOffsetCorrectedDate(Date date, String serverOffsetString, String clientOffsetString) {
         if (StringUtils.equals(serverOffsetString, clientOffsetString)) {
             return date;
