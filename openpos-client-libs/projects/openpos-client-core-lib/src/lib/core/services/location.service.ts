@@ -1,12 +1,14 @@
-import { SessionService } from './session.service';
-import {filter, map, take} from 'rxjs/operators';
-import { Optional, Inject, InjectionToken, OnDestroy, Injectable } from '@angular/core';
-import { ILocationProvider } from '../location-providers/location-provider.interface';
-import { ILocationData } from '../location-providers/location-data.interface';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
-import { ActionMessage } from '../messages/action-message';
+import {SessionService} from './session.service';
+import {filter, map} from 'rxjs/operators';
+import {Inject, Injectable, InjectionToken, OnDestroy, Optional} from '@angular/core';
+import {ILocationProvider} from '../location-providers/location-provider.interface';
+import {ILocationData} from '../location-providers/location-data.interface';
+import {BehaviorSubject, Observable, Subscription} from 'rxjs';
+import {ActionMessage} from '../messages/action-message';
+import {ConfigurationService} from './configuration.service';
 
 export const PROVIDERS = new InjectionToken<ILocationProvider[]>('LocationProviders');
+
 @Injectable({
     providedIn: 'root',
 })
@@ -18,17 +20,19 @@ export class LocationService implements OnDestroy {
     manualOverride = false;
     availableCountries: string[];
 
-    constructor(public sessionService: SessionService,
+    constructor(private configurationService: ConfigurationService,
+                public sessionService: SessionService,
                 @Optional() @Inject(PROVIDERS) private locationProviders: Array<ILocationProvider>) {
 
         sessionService.getMessages('ConfigChanged').pipe(
-            filter( m => m.configType === 'LocationService'), take(1)
-        ).subscribe( message => {
+            filter(m => m.configType === 'LocationService')
+        ).subscribe(message => {
             if (message.enabled === 'true') {
+                console.info(`LocationService config received: ${JSON.stringify(message)}`);
                 if (message.countries) {
                     this.availableCountries = message.countries.split(',');
                 }
-                let provider = locationProviders.find( l => l.getProviderName() === message.provider );
+                let provider = locationProviders.find(l => l.getProviderName() === message.provider);
                 if (provider === undefined || provider === null) {
                     provider = locationProviders.find(l => l.getProviderName() === 'default');
                 }
@@ -36,13 +40,13 @@ export class LocationService implements OnDestroy {
                     this.subscription.unsubscribe();
                 }
                 this.subscription = provider.getCurrentLocation(message.coordinateBuffer ? message.coordinateBuffer : 0)
-                .subscribe((locationData: ILocationData) => {
-                    if (!this.manualOverride) {
-                        sessionService.sendMessage( new ActionMessage('LocationChanged', true, locationData ));
-                        this.$data.next(locationData);
-                        this.previousLocationData = locationData;
-                    }
-                });
+                    .subscribe((locationData: ILocationData) => {
+                        if (!this.manualOverride) {
+                            sessionService.sendMessage(new ActionMessage('LocationChanged', true, locationData));
+                            this.$data.next(locationData);
+                            this.previousLocationData = locationData;
+                        }
+                    });
             }
         });
     }
@@ -64,7 +68,7 @@ export class LocationService implements OnDestroy {
             this.manualOverride = true;
             this.$data.next(locationData);
             this.previousLocationData = locationData;
-            this.sessionService.sendMessage( new ActionMessage('LocationChanged', true, locationData ));
+            this.sessionService.sendMessage(new ActionMessage('LocationChanged', true, locationData));
         } else {
             this.manualOverride = false;
         }
