@@ -30,6 +30,7 @@ public class TransactionSummary extends TransactionIdentifier {
     private String statusText;
     private String statusIcon;
     private boolean voidable;
+    private boolean hasGiftReceiptItems;
     private String username;
     private String transactionType;
     private String transactionTypeText;
