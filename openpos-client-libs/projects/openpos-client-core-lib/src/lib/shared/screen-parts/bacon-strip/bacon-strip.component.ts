@@ -41,6 +41,10 @@ export class BaconStripComponent extends ScreenPartComponent<BaconStripInterface
     isMobile: Observable<boolean>;
 
     searchExpanded = false;
+
+    @Input()
+    searchEnabled = false;
+
     constructor(
         injector: Injector,
         public helpTextService: HelpTextService,
