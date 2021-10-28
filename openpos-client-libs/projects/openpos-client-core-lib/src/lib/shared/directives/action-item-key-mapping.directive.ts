@@ -21,8 +21,10 @@ export class ActionItemKeyMappingDirective implements OnDestroy {
             this.keyUpSubscription.unsubscribe();
         }
 
-        this.keyDownSubscription = this.keyPresses.subscribe( item.keybind, 100, event => this.handleKeypress(event, item));
-        this.keyUpSubscription = this.keyPresses.subscribe(item.keybind, 101, event => this.handleKeypress(event, item), null, 'keyup');
+        if (Configuration.enableKeybinds && item.keybind) {
+            this.keyDownSubscription = this.keyPresses.subscribe(item.keybind, 100, event => this.handleKeypress(event, item));
+            this.keyUpSubscription = this.keyPresses.subscribe(item.keybind, 101, event => this.handleKeypress(event, item), null, 'keyup');
+        }
     }
 
     private keyDownSubscription: Subscription;
