@@ -1,7 +1,7 @@
 import { MatSidenav } from '@angular/material/sidenav';
 import { BaconStripInterface } from './bacon-strip.interface';
 import { ScreenPartComponent } from '../screen-part';
-import { Component, EventEmitter, Injector, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Injector, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { ScreenPart } from '../../decorators/screen-part.decorator';
 import { HelpTextService } from '../../../core/help-text/help-text.service';
 import { MediaBreakpoints, OpenposMediaService } from '../../../core/media/openpos-media.service';
@@ -32,6 +32,7 @@ export class BaconStripComponent extends ScreenPartComponent<BaconStripInterface
     set sidenavOpened(opened: boolean) {
         if (this.baconDrawer) {
             this.baconDrawer.opened = opened;
+            this.changeDetector.detectChanges();
         }
     }
 
@@ -45,7 +46,8 @@ export class BaconStripComponent extends ScreenPartComponent<BaconStripInterface
         injector: Injector,
         public helpTextService: HelpTextService,
         private media: OpenposMediaService,
-        protected keyPresses: KeyPressProvider
+        protected keyPresses: KeyPressProvider,
+        private changeDetector: ChangeDetectorRef
     ) {
         super(injector);
 
@@ -75,7 +77,10 @@ export class BaconStripComponent extends ScreenPartComponent<BaconStripInterface
         super.ngOnInit();
 
         if (this.baconDrawer) {
-            this.baconDrawer.openedChange.subscribe(v => this.sidenavOpenedChange.next(v));
+            this.baconDrawer.openedChange.subscribe(v => {
+                this.sidenavOpenedChange.next(v);
+                this.changeDetector.detectChanges();
+            });
         }
     }
 
@@ -94,6 +99,7 @@ export class BaconStripComponent extends ScreenPartComponent<BaconStripInterface
             this.doAction(this.screenData.actions[0]);
         } else {
             this.baconDrawer.toggle();
+            this.changeDetector.detectChanges();
         }
     }
 
