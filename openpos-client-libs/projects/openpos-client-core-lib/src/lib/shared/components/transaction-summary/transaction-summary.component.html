@@ -1,4 +1,4 @@
-<div *ngIf="transactionSummary" class="summary-container" responsive-class>
+<div *ngIf="transactionSummary && !(isMobile$ | async)" class="summary-container" responsive-class>
     <div class="summary-trans-type trans-icon-secondary" responsive-class>
         <app-icon *ngIf="transactionSummary.transactionTypeIcon" [iconName]="transactionSummary.transactionTypeIcon"
                   iconClass="mat-64" class="trans-type-icon" responsive-class></app-icon>
@@ -67,5 +67,41 @@
             <span class="transaction-button-text">{{button.title}}</span>
             <app-icon [iconName]="button.icon" iconClass="mat-24"></app-icon>
         </button>
+    </div>
+</div>
+
+<div *ngIf="transactionSummary && (isMobile$ | async)" class="summary-container" responsive-class>
+    <div class="summary-trans-type trans-icon-secondary" responsive-class>
+        <app-icon *ngIf="transactionSummary.transactionTypeIcon" [iconName]="transactionSummary.transactionTypeIcon"
+                  iconClass="mat-36" class="trans-type-icon" responsive-class></app-icon>
+        <span class="trans-type-text">{{transactionSummary.transactionTypeText}}</span>
+    </div>
+    <div class="summary-attention summary-trans" responsive-class>
+        <app-icon class="summary-trans-status-icon" responsive-class iconClass="mat-24 {{statusClass}}"
+                  *ngIf="transactionSummary.statusIcon" [iconName]="transactionSummary.statusIcon"></app-icon>
+        <div class="summary-trans-status-text" responsive-class>
+            {{transactionSummary.statusText}} {{transactionSummary.sequenceNumberFormatted}}
+        </div>
+    </div>
+    <div class="summary-details" responsive-class>
+        <div class="summary-trans-properties">
+            <div class="emphasize-detail">{{transactionSummary.transactionDate | date:'M/d/yyy h:mm a'}}</div>
+            <div>Customer <span class="emphasize-detail">{{transactionSummary.customerName}}</span></div>
+            <div>{{transactionSummary.itemsFormatted}}</div>
+            <div>Device <span class="emphasize-detail">{{transactionSummary.deviceId}}</span></div>
+        </div>
+    </div>
+    <div class="summary-total" responsive-class>
+        <app-currency-text [amountText]="transactionSummary.total" class="summary-total-amount" responsive-class></app-currency-text>
+        <div class="summary-tender-type-icons">
+            <app-icon *ngFor="let tenderTypeIcon of transactionSummary.tenderTypeIcons" [iconName]="tenderTypeIcon"
+                      iconClass="trans-icon-secondary mat-24"></app-icon>
+        </div>
+    </div>
+    <div class="summary-action" responsive-class>
+        <app-icon-button *ngIf="transactionSummary.actions"
+                [iconName]="(transactionSummary.actions[transactionSummary.actions.length - 1]).icon"
+                [iconClass]="'mat-24'" (buttonClick)="onClick(transactionSummary.actions[transactionSummary.actions.length - 1])">
+        </app-icon-button>
     </div>
 </div>

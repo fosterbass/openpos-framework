@@ -1,4 +1,5 @@
 @import './bacon-strip/bacon-strip-theme';
+@import './dynamic-bacon-strip/dynamic-bacon-strip-theme';
 @import './scan-or-search/scan-or-search-theme';
 @import './status-strip/status-strip-theme';
 @import './choose-options-part/choose-options-part-theme';
@@ -13,7 +14,6 @@
 @import './sale-total-panel/sale-total-panel-theme';
 @import './tender-part/tender-part-theme';
 @import './basic-bacon-strip/basic-bacon-strip-theme';
-@import './dynamic-bacon-strip/dynamic-bacon-strip-theme';
 @import './transaction-history-part/transaction-history-part-theme';
 @import './membership-display/membership-display-theme';
 @import './rewards-line-item/rewards-line-item-theme';
@@ -23,6 +23,7 @@
 
 @mixin screen-part-themes($theme) {
     @include bacon-strip-theme($theme);
+    @include dynamic-bacon-strip-theme($theme);
     @include scan-or-search-theme($theme);
     @include choose-options-part-theme($theme);
     @include banner-theme($theme);

@@ -192,6 +192,7 @@ const screenParts = [
     SausageLinksComponent,
     ScanOrSearchComponent,
     BaconStripComponent,
+    DynamicBaconStripComponent,
     DualActionDialogHeaderComponent,
     DialogHeaderComponent,
     SaleFooterComponent,
