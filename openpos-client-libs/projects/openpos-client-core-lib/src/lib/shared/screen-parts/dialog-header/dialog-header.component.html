@@ -6,7 +6,10 @@
                         [iconName]="screenData.headerIcon"></app-icon>
             <span class="context-text">{{screenData.headerContextText}}</span>
         </div>
-        <span class="header-text">{{screenData.headerText}}</span>
+        <div class="header-text-container">
+            <div class="header-text">{{screenData.headerText}}</div>
+            <div *ngIf="screenData.headerAdditionalText" class="header-additional-text">{{screenData.headerAdditionalText}}</div>
+        </div>
     </div>
     <app-icon-button 
         class="back-button" 
