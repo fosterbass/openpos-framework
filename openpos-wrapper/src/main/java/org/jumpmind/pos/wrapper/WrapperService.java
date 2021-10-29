@@ -14,10 +14,12 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jumpmind.pos.wrapper.Constants.Status;
@@ -26,6 +28,7 @@ import com.sun.jna.Platform;
 import org.update4j.Archive;
 import org.update4j.Configuration;
 import org.update4j.UpdateOptions;
+import org.update4j.UpdateResult;
 import org.update4j.service.UpdateHandler;
 import org.update4j.util.FileUtils;
 
@@ -99,6 +102,8 @@ public abstract class WrapperService {
     }
 
     public void init() {
+        tryAutoUpdate();
+
         execJava(false);
     }
 
@@ -311,12 +316,11 @@ public abstract class WrapperService {
     }
 
     public void installUpdate(String updateFile) {
-        if (isInstalled()) {
+        if (isRunning()) {
             stop();
-        } else {
-            System.err.println("auto update currently only supported from services");
-            return;
         }
+
+        System.out.println("about to run update on " + updateFile);
 
         try {
             Archive.read(updateFile).install();
@@ -347,21 +351,29 @@ public abstract class WrapperService {
         return sb.toString();
     }
 
-    protected ArrayList<String> getWrapperCommand(String arg) {
-        ArrayList<String> cmd = new ArrayList<String>();
-        String quote = getWrapperCommandQuote();
+    protected final ArrayList<String> getWrapperCommand(String command, String... additionalArgs) {
+        return getWrapperCommandForOtherWrapper(config.getWrapperJarPath(), command, additionalArgs);
+    }
+
+    protected ArrayList<String> getWrapperCommandForOtherWrapper(String wrapperJar, String command, String... additionalArgs) {
+        final ArrayList<String> cmd = new ArrayList<>();
+        final String quote = getWrapperCommandQuote();
+
         cmd.add(quote + config.getJavaCommand() + quote);
         cmd.add("-Djava.io.tmpdir=" + quote + System.getProperty("java.io.tmpdir") + quote);
         cmd.add("-Duser.dir=" + quote + System.getProperty("user.dir") + quote);
         cmd.add("-jar");
-        cmd.add(quote + config.getWrapperJarPath() + quote);
-        cmd.add(arg);
+        cmd.add(quote + wrapperJar + quote);
+        cmd.add(command);
         cmd.add(quote + config.getConfigFile() + quote);
+
+        cmd.addAll(Arrays.asList(additionalArgs));
+
         return cmd;
     }
 
     protected ArrayList<String> getPrivilegedCommand() {
-        ArrayList<String> cmd = new ArrayList<String>();
+        ArrayList<String> cmd = new ArrayList<>();
         String quote = getWrapperCommandQuote();
         cmd.add(quote + config.getJavaCommand() + quote);
         return cmd;
@@ -429,17 +441,25 @@ public abstract class WrapperService {
 
         final File jarDirectory = jarFile.getParentFile();
 
-        final File libCpyDir = new File("./tmp/updatelibcpy");
+        final File libCpyDir;
 
-        // copy all of the libs to a temp directory that we'll move execution over to.
+        try {
+            libCpyDir = Files.createTempDirectory("libs-bak").toFile();
+        } catch (IOException ex) {
+            System.err.println("failed to copy lib dir for update; could not create directory" + ex.getMessage());
+            return;
+        }
+
+        // copy all the libs to a temp directory that we'll move execution over to.
         if (libCpyDir.exists() && libCpyDir.delete() && libCpyDir.mkdirs()) {
-            try {
-                Files.walk(jarDirectory.toPath()).forEach(f -> {
+            try (final Stream<Path> paths = Files.walk(jarDirectory.toPath())) {
+                paths.forEach(f -> {
                     final Path to = Paths.get(libCpyDir.toString(), f.toString().substring(jarDirectory.toString().length()));
 
                     try {
                         Files.copy(f, to, StandardCopyOption.REPLACE_EXISTING);
                     } catch (IOException ignored) {
+                        System.err.println("failed to copy file `" + f.toString() + "`");
                     }
                 });
             } catch (IOException ignored) {
@@ -447,18 +467,30 @@ public abstract class WrapperService {
             }
 
             try {
+//                final String[] args = new String[]
+//                        {
+//                                config.getJavaCommand(),
+//                                "-classpath " + libCpyDir.toString() + "/*",
+//                                "org.jumpmind.pos.wrapper.ServiceWrapper",
+//                                "install-update",
+//                                "\"" + config.configFile + "\"",
+//                                "\"" + updateFile.getAbsolutePath() + "\""
+//                        };
+
+                final ArrayList<String> args = getWrapperCommandForOtherWrapper(
+                        Paths.get(libCpyDir.getAbsolutePath(), jarFile.getName()).toString(),
+                        "install-update",
+                        getWrapperCommandQuote() + updateFile + getWrapperCommandQuote()
+                );
+
+                System.out.println("about to run: " + StringUtils.join(args, ' '));
+
                 new ProcessBuilder()
-                        .command(
-                                config.getJavaCommand(),
-                                "-classpath ./tmp/updatelibcpy/*",
-                                "org.jumpmind.pos.wrapper.ServiceWrapper",
-                                "install-update",
-                                "\"" + config.configFile + "\"",
-                                "\"" + updateFile.getAbsolutePath() + "\""
-                        )
+                        .command(args)
                         .directory(config.getWorkingDirectory())
                         .start();
             } catch (IOException ex) {
+                logger.log(Level.WARNING, "failed to start process" + ex.getMessage());
                 return;
             }
 
@@ -485,15 +517,15 @@ public abstract class WrapperService {
             return;
         }
 
-        String deviceId = config.getInstallationId();
+        String installationId = config.getInstallationId();
 
-        if (deviceId == null) {
+        if (StringUtils.isEmpty(installationId)) {
+            System.out.println("missing installation id");
             return;
         }
 
         String endpoint = StringUtils.stripEnd(server, "/");
-        endpoint += "/update/installation/" + deviceId;
-
+        endpoint += "/update/installation/" + installationId;
 
         final URL url;
 
@@ -521,13 +553,44 @@ public abstract class WrapperService {
         Configuration configuration;
 
         try {
+            final Map<String, String> properties = config.properties.entrySet()
+                    .stream()
+                    .filter(s -> s.getValue().size() == 1)
+                    .collect(
+                            Collectors.toMap(
+                                    Map.Entry::getKey,
+                                    o -> o.getValue().stream().findFirst().get()
+                            )
+                    );
+
             try (final InputStreamReader reader = new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8)) {
-                configuration = Configuration.read(reader);
+                configuration = Configuration.read(reader, properties);
             }
 
-            configuration = configuration.sync(config.getWorkingDirectory().toPath());
+            System.out.println("working dir: " + config.getWorkingDirectory().toPath());
+
+            System.out.println("config before sync: " + configuration.getFiles().stream().findFirst().get().getUri().toString());
+
+            //configuration = configuration.sync(config.getWorkingDirectory().toPath());
+
+            //System.out.println("config after sync: " + configuration.getFiles().stream().findFirst().get().getUri().toString());
+
+            configuration.getFiles().forEach(file -> {
+                try {
+                    boolean requiresUpdate = file.requiresUpdate();
+
+                     System.out.println("file '" + file.getPath().toString() + "'    check: " +  String.format("%x", file.getChecksum()));
+
+                    if (requiresUpdate) {
+                        System.out.println("file requires update: " + file.getPath().toString());
+                    }
+                } catch (IOException ex) {
+                    System.out.println("cannot read file '" + file.getPath().toString() + "'");
+                }
+            });
 
             if (!configuration.requiresUpdate()) {
+                System.out.println("no update found");
                 return;
             }
         } catch (IOException ignored) {
@@ -544,11 +607,18 @@ public abstract class WrapperService {
             return;
         }
 
+        System.out.println("creating temp file at '" + tempFile.toString() + "'");
+
         // let update4js create the file otherwise it won't download anything
         tempFile.toFile().delete();
 
-        configuration.update(UpdateOptions.archive(tempFile).updateHandler(new UpdateHandler() {
+        final UpdateResult result = configuration.update(UpdateOptions.archive(tempFile).updateHandler(new UpdateHandler() {
         }));
+
+        if (result.getException() != null) {
+            System.err.println("failed to get update: " + result.getException().getMessage());
+            return;
+        }
 
         doUpdateInstall(tempFile.toFile());
     }

@@ -9,6 +9,7 @@ public class ServiceWrapper {
     protected static final String OPENPOS_HOME = "OPENPOS_HOME";
 
     public static void main(String[] args) throws Exception {
+        System.out.println("THIS IS THE VERSION " + 2);
 
     	String configFileName = null;
     	if (args.length >= 2) {

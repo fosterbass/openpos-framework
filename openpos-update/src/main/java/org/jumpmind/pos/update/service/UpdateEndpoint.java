@@ -105,23 +105,26 @@ public class UpdateEndpoint {
                 .basePath(installBasePath)
                 .property("default.launcher.main.class", "org.jumpmind.pos.app.Commerce");
 
-        FileSystem zipFs = FileSystems.newFileSystem(fromZip, ClassLoader.getSystemClassLoader());
+        try (FileSystem zipFs = FileSystems.newFileSystem(fromZip, ClassLoader.getSystemClassLoader())) {
+            for(Path root : zipFs.getRootDirectories()) {
+                Files.walkFileTree(root, new SimpleFileVisitor<Path>() {
+                    @Override
+                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                        String entry = file.toString();
+                        configBuilder.file(
+                                FileMetadata.readFrom(file)
+                                        .uri(configBuilder.getBaseUri() + entry)
+                                        .path(entry.substring(1))
+                                        .ignoreBootConflict()
+                                        .classpath(entry.endsWith("jar"))
+                        );
 
-        for(Path root : zipFs.getRootDirectories()) {
-            Files.walkFileTree(root, new SimpleFileVisitor<Path>() {
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
-                        throws IOException {
-                    String entry = file.toString();
-                    configBuilder.file(FileMetadata.readFrom(file).
-                            uri(configBuilder.getBaseUri() + entry).
-                            path(entry.substring(1)).ignoreBootConflict().
-                            classpath(entry.endsWith("jar")));
-                    return FileVisitResult.CONTINUE;
-                }
-            });
+                        return FileVisitResult.CONTINUE;
+                    }
+                });
+            }
+
+            return configBuilder.build();
         }
-
-        return configBuilder.build();
     }
 }
