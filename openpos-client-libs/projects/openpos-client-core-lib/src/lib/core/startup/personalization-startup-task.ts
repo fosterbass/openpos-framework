@@ -29,7 +29,7 @@ import { Optional } from '@angular/core';
 export class PersonalizationStartupTask implements IStartupTask {
 
     private readonly TYPE = '_jmc-personalize._tcp.';
-    private readonly DOMAIN = 'local.';
+    private readonly DOMAIN = '';
     name = StartupTaskNames.PERSONALIZATION;
 
     order = 500;
