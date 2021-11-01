@@ -1,5 +1,6 @@
 import { IActionItem } from '../../../core/actions/action-item.interface';
 import {
+    ChangeDetectorRef,
     Component,
     ElementRef,
     EventEmitter,
@@ -66,7 +67,8 @@ export class ScanOrSearchComponent extends ScreenPartComponent<ScanOrSearchInter
         mediaService: OpenposMediaService,
         public imageScanners: BarcodeScanner,
         public dialog: MatDialog,
-        public lockScreen: LockScreenService
+        public lockScreen: LockScreenService,
+        private changeDetector: ChangeDetectorRef
     ) {
         super(injector);
         const mobileMap = new Map([
@@ -129,6 +131,9 @@ export class ScanOrSearchComponent extends ScreenPartComponent<ScanOrSearchInter
         if (this.imageScanners.hasImageScanner) {
             this.showScannerVisual = !this.showScannerVisual;
         }
+
+
+        this.changeDetector.detectChanges();
 
         this.triggerNotify.next();
     }

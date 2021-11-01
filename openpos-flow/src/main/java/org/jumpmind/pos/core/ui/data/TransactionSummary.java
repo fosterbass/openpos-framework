@@ -15,6 +15,7 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TransactionSummary extends TransactionIdentifier {
+    private String businessUnitId;
     private String sequenceNumberFormatted;
     private String voidedSequenceNumberFormatted;
     private String customerName;

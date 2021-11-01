@@ -28,6 +28,9 @@ export interface ISellItem extends IItem {
     orderItemLabels: IAdditionalLabel[];
     collapsedAdditionalLabels: IAdditionalLabel[];
     promoLabels: IAdditionalLabel[];
+    pendingPromoLabels: string[];
+    pendingPromoTitle: string;
+    pendingPromoIcon: string;
     optionsLabel: string;
     isOrderItem: boolean;
     isTender: boolean;

@@ -1,0 +1,16 @@
+@mixin item-card-component-theme($theme){
+  $border: map-get(map-get($theme, foreground), border);
+  $background: map-get(map-get($theme, background), background);
+  
+  
+  app-item-card{
+    .pending-promos{
+      border: dashed $border 2px;
+      background-color: $background;
+      .pending-promo-title{
+        color: map-get(map-get($theme, foreground), secondary-text);
+      }
+    }
+  }
+  
+}

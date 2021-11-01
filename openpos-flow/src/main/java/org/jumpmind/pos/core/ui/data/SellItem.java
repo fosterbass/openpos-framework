@@ -31,6 +31,9 @@ public class SellItem extends DefaultItem {
     private List<AdditionalLabel> orderItemLabels;
     private List<AdditionalLabel> collapsedAdditionalLabels = new ArrayList<>();
     private List<AdditionalLabel> promoLabels = new ArrayList<>();
+    private List<String> pendingPromoLabels = new ArrayList<>();
+    private String pendingPromoTitle;
+    private String pendingPromoIcon;
     private String imageUrl;
     private String optionsLabel;
     private boolean isTender;
@@ -390,4 +393,28 @@ public class SellItem extends DefaultItem {
             getPromoLabels().addAll(labels);
         }
     }
+    
+    public List<String> getPendingPromoLabels() { return pendingPromoLabels; }
+    
+    public void setPendingPromoLabels(List<String> pendingPromoLabels){
+        this.pendingPromoLabels = pendingPromoLabels;
+    }
+
+    public void setPendingPromoTitle(String pendingPromoTitle){
+        this.pendingPromoTitle = pendingPromoTitle;
+    }
+    
+    public String getPendingPromoTitle(){
+        return this.pendingPromoTitle;
+    }
+    
+    public void setPendingPromoIcon(String iconName){
+        this.pendingPromoIcon = iconName;
+    }
+    
+    public String getPendingPromoIcon(){
+        return pendingPromoIcon;
+    }
+    
+    
 }

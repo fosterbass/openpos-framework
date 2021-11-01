@@ -6,6 +6,10 @@ export interface DialogHeaderInterface {
      */
     headerText: string;
     /**
+     * Optional additional text to display under the header text
+     */
+    headerAdditionalText?: string;
+    /**
      * Name of the Icon to show next to the header text
      */
     headerIcon: string;

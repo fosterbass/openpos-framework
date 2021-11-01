@@ -109,4 +109,5 @@ public interface IconType {
     public static final String CheckAccountSymbol = "CheckAccountSymbol";
     public static final String Number = "Number";
     public static final String License = "License"; //picture_in_picture
+    public static final String Promo = "local_offer";
 }

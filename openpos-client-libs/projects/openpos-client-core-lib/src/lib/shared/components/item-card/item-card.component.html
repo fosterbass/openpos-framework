@@ -42,8 +42,12 @@
             </ul>
         </div>
         <div class="right-side">
-            <div class="promos" [class.collapsed]="!expanded" *ngIf="item.promoLabels && item.promoLabels.length > 0">
+            <div class="promos" [class.collapsed]="!expanded" *ngIf="(item.promoLabels && item.promoLabels.length > 0) || (item.pendingPromoLabels && item.pendingPromoLabels.length > 0 && !expanded)">
                 <ul responsive-class class="item-card-details">
+                    <li class="pending-promo-collapsed" *ngIf="item.pendingPromoLabels && item.pendingPromoLabels.length > 0 && !expanded">
+                        <app-icon [iconName]="item.pendingPromoIcon"></app-icon>
+                        <span>{{item.pendingPromoTitle}}</span>
+                    </li>
                     <li *ngFor="let label of item.promoLabels" class="muted-color">
                         <span class="item-card-details-label">{{label.label}}</span><span class="item-card-details-value">{{label.value}}</span>
                     </li>
@@ -76,6 +80,16 @@
                     </button>
                 </ng-template>
             </div>
+        </div>
+        <div class="pending-promos" *ngIf="item.pendingPromoLabels && item.pendingPromoLabels.length > 0 && expanded">
+            <div class="pending-promo-title">{{item.pendingPromoTitle}}</div>
+            <ul class="pending-promo-list">
+                <li class="pending-promo-list-item" *ngFor="let pendingPromo of item.pendingPromoLabels">
+                    <app-icon [iconName]="item.pendingPromoIcon"></app-icon>
+                    <span>{{pendingPromo}}</span>
+                </li>
+            </ul>
+            
         </div>
     </mat-card-content>
 </mat-card>

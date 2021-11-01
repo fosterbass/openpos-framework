@@ -11,6 +11,7 @@ public class DialogHeaderPart implements IHasBackButton, Serializable {
     private static final long serialVersionUID = 1L;
 
     private String headerText;
+    private String headerAdditionalText;
     private String headerIcon;
     private String headerContextStyle;
     private String headerContextText;
