@@ -1,4 +1,4 @@
 export enum TransactionSearchMode {
-    SaleAndReturn = 'SaleAndReturn',
-    All = 'All'
+    SALE_RETURN_NO_SALE = 'SALE_RETURN_NO_SALE',
+    ALL = 'ALL'
 }
