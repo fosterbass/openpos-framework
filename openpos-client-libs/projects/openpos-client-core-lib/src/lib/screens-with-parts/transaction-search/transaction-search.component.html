@@ -6,7 +6,7 @@
                 <app-icon [iconName]="screen.transSearchModeIcon" iconClass="mat-36"></app-icon>
                 <span class="transaction-search-mode-text">{{screen.transSearchModeText}}</span>
             </div>
-            <div *ngSwitchCase="TransactionSearchMode.SaleAndReturn"
+            <div *ngSwitchCase="TransactionSearchMode.SALE_RETURN_NO_SALE"
                  [ngClass]="{'change-search-mode-disabled': this.changeSearchModeDisabled}"
                  class="transaction-search-options transaction-search-options-search">
                 <app-scan-or-search class="scan-or-search mat-elevation-z1"
@@ -22,7 +22,7 @@
                     <app-icon *ngIf="screen.searchButton.icon" [iconName]="screen.searchButton.icon"></app-icon>
                 </app-primary-button>
             </div>
-            <div *ngSwitchCase="TransactionSearchMode.All"
+            <div *ngSwitchCase="TransactionSearchMode.ALL"
                  [ngClass]="{'change-search-mode-disabled': this.changeSearchModeDisabled}"
                  class="transaction-search-options transaction-search-options-search-all">
                 <app-dynamic-form-part class="transaction-search-all-params-form"
