@@ -7,9 +7,6 @@ import org.slf4j.LoggerFactory;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -86,34 +83,5 @@ public final class DateUtils {
             logger.warn(String.format("Unable to change format of date '%s' from '%s' to '%s'", value, existingFormat, newFormat), e);
             return value;
         }
-    }
-
-    /**
-     * Returns the date adjusted from the server timezone to the client timezone
-     * @param date date to be converted
-     * @param serverOffsetString string representation of server timezone offset
-     * @param clientOffsetString string representation of client timezone offset
-     * @return date adjusted from server timezone to client timezone
-     */
-    public static Date getTimezoneOffsetCorrectedDate(Date date, String serverOffsetString, String clientOffsetString) {
-        if (StringUtils.equals(serverOffsetString, clientOffsetString)) {
-            return date;
-        }
-        if (serverOffsetString != null && clientOffsetString != null) {
-            try {
-                ZoneOffset serverOffset = ZoneOffset.of(serverOffsetString);
-                ZoneOffset clientOffset = ZoneOffset.of(clientOffsetString);
-
-                LocalDateTime serverLocalDateTime = date.toInstant().atOffset(serverOffset).toLocalDateTime();
-                LocalDateTime clientLocalDateTime = date.toInstant().atOffset(clientOffset).toLocalDateTime();
-
-                long hoursOffset = ChronoUnit.HOURS.between(clientLocalDateTime, serverLocalDateTime);
-                return Date.from(serverLocalDateTime.minusHours(hoursOffset).toInstant(serverOffset));
-            } catch (Exception e) {
-                logger.warn("Could not convert date using server and client offsets, returning original date");
-                return date;
-            }
-        }
-        return date;
     }
 }
