@@ -75,12 +75,12 @@
                 <app-icon iconName="Forward" iconClass="mat-24"></app-icon>
             </button>
 
-            <div *ngSwitchCase="TransactionSearchMode.SaleAndReturn" class="flex-column-spaced-between"
+            <div *ngSwitchCase="TransactionSearchMode.SALE_RETURN_NO_SALE" class="flex-column-spaced-between"
                  [ngClass]="{'change-search-mode-disabled': this.changeSearchModeDisabled}">
                 <app-scan-or-search class="scan-or-search mat-elevation-z1" [focusInitial]="false"></app-scan-or-search>
             </div>
 
-            <div *ngSwitchCase="TransactionSearchMode.SaleAndReturn" class="flex-column-spaced-between"
+            <div *ngSwitchCase="TransactionSearchMode.SALE_RETURN_NO_SALE" class="flex-column-spaced-between"
                  [ngClass]="{'change-search-mode-disabled': this.changeSearchModeDisabled}">
                 <div class="flex-spaced-between-gap">
                     <app-primary-button *ngIf="screen.searchButton" class="transaction-search-button flex-grow"
@@ -95,7 +95,7 @@
                     </app-secondary-button>
                 </div>
             </div>
-            <div *ngSwitchCase="TransactionSearchMode.All" [ngClass]="{'change-search-mode-disabled': this.changeSearchModeDisabled}"
+            <div *ngSwitchCase="TransactionSearchMode.ALL" [ngClass]="{'change-search-mode-disabled': this.changeSearchModeDisabled}"
                  class="transaction-search-options transaction-search-options-search-all">
                 <app-dynamic-form-part class="transaction-search-all-params-form"
                                        (formInit)="onSearchAllFormChanges($event)"
