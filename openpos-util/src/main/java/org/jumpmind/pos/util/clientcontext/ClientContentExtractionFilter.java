@@ -26,12 +26,12 @@ public class ClientContentExtractionFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        log.info(String.format("Request before ClientContentExtractionFilter: %s",request.toString()));
+        log.debug(String.format("Request before ClientContentExtractionFilter: %s",request.toString()));
         Enumeration gwwHeaderNames = request.getHeaderNames();
-        log.info("Logging headers...");
+        log.debug("Logging headers...");
         while (gwwHeaderNames.hasMoreElements()) {
             String key = (String) gwwHeaderNames.nextElement();
-            log.info("Header {}: {}", key, request.getHeader(key));
+            log.debug("Header {}: {}", key, request.getHeader(key));
         }
 
         Enumeration<String> headerNames = request.getHeaderNames();
