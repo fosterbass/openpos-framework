@@ -2,7 +2,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Injectable } from '@angular/core';
 import { MatIconRegistry } from '@angular/material';
 import { ImageService } from './image.service';
-import { Observable } from 'rxjs';
+import {EMPTY, Observable} from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Injectable({
@@ -139,7 +139,7 @@ export class IconService {
 
     public getIconHtml(name: string): Observable<SafeHtml> {
         if (!name) {
-            return null;
+            return EMPTY;
         }
         let url: string;
         if (name.includes('${apiServerBaseUrl}/appId/${appId}/deviceId/${deviceId}/content?contentPath=')) {
