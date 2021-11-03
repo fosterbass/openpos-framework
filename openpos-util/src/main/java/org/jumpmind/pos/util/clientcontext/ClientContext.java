@@ -18,9 +18,6 @@ public class ClientContext {
     private ThreadLocal<Map<String, String>> propertiesMap = new ThreadLocal<>();
     final Logger log = LoggerFactory.getLogger(getClass());
 
-    @Value("${openpos.installationId:'not set'}")
-    String installationId;
-
     @Value("${openpos.businessunitId:'not set'}")
     String businessUnitId;
 
@@ -44,7 +41,7 @@ public class ClientContext {
 
         if (props == null || !props.containsKey(name)) {
             if ("deviceId".equalsIgnoreCase(name)) {
-                return installationId;
+                return businessUnitId + "-000";
             } else if ("businessUnitId".equalsIgnoreCase(name)) {
                 return businessUnitId;
             } else if ("appId".equalsIgnoreCase(name)) {
