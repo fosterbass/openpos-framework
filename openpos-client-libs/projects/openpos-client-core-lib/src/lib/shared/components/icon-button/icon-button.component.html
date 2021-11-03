@@ -1,7 +1,8 @@
-<button mat-icon-button [ngClass]="iconClass"
-    class="icon-button"
+<button 
+    mat-icon-button
+    [ngClass]="iconClass"
+    class="icon-button material-icons"
     [disabled]="disabled"
-    [color]="color"
     (click)="clickFn()">
-    <app-icon [iconName]="iconName" [iconClass]="iconClass"></app-icon>
+    <app-icon [iconName]="iconName" [iconClass]="iconClass" [ngStyle]="{'color': color}"></app-icon>
 </button>

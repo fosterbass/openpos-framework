@@ -8,6 +8,8 @@ public class StandbyUIMessage extends UIMessage {
     private static final long serialVersionUID = 1L;
 
     private String backgroundImage;
+    private String iconName;
+    private String iconAction;
 
     public StandbyUIMessage() {
         setId("standby");

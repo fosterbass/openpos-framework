@@ -4,7 +4,7 @@ import { MessageProvider } from '../../providers/message.provider';
 import { ToastrService } from 'ngx-toastr';
 import { SessionService } from '../../../core/services/session.service';
 import { ConfigurationService } from '../../../core/services/configuration.service';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { MockComponent } from 'ng-mocks';
 import { LoaderComponent } from '../loader/loader.component';
 import { WatermarkMessage } from '../../../core/messages/watermark-message';

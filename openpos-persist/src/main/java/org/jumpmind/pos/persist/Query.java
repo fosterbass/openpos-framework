@@ -1,18 +1,5 @@
 package org.jumpmind.pos.persist;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.StringSubstitutor;
-import org.apache.commons.text.lookup.StringLookup;
-import org.jumpmind.pos.persist.impl.QueryTemplate;
-import org.springframework.util.Assert;
-
 public class Query<T> {
 
     private String name;

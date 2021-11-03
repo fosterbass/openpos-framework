@@ -24,13 +24,13 @@ export abstract class PosScreenDirective<T extends IAbstractScreen> implements I
         }
     }
 
-    show(screen: any) {
+    show(screen: any): void {
         this.screen = deepAssign(this.screen, screen);
         this.beforeBuildScreen$.next();
         this.buildScreen();
     }
 
-    doAction(action: IActionItem | string, payload?: any) {
+    doAction(action: IActionItem | string, payload?: any): void {
         if (typeof (action) === 'string') {
             this.actionService.doAction({ action }, payload);
         } else {
@@ -45,5 +45,5 @@ export abstract class PosScreenDirective<T extends IAbstractScreen> implements I
         this.destroyed$.next();
     }
 
-    abstract buildScreen();
+    abstract buildScreen(): void;
 }

@@ -1,6 +1,12 @@
 .standby-wrapper {
   height: 100%;
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
   justify-content: space-between;
+}
+
+.understated-icon {
+  opacity: 0.75;
+  margin-left: 20px;
+  margin-bottom: 20px;
 }

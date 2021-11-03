@@ -20,7 +20,6 @@ import org.jumpmind.pos.util.ReflectUtils;
 import org.jumpmind.pos.util.model.ITypeCode;
 import org.jumpmind.properties.TypedProperties;
 import org.jumpmind.util.LinkedCaseInsensitiveMap;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.*;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -34,10 +33,10 @@ import java.io.FileReader;
 import java.io.Reader;
 import java.lang.reflect.Field;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.*;
@@ -73,6 +72,77 @@ public class DBSession {
         this.queryTemplates = queryTemplates;
         this.tagHelper = tagHelper;
         this.augmenterHelper = augmenterHelper;
+    }
+
+    /**
+     * A collection of helpers for performing bulk operations against a {@link DBSession} instance.
+     * <p>
+     * Operations may be accessed through the {@link DBSession#getBulkOperations()} method.
+     */
+    public final class BulkOperations {
+        public void queryForEachRow(Query<Row> query, int maxResults, Consumer<RowConsumerContext<Row>> rowHandler) {
+            queryForEachRow(query, maxResults, Collections.emptyMap(), rowHandler);
+        }
+
+        public void queryForEachRow(Query<Row> query, int maxResults, Map<String, Object> params, Consumer<RowConsumerContext<Row>> rowHandler) {
+            final QueryTemplate queryTemplate = getQueryTemplate(query);
+
+            try {
+                final SqlStatement statement = queryTemplate.generateSQL(query, params);
+                DBSession.this.queryInternal(statement, maxResults, rowHandler);
+            } catch (Exception ex) {
+                throwPersistException(query, params, ex);
+            }
+        }
+
+        public <T> void queryForEachRow(Query<T> query, int maxResults, Class<T> clazz, Consumer<RowConsumerContext<T>> rowHandler) {
+            queryForEachRow(query, maxResults, Collections.emptyMap(), clazz, rowHandler);
+        }
+
+        public <T> void queryForEachRow(Query<T> query, int maxResults, Map<String, Object> params, Class<T> clazz, Consumer<RowConsumerContext<T>> rowHandler) {
+            final QueryTemplate queryTemplate = getQueryTemplate(query);
+
+            try {
+                final SqlStatement statement = queryTemplate.generateSQL(query, params);
+                queryForEachRow(statement, maxResults, clazz, rowHandler);
+            } catch (Exception ex) {
+                throwPersistException(query, params, ex);
+            }
+        }
+
+        public void insert(List<? extends AbstractModel> models) {
+            batchInternal(models, DmlType.INSERT);
+        }
+
+        public void delete(List<? extends AbstractModel> models) {
+            batchInternal(models, DmlType.DELETE);
+        }
+
+        public void update(List<? extends AbstractModel> models) {
+            batchInternal(models, DmlType.UPDATE);
+        }
+
+        private <T> void queryForEachRow(SqlStatement statement, int maxResults, Class<T> resultClass, Consumer<RowConsumerContext<T>> rowHandler) {
+            DBSession.this.queryInternal(statement, maxResults, context -> {
+                final Row row = context.getRow();
+
+                try {
+                    final T object = performObjectMapping(row, resultClass);
+                    rowHandler.accept(new RowConsumerContext<>(object));
+                } catch (Exception ex) {
+                    log.error("cannot map row to `{}` class for query `{}`; aborting row-by-row iteration", resultClass.getSimpleName(), statement.getSql(), ex);
+                    context.breakIteration();
+                }
+            });
+        }
+
+        private <T> void throwPersistException(Query<T> query, Map<String, Object> params, Throwable cause) throws PersistException {
+            throw new PersistException("Failed to execute query. Name: " + query.getName() + " Parameters: " + params, cause);
+        }
+    }
+
+    public BulkOperations getBulkOperations() {
+        return this.new BulkOperations();
     }
 
     public <T extends AbstractModel> List<T> findAll(Class<T> clazz, int maxResults) {
@@ -359,6 +429,33 @@ public class DBSession {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    private <T> T performObjectMapping(Row row, Class<T> resultClass) throws InstantiationException, IllegalAccessException {
+        T object;
+
+        if (resultClass != null) {
+            if (resultClass.equals(String.class)) {
+                object = (T) row.stringValue();
+            } else if (resultClass.getPackage().getName().equals("java.lang") ||
+                    resultClass.getPackage().getName().equals("java.util") ||
+                    resultClass.getPackage().getName().equals("java.sql") ||
+                    resultClass.getPackage().getName().equals("java.math")) {
+                object = (T) row.values().iterator().next();
+                if (object != null && !resultClass.isAssignableFrom(object.getClass())) {
+                    throw new PersistException(object.getClass().getName() + " is not assignable to " + resultClass.getName());
+                }
+            } else if (isModel(resultClass)) {
+                object = mapModel(resultClass, row);
+            } else {
+                object = mapNonModel(resultClass, row);
+            }
+        } else {
+            object = (T) mapNonModel(row);
+        }
+
+        return object;
+    }
+
     public ModelWrapper wrap(AbstractModel model) {
         ModelWrapper wrapper = new ModelWrapper(model, databaseSchema.getModelMetaData(model.getClass()), augmenterHelper);
         return wrapper;
@@ -593,7 +690,7 @@ public class DBSession {
     }
 
     protected void batchInternal(List<? extends  AbstractModel> models, DmlType dmlType) {
-        if (models.size() > 0) {
+        if (!models.isEmpty()) {
             AbstractModel exampleModel = models.get(0);
 
             ModelWrapper model = new ModelWrapper(exampleModel, databaseSchema.getModelMetaData(exampleModel.getClass()), augmenterHelper);
@@ -633,16 +730,28 @@ public class DBSession {
         return false;
     }
 
+    /**
+     * @deprecated moved to {@link BulkOperations#insert(List)}; can be accessed through the {@link #getBulkOperations()} method.
+     */
+    @Deprecated
     public void batchInsert(List<? extends AbstractModel> models) {
-        batchInternal(models, DmlType.INSERT);
+        getBulkOperations().insert(models);
     }
 
+    /**
+     * @deprecated moved to {@link BulkOperations#delete(List)}; can be accessed through the {@link #getBulkOperations()} method.
+     */
+    @Deprecated
     public void batchDelete(List<? extends AbstractModel> models) {
-        batchInternal(models, DmlType.DELETE);
+        getBulkOperations().delete(models);
     }
 
+    /**
+     * @deprecated moved to {@link BulkOperations#update(List)}; can be accessed through the {@link #getBulkOperations()} method.
+     */
+    @Deprecated
     public void batchUpdate(List<? extends AbstractModel> models) {
-        batchInternal(models, DmlType.UPDATE);
+        getBulkOperations().update(models);
     }
 
     private List<Object[]> getValueArray(DmlStatement statement, List<? extends AbstractModel> models) {
@@ -675,84 +784,85 @@ public class DBSession {
         return tables;
     }
 
-    @SuppressWarnings("unchecked")
-    protected <T> List<T> queryInternal(Class<T> resultClass, SqlStatement statement, int maxResults) throws Exception {
-        List<T> objects = new ArrayList<T>();
+    protected void queryInternal(SqlStatement statement, int maxResults, Consumer<RowConsumerContext<Row>> rowHandler) {
+        Objects.requireNonNull(statement);
+        Objects.requireNonNull(rowHandler);
+
         String sqlToUse = null;
         Object[] args = null;
+
         try {
-            ParsedSql parsedSql = NamedParameterUtils.parseSqlStatement(statement.getSql());
+            final ParsedSql parsedSql = NamedParameterUtils.parseSqlStatement(statement.getSql());
+
             sqlToUse = NamedParameterUtils.substituteNamedParameters(parsedSql, statement.getParameters());
             List<SqlParameter> declaredParameters = NamedParameterUtils.buildSqlParameterList(parsedSql, statement.getParameters());
             args = NamedParameterUtils.buildValueArray(parsedSql, statement.getParameters(), declaredParameters);
             PreparedStatementCreator psc = new PreparedStatementCreatorFactory(sqlToUse, declaredParameters).newPreparedStatementCreator(args);
-            List<Row> rows = jdbcTemplate.getJdbcOperations().execute(psc, new PreparedStatementCallback<List<Row>>() {
-                @Override
-                public List<Row> doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-                    Connection con = ps.getConnection();
-                    boolean autoCommitBefore = con.getAutoCommit();
-                    List<Row> results = new ArrayList<>();
-                    DefaultMapper mapper = new DefaultMapper();
-                    try {
-                        ps.setFetchSize(maxResults < 10000 ? maxResults : 10000);
-                        ps.setMaxRows(maxResults);
-                        // jumped through all these hoops just to set auto commit to false for postgres
-                        con.setAutoCommit(false);
-                        ResultSet rs = ps.executeQuery();
-                        int rowCount = 0;
+
+            Integer rowsProcessed = jdbcTemplate.getJdbcOperations().execute(psc, ps -> {
+                Connection con = ps.getConnection();
+                boolean autoCommitBefore = con.getAutoCommit();
+                DefaultMapper mapper = new DefaultMapper();
+
+                int rowCount = 0;
+
+                try {
+                    ps.setFetchSize(Math.min(maxResults, 10000));
+                    ps.setMaxRows(maxResults);
+                    ps.setQueryTimeout(5 * 60);
+
+                    // jumped through all these hoops just to set auto commit to false for postgres
+                    con.setAutoCommit(false);
+
+                    try (final ResultSet rs = ps.executeQuery()) {
                         while (rs.next() && rowCount < maxResults) {
                             Row row = mapper.mapRow(rs, ++rowCount);
                             if (row != null) {
-                                results.add(row);
+                                rowHandler.accept(new RowConsumerContext<>(row));
                             }
                         }
-                        rs.close();
-                        return results;
-                    } finally {
-                        con.setAutoCommit(autoCommitBefore);
+                    } catch (RowConsumerContext.BreakIterationException ignored) {
+                        // used to exit the loop from within the consumer.
+                        log.debug("row iteration break control flow initiated");
                     }
+                } finally {
+                    // We can't really turn this into an iterator because there really isn't a good way reset this back
+                    // until the iterator has finished to its entirety. If the iterator is broken for any reason in the
+                    // middle of iterator, this would not happen. For that reason we'll instead invoke a callback for
+                    // every row and the callback context contains loop breaks.
+                    con.setAutoCommit(autoCommitBefore);
                 }
-            });
-            for (int j = 0; j < rows.size(); j++) {
-                Row row = rows.get(j);
-                T object = null;
 
-                if (resultClass != null) {
-                    if (resultClass.equals(String.class)) {
-                        object = (T) row.stringValue();
-                    } else if (resultClass.getPackage().getName().equals("java.lang") ||
-                            resultClass.getPackage().getName().equals("java.util") ||
-                            resultClass.getPackage().getName().equals("java.sql") ||
-                            resultClass.getPackage().getName().equals("java.math")) {
-                        object = (T) row.values().iterator().next();
-                        if (object != null && !resultClass.isAssignableFrom(object.getClass())) {
-                            throw new PersistException(object.getClass().getName() + " is not assignable to " + resultClass.getName());
-                        }
-                    } else if (isModel(resultClass)) {
-                        object = mapModel(resultClass, row);
-                    } else {
-                        object = mapNonModel(resultClass, row);
-                    }
-                } else {
-                    object = (T) mapNonModel(row);
-                }
-                objects.add(object);
-            }
+                return rowCount;
+            });
+
+            log.debug("processed {} database row(s)", rowsProcessed);
         } catch (Exception ex) {
+            String sql;
+
             try {
                 LogSqlBuilder builder = new LogSqlBuilder();
                 Object[] rawArgs = cleanArgs(args);
-                String sql = builder.buildDynamicSqlForLog(sqlToUse, rawArgs, null);
-                throw new PersistException("Failed to execute sql: " + sql, ex);
+                sql = builder.buildDynamicSqlForLog(sqlToUse, rawArgs, null);
             } catch (Exception ex2) {
-                if (ex2 instanceof PersistException) {
-                    throw (PersistException)ex2;
-                } else {
-                    log.warn("Could not generate dynamic sql to log.", ex2);
-                    throw ex; // throw the first.
-                }
+                log.warn("Could not generate dynamic sql to log.", ex2);
+                throw new PersistException("Failed to execute sql; sql could not be generated", ex2);
             }
 
+            throw new PersistException("Failed to execute sql: " + sql, ex);
+        }
+    }
+
+    protected <T> List<T> queryInternal(Class<T> resultClass, SqlStatement statement, int maxResults)
+            throws IllegalAccessException, InstantiationException
+    {
+        List<T> objects = new ArrayList<>();
+
+        final List<Row> rows = new ArrayList<>();
+        queryInternal(statement, maxResults, rowConsumerContext -> rows.add(rowConsumerContext.getRow()));
+
+        for (Row row : rows) {
+            objects.add(performObjectMapping(row, resultClass));
         }
 
         return objects;
@@ -776,7 +886,7 @@ public class DBSession {
     }
 
     @SuppressWarnings("unchecked")
-    protected <T> T mapModel(Class<T> resultClass, Row row) throws Exception {
+    protected <T> T mapModel(Class<T> resultClass, Row row) throws InstantiationException, IllegalAccessException {
         ModelMetaData modelMetaData = databaseSchema.getModelMetaData(resultClass);
 
         T object = resultClass.newInstance();
@@ -808,11 +918,12 @@ public class DBSession {
             ModelWrapper modelWrapper,
             Class<?> resultClass,
             LinkedCaseInsensitiveMap<String> matchedColumns,
-            LinkedHashMap<String, Object> deferredLoadValues){
+            LinkedHashMap<String, Object> deferredLoadValues
+    ) {
         PropertyDescriptor[] propertyDescriptors = PropertyUtils.getPropertyDescriptors(object);
 
-        for (int i = 0; i < propertyDescriptors.length; i++) {
-            String propertyName = propertyDescriptors[i].getName();
+        for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
+            String propertyName = propertyDescriptor.getName();
             String columnName = modelMetaData.getColumnNameForProperty(resultClass, propertyName);
             if (columnName != null) {
                 if (row.containsKey(columnName)) {
@@ -877,24 +988,20 @@ public class DBSession {
         return row;
     }
 
-
-
-    protected <T> T mapNonModel(Class<T> resultClass, Row row) throws Exception {
+    protected <T> T mapNonModel(Class<T> resultClass, Row row) throws InstantiationException, IllegalAccessException {
         T object = resultClass.newInstance();
         PropertyDescriptor[] propertyDescriptors = PropertyUtils.getPropertyDescriptors(object);
 
-        LinkedCaseInsensitiveMap<String> matchedColumns = new LinkedCaseInsensitiveMap<String>();
-
-        for (int i = 0; i < propertyDescriptors.length; i++) {
-            String propertyName = propertyDescriptors[i].getName();
+        for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
+            String propertyName = propertyDescriptor.getName();
             String columnName = DatabaseSchema.camelToSnakeCase(propertyName);
 
             if (row.containsKey(columnName)) {
                 Object value = row.get(columnName);
                 ReflectUtils.setProperty(object, propertyName, value);
-                matchedColumns.put(columnName, null);
             }
         }
+
         return object;
     }
 
