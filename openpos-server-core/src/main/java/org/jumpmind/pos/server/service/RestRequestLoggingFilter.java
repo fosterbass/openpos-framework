@@ -7,12 +7,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.web.filter.AbstractRequestLoggingFilter;
 
 import java.util.List;
 
 @Data
 @ConfigurationProperties("openpos.general.http-requests.logging")
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class RestRequestLoggingFilter extends AbstractRequestLoggingFilter {
 
     Logger log = LoggerFactory.getLogger(getClass());
