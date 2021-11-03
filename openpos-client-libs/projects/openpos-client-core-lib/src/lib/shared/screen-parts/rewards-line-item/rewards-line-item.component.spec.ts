@@ -1,5 +1,4 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Observable, of, Subscription } from 'rxjs';
@@ -54,9 +53,6 @@ describe('RewardsLineItemComponent', () => {
                     { provide: ElectronService, useClass: MockElectronService },
                     { provide: ClientContext, useValue: {} },
                     { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
-                ],
-                schemas: [
-                    NO_ERRORS_SCHEMA,
                 ]
             }).compileComponents();
             fixture = TestBed.createComponent(RewardsLineItemComponent);
@@ -219,9 +215,6 @@ describe('RewardsLineItemComponent', () => {
                     { provide: ElectronService, useClass: MockElectronService },
                     { provide: ClientContext, useValue: {} },
                     { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
-                ],
-                schemas: [
-                    NO_ERRORS_SCHEMA,
                 ]
             }).compileComponents();
             fixture = TestBed.createComponent(RewardsLineItemComponent);
@@ -262,9 +255,6 @@ describe('RewardsLineItemComponent', () => {
                     { provide: ElectronService, useClass: MockElectronService },
                     { provide: ClientContext, useValue: {} },
                     { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
-                ],
-                schemas: [
-                    NO_ERRORS_SCHEMA,
                 ]
             }).compileComponents();
             fixture = TestBed.createComponent(RewardsLineItemComponent);

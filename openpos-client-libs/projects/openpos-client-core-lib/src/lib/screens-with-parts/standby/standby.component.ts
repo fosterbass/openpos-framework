@@ -18,7 +18,11 @@ export class StandbyComponent extends PosScreenDirective<StandByInterface> {
         super(injector);
     }
 
-    buildScreen() {
+    buildScreen(): void {
+    }
+
+    iconClicked(): void {
+        this.doAction(this.screen.iconAction);
     }
 
 }

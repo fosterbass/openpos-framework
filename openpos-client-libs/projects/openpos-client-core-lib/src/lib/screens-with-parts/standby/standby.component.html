@@ -1,3 +1,6 @@
 <app-screen-gesture></app-screen-gesture>
-<div [ngStyle]="screen.backgroundImage | backgroundImageUrl" class="standby-wrapper">
+<div [ngStyle]="screen?.backgroundImage | backgroundImageUrl" class="standby-wrapper">
+    <app-icon-button *ngIf="screen?.iconName" class="understated-icon" [iconName]="screen.iconName" [color]="'lightgray'" [iconClass]="'mat-48'"
+        (buttonClick)="iconClicked()">
+    </app-icon-button>
 </div>
