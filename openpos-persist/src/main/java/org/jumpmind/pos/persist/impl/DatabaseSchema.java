@@ -36,23 +36,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.AnnotationConfigurationException;
 
-import javax.lang.model.element.UnknownAnnotationValueException;
-
 public class DatabaseSchema {
 
     protected static final Logger log = LoggerFactory.getLogger(DatabaseSchema.class);
+    public static final String TRAINING_MODE = "training";
 
     private IDatabasePlatform platform;
     private List<Class<?>> entityClasses;
     private List<Class<?>> entityExtensionClasses;
     private Map<Class<?>, ModelMetaData> classToModelMetaData = new HashMap<>();
     private Database desiredModel;
-    private static ModelValidator modelClassValidator = new ModelValidator();
     private String tablePrefix;
     private AugmenterHelper augmenterHelper;
     private ShadowTablesConfigModel shadowTablesConfig;
     private ClientContext clientContext;
     private Map<Class<?>, ModelClassMetaData> shadowTables;
+
 
     @SneakyThrows
     public void init(String tablePrefix, IDatabasePlatform platform, List<Class<?>> entityClasses, List<Class<?>> entityExtensionClasses, AugmenterHelper augmenterHelper, ClientContext clientContext, ShadowTablesConfigModel shadowTablesConfig) {
@@ -105,7 +104,7 @@ public class DatabaseSchema {
             if (metas != null) {
                 //  Handle special Device Modes here.
 
-                if (deviceMode.equalsIgnoreCase("training")) {
+                if (deviceMode.equalsIgnoreCase(TRAINING_MODE)) {
                     for (ModelClassMetaData regularMeta : metas) {
                         if (regularMeta.getClazz().equals(superClass)) {
                             ModelClassMetaData shadowMeta = shadowTables.get(superClass);
@@ -143,7 +142,7 @@ public class DatabaseSchema {
     }
 
     protected List<ModelClassMetaData> getModelClassMetaDataList(String deviceMode, Class<?> entityClass)  {
-        if (deviceMode.equalsIgnoreCase("training"))  {
+        if (deviceMode.equalsIgnoreCase(TRAINING_MODE))  {
             List<ModelClassMetaData> metaList = new ArrayList<>();
             for (ModelClassMetaData regularMeta : classToModelMetaData.get(entityClass).getModelClassMetaData()) {
                 ModelClassMetaData shadowMeta = shadowTables.get(regularMeta.getClazz());
@@ -185,7 +184,7 @@ public class DatabaseSchema {
         } catch (RuntimeException ex) {
             throw ex;
         } catch (Exception ex) {
-            throw new RuntimeException(ex);
+            throw new PersistException(ex);
         }
     }
 
@@ -214,7 +213,7 @@ public class DatabaseSchema {
         } catch (RuntimeException ex) {
             throw ex;
         } catch (Exception ex) {
-            throw new RuntimeException(ex);
+            throw new PersistException(ex);
         }
     }
 
@@ -227,7 +226,7 @@ public class DatabaseSchema {
     protected Collection<Table> loadTables(String tablePrefix) {
         Set<Table> tables = new TreeSet<>();
         for (Class<?> entityClass : entityClasses) {
-            ModelMetaData modelMetaData = createMetaData(entityClass, entityExtensionClasses, platform);
+            ModelMetaData modelMetaData = createMetaData(entityClass, entityExtensionClasses, platform, augmenterHelper);
             classToModelMetaData.put(entityClass, modelMetaData);
             for (ModelClassMetaData meta : modelMetaData.getModelClassMetaData()) {
                 validateTable(tablePrefix, meta.getTable());
@@ -292,11 +291,12 @@ public class DatabaseSchema {
     }
 
     public ModelMetaData createMetaData(Class<?> clazz, List<Class<?>> entityExtensionClasses) {
-        return createMetaData(clazz, entityExtensionClasses, null);
+        return createMetaData(clazz, entityExtensionClasses, null, augmenterHelper);
     }
 
     @SneakyThrows
-    public ModelMetaData createMetaData(Class<?> clazz, List<Class<?>> entityExtensionClasses, IDatabasePlatform databasePlatform) {
+    public static ModelMetaData createMetaData(Class<?> clazz, List<Class<?>> entityExtensionClasses,
+                                               IDatabasePlatform databasePlatform, AugmenterHelper augmenterHelper) {
         List<ModelClassMetaData> list = new ArrayList<>();
         Class<?> entityClass = clazz;
         boolean ignoreSuperClasses = false;
@@ -319,12 +319,13 @@ public class DatabaseSchema {
                 while (currentClass != null && currentClass != Object.class) {
                     createClassFieldsMetadata(currentClass, meta, includeAllFields, columns, databasePlatform);
                     currentClass = currentClass.getSuperclass();
-                    includeAllFields = currentClass != null && (currentClass.getAnnotation(TableDef.class) == null || ignoreSuperClasses);
+                    includeAllFields = currentClass != null &&
+                            (currentClass.getAnnotation(TableDef.class) == null || ignoreSuperClasses);
                 }
                 for (Class<?> extensionClass : myExtensions) {
                     createClassFieldsMetadata(extensionClass, meta, true, columns, databasePlatform);
                 }
-                createAugmentedFieldsMetaData(meta, columns, databasePlatform);
+                createAugmentedFieldsMetaData(meta, columns, databasePlatform, augmenterHelper);
                 meta.init();
 
                 for (Column column : meta.getPrimaryKeyColumns()) {
@@ -335,7 +336,7 @@ public class DatabaseSchema {
                 }
 
                 meta.setTable(dbTable);
-                modelClassValidator.validate(meta);
+                ModelValidator.validate(meta);
                 list.add(meta);
             }
             entityClass = entityClass.getSuperclass();
@@ -349,7 +350,8 @@ public class DatabaseSchema {
             for (IIndex index : indices.values()) {
                 dbTable.addIndex(index);
             }
-            Map<String, IIndex> augmentedIndices = createAugmentedIndices(currentClass, dbTable, meta, platform);
+            Map<String, IIndex> augmentedIndices = createAugmentedIndices(currentClass, dbTable,
+                    databasePlatform, augmenterHelper);
             for (IIndex index : augmentedIndices.values()) {
                 dbTable.addIndex(index);
             }
@@ -361,18 +363,21 @@ public class DatabaseSchema {
         return metaData;
     }
 
-    private void createAugmentedFieldsMetaData(ModelClassMetaData meta, List<Column> columns, IDatabasePlatform databasePlatform) {
-        List<AugmenterConfig> configs = augmenterHelper.getAugmenterConfigs(meta.getClazz());
-        for (AugmenterConfig config : configs) {
-            meta.getAugmenterConfigs().add(config);
-            for (AugmenterModel augmenterModel : config.getAugmenters()) {
-                meta.getAugmentedFieldNames().add(augmenterModel.getName());
-                Column column = new Column();
-                column.setName(alterCaseToMatchDatabaseDefaultCase(config.getPrefix(), databasePlatform) + alterCaseToMatchDatabaseDefaultCase(camelToSnakeCase(augmenterModel.getName()), databasePlatform));
-                column.setDefaultValue(augmenterModel.getDefaultValue());
-                column.setSize(augmenterModel.getSize() != null ? Integer.toString(augmenterModel.getSize()) : "32");
-                column.setTypeCode(Types.VARCHAR);
-                columns.add(column);
+    private static void createAugmentedFieldsMetaData(ModelClassMetaData meta, List<Column> columns,
+                                                      IDatabasePlatform databasePlatform, AugmenterHelper augmenterHelper) {
+        if (augmenterHelper != null) {
+            List<AugmenterConfig> configs = augmenterHelper.getAugmenterConfigs(meta.getClazz());
+            for (AugmenterConfig config : configs) {
+                meta.getAugmenterConfigs().add(config);
+                for (AugmenterModel augmenterModel : config.getAugmenters()) {
+                    meta.getAugmentedFieldNames().add(augmenterModel.getName());
+                    Column column = new Column();
+                    column.setName(alterCaseToMatchDatabaseDefaultCase(config.getPrefix(), databasePlatform) + alterCaseToMatchDatabaseDefaultCase(camelToSnakeCase(augmenterModel.getName()), databasePlatform));
+                    column.setDefaultValue(augmenterModel.getDefaultValue());
+                    column.setSize(augmenterModel.getSize() != null ? Integer.toString(augmenterModel.getSize()) : "32");
+                    column.setTypeCode(Types.VARCHAR);
+                    columns.add(column);
+                }
             }
         }
     }
@@ -401,9 +406,9 @@ public class DatabaseSchema {
     }
 
     @SneakyThrows
-    private void createClassFieldsMetadata(Class<?> clazz, ModelClassMetaData metaData,
-                                                  boolean includeAllFields, List<Column> columns, IDatabasePlatform platform) {
-
+    private static void createClassFieldsMetadata(Class<?> clazz, ModelClassMetaData metaData,
+                                                  boolean includeAllFields, List<Column> columns,
+                                                  IDatabasePlatform platform) {
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
             field.setAccessible(true);
@@ -432,7 +437,7 @@ public class DatabaseSchema {
         }
     }
 
-    private Map<String, IIndex> createIndices(IndexDefs indexDefs, Table table,
+    private static Map<String, IIndex> createIndices(IndexDefs indexDefs, Table table,
                                                      ModelClassMetaData metaData, IDatabasePlatform platform) {
         Map<String, IIndex> indices = new HashMap<>();
         if (indexDefs != null && indexDefs.value() != null) {
@@ -444,7 +449,7 @@ public class DatabaseSchema {
         return indices;
     }
 
-    private void parseIndexDef(IndexDef indexDef, Table table, Map<String, IIndex> indices, ModelClassMetaData metaData, IDatabasePlatform platform) {
+    private static void parseIndexDef(IndexDef indexDef, Table table, Map<String, IIndex> indices, ModelClassMetaData metaData, IDatabasePlatform platform) {
         if (indexDef.column() != null && !indexDef.column().isEmpty()) {
             Column column = findColumn(indexDef.column(), table, platform);
             createIndex(indexDef, column, indexDef.column(), indices, metaData.getIdxPrefix());
@@ -458,18 +463,17 @@ public class DatabaseSchema {
         }
     }
 
-    private Column findColumn(String columnName, String augmentedPrefix, Table table, IDatabasePlatform platform) {
+    private static Column findColumn(String columnName, String augmentedPrefix, Table table, IDatabasePlatform platform) {
         String augmentedColumnName = alterCaseToMatchDatabaseDefaultCase(augmentedPrefix + camelToSnakeCase(columnName), platform);
         return table.getColumnWithName(augmentedColumnName);
     }
 
-    private Column findColumn(String columnName, Table table, IDatabasePlatform platform) {
+    private static Column findColumn(String columnName, Table table, IDatabasePlatform platform) {
         String snakeCase = alterCaseToMatchDatabaseDefaultCase(camelToSnakeCase(columnName), platform);
-        Column column = table.getColumnWithName(snakeCase);
-        return column;
+        return table.getColumnWithName(snakeCase);
     }
 
-    private void createIndex(IndexDef indexDef, Column column, String columnName, Map<String, IIndex> indices, String idxPrefix) {
+    private static void createIndex(IndexDef indexDef, Column column, String columnName, Map<String, IIndex> indices, String idxPrefix) {
         if (column != null && indexDef != null) {
             String indexName = idxPrefix != null && !idxPrefix.isEmpty() ? idxPrefix + "_" + indexDef.name() : indexDef.name();
             boolean unique = indexDef.unique();
@@ -486,7 +490,7 @@ public class DatabaseSchema {
         }
     }
 
-    private boolean isPrimaryKey(Field field, ModelClassMetaData metaData) {
+    private static boolean isPrimaryKey(Field field, ModelClassMetaData metaData) {
         if (field != null) {
             ColumnDef colAnnotation = field.getAnnotation(ColumnDef.class);
             if (colAnnotation != null) {
@@ -497,14 +501,14 @@ public class DatabaseSchema {
         return false;
     }
 
-    private String alterCaseToMatchDatabaseDefaultCase(String name, IDatabasePlatform platform) {
+    private static String alterCaseToMatchDatabaseDefaultCase(String name, IDatabasePlatform platform) {
         if (platform != null) {
             name = platform.alterCaseToMatchDatabaseDefaultCase(name);
         }
         return name;
     }
 
-    private Column createColumn(Field field, IDatabasePlatform platform, ModelClassMetaData metaData) {
+    private static Column createColumn(Field field, IDatabasePlatform platform, ModelClassMetaData metaData) {
         Column dbCol = null;
         ColumnDef colAnnotation = field.getAnnotation(ColumnDef.class);
 
@@ -534,10 +538,10 @@ public class DatabaseSchema {
                 dbCol.setDefaultValue(colAnnotation.defaultValue());
             }
 
-            if (colAnnotation.size() != null & !colAnnotation.size().equalsIgnoreCase("")) {
+            if (colAnnotation.size() != null && !colAnnotation.size().equalsIgnoreCase("")) {
                 dbCol.setSize(colAnnotation.size());
             } else {
-                dbCol.setSize(getDefaultSize(field, dbCol));
+                dbCol.setSize(getDefaultSize(dbCol));
             }
             dbCol.setPrimaryKey(metaData.isPrimaryKey(field));
 
@@ -551,7 +555,7 @@ public class DatabaseSchema {
         return dbCol;
     }
 
-    private boolean platformMatches(String name, IDatabasePlatform platform) {
+    private static boolean platformMatches(String name, IDatabasePlatform platform) {
         return platform != null && name != null && platform.getName().equals(name);
     }
 
@@ -593,13 +597,12 @@ public class DatabaseSchema {
             }
         }
         Map<String, String> augmentedColumnsToFields = getAugmentedColumnsToFields(entityClass);
-        Map<String, String> mergedMaps = Stream.concat(entityIdColumnsToFields.entrySet().stream(), augmentedColumnsToFields.entrySet().stream())
+        return Stream.concat(entityIdColumnsToFields.entrySet().stream(), augmentedColumnsToFields.entrySet().stream())
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
                         Map.Entry::getValue,
                         (value1, value2) -> value1,
                         CaseInsensitiveMap::new));
-        return mergedMaps;
     }
 
     private Map<String, String> getAugmentedColumnsToFields(Class<?> entityClass) {
@@ -635,16 +638,16 @@ public class DatabaseSchema {
     protected List<FieldMetaData> getEntityIdFields(Class<?> entityClass) {
         ModelMetaData modelMetaData = classToModelMetaData.get(entityClass);
         ModelClassMetaData meta = modelMetaData != null ? modelMetaData.getModelClassMetaData().get(0) : null;
-        return meta != null ? new ArrayList(meta.getEntityIdFieldMetaDatas().values()) : Collections.emptyList();
+        return meta != null ? new ArrayList<>(meta.getEntityIdFieldMetaDatas().values()) : Collections.emptyList();
     }
 
     protected List<FieldMetaData> getEntityFields(Class<?> entityClass) {
         ModelMetaData modelMetaData = classToModelMetaData.get(entityClass);
         ModelClassMetaData meta = modelMetaData != null ? modelMetaData.getModelClassMetaData().get(0) : null;
-        return meta != null ? new ArrayList(meta.getEntityFieldMetaDatas().values()) : Collections.emptyList();
+        return meta != null ? new ArrayList<>(meta.getEntityFieldMetaDatas().values()) : Collections.emptyList();
     }
 
-    protected static String getDefaultSize(Field field, Column column) {
+    protected static String getDefaultSize(Column column) {
         if (column.getMappedTypeCode() == Types.VARCHAR) {
             return "128";
         } else if (column.getJdbcTypeCode() == Types.DECIMAL) {
@@ -682,7 +685,7 @@ public class DatabaseSchema {
         return classToModelMetaData.get(modelClass);
     }
 
-    private int getDefaultType(Field field) {
+    private static int getDefaultType(Field field) {
         if (field.getType().isAssignableFrom(String.class) || field.getType().isEnum() || ITypeCode.class.isAssignableFrom(field.getType())) {
             return Types.VARCHAR;
         } else if (field.getType().isAssignableFrom(long.class) || field.getType().isAssignableFrom(Long.class)) {
@@ -718,23 +721,26 @@ public class DatabaseSchema {
         return buff.toString().toLowerCase();
     }
 
-    private Map<String, IIndex> createAugmentedIndices(Class<?> currentClass, Table table,
-                                                       ModelClassMetaData metaData, IDatabasePlatform platform) {
+    private static Map<String, IIndex> createAugmentedIndices(Class<?> currentClass, Table table,
+                                                              IDatabasePlatform platform,
+                                                              AugmenterHelper augmenterHelper) {
         Map<String, IIndex> indices = new HashMap<>();
-        Augmented augmented = currentClass.getAnnotation(Augmented.class);
-        if (augmented != null) {
-            AugmenterConfig config = augmenterHelper.getAugmenterConfig(augmented.name());
-            if (config != null && config.getIndexConfigs() != null) {
-                List<AugmenterIndexConfig> indexConfigs = config.getIndexConfigs();
-                for (AugmenterIndexConfig indexConfig : indexConfigs) {
-                    createIndex(indexConfig, table, indices, augmented.indexPrefix(), platform, config.getPrefix());
+        if (augmenterHelper != null) {
+            Augmented augmented = currentClass.getAnnotation(Augmented.class);
+            if (augmented != null) {
+                AugmenterConfig config = augmenterHelper.getAugmenterConfig(augmented.name());
+                if (config != null && config.getIndexConfigs() != null) {
+                    List<AugmenterIndexConfig> indexConfigs = config.getIndexConfigs();
+                    for (AugmenterIndexConfig indexConfig : indexConfigs) {
+                        createIndex(indexConfig, table, indices, augmented.indexPrefix(), platform, config.getPrefix());
+                    }
                 }
             }
         }
         return indices;
     }
 
-    private void createIndex(AugmenterIndexConfig indexConfig, Table table, Map<String, IIndex> indices, String idxPrefix, IDatabasePlatform platform, String augmentedColumnPrefix) {
+    private static void createIndex(AugmenterIndexConfig indexConfig, Table table, Map<String, IIndex> indices, String idxPrefix, IDatabasePlatform platform, String augmentedColumnPrefix) {
         String indexName = idxPrefix != null && !idxPrefix.isEmpty() ? idxPrefix + "_" + indexConfig.getName() : indexConfig.getName();
         indexName += (indexConfig.isUnique() ? "_unq" : "");
         IIndex index = indices.get(indexName);
@@ -765,7 +771,7 @@ public class DatabaseSchema {
         //  We will configure Training Mode shadow tables if we got a shadow table configuration object
         //  and the Device Mode is training.
 
-        if ((shadowTablesConfig != null) && shadowTablesConfig.getDeviceMode().equalsIgnoreCase("training")) {
+        if ((shadowTablesConfig != null) && shadowTablesConfig.getDeviceMode().equalsIgnoreCase(TRAINING_MODE)) {
             //  Get a map of full table names (with prefix) to meta data for this module.
 
             Map<String, ModelClassMetaData> tableMap = getTableMap();
@@ -804,23 +810,24 @@ public class DatabaseSchema {
 
                     //  See what table name(s) match the current include name.
 
-                    for (String tableName : tableMap.keySet()) {
+                    for (Map.Entry<String, ModelClassMetaData> entry : tableMap.entrySet()) {
                         if (leadingPortion == null) {
                             //  This is a valid table name without a wild card.
 
-                            if (tableName.equalsIgnoreCase(includeName)) {
-                                ModelClassMetaData meta = tableMap.get(tableName);
+                            if (entry.getKey().equalsIgnoreCase(includeName)) {
+                                ModelClassMetaData meta = entry.getValue();
                                 meta.setShadowTable(shadowTablesConfig.getTablePrefix(), tablePrefix);
-                                includeTableList.put(tableName, meta);
+                                includeTableList.put(entry.getKey(), meta);
                             }
 
                         } else {
                             //  This is a table name that contained a wild card.
 
-                            if (tableName.startsWith(leadingPortion.toLowerCase()) || ((trailingPortion != null) && tableName.endsWith(trailingPortion.toLowerCase()))) {
-                                ModelClassMetaData meta = tableMap.get(tableName);
+                            if (entry.getKey().startsWith(leadingPortion.toLowerCase()) || ((trailingPortion != null) &&
+                                    entry.getKey().endsWith(trailingPortion.toLowerCase()))) {
+                                ModelClassMetaData meta = entry.getValue();
                                 meta.setShadowTable(shadowTablesConfig.getTablePrefix(), tablePrefix);
-                                includeTableList.put(tableName, meta);
+                                includeTableList.put(entry.getKey(), meta);
                             }
                         }
                     }
@@ -875,14 +882,14 @@ public class DatabaseSchema {
             //  entity class corresponding to the given table, as opposed to the list we already
             //  have whose key is the table name.
 
-            for (String tableName : includeTableList.keySet()) {
-                ModelClassMetaData tableClassMetaData = includeTableList.get(tableName);
+            for (ModelClassMetaData tableClassMetaData : includeTableList.values()) {
                 trainingModeShadowTableList.put(tableClassMetaData.getClazz(), tableClassMetaData);
             }
 
             //  At this point, we've processed the table list.
 
-            log.info("Configuration specifies {} shadow table(s) for module {}", trainingModeShadowTableList.size(), tablePrefix.toUpperCase());
+            log.info("Configuration specifies {} shadow table(s) for module {}", trainingModeShadowTableList.size(),
+                    tablePrefix.toUpperCase());
         }
 
         return trainingModeShadowTableList;
@@ -895,7 +902,7 @@ public class DatabaseSchema {
         Map<String, ModelClassMetaData> modelClassMetaDataMap = new HashMap<>();
 
         for (Class<?> tableClass : entityClasses) {
-            ModelMetaData modelMetaData = createMetaData(tableClass, entityExtensionClasses, platform);
+            ModelMetaData modelMetaData = createMetaData(tableClass, entityExtensionClasses, platform, augmenterHelper);
 
             for (ModelClassMetaData meta : modelMetaData.getModelClassMetaData()) {
                 Table entityTable = meta.getTable();
