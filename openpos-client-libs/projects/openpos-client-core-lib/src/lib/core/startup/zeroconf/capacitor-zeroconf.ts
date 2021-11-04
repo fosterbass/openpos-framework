@@ -17,7 +17,7 @@ export class CapacitorZeroconf implements Zeroconf {
         console.log(`ZEROCONF: subscribing to type: ${type} domain: ${domain}`);
         return CAP.Zeroconf.watch(type, domain).pipe(
             tap(result => console.log('ZEROCONF: Observed service', result))
-        )
+        );
     }
 
     deviceName(): Observable<string> {
