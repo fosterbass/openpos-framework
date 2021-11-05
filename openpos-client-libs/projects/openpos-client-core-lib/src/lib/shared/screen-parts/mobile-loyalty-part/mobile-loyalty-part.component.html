@@ -10,16 +10,20 @@
     </div>
 </button>
 <button *ngIf="screenData.customer && screenData.linkedCustomerButton" mat-raised-button
-    class="mobile-loyalty-customer-outer" (click)="doAction(screenData.linkedCustomerButton)">
-    <div class="mobile-loyalty-customer-content">
-        <img *ngIf="screenData.customer.icon" [src]="screenData.customer.icon | imageUrl" class="mobile-loyalty-image">
-        <div class="mobile-loyalty-customer-name">
-            <div responsive-class *ngIf="screenData.customer.name" class="mobile-loyalty-name">
-                {{screenData.customer.name}}
-            </div>
-            <div responsive-class *ngIf="screenData.customer.label && screenData.customer.id" class="mobile-loyalty-id">
-                {{screenData.customer.label}}: {{screenData.customer.id}}
-            </div>
+        [ngClass]="'mobile-loyalty-customer-outer ' + getHideLogoShowMembershipsClass()" (click)="doAction(screenData.linkedCustomerButton)">
+    <img *ngIf="screenData.customer.icon && !screenData.mobileLoyaltySaleShowMembershipsHideLogo" [src]="screenData.customer.icon | imageUrl"
+         alt="{{screenData.customer.icon}}" class="mobile-loyalty-image">
+    <div [ngClass]="'mobile-loyalty-customer-name ' + getHideLogoShowMembershipsClass()">
+        <div responsive-class *ngIf="screenData.customer.name" [ngClass]="'mobile-loyalty-name ' + getHideLogoShowMembershipsClass()">
+            {{screenData.customer.name}}
         </div>
+        <div responsive-class *ngIf="screenData.customer.label && screenData.customer.id" [ngClass]="'mobile-loyalty-id ' + getHideLogoShowMembershipsClass()">
+            {{screenData.customer.label}}: {{screenData.customer.id}}
+        </div>
+    </div>
+    <div *ngIf="screenData.mobileLoyaltySaleShowMembershipsHideLogo" class="memberships">
+        <app-membership-display *ngFor="let membership of screenData.memberships" class="item"
+                                [membership]="membership" [iconMatClass]="'mat-16'"></app-membership-display>
+        <div *ngIf="screenData.memberships?.length == 0" class="no-memberships" responsive-class>{{screenData.noMembershipsFoundLabel}}</div>
     </div>
 </button>

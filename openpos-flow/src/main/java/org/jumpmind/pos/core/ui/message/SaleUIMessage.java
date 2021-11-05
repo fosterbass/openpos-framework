@@ -31,6 +31,8 @@ public class SaleUIMessage extends LoyaltySaleUIMessage {
     private boolean enableCollapsibleItems = true;
     private String iconName;
 
+    private boolean mobileLoyaltySaleShowMembershipsHideLogo;
+
     public SaleUIMessage() {
         this.setScreenType(UIMessageType.SALE);
         this.setId("sale");

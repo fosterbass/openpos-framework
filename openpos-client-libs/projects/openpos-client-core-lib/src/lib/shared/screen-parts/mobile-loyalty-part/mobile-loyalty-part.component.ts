@@ -3,7 +3,6 @@ import { MobileLoyaltyPartInterface } from './mobile-loyalty-part.interface';
 import { ScreenPart } from '../../decorators/screen-part.decorator';
 import { ScreenPartComponent } from '../screen-part';
 
-
 @ScreenPart({
     name: 'MobileLoyaltyPart'
 })
@@ -15,6 +14,10 @@ import { ScreenPartComponent } from '../screen-part';
 export class MobileLoyaltyPartComponent extends ScreenPartComponent<MobileLoyaltyPartInterface> {
 
     screenDataUpdated() {
+    }
+
+    getHideLogoShowMembershipsClass(): string {
+        return this.screenData.mobileLoyaltySaleShowMembershipsHideLogo ? ' hide-logo-show-memberships' : '';
     }
 
 }

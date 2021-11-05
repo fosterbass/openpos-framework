@@ -36,6 +36,8 @@
         min-height: 10%;
         overflow-y: auto;
         padding: 24px;
+
+        &.mat-dialog-content { overflow: revert; }
         &.mobile {
             display: flex;
             flex-direction: column;

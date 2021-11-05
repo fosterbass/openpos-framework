@@ -11,8 +11,8 @@
 }
 
 .mobile-loyalty-button-image {
+    width: 100%;
     max-height: 32px;
-    max-width: 100%;
     align-self: center;
     justify-self: start;
     margin-right: 16px;
@@ -44,14 +44,28 @@
     padding: 8px 16px !important;
     width: 100%;
 
+    &.hide-logo-show-memberships, &.hide-logo-show-memberships .mat-button-wrapper {
+        display: flex;
+        flex-direction: column;
+    }
+
     .mat-button-wrapper {
         margin: 0px;
         line-height: normal;
+        justify-content: space-between;
     }
 }
 
 .mobile-loyalty-customer-name {
-    margin-bottom: 8px;
+    display: grid;
+    justify-self: center;
+
+    &.hide-logo-show-memberships {
+        width: 100%;
+        display: flex;
+        gap: 0.5rem;
+        justify-content: space-between;
+    }
 }
 
 .mobile-loyalty-image {
@@ -62,9 +76,35 @@
 .mobile-loyalty-name {
     font-size: 1rem;
     justify-self: center;
+
+    &.hide-logo-show-memberships {
+        text-align: left;
+        word-break: break-all;
+        white-space: pre-wrap;
+        font-weight: bold;
+    }
 }
 
 .mobile-loyalty-id {
     @extend %text-sm;
     justify-self: center;
+
+    &.hide-logo-show-memberships {
+        text-align: right;
+        word-break: break-word;
+        white-space: pre-wrap;
+    }
+}
+
+.memberships {
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:flex-start;
+    gap:.25rem;
+    width:100%;
+    margin-top:.25rem;
+}
+
+.no-memberships {
+    @extend %text-sm;
 }
