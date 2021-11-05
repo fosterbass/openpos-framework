@@ -76,29 +76,17 @@ public class ObjectFinder<T extends Object> {
     }
 
     public void searchRecursive(Object obj) {
-        if (obj == null) {
+        searchRecursive(obj, null);
+    }
+
+    public void searchRecursive(Object obj, ObjectSearchVisitor visitor) {
+        if (obj == null || isSimpleType(obj.getClass())) {
             return;
         }
 
         Class<?> clazz = obj.getClass();
-        if (isSimpleType(clazz)) {
-            return;
-        }
-
         if (!recursionInto.add(obj)) {
-            String ident = String.format("%s@%x", clazz.getName(), obj.hashCode());
-            log.warn("avoiding infinite recursion into {}", ident);
-
-            /* useful detail for untangling cyclical object graphs */
-            if (log.isDebugEnabled()) {
-                log.debug("cyclical object graph detected: {} (-> {})",
-                        recursionInto.stream().
-                            map(o -> String.format("%s@%x", o.getClass().getName(), o.hashCode())).
-                            map(ObjectFinder::shortenFqcn).
-                            collect(Collectors.joining(" -> ")),
-                        shortenFqcn(ident));
-            }
-
+            logDidNotAdd(obj, clazz);
             return;
         }
 
@@ -113,10 +101,18 @@ public class ObjectFinder<T extends Object> {
                     if (value != null) {
                         if (targetType.isAssignableFrom(type)) {
                             addToResults((T) value);
+                            if (visitor != null) {
+                                visitor.visit(obj, value, field);
+                            }
                         }
 
-                        if (!searchCollections(value) && shouldSearch(field) && shouldSearch(type)) {
-                            searchRecursive(value);
+                        if (searchCollections(value, visitor)) {
+                            /* already added to results */
+                            if (visitor != null) {
+                                visitor.visit(obj, value, field);
+                            }
+                        } else if (shouldSearch(field) && shouldSearch(type)) {
+                            searchRecursive(value, visitor);
                         }
                     }
                 } catch (Exception e) {
@@ -124,6 +120,21 @@ public class ObjectFinder<T extends Object> {
                 }
             }
         } while ((clazz = clazz.getSuperclass()) != null);
+    }
+
+    private void logDidNotAdd(Object obj, Class<?> clazz) {
+        String ident = String.format("%s@%x", clazz.getName(), obj.hashCode());
+        log.warn("avoiding infinite recursion into {}", ident);
+
+        /* useful detail for untangling cyclical object graphs */
+        if (log.isDebugEnabled()) {
+            log.debug("cyclical object graph detected: {} (-> {})",
+                    recursionInto.stream().
+                            map(o -> String.format("%s@%x", o.getClass().getName(), o.hashCode())).
+                            map(ObjectFinder::shortenFqcn).
+                            collect(Collectors.joining(" -> ")),
+                    shortenFqcn(ident));
+        }
     }
 
     public boolean isDistinctResults() {
@@ -155,68 +166,82 @@ public class ObjectFinder<T extends Object> {
                 && clazz.getPackage() != null && !clazz.getPackage().getName().startsWith("sun");
     }
 
-    protected boolean searchCollections(Object value) {
+    protected boolean searchCollections(Object value, ObjectSearchVisitor visitor) {
         if (value instanceof List<?>) {
-            @SuppressWarnings("unchecked")
-            List<Object> list = (List<Object>) value;
-            for (int i = 0; i < list.size(); i++) {
-                Object fieldObj = list.get(i);
-                if (fieldObj != null) {
-                    if (targetType.isAssignableFrom(fieldObj.getClass())) {
-                        addToResults((T) fieldObj);
-                    }
-
-                    if (! searchCollections(fieldObj) && shouldSearch(fieldObj.getClass())) {
-                        searchRecursive(fieldObj);
-                    }
-                }
-            }
-            return true;
-
+            return searchList(value, visitor);
         } else if (value instanceof Collection<?>) {
-            Collection<?> collection = (Collection<?>) value;
-            Iterator<?> i = collection.iterator();
-            while (i.hasNext()) {
-                Object fieldObj = i.next();
-                if (fieldObj != null) {
-                    if (targetType.isAssignableFrom(fieldObj.getClass())) {
-                        addToResults((T) fieldObj);
-                    }
-                    if ( !searchCollections(fieldObj) && shouldSearch(fieldObj.getClass())) {
-                        searchRecursive(fieldObj);
-                    }
-                }
-            }
-            return true;
+            return searchCollection(value, visitor);
         } else if (value != null && value.getClass().isArray() && ! value.getClass().isPrimitive() && targetType.isAssignableFrom(value.getClass().getComponentType())) {
-            // Only process arrays that hold objects of the given target type
-            for (int i = 0; i < Array.getLength(value); i++) {
-                Object arrayElem = Array.get(value, i);
-                if (arrayElem != null && targetType.isAssignableFrom(arrayElem.getClass())) {
-                    addToResults((T) arrayElem);
-                }
-            }
-            return true;
+            return  searchArray(value);
         } else if (value instanceof Map) {
-            @SuppressWarnings("unchecked")
-            Map<Object, Object> map = (Map<Object, Object>) value;
-            for (Map.Entry<Object, Object> entry : map.entrySet()) {
-                Object entryValue = entry.getValue();
-                if (entryValue != null) {
-                    if (targetType.isAssignableFrom(entryValue.getClass())) {
-                        addToResults((T) entryValue);
-                    }
-
-                    if (! searchCollections(entryValue) && shouldSearch(entryValue.getClass())) {
-                        searchRecursive(entryValue);
-                    }
-                }
-            }
-            return true;
-
+            return searchMap(value, visitor);
         } else {
             return false;
         }
+    }
+
+    private boolean searchList(Object value, ObjectSearchVisitor visitor) {
+        @SuppressWarnings("unchecked")
+        List<Object> list = (List<Object>) value;
+        for (int i = 0; i < list.size(); i++) {
+            Object fieldObj = list.get(i);
+            if (fieldObj != null) {
+                if (targetType.isAssignableFrom(fieldObj.getClass())) {
+                    addToResults((T) fieldObj);
+                }
+
+                if (! searchCollections(fieldObj, visitor) && shouldSearch(fieldObj.getClass())) {
+                    searchRecursive(fieldObj, visitor);
+                }
+            }
+        }
+        return true;
+    }
+
+    private boolean searchCollection(Object value, ObjectSearchVisitor visitor) {
+        Collection<?> collection = (Collection<?>) value;
+        Iterator<?> i = collection.iterator();
+        while (i.hasNext()) {
+            Object fieldObj = i.next();
+            if (fieldObj != null) {
+                if (targetType.isAssignableFrom(fieldObj.getClass())) {
+                    addToResults((T) fieldObj);
+                }
+                if ( !searchCollections(fieldObj, visitor) && shouldSearch(fieldObj.getClass())) {
+                    searchRecursive(fieldObj, visitor);
+                }
+            }
+        }
+        return true;
+    }
+
+    private boolean searchArray(Object value) {
+        // Only process arrays that hold objects of the given target type
+        for (int i = 0; i < Array.getLength(value); i++) {
+            Object arrayElem = Array.get(value, i);
+            if (arrayElem != null && targetType.isAssignableFrom(arrayElem.getClass())) {
+                addToResults((T) arrayElem);
+            }
+        }
+        return true;
+    }
+
+    private boolean searchMap(Object value, ObjectSearchVisitor visitor) {
+        @SuppressWarnings("unchecked")
+        Map<Object, Object> map = (Map<Object, Object>) value;
+        for (Map.Entry<Object, Object> entry : map.entrySet()) {
+            Object entryValue = entry.getValue();
+            if (entryValue != null) {
+                if (targetType.isAssignableFrom(entryValue.getClass())) {
+                    addToResults((T) entryValue);
+                }
+
+                if (! searchCollections(entryValue, visitor) && shouldSearch(entryValue.getClass())) {
+                    searchRecursive(entryValue, visitor);
+                }
+            }
+        }
+        return true;
     }
 
     protected boolean isSimpleType(Class<?> clazz) {

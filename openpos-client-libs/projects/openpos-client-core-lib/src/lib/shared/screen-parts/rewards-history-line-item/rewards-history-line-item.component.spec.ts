@@ -1,5 +1,4 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Observable, of, Subscription } from 'rxjs';
@@ -13,6 +12,8 @@ import { RewardsHistoryLineItemComponent } from './rewards-history-line-item.com
 import { RewardHistory, RewardsHistoryLineItemComponentInterface } from './rewards-history-line-item.interface';
 import { validateDoesNotExist, validateExist, validateIcon, validateText } from '../../../utilites/test-utils';
 import { By } from '@angular/platform-browser';
+import { MockComponent } from 'ng-mocks';
+import { IconComponent } from '../../components/icon/icon.component';
 
 class MockActionService { }
 class MockMatDialog { }
@@ -44,7 +45,8 @@ describe('RewardsHistoryLineItemComponent', () => {
             TestBed.configureTestingModule({
                 imports: [HttpClientTestingModule],
                 declarations: [
-                    RewardsHistoryLineItemComponent
+                    RewardsHistoryLineItemComponent,
+                    MockComponent(IconComponent)
                 ],
                 providers: [
                     { provide: ActionService, useClass: MockActionService },
@@ -54,9 +56,6 @@ describe('RewardsHistoryLineItemComponent', () => {
                     { provide: ElectronService, useClass: MockElectronService },
                     { provide: ClientContext, useValue: {} },
                     { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
-                ],
-                schemas: [
-                    NO_ERRORS_SCHEMA,
                 ]
             }).compileComponents();
             fixture = TestBed.createComponent(RewardsHistoryLineItemComponent);
@@ -245,7 +244,8 @@ describe('RewardsHistoryLineItemComponent', () => {
             TestBed.configureTestingModule({
                 imports: [HttpClientTestingModule],
                 declarations: [
-                    RewardsHistoryLineItemComponent
+                    RewardsHistoryLineItemComponent,
+                    MockComponent(IconComponent)
                 ],
                 providers: [
                     { provide: ActionService, useClass: MockActionService },
@@ -255,9 +255,6 @@ describe('RewardsHistoryLineItemComponent', () => {
                     { provide: ElectronService, useClass: MockElectronService },
                     { provide: ClientContext, useValue: {} },
                     { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
-                ],
-                schemas: [
-                    NO_ERRORS_SCHEMA,
                 ]
             }).compileComponents();
             fixture = TestBed.createComponent(RewardsHistoryLineItemComponent);
@@ -290,7 +287,8 @@ describe('RewardsHistoryLineItemComponent', () => {
             TestBed.configureTestingModule({
                 imports: [HttpClientTestingModule],
                 declarations: [
-                    RewardsHistoryLineItemComponent
+                    RewardsHistoryLineItemComponent,
+                    MockComponent(IconComponent)
                 ],
                 providers: [
                     { provide: ActionService, useClass: MockActionService },
@@ -300,9 +298,6 @@ describe('RewardsHistoryLineItemComponent', () => {
                     { provide: ElectronService, useClass: MockElectronService },
                     { provide: ClientContext, useValue: {} },
                     { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
-                ],
-                schemas: [
-                    NO_ERRORS_SCHEMA,
                 ]
             }).compileComponents();
             fixture = TestBed.createComponent(RewardsHistoryLineItemComponent);

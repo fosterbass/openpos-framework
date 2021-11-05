@@ -1,0 +1,16 @@
+@mixin membership-details-dialog-theme($theme) {
+    $divider: map-get(map-get($theme, foreground), divider);
+    $foreground: map-get($theme, foreground );
+
+    .membership-details-dialog {
+        .tab-title {
+            border-bottom: 1px solid $divider;
+        }
+        .mat-tab-body-wrapper{
+            border-width: 0px ;
+          }
+        mat-card {
+            border: 2px solid map-get($foreground, border);
+          }
+    }
+}

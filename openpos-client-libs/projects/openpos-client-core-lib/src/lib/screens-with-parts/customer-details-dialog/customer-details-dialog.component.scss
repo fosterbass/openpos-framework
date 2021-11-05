@@ -1,4 +1,4 @@
-@import "../../../styles/mixins/typography";
+@import "../../styles/mixins/typography";
 
 .tabs {
   margin-top: 8px;
@@ -70,12 +70,27 @@ app-content-card {
     .wrapper {
       height: 100%;
     }
-  }
-  .memberships {
-    padding-bottom: 10px;
-    .wrapper {
-      height: 100%;
+
+    .membership-sign-up {
+      float: right;
+      display: inherit;
+
+      app-icon{
+        width: 1em;
+        margin-right: .25em;
+      }
     }
+
+    .enrolled-membership-sign-up {
+          float: right;
+          margin-right:10px;
+          display: inherit;
+          app-icon{
+            width: 1em;
+            margin-right: .25em;
+          }
+      }
+
   }
 }
 
@@ -85,56 +100,22 @@ app-content-card {
   height: 65vh;
   max-height: 65vh;
 
-  .mobile-grid-container {
-    display: grid;
-    grid-template-columns: 1fr 10fr;
-    grid-template-rows: 1fr;
-    gap: 0px 0px;
-    grid-template-areas:
-      "icon details"
-      "memberships memberships";
-
-    .details {
-      .details-label {
-        @extend %text-md;
-        height: 100%;
-        padding-top: 16px;
-        padding-left: 5px;
-      }
-    }
-
-    .memberships {
-      padding-top: 10px;
-      padding-bottom: 5px;
-      display: inline-block;
-
-      .membership-items {
-        display: flex;
-        justify-content: flex-start;
-        flex-wrap: wrap;
-
-        .item {
-          margin-right: .25em;
-          margin-bottom: .25em;
-        }
-      }
-    }
-
-    .contactTab {
-      padding-left: 5px;
-      padding-right: 5px;
-    }
-  }
-
   .mobile-memberships {
-    display: flex;
-    justify-content: flex-start;
+    display: grid;
     flex-wrap: wrap;
     margin-bottom: .25em;
+    grid-row-start: 1;
+    grid-row-end: 3;
 
     .item {
       margin-right: .25em;
       margin-bottom: .25em;
+    }
+
+    .enrolled-membership-sign-up{
+        grid-column-start: 2;
+        grid-column-end: 3;
+        margin-top: .5em;
     }
   }
 

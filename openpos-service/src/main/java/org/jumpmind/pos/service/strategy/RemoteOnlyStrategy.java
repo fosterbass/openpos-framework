@@ -1,10 +1,9 @@
 package org.jumpmind.pos.service.strategy;
 
-import net.bytebuddy.implementation.bytecode.Throw;
+import org.jumpmind.pos.service.EndpointInvocationContext;
 import org.jumpmind.pos.service.PosServerException;
 import org.jumpmind.pos.service.ProfileConfig;
 import org.jumpmind.pos.service.ServiceConfig;
-import org.jumpmind.pos.service.ServiceSpecificConfig;
 import org.jumpmind.pos.util.clientcontext.ClientContext;
 import org.jumpmind.pos.util.model.ServiceException;
 import org.jumpmind.pos.util.model.ServiceResult;
@@ -17,7 +16,6 @@ import org.jumpmind.pos.util.web.ConfiguredRestTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
@@ -45,9 +43,6 @@ public class RemoteOnlyStrategy extends AbstractInvocationStrategy implements II
     static final String REMOTE_ONLY_STRATEGY = "REMOTE_ONLY";
 
     @Autowired
-    protected ApplicationContext applicationContext;
-
-    @Autowired
     private ClientContext clientContext;
 
     @Autowired
@@ -71,20 +66,20 @@ public class RemoteOnlyStrategy extends AbstractInvocationStrategy implements II
     }
 
     @Override
-    public Object invoke(List<String> profileIds, Object proxy, Method method, Map<String, Object> endpoints, Object[] args) throws Throwable {
+    public Object invoke(EndpointInvocationContext endpointInvocationContext) throws Throwable {
 
         Throwable lastException = null;
         Object result = null;
         List<ServiceVisit> serviceVisits = new ArrayList<>();
 
-        for (String profileId : profileIds) {
+        for (String profileId : endpointInvocationContext.getProfileIds()) {
             ServiceVisit serviceVisit = new ServiceVisit();
             serviceVisit.setProfileId(profileId);
             long startTime = System.currentTimeMillis();
             try {
-                result = invokeProfile(profileId, serviceConfig.getProfileConfig(profileId), proxy, method, endpoints, args);
+                result = invokeProfile(profileId, endpointInvocationContext);
                 break;
-            } catch (Throwable ex) {
+            } catch (Exception ex) {
                 serviceVisit.setException(ex);
                 lastException = ex;
                 logger.warn(String.format("Remote service %s unavailable.", profileId), ex);
@@ -115,16 +110,7 @@ public class RemoteOnlyStrategy extends AbstractInvocationStrategy implements II
         }
     }
 
-    private Object invokeProfile(String profileId, ProfileConfig profileConfig, Object proxy, Method method,
-                                 Map<String, Object> endpoints, Object[] args) throws ResourceAccessException {
-
-        int httpTimeoutInSecond = profileConfig.getHttpTimeout();
-        int connectTimeoutInSecond = profileConfig.getConnectTimeout() > 0 ? profileConfig.getConnectTimeout() : httpTimeoutInSecond;
-        ConfiguredRestTemplate template = new ConfiguredRestTemplate(httpTimeoutInSecond, connectTimeoutInSecond);
-
-        RequestMapping mapping = method.getAnnotation(RequestMapping.class);
-        RequestMethod[] requestMethods = mapping.method();
-
+    private HttpHeaders getHeaders(ProfileConfig profileConfig, String profileId) {
         HttpHeaders headers = new HttpHeaders();
 
         if (profileConfig.getApiToken() != null) {
@@ -139,16 +125,33 @@ public class RemoteOnlyStrategy extends AbstractInvocationStrategy implements II
                 headers.set("ClientContext-" + propertyName, clientContext.get(propertyName));
             }
         }
+        return headers;
+    }
 
-        if (requestMethods != null && requestMethods.length > 0) {
+    private Object invokeProfile(String profileId, EndpointInvocationContext endpointInvocationContext) throws ResourceAccessException {
+
+        ProfileConfig profileConfig = serviceConfig.getProfileConfig(profileId);
+
+        int httpTimeoutInSecond = profileConfig.getHttpTimeout();
+        int connectTimeoutInSecond = profileConfig.getConnectTimeout() > 0 ? profileConfig.getConnectTimeout() : httpTimeoutInSecond;
+        ConfiguredRestTemplate template = new ConfiguredRestTemplate(httpTimeoutInSecond, connectTimeoutInSecond);
+
+        RequestMapping mapping = endpointInvocationContext.getMethod().getAnnotation(RequestMapping.class);
+        RequestMethod[] requestMethods = mapping.method();
+
+        HttpHeaders headers = getHeaders(profileConfig, profileId);
+
+        if (requestMethods.length > 0) {
             try {
+                Method method = endpointInvocationContext.getMethod();
+                Object[] args = endpointInvocationContext.getArguments();
                 HttpMethod requestMethod = translate(requestMethods[0]);
-                String serverUrl = buildUrl(profileConfig, proxy, method, args);
+                String serverUrl = buildUrl(profileConfig, endpointInvocationContext);
                 Object[] newArgs = findArgs(method, args);
-                if (isMultiPartUpload(method, args)) {
+                if (isMultiPartUpload(args)) {
                     headers.setContentType(MediaType.MULTIPART_FORM_DATA);
                     MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-                    body.add(getRequestParamName(method), new FileSystemResource(getMultiPartFile(method, args)));
+                    body.add(getRequestParamName(method), new FileSystemResource(getMultiPartFile(args)));
                     HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
                     ResponseEntity<String> response = template.postForEntity(serverUrl, requestEntity, String.class, newArgs);
                     if (response.getStatusCode() != HttpStatus.OK) {
@@ -159,13 +162,13 @@ public class RemoteOnlyStrategy extends AbstractInvocationStrategy implements II
                     if (method.getReturnType().equals(Void.TYPE)) {
                         template.execute(serverUrl, requestBody, requestMethod, headers, newArgs);
                     } else {
-                        Object result =  template.execute(serverUrl, requestBody, method.getReturnType(), requestMethod, headers, newArgs);
+                        Object result = template.execute(serverUrl, requestBody, method.getReturnType(), requestMethod, headers, newArgs);
                         statuses.put(profileId, Status.Online);
                         reportStatus();
                         return result;
                     }
                 }
-            } catch (Throwable ex) {
+            } catch (Exception ex) {
                 statuses.put(profileId, Status.Offline);
                 reportStatus(ex.getMessage());
                 throw ex;
@@ -199,14 +202,14 @@ public class RemoteOnlyStrategy extends AbstractInvocationStrategy implements II
         }
     }
 
-    protected String buildUrl(ProfileConfig profileConfig, Object proxy, Method method, Object[] args) {
+    protected String buildUrl(ProfileConfig profileConfig, EndpointInvocationContext endpointInvocationContext) {
         String url = profileConfig.getUrl();
-        String path = buildPath(proxy, method);
+        String path = buildPath(endpointInvocationContext.getProxy(), endpointInvocationContext.getMethod());
         url = String.format("%s%s", url, path);
         return url;
     }
 
-    protected boolean isMultiPartUpload(Method method, Object[] args) {
+    protected boolean isMultiPartUpload(Object[] args) {
         if (args != null && args.length > 0) {
             for (Object arg : args) {
                 if (arg instanceof MultipartFile) {
@@ -217,7 +220,7 @@ public class RemoteOnlyStrategy extends AbstractInvocationStrategy implements II
         return false;
     }
 
-    protected String getMultiPartFile(Method method, Object[] args) {
+    protected String getMultiPartFile(Object[] args) {
         if (args != null && args.length > 0) {
             for (Object arg : args) {
                 if (arg instanceof MultipartFile) {

@@ -1,21 +1,31 @@
 <button *ngIf="!screenData.customer && screenData.mobileLoyaltyButton" mat-raised-button class="mobile-loyalty-button"
     (click)="doAction(screenData.mobileLoyaltyButton)">
-    <div class="mobile-loyalty-button-content">
-        <img *ngIf="screenData.mobileLoyaltyButton.icon" [src]="screenData.mobileLoyaltyButton.icon | imageUrl"
-             class="mobile-loyalty-button-image">
-        <div class="mobile-loyalty-button-wrapper">
-            <span responsive-class class="mobile-loyalty-button-text">{{screenData.mobileLoyaltyButton.title}}</span>
-            <app-icon class="mobile-loyalty-button-icon" [iconName]="'Increment'" [iconClass]="'primary md'"></app-icon>
-        </div>
+    <img *ngIf="screenData.mobileLoyaltyButton.icon" [src]="screenData.mobileLoyaltyButton.icon | imageUrl"
+        class="mobile-loyalty-button-image">
+    <div class="mobile-loyalty-button-wrapper">
+        <span responsive-class class="mobile-loyalty-button-text">{{screenData.mobileLoyaltyButton.title}}</span>
+        <app-icon class="mobile-loyalty-button-icon" [iconName]="'Increment'" [iconClass]="'primary md'"></app-icon>
     </div>
 </button>
 <button *ngIf="screenData.customer && screenData.linkedCustomerButton" mat-raised-button
-        [ngClass]="'mobile-loyalty-customer-outer ' + getHideLogoShowMembershipsClass()" (click)="doAction(screenData.linkedCustomerButton)">
-    <img *ngIf="screenData.customer.icon && !screenData.mobileLoyaltySaleShowMembershipsHideLogo" [src]="screenData.customer.icon | imageUrl"
-         alt="{{screenData.customer.icon}}" class="mobile-loyalty-image">
+    ngClass="{{'mobile-loyalty-customer-outer' + getHideLogoShowMembershipsClass()}}"
+    (click)="doAction(screenData.linkedCustomerButton)">
+    <img *ngIf="screenData.customer.icon && !screenData.mobileLoyaltySaleShowMembershipsHideLogo"
+        [src]="screenData.customer.icon | imageUrl" class="mobile-loyalty-image" alt="{{screenData.customer.icon}}">
     <div [ngClass]="'mobile-loyalty-customer-name ' + getHideLogoShowMembershipsClass()">
         <div responsive-class *ngIf="screenData.customer.name" [ngClass]="'mobile-loyalty-name ' + getHideLogoShowMembershipsClass()">
             {{screenData.customer.name}}
+        </div>
+        <div responsive-class *ngIf="screenData.customer.label && screenData.customer.id"
+            ngClass="{{'mobile-loyalty-id' + getHideLogoShowMembershipsClass()}}">
+            {{screenData.customer.label}}: {{screenData.customer.id}}
+        </div>
+    </div>
+    <div *ngIf="screenData.mobileLoyaltySaleShowMembershipsHideLogo" class="memberships">
+        <app-membership-display *ngFor="let membership of screenData.memberships" class="item" [membership]="membership"
+            [iconMatClass]="'mat-16'"></app-membership-display>
+        <div *ngIf="screenData.memberships?.length == 0" class="no-memberships" responsive-class>
+            {{screenData.noMembershipsFoundLabel}}
         </div>
         <div responsive-class *ngIf="screenData.customer.label && screenData.customer.id" [ngClass]="'mobile-loyalty-id ' + getHideLogoShowMembershipsClass()">
             {{screenData.customer.label}}: {{screenData.customer.id}}

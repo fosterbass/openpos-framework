@@ -1,0 +1,9 @@
+@mixin program-plan-details-theme($theme) {
+    $foreground: map-get($theme, foreground );
+
+    .program-plan-details {
+        .plans {
+            border-color: map-get($foreground, border);
+        }
+    }
+}

@@ -49,9 +49,9 @@ public abstract class AbstractTypeCode implements ITypeCode {
      * only be returned if it can be found to already exist in the ITypeCodeRegistry.
      * If you need to ensure the type code is created whether or not it already
      * exists in the registry, use the ITypeCode.make() method instead.
-     * @param clazz
-     * @param value
-     * @return
+     * @param clazz Class of the TypeCode
+     * @param value The string value of the TypeCode
+     * @return The singleton instance of the TypeCode
      */
     protected static <T extends ITypeCode> T of(Class<T> clazz, String value) {
 
@@ -69,7 +69,7 @@ public abstract class AbstractTypeCode implements ITypeCode {
      * @return The set of ITypeCode subclassed values
      */
     protected static <T extends ITypeCode> Set<T> values(Class<T> clazz) {
-        return (Set<T>) ITypeCodeRegistry.values(clazz);
+        return ITypeCodeRegistry.values(clazz);
     }
     
     @Override
@@ -87,6 +87,14 @@ public abstract class AbstractTypeCode implements ITypeCode {
         return this.isEqual(other);
     }
 
+    public boolean equalsString(String stringValue) {
+        return this.value.equals(stringValue);
+    }
+
+    public boolean equalsStringIgnoreCase(String stringValue) {
+        return this.value.equalsIgnoreCase(stringValue);
+    }
+
     @Override
     public int hashCode() {
         return this.hash();
@@ -96,10 +104,9 @@ public abstract class AbstractTypeCode implements ITypeCode {
      * Hooks into Java deserialization so that we can return the static
      * instance of the TypeCode whenever possible.
      * @return The static TypeCode when possible
-     * @throws ObjectStreamException
+     * @throws ObjectStreamException If there was an error deserializing the TypeCode
      */
     protected Object readResolve() throws ObjectStreamException {
-        //return deserializeStaticInstance(this.value);
         return of(this.getClass(), this.value);
     }
     

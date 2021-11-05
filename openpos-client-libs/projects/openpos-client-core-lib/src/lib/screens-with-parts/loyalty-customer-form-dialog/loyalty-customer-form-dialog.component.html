@@ -1,6 +1,7 @@
 <app-dialog-header></app-dialog-header>
 <app-scan-part></app-scan-part>
 <app-instructions *ngIf="screen.instructions" [instructions]="screen.instructions" [instructionsSize]="'text-sm'"></app-instructions>
+<app-scan-part></app-scan-part>
 <mat-dialog-content>
     <app-form (submitFormEvent)="submitForm()" [form]="screen.formGroup">
         <div responsive-class class="form-part-body loyalty-customer-form form-content">
@@ -120,6 +121,10 @@
                                 <div class="loyalty-number" *ngIf="loyaltyNumberField">
                                     <app-icon matPrefix [iconName]="screen.loyaltyNumberIcon" iconClass="material-icons sm"></app-icon>
                                     <app-dynamic-form-field [formGroup]="screen.formGroup" [formField]="loyaltyNumberField" (changed)="onFieldChanged($event)"></app-dynamic-form-field>
+                                </div>
+                                <div class="loyalty-number" *ngIf="extensionAttributeField">
+                                    <app-icon matPrefix [iconName]="screen.loyaltyNumberIcon" iconClass="material-icons sm"></app-icon>
+                                    <app-dynamic-form-field [formGroup]="screen.formGroup" [formField]="extensionAttributeField" (onFieldChanged)="onFieldChanged($event)"></app-dynamic-form-field>
                                 </div>
                                 <div *ngIf="screen.membershipEnabled && screen.isStructuredForm" class="memberships">
                                     <div *ngIf="screen.memberships && screen.memberships.length">

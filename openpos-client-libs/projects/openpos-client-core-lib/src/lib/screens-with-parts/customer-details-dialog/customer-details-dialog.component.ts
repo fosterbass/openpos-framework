@@ -1,14 +1,15 @@
 import { Component, Injector } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { CustomerDetailsDialogInterface, CustomerItemHistoryFilter } from './customer-details-dialog.interface';
-import { DialogComponent } from '../../../shared/decorators/dialog-component.decorator';
 import { Observable } from 'rxjs';
-import { MediaBreakpoints, OpenposMediaService } from '../../../core/media/openpos-media.service';
-import { IActionItem } from '../../../core/actions/action-item.interface';
-import { CONFIGURATION } from '../../../configuration/configuration';
-import { KeyPressProvider } from '../../../shared/providers/keypress.provider';
 import { MatTabChangeEvent } from '@angular/material/tabs';
-import { PosScreenDirective } from '../../pos-screen/pos-screen.component';
+import { DialogComponent } from '../../shared/decorators/dialog-component.decorator';
+import { PosScreenDirective } from '../pos-screen/pos-screen.component';
+import { KeyPressProvider } from '../../shared/providers/keypress.provider';
+import { MediaBreakpoints, OpenposMediaService } from '../../core/media/openpos-media.service';
+import { IActionItem } from '../../core/actions/action-item.interface';
+import { CONFIGURATION } from '../../configuration/configuration';
+
 
 @DialogComponent({
   name: 'CustomerDetailsDialog'

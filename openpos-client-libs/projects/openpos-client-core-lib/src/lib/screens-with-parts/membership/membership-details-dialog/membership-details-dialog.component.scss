@@ -1,0 +1,68 @@
+@import "../../../styles/mixins/typography";
+
+.membership-details-dialog {
+  
+
+  .tabs {
+    margin-top: 8px;
+    height: 53vmin;
+    mat-tab-group, mat-card {
+      height: 100%;
+    }
+    mat-card {
+      overflow: auto;
+      margin: 0;
+      border-radius: 0px;
+      .no-items {
+        @extend %text-lg;
+        text-align: center;
+        &.mobile {
+          @extend %text-md;
+          padding-top: 10px;
+        }
+      }  
+    }
+    &.mobile {
+      height: 80vmin;
+    }
+
+    .tab-title {
+      font-weight: bold;
+      padding-bottom: .5em;
+    }
+
+    .sign-up {
+      width: 30%;
+      float: right;
+      margin-top: 1em;
+      app-icon {
+        width: 1em;
+        margin-right: .25em;
+      }
+      &.mobile {
+        width: 100%;
+      }
+      &.tablet{
+        width:40%
+      }
+    }
+  }
+
+  .buttons {
+    display: grid;
+    grid-auto-flow: column;
+    justify-content: end;
+    grid-column-gap: 8px;
+    padding-bottom: 16px;
+    .keybinding {
+      margin-left: 10px;
+    }
+  }
+
+  app-content-card {
+    section {
+      padding-left: 0px;
+      padding-right: 0px;
+    }
+  }
+}

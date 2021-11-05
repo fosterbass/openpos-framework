@@ -1,126 +1,376 @@
 package org.jumpmind.pos.util;
 
-import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.lang.reflect.Field;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
 public class ObjectFinderTest {
-
-    Container parent;
-
-    @Before
-    public void setUp() {
-        parent = new Container();
-        parent.name = "parent";
-        parent.amount = null;
-        parent.data = new char[]{'a', 'b'};
-        ClassSought item1 = new ClassSought("item1");
-        parent.item = item1; // 1
-        ClassSought child1 = new ClassSought("child1");
-        ClassSought child2 = new ClassSought("child2");
-        ClassSought child3 = new ClassSought("child3");
-        DerivedClassSought derivedChild1 = new DerivedClassSought("derivedChild1", 1);
-        ClassSought[] children = new ClassSought[]{
-                child1,
-                child2,
-                child3,
-                derivedChild1
-        };
-        parent.moreItems = children; // 4
-        parent.otherItems = new HashSet<>(Arrays.asList(children)); // 4
-
-
-        Container subContainer1 = new Container();
-        subContainer1.name = "subContainer1";
-        subContainer1.amount = 1.0;
-        ClassSought sub1Item1 = new ClassSought("sub1.item1");
-        subContainer1.item = sub1Item1; // 1
-        subContainer1.itemMap = new HashMap<>();
-        subContainer1.itemMap.put(sub1Item1.name, sub1Item1); // 1
-        subContainer1.subContainerMap = new HashMap<>();
-
-        List<Container> subContainers = new ArrayList<>();
-        subContainers.add(subContainer1);
-        parent.subContainers = subContainers;
-
-        Container subContainer2 = new Container();
-        subContainer2.name = "subContainer2";
-        ClassSought sub2Item1 = new ClassSought("sub2.item1");
-        subContainer2.otherItems = new HashSet<>();
-        subContainer2.otherItems.add(new ClassSought("sub2.item2")); // 1
-        subContainer2.itemMap = new HashMap<>();
-        subContainer2.itemMap.put(sub2Item1.name, sub2Item1); // 1
-        subContainer2.moreItems = new ClassSought[]{sub1Item1, child1, child2, derivedChild1}; // 4
-
-        subContainer1.subContainerMap.put(subContainer2.name, subContainer2);
+    interface Container {
     }
 
-    @Test
-    public void testDistinctSearch() {
-        ObjectFinder<ClassSought> finder = new ObjectFinder<>(ClassSought.class);
-        finder.searchRecursive(parent);
-        List<ClassSought> results = finder.getResults();
-        assertEquals(8, results.size());
-        assertNotNull(results.stream().filter(c -> c.name.equals("item1")).findFirst().orElse(null));
-        assertNotNull(results.stream().filter(c -> c.name.equals("child1")).findFirst().orElse(null));
-        assertNotNull(results.stream().filter(c -> c.name.equals("child2")).findFirst().orElse(null));
-        assertNotNull(results.stream().filter(c -> c.name.equals("child3")).findFirst().orElse(null));
-        assertNotNull(results.stream().filter(c -> c.name.equals("derivedChild1")).findFirst().orElse(null));
-        assertNotNull(results.stream().filter(c -> c.name.equals("sub1.item1")).findFirst().orElse(null));
-        assertNotNull(results.stream().filter(c -> c.name.equals("sub2.item1")).findFirst().orElse(null));
-        assertNotNull(results.stream().filter(c -> c.name.equals("sub2.item2")).findFirst().orElse(null));
+    static class MemberContainer implements Container {
+        Target target;
+
+        MemberContainer(Target target) {
+            this.target = target;
+        }
     }
 
-    @Test
-    public void testMultipleSearch() {
-        ObjectFinder<ClassSought> finder = new ObjectFinder<>(ClassSought.class, false);
-        finder.searchRecursive(parent);
-        List<ClassSought> results = finder.getResults();
-        assertEquals(17, results.size());
-        assertEquals(1, results.stream().filter(c -> c.name.equals("item1")).count());
-        assertEquals(3, results.stream().filter(c -> c.name.equals("child1")).count());
-        assertEquals(3, results.stream().filter(c -> c.name.equals("child2")).count());
-        assertEquals(2, results.stream().filter(c -> c.name.equals("child3")).count());
-        assertEquals(3, results.stream().filter(c -> c.name.equals("derivedChild1")).count());
-        assertEquals(3, results.stream().filter(c -> c.name.equals("sub1.item1")).count());
-        assertEquals(1, results.stream().filter(c -> c.name.equals("sub2.item1")).count());
-        assertEquals(1, results.stream().filter(c -> c.name.equals("sub2.item2")).count());
+    static class CollectionContainer implements Container {
+        Collection<Target> targets;
+
+        CollectionContainer(Collection<Target> targets) {
+            this.targets = targets;
+        }
     }
 
-    static class Container {
+    static class ArrayContainer implements Container {
+        Target[] targets;
+
+        ArrayContainer(Target[] targets) {
+            this.targets = targets;
+        }
+    }
+
+    static class MapContainer implements Container {
+        Map<String, Target> targets;
+
+        MapContainer(Map<String, Target> targets) {
+            this.targets = targets;
+        }
+    }
+
+    static class NestedContainer implements Container {
+        Container nested;
+
+        NestedContainer(Container nested) {
+            this.nested = nested;
+        }
+    }
+
+    static class ComplexContainer extends NestedContainer {
+        Target target;
+
+        ComplexContainer(Target target, Container nested) {
+            super(nested);
+            this.target = target;
+        }
+    }
+
+    static class CyclicalContainer implements Container {
+        Target target;
+
+        Container container;
+
+        CyclicalContainer(Target target) {
+            this.target = target;
+            container = this; // self-referent
+        }
+    }
+
+    static class Target {
         String name;
-        Double amount;
-        char[] data;
-        ClassSought item;
-        List<Container> subContainers;
-        Set<ClassSought> otherItems;
-        Map<String, ClassSought> itemMap;
-        Map<String, Container> subContainerMap;
-        ClassSought[] moreItems;
-    }
 
-    static class ClassSought {
-        String name;
-        ClassSought(String name) {
+        Target(String name) {
             this.name = name;
         }
     }
 
-    static class DerivedClassSought extends ClassSought {
-        int size;
-        DerivedClassSought(String name, int size) {
+    static class DerivedTarget extends Target {
+        DerivedTarget(String name) {
             super(name);
-            this.size = size;
         }
     }
 
+    static class Visited implements ObjectSearchVisitor {
+        Object parent;
+        Object found;
+        Field field;
+
+        @Override
+        public void visit(Object parentObject, Object object, Field location) {
+            parent = parentObject;
+            found = object;
+            field = location;
+        }
+
+        void assertMatches(Container container, String fieldName) throws NoSuchFieldException, IllegalAccessException {
+            Field f = container.getClass().getDeclaredField(fieldName);
+            f.setAccessible(true);
+            Object o = f.get(container);
+
+            assertSame(container, parent);
+            assertEquals(f, field);
+            assertEquals(o, found);
+        }
+    }
+
+    @Test
+    public void findsTargetInImmediateMember() {
+        Target expectedTarget = new Target("target");
+        Container root = new MemberContainer(expectedTarget);
+
+        ObjectFinder<Target> finder = new ObjectFinder<>(Target.class);
+        finder.searchRecursive(root);
+
+        List<Target> results = finder.getResults();
+        assertEquals(1, results.size());
+        assertEquals(expectedTarget, results.get(0));
+    }
+
+    @Test
+    public void visitsTargetInImmediateMember() throws NoSuchFieldException, IllegalAccessException {
+        Target expectedTarget = new Target("target");
+        Container root = new MemberContainer(expectedTarget);
+
+        Visited visitor = new Visited();
+
+        ObjectFinder<Target> finder = new ObjectFinder<>(Target.class);
+        finder.searchRecursive(root, visitor);
+
+        visitor.assertMatches(root, "target");
+    }
+
+    @Test
+    public void findsTargetInNestedMember() {
+        Target expectedTarget = new Target("target");
+        Container container = new MemberContainer(expectedTarget);
+        Container root = new NestedContainer(container);
+
+        ObjectFinder<Target> finder = new ObjectFinder<>(Target.class);
+        finder.searchRecursive(root);
+
+        List<Target> results = finder.getResults();
+        assertEquals(1, results.size());
+        assertEquals(expectedTarget, results.get(0));
+    }
+
+    @Test
+    public void visitsTargetInNestedMember() throws NoSuchFieldException, IllegalAccessException {
+        Target expectedTarget = new Target("target");
+        Container container = new MemberContainer(expectedTarget);
+        Container root = new NestedContainer(container);
+
+        Visited visitor = new Visited();
+
+        ObjectFinder<Target> finder = new ObjectFinder<>(Target.class);
+        finder.searchRecursive(root, visitor);
+
+        visitor.assertMatches(container, "target");
+    }
+
+    @Test
+    public void findsTargetInListMember() {
+        Target expectedTarget = new Target("target");
+        Container root = new CollectionContainer(Collections.singletonList(expectedTarget));
+
+        ObjectFinder<Target> finder = new ObjectFinder<>(Target.class);
+        finder.searchRecursive(root);
+
+        List<Target> results = finder.getResults();
+        assertEquals(1, results.size());
+        assertEquals(expectedTarget, results.get(0));
+    }
+
+    @Test
+    public void visitsTargetInListMember() throws NoSuchFieldException, IllegalAccessException {
+        Target target = new Target("target");
+        List<Target> expectedList = Collections.singletonList(target);
+        Container root = new CollectionContainer(expectedList);
+
+        Visited visitor = new Visited();
+
+        ObjectFinder<Target> finder = new ObjectFinder<>(Target.class);
+        finder.searchRecursive(root, visitor);
+
+        visitor.assertMatches(root, "targets");
+    }
+
+    @Test
+    public void findsTargetInNonListCollectionMember() {
+        Target expectedTarget = new Target("target");
+        Container root = new CollectionContainer(Collections.singleton(expectedTarget));
+
+        ObjectFinder<Target> finder = new ObjectFinder<>(Target.class);
+        finder.searchRecursive(root);
+
+        List<Target> results = finder.getResults();
+        assertEquals(1, results.size());
+        assertEquals(expectedTarget, results.get(0));
+    }
+
+    @Test
+    public void visitsTargetInNonListCollectionMember() throws NoSuchFieldException, IllegalAccessException {
+        Target target = new Target("target");
+        Collection<Target> expectedCollection = Collections.singleton(target);
+        Container root = new CollectionContainer(expectedCollection);
+
+        Visited visitor = new Visited();
+
+        ObjectFinder<Target> finder = new ObjectFinder<>(Target.class);
+        finder.searchRecursive(root, visitor);
+
+        visitor.assertMatches(root, "targets");
+    }
+
+    @Test
+    public void findsTargetInArrayMember() {
+        Target expectedTarget = new Target("target");
+        Container root = new ArrayContainer(new Target[]{expectedTarget});
+
+        ObjectFinder<Target> finder = new ObjectFinder<>(Target.class);
+        finder.searchRecursive(root);
+
+        List<Target> results = finder.getResults();
+        assertEquals(1, results.size());
+        assertEquals(expectedTarget, results.get(0));
+    }
+
+    @Test
+    public void visitsTargetInArrayMember() throws NoSuchFieldException, IllegalAccessException {
+        Target target = new Target("target");
+        Target[] expectedArray = new Target[]{target};
+        Container root = new ArrayContainer(expectedArray);
+
+        Visited visitor = new Visited();
+
+        ObjectFinder<Target> finder = new ObjectFinder<>(Target.class);
+        finder.searchRecursive(root, visitor);
+
+        visitor.assertMatches(root, "targets");
+    }
+
+    @Test
+    public void findsTargetInMapMember() {
+        Target expectedTarget = new Target("target");
+        Container root = new MapContainer(Collections.singletonMap("test", expectedTarget));
+
+        ObjectFinder<Target> finder = new ObjectFinder<>(Target.class);
+        finder.searchRecursive(root);
+
+        List<Target> results = finder.getResults();
+        assertEquals(1, results.size());
+        assertEquals(expectedTarget, results.get(0));
+    }
+
+    @Test
+    public void visitsTargetInMapMember() throws NoSuchFieldException, IllegalAccessException {
+        Target target = new Target("target");
+        Map<String, Target> expectedMap = Collections.singletonMap("test", target);
+        Container root = new MapContainer(expectedMap);
+
+        Visited visitor = new Visited();
+
+        ObjectFinder<Target> finder = new ObjectFinder<>(Target.class);
+        finder.searchRecursive(root, visitor);
+
+        visitor.assertMatches(root, "targets");
+    }
+
+    @Test
+    public void findsDeeplyNestedCollectionItemTarget() {
+        Target expectedTarget = new Target("target");
+        Container container = new CollectionContainer(Collections.singleton(expectedTarget));
+        Container root = new NestedContainer(container);
+
+        ObjectFinder<Target> finder = new ObjectFinder<>(Target.class);
+        finder.searchRecursive(root);
+
+        List<Target> results = finder.getResults();
+        assertEquals(1, results.size());
+        assertEquals(expectedTarget, results.get(0));
+    }
+
+    @Test
+    public void visitsDeeplyNestedCollectionItemTarget() throws NoSuchFieldException, IllegalAccessException {
+        Target target = new Target("target");
+        Set<Target> expectedSet = Collections.singleton(target);
+        Container container = new CollectionContainer(expectedSet);
+        Container root = new NestedContainer(container);
+
+        Visited visitor = new Visited();
+
+        ObjectFinder<Target> finder = new ObjectFinder<>(Target.class);
+        finder.searchRecursive(root, visitor);
+
+        visitor.assertMatches(container, "targets");
+    }
+
+    @Test
+    public void findsDistinctResultsByDefault() {
+        Target target = new Target("target");
+        List<Target> duplicateTargets = new ArrayList<>();
+        duplicateTargets.add(target);
+        duplicateTargets.add(target);
+        Container root = new CollectionContainer(duplicateTargets);
+
+        ObjectFinder<Target> finder = new ObjectFinder<>(Target.class);
+        finder.searchRecursive(root);
+
+        List<Target> results = finder.getResults();
+        assertEquals(1, results.size());
+        assertEquals(target, results.get(0));
+    }
+
+    @Test
+    public void canFindDerivedTargetType() {
+        Target expectedTarget = new DerivedTarget("derived-target");
+        Container root = new MemberContainer(expectedTarget);
+
+        ObjectFinder<Target> finder = new ObjectFinder<>(Target.class);
+        finder.searchRecursive(root);
+
+        List<Target> results = finder.getResults();
+        assertEquals(1, results.size());
+        assertEquals(expectedTarget, results.get(0));
+    }
+
+    @Test
+    public void canFindDuplicateResultsByConfiguration() {
+        Target target = new Target("target");
+        List<Target> duplicateTargets = new ArrayList<>();
+        duplicateTargets.add(target);
+        duplicateTargets.add(target);
+        Container root = new CollectionContainer(duplicateTargets);
+
+        ObjectFinder<Target> finder = new ObjectFinder<>(Target.class, false);
+        finder.searchRecursive(root);
+
+        List<Target> results = finder.getResults();
+        assertEquals(2, results.size());
+        assertEquals(target, results.get(0));
+        assertEquals(target, results.get(1));
+    }
+
+    @Test
+    public void canFindTargetsAtMultipleLevels() {
+        Target target1 = new Target("target");
+        Target target2 = new DerivedTarget("derived-target");
+        Container root = new ComplexContainer(target1, new CollectionContainer(Collections.singleton(target2)));
+
+        ObjectFinder<Target> finder = new ObjectFinder<>(Target.class);
+        finder.searchRecursive(root);
+
+        List<Target> results = finder.getResults();
+        assertEquals(2, results.size());
+        assertTrue(results.contains(target1));
+        assertTrue(results.contains(target2));
+    }
+
+    /* WARNING: If this test fails, the JVM will likely die with StackOverflowError */
+    @Test
+    public void avoidsInfiniteRecursionForCyclicalObjectGraphs() {
+        Target expectedTarget = new Target("target");
+        Container root = new CyclicalContainer(expectedTarget);
+
+        ObjectFinder<Target> finder = new ObjectFinder<>(Target.class);
+        finder.searchRecursive(root);
+
+        List<Target> results = finder.getResults();
+        assertEquals(1, results.size());
+        assertEquals(expectedTarget, results.get(0));
+    }
 }

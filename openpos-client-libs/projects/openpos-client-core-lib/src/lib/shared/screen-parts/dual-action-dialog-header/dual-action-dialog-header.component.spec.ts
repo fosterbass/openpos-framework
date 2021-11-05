@@ -12,6 +12,8 @@ import {validateExist, validateIcon, validateText} from '../../../utilites/test-
 import {DualActionDialogHeaderComponent} from './dual-action-dialog-header.component';
 import {IActionItem} from '../../../core/actions/action-item.interface';
 import {DialogHeaderInterface} from '../dialog-header/dialog-header.interface';
+import { MockComponent } from 'ng-mocks';
+import { IconComponent } from '../../components/icon/icon.component';
 
 class MockActionService {}
 class MockMatDialog {}
@@ -32,7 +34,8 @@ describe('DualActionDialogHeaderComponent', () => {
             TestBed.configureTestingModule({
                 imports: [ HttpClientTestingModule],
                 declarations: [
-                    DualActionDialogHeaderComponent
+                    DualActionDialogHeaderComponent,
+                    MockComponent(IconComponent)
                 ],
                 providers: [
                     { provide: ActionService, useClass: MockActionService },
@@ -41,9 +44,6 @@ describe('DualActionDialogHeaderComponent', () => {
                     { provide: ElectronService, useClass: MockElectronService },
                     { provide: ClientContext, useValue: {}},
                     { provide: CLIENTCONTEXT, useClass: TimeZoneContext}
-                ],
-                schemas: [
-                    NO_ERRORS_SCHEMA,
                 ]
             }).compileComponents();
             fixture = TestBed.createComponent(DualActionDialogHeaderComponent);

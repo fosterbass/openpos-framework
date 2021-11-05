@@ -1,22 +1,33 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { CustomerDetailsDialogComponent } from './customer-details-dialog.component';
 import { CustomerDetailsDialogInterface } from './customer-details-dialog.interface';
-import { ActionService } from '../../../core/actions/action.service';
-import { validateDoesNotExist, validateExist, validateText } from '../../../utilites/test-utils';
+import { ActionService } from '../../core/actions/action.service';
+import { validateDoesNotExist, validateExist, validateText } from '../../utilites/test-utils';
 import { By } from '@angular/platform-browser';
-import { IActionItem } from '../../../core/actions/action-item.interface';
-import { PhonePipe } from '../../../shared/pipes/phone.pipe';
-import { MatDialog } from '@angular/material/dialog';
+import { IActionItem } from '../../core/actions/action-item.interface';
+import { PhonePipe } from '../../shared/pipes/phone.pipe';
+import { MatDialog, MatDialogActions } from '@angular/material/dialog';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ElectronService } from 'ngx-electron';
-import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provider.interface';
-import { TimeZoneContext } from '../../../core/client-context/time-zone-context';
+import { CLIENTCONTEXT } from '../../core/client-context/client-context-provider.interface';
+import { TimeZoneContext } from '../../core/client-context/time-zone-context';
 import { Observable, of, Subscription } from 'rxjs';
-import { MediaBreakpoints, OpenposMediaService } from '../../../core/media/openpos-media.service';
-import { ImageUrlPipe } from '../../../shared/pipes/image-url.pipe';
-import { MarkdownFormatterPipe } from '../../../shared/pipes/markdown-formatter.pipe';
-import {KeyPressProvider} from '../../../shared/providers/keypress.provider';
+import { MediaBreakpoints, OpenposMediaService } from '../../core/media/openpos-media.service';
+import { ImageUrlPipe } from '../../shared/pipes/image-url.pipe';
+import { MarkdownFormatterPipe } from '../../shared/pipes/markdown-formatter.pipe';
+import {KeyPressProvider} from '../../shared/providers/keypress.provider';
+import { MockComponent } from 'ng-mocks';
+import { IconComponent } from '../../shared/components/icon/icon.component';
+import { InfiniteScrollComponent } from '../../shared/components/infinite-scroll/infinite-scroll.component';
+import { DialogHeaderComponent } from '../../shared/screen-parts/dialog-header/dialog-header.component';
+import { ContentCardComponent } from '../../shared/components/content-card/content-card.component';
+import { CustomerInformationComponent } from '../../shared/screen-parts/customer-information/customer-information.component';
+import { DualActionDialogHeaderComponent } from '../../shared/screen-parts/dual-action-dialog-header/dual-action-dialog-header.component';
+import { MembershipPointsDisplayComponent } from '../../shared/screen-parts/membership-points-display/membership-points-display.component';
+import { SecondaryButtonComponent } from '../../shared/components/secondary-button/secondary-button.component';
+import { PrimaryButtonComponent } from '../../shared/components/primary-button/primary-button.component';
+import { MatTab, MatTabGroup } from '@angular/material/tabs';
+import { MembershipDisplayComponent } from '../../shared/screen-parts/membership-display/membership-display.component';
 
 class MockKeyPressProvider {
   subscribe(): Subscription {
@@ -63,7 +74,23 @@ describe('CustomerDetailsDialog', () => {
       TestBed.configureTestingModule({
         imports: [HttpClientTestingModule],
         declarations: [
-          CustomerDetailsDialogComponent, PhonePipe, ImageUrlPipe, MarkdownFormatterPipe
+          CustomerDetailsDialogComponent,
+          PhonePipe,
+          ImageUrlPipe,
+          MarkdownFormatterPipe,
+          MockComponent(IconComponent),
+          MockComponent(InfiniteScrollComponent),
+          MockComponent(DialogHeaderComponent),
+          MockComponent(ContentCardComponent),
+          MockComponent(CustomerInformationComponent),
+          MockComponent(DualActionDialogHeaderComponent),
+          MockComponent(MembershipPointsDisplayComponent),
+          MockComponent(MembershipDisplayComponent),
+          MockComponent(SecondaryButtonComponent),
+          MockComponent(PrimaryButtonComponent),
+          MockComponent(MatTab),
+          MockComponent(MatDialogActions),
+          MockComponent(MatTabGroup)
         ],
         providers: [
           { provide: KeyPressProvider, useClass: MockKeyPressProvider },
@@ -73,9 +100,6 @@ describe('CustomerDetailsDialog', () => {
           { provide: ElectronService, useClass: MockElectronService },
           { provide: ClientContext, useValue: {} },
           { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
-        ],
-        schemas: [
-          NO_ERRORS_SCHEMA,
         ]
       }).compileComponents();
       fixture = TestBed.createComponent(CustomerDetailsDialogComponent);
@@ -190,6 +214,53 @@ describe('CustomerDetailsDialog', () => {
 
             it('shows the noMembershipsFound label', () => {
               validateText(fixture, '.memberships .list', component.screen.noMembershipsFoundLabel);
+            });
+          });
+
+          describe('membership sign up button', () => {
+            let button;
+            let configuration;
+            const selector = '.membership-sign-up';
+            const setButtonConfiguration = (conf) => {
+              component.screen.customer.membershipSignUpAction = conf;
+            };
+
+            beforeEach(() => {
+              configuration = {
+                title: 'Some Title'
+              } as IActionItem;
+              setButtonConfiguration(configuration);
+              component.screen.membershipEnabled = true;
+              fixture.detectChanges();
+              button = fixture.debugElement.query(By.css(selector));
+            });
+
+            it('renders when the button configuration is set', () => {
+              expect(button.nativeElement).toBeDefined();
+            });
+
+            it('does not render when the configuration is undefined', () => {
+              setButtonConfiguration(undefined);
+              fixture.detectChanges();
+              validateDoesNotExist(fixture, selector);
+            });
+
+            it('displays the configured text', () => {
+              expect(button.nativeElement.innerHTML).toContain(configuration.title);
+            });
+
+            it('calls doAction with the configuration when an actionClick event is triggered', () => {
+              spyOn(component, 'doAction');
+              button = fixture.debugElement.query(By.css(selector));
+              button.nativeElement.dispatchEvent(new Event('actionClick'));
+              expect(component.doAction).toHaveBeenCalledWith(configuration);
+            });
+
+            it('calls doAction with the configuration when the button is clicked', () => {
+              spyOn(component, 'doAction');
+              button = fixture.debugElement.query(By.css(selector));
+              button.nativeElement.click();
+              expect(component.doAction).toHaveBeenCalledWith(configuration);
             });
           });
 
@@ -334,7 +405,23 @@ describe('CustomerDetailsDialog', () => {
       TestBed.configureTestingModule({
         imports: [HttpClientTestingModule],
         declarations: [
-          CustomerDetailsDialogComponent, PhonePipe, ImageUrlPipe, MarkdownFormatterPipe
+          CustomerDetailsDialogComponent,
+          PhonePipe,
+          ImageUrlPipe,
+          MarkdownFormatterPipe,
+          MockComponent(IconComponent),
+          MockComponent(InfiniteScrollComponent),
+          MockComponent(DialogHeaderComponent),
+          MockComponent(ContentCardComponent),
+          MockComponent(CustomerInformationComponent),
+          MockComponent(DualActionDialogHeaderComponent),
+          MockComponent(MembershipPointsDisplayComponent),
+          MockComponent(MembershipDisplayComponent),
+          MockComponent(SecondaryButtonComponent),
+          MockComponent(PrimaryButtonComponent),
+          MockComponent(MatTab),
+          MockComponent(MatDialogActions),
+          MockComponent(MatTabGroup)
         ],
         providers: [
           { provide: KeyPressProvider, useClass: MockKeyPressProvider },
@@ -344,9 +431,6 @@ describe('CustomerDetailsDialog', () => {
           { provide: ElectronService, useClass: MockElectronService },
           { provide: ClientContext, useValue: {} },
           { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
-        ],
-        schemas: [
-          NO_ERRORS_SCHEMA,
         ]
       }).compileComponents();
       fixture = TestBed.createComponent(CustomerDetailsDialogComponent);
@@ -417,7 +501,23 @@ describe('CustomerDetailsDialog', () => {
       TestBed.configureTestingModule({
         imports: [HttpClientTestingModule],
         declarations: [
-          CustomerDetailsDialogComponent, PhonePipe, ImageUrlPipe, MarkdownFormatterPipe
+          CustomerDetailsDialogComponent,
+          PhonePipe,
+          ImageUrlPipe,
+          MarkdownFormatterPipe,
+          MockComponent(IconComponent),
+          MockComponent(InfiniteScrollComponent),
+          MockComponent(DialogHeaderComponent),
+          MockComponent(ContentCardComponent),
+          MockComponent(CustomerInformationComponent),
+          MockComponent(DualActionDialogHeaderComponent),
+          MockComponent(MembershipPointsDisplayComponent),
+          MockComponent(MembershipDisplayComponent),
+          MockComponent(SecondaryButtonComponent),
+          MockComponent(PrimaryButtonComponent),
+          MockComponent(MatTab),
+          MockComponent(MatDialogActions),
+          MockComponent(MatTabGroup)
         ],
         providers: [
           { provide: KeyPressProvider, useClass: MockKeyPressProvider },
@@ -427,9 +527,6 @@ describe('CustomerDetailsDialog', () => {
           { provide: ElectronService, useClass: MockElectronService },
           { provide: ClientContext, useValue: {} },
           { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
-        ],
-        schemas: [
-          NO_ERRORS_SCHEMA,
         ]
       }).compileComponents();
       fixture = TestBed.createComponent(CustomerDetailsDialogComponent);

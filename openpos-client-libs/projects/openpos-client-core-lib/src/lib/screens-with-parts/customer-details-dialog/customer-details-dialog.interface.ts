@@ -1,8 +1,9 @@
-import { IAbstractScreen } from '../../../core/interfaces/abstract-screen.interface';
-import { IActionItem } from '../../../core/actions/action-item.interface';
-import { CustomerDetails } from '../../../shared/screen-parts/customer-information/customer-information.interface';
+import { IActionItem } from '../../core/actions/action-item.interface';
+import { IAbstractScreen } from '../../core/interfaces/abstract-screen.interface';
+import { CustomerDetails } from '../../shared/screen-parts/customer-information/customer-information.interface';
 
 export interface CustomerDetailsDialogInterface extends IAbstractScreen {
+    membershipSignUpAction: any;
     message: string;
     rewardsDataKey: string;
     rewardsHistoryDataKey: string;
@@ -11,7 +12,6 @@ export interface CustomerDetailsDialogInterface extends IAbstractScreen {
     membershipPointsEnabled: boolean;
     membershipLabel: string;
     appliedLabel: string;
-    loyaltyPromotions: IActionItem;
     backButton: IActionItem;
     editButton: IActionItem;
     unlinkButton: IActionItem;

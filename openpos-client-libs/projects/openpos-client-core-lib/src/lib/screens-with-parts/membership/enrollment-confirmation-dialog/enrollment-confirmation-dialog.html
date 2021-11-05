@@ -1,0 +1,36 @@
+<div class="dialog-outer">
+    <app-dialog-header></app-dialog-header>
+    <div class="dialog-body" responsive-class>
+        <app-content-card>
+            <div *ngIf="screen.message && screen.programCopy">
+                <div [innerHTML]="screen.programCopy | safeHtml"></div>
+                <div class="message">
+                    <app-icon *ngIf="screen.checkIcon" [iconName]="screen.checkIcon"
+                              [iconClass]="'material-icons mat-64'"></app-icon>
+                    <div [innerHTML]="screen.message"></div>
+                </div>
+            </div>
+        </app-content-card>
+    </div>
+
+    <div class="button-row">
+        <app-secondary-button *ngIf="screen.signUpAnother" class="button" [disabled]="!screen.signUpAnother.enabled"
+                              (buttonClick)="doAction(screen.signUpAnother)">
+            <app-icon *ngIf="screen.signUpAnother.icon"
+                      [iconName]="screen.signUpAnother.icon"
+                      [iconClass]="'material-icons mat-24'"></app-icon>
+            <span>{{screen.signUpAnother.title}}</span>
+        </app-secondary-button>
+        <app-primary-button responsive-class
+                            class="continue"
+                            *ngIf="screen.continueAction"
+                            [disabled]="!screen.continueAction.enabled"
+                            (actionClick)="doAction(screen.continueAction)"
+                            (click)="doAction(screen.continueAction)">
+            <span>{{screen.continueAction.title}}</span>
+            <span *ngIf="keybindsEnabled(screen.continueAction)" class="muted-color keybinding" >
+                            {{screen.continueAction.keybindDisplayName}}
+                        </span>
+        </app-primary-button>
+    </div>
+</div>

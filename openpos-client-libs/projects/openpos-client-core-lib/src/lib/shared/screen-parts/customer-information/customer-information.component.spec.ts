@@ -1,5 +1,4 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ActionService } from '../../../core/actions/action.service';
 import { CustomerInformationComponent } from './customer-information.component';
 import { validateDoesNotExist, validateIcon, validateText } from '../../../utilites/test-utils';
@@ -13,6 +12,8 @@ import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provi
 import { TimeZoneContext } from '../../../core/client-context/time-zone-context';
 import { Subscription } from 'rxjs';
 import { KeyPressProvider } from '../../providers/keypress.provider';
+import { MockComponent } from 'ng-mocks';
+import { IconComponent } from '../../components/icon/icon.component';
 
 class MockMatDialog { }
 class MockActionService { }
@@ -32,7 +33,9 @@ describe('CustomerInformationComponent', () => {
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
             declarations: [
-                CustomerInformationComponent, PhonePipe
+                CustomerInformationComponent,
+                PhonePipe,
+                MockComponent(IconComponent)
             ],
             providers: [
                 { provide: MatDialog, useClass: MockMatDialog },
@@ -41,9 +44,6 @@ describe('CustomerInformationComponent', () => {
                 { provide: KeyPressProvider, useClass: MockKeyPressProvider },
                 { provide: ClientContext, useValue: {} },
                 { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
-            ],
-            schemas: [
-                NO_ERRORS_SCHEMA,
             ]
         }).compileComponents();
         fixture = TestBed.createComponent(CustomerInformationComponent);

@@ -10,7 +10,7 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +24,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { TestServiceConfig.class })
+@ContextConfiguration(classes = {TestServiceConfig.class})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class RemoteOnlyStrategyTest {
 
     @Rule
@@ -42,7 +43,7 @@ public class RemoteOnlyStrategyTest {
                 .withBody(mapper.writeValueAsString(new TestResponse(new BigDecimal("1.11"), "abcd")))));
 
         TestResponse response = (TestResponse) handler.invoke(config().getProfileIds(), null, ITestService.class.getMethod("testPost", String.class), null,
-                new Object[] { "test001" });
+                new Object[]{"test001"});
 
         assertNotNull(response);
         assertEquals(new BigDecimal("1.11"), response.total);
@@ -55,7 +56,7 @@ public class RemoteOnlyStrategyTest {
                 .withBody(mapper.writeValueAsString(new TestResponse(new BigDecimal("3.14"), "xyz")))));
 
         TestResponse response = (TestResponse) handler.invoke(config().getProfileIds(), null, ITestService.class.getMethod("testPut", String.class, TestRequest.class), null,
-                new Object[] { "test001", new TestRequest("one", 1) });
+                new Object[]{"test001", new TestRequest("one", 1)});
 
         assertNotNull(response);
         assertEquals(new BigDecimal("3.14"), response.total);
@@ -67,7 +68,7 @@ public class RemoteOnlyStrategyTest {
         stubFor(put(urlEqualTo("/check/deviceid/test001/nuttin")).willReturn(status(200)));
 
         handler.invoke(config().getProfileIds(), null, ITestService.class.getMethod("testPutNuttin", String.class, TestRequest.class), null,
-                new Object[] { "test001", new TestRequest("one", 1) });
+                new Object[]{"test001", new TestRequest("one", 1)});
 
     }
 
@@ -79,7 +80,7 @@ public class RemoteOnlyStrategyTest {
                 .withBody(mapper.writeValueAsString(result)).withStatus(501)));
 
         handler.invoke(config().getProfileIds(), null, ITestService.class.getMethod("testPutNuttin", String.class, TestRequest.class), null,
-                new Object[] { "test001", new TestRequest("one", 1) });
+                new Object[]{"test001", new TestRequest("one", 1)});
 
     }
 
@@ -99,7 +100,7 @@ public class RemoteOnlyStrategyTest {
         ProfileConfig profileConfig = new ProfileConfig();
         profileConfig.setHttpTimeout(30);
         profileConfig.setUrl("http://localhost:8080");
-        serviceConfig.getProfiles().put("local",profileConfig);
+        serviceConfig.getProfiles().put("local", profileConfig);
         handler.setServiceConfig(serviceConfig);
 
         ServiceSpecificConfig config = new ServiceSpecificConfig();

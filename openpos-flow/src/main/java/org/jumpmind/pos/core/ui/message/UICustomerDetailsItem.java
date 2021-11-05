@@ -1,6 +1,7 @@
 package org.jumpmind.pos.core.ui.message;
 
 import lombok.Data;
+import org.jumpmind.pos.core.ui.ActionItem;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -25,4 +26,6 @@ public class UICustomerDetailsItem extends SelectableItem implements Serializabl
     private int numberOfActiveRewards;
     private int numberOfHistoricRewards;
     private List<UIMembership> memberships = new ArrayList<>();
+    private ActionItem membershipSignUpAction;
+    private ActionItem enrolledMembershipAction;
 }

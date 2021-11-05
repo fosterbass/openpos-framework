@@ -34,6 +34,9 @@ public final class UIMessageType {
     public static final String CUSTOMER_DISPLAY_SALE = "CustomerDisplaySale";
     public static final String CUSTOMER_DISPLAY_RETURN = "CustomerDisplayReturn";
     public static final String CUSTOMER_SEARCH_RESULT = "CustomerSearchResultDialog";
+    public static final String MEMBERSHIP_DETAILS_DIALOG = "MembershipDetailsDialog";
+    public static final String MEMBERSHIP_PLAN_DETAILS_DIALOG = "MembershipPlanDetailsDialog";
+    public static final String PROGRAM_PLANS_SELECT_DIALOG = "ProgramPlansSelectDialog";
     public static final String TRANSACTION_SEARCH = "TransactionSearch";
     public static final String TRANSACTION_DETAILS = "TransactionDetails";
     public static final String PROMOTION_SEARCH = "PromotionSearch";

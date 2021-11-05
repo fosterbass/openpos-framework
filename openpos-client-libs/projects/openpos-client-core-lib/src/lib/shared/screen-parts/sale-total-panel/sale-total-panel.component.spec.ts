@@ -1,6 +1,5 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { Subscription, Observable, of } from 'rxjs';
 import { SaleTotalPanelComponent } from './sale-total-panel.component';
 import { SaleTotalPanelInterface } from './sale-total-panel.interface';
@@ -16,6 +15,9 @@ import { By } from '@angular/platform-browser';
 import { CONFIGURATION } from '../../../configuration/configuration';
 import { ImageUrlPipe } from '../../pipes/image-url.pipe';
 import { validateDoesNotExist, validateExist, validateIcon, validateText } from '../../../utilites/test-utils';
+import { MockComponent } from 'ng-mocks';
+import { IconComponent } from '../../components/icon/icon.component';
+
 
 class MockMatDialog { }
 class MockActionService { }
@@ -43,7 +45,9 @@ describe('SaleTotalPanelComponent', () => {
             await TestBed.configureTestingModule({
                 imports: [HttpClientTestingModule],
                 declarations: [
-                    SaleTotalPanelComponent, ImageUrlPipe
+                    SaleTotalPanelComponent,
+                    ImageUrlPipe,
+                    MockComponent(IconComponent)
                 ],
                 providers: [
                     { provide: ActionService, useClass: MockActionService },
@@ -53,9 +57,6 @@ describe('SaleTotalPanelComponent', () => {
                     { provide: ElectronService, useClass: MockElectronService },
                     { provide: ClientContext, useValue: {} },
                     { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
-                ],
-                schemas: [
-                    NO_ERRORS_SCHEMA,
                 ]
             }).compileComponents();
             fixture = TestBed.createComponent(SaleTotalPanelComponent);

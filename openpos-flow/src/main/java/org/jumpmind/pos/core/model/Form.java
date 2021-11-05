@@ -4,31 +4,37 @@ import org.jumpmind.pos.util.DriversLicenseUtils;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Form implements Serializable {
 
-    /** Use {@link FieldPattern#EMAIL} instead*/@Deprecated()
+    /** @deprecated Use {@link FieldPattern#EMAIL} instead*/
+    @Deprecated()
     public static final String PATTERN_EMAIL =  FieldPattern.EMAIL;
-    /** Use {@link FieldPattern#MONEY} instead*/@Deprecated()
+    /** @deprecated Use {@link FieldPattern#MONEY} instead*/
+    @Deprecated()
     public static final String PATTERN_MONEY =  FieldPattern.MONEY;
-    /** Use {@link FieldPattern#PERCENT} instead*/@Deprecated()
+    /** @deprecated Use {@link FieldPattern#PERCENT} instead*/
+    @Deprecated()
     public static final String PATTERN_PERCENT =  FieldPattern.PERCENT;
-    /** Use {@link FieldPattern#DATE} instead*/@Deprecated()
+    /** @deprecated Use {@link FieldPattern#DATE} instead*/
+    @Deprecated()
     public static final String PATTERN_DATE = FieldPattern.DATE;
-    /** Use {@link FieldPattern#YY_DATE} instead*/@Deprecated()
+    /** @deprecated Use {@link FieldPattern#YY_DATE} instead*/
+    @Deprecated()
     public static final String PATTERN_YY_DATE = FieldPattern.YY_DATE;
-    /** Use {@link FieldPattern#NO_YEAR_DATE} instead*/@Deprecated()
+    /** @deprecated Use {@link FieldPattern#NO_YEAR_DATE} instead*/
+    @Deprecated()
     public static final String PATTERN_NO_YEAR_DATE = FieldPattern.NO_YEAR_DATE;
-    /** Use {@link FieldPattern#US_PHONE_NUMBER} instead*/@Deprecated()
+    /** @deprecated Use {@link FieldPattern#US_PHONE_NUMBER} instead*/
+    @Deprecated()
     public static final String PATTERN_US_PHONE_NUMBER = FieldPattern.US_PHONE_NUMBER;
     
     private static final long serialVersionUID = 1L;
 
-    private List<IFormElement> formElements = new ArrayList<IFormElement>();
+    private List<IFormElement> formElements = new ArrayList<>();
     
-    private List<String> formErrors = new ArrayList<String>();
+    private List<String> formErrors = new ArrayList<>();
     
     private boolean requiresAtLeastOneValue = false;
     
@@ -39,13 +45,17 @@ public class Form implements Serializable {
     public Map<String, String> toMap() {
         return getFormElements()
                 .stream()
-                .filter(formElement -> formElement instanceof FormField)
-                .map(formElement -> (FormField)formElement)
+                .filter(FormField.class::isInstance)
+                .map(FormField.class::cast)
                 .collect(Collectors.toMap(FormField::getId, FormField::getValue));
     }
 
     public List<IFormElement> getFormElements() {
         return formElements;
+    }
+
+    public List<FormField> getFormFields() {
+        return formElements.stream().filter(FormField.class::isInstance).map(FormField.class::cast).collect(Collectors.toList());
     }
 
     public void setFormElements(List<IFormElement> formElements) {
@@ -417,7 +427,7 @@ public class Form implements Serializable {
 
     public FormField getTextField(String fieldId) {
         IFormElement formElement = this.getFormElement(fieldId);
-        if (formElement != null && formElement instanceof FormField) {
+        if (formElement instanceof FormField) {
             return (FormField) formElement;
         }
         
@@ -426,7 +436,7 @@ public class Form implements Serializable {
 
     public ComboField getComboField(String fieldId) {
         IFormElement formElement = this.getFormElement(fieldId);
-        if (formElement != null && formElement instanceof ComboField) {
+        if (formElement instanceof ComboField) {
             return (ComboField) formElement;
         }
         
@@ -435,7 +445,7 @@ public class Form implements Serializable {
     
     public FormListField getListField(String fieldId) {
         IFormElement formElement = this.getFormElement(fieldId);
-        if (formElement != null && formElement instanceof FormListField) {
+        if (formElement instanceof FormListField) {
             return (FormListField) formElement;
         }
         
@@ -468,7 +478,7 @@ public class Form implements Serializable {
     public String getFormElementValue(String elementId) {
         String returnValue = null;
         IFormElement formElement = this.getFormElement(elementId);
-        if (formElement != null && formElement instanceof FormField) {
+        if (formElement instanceof FormField) {
             returnValue = ((FormField) formElement).getValue();
         }
         
@@ -495,10 +505,8 @@ public class Form implements Serializable {
     // This means different things to different elements. 
     public String getString(String id) {
         for (IFormElement element : formElements) {
-            if (id.equals(element.getId())) {
-                if (element instanceof FormField) {
-                    return ((FormField) element).getValue();
-                }
+            if (id.equals(element.getId()) && element instanceof FormField) {
+                return ((FormField) element).getValue();
             }
         }
         return null;

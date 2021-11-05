@@ -17,7 +17,7 @@ export const validateText = (fixture, selector: string, value: string) => {
 };
 
 export const validateIcon = (fixture, selector: string, iconName: string) => {
-    const iconElement = fixture.debugElement.query(By.css(selector));
-    expect(iconElement.nativeElement).toBeDefined();
-    expect(iconElement.properties.iconName).toBe(iconName);
+    const iconElement: HTMLElement = fixture.debugElement.query(By.css(selector)).nativeElement;
+    expect(iconElement).toBeDefined();
+    expect(iconElement.getAttribute('ng-reflect-icon-name')).toBe(iconName);
 };

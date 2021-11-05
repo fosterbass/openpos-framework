@@ -1,16 +1,18 @@
 package org.jumpmind.pos.service;
 
-import static org.junit.Assert.assertEquals;
-
 import org.jumpmind.pos.service.TestServiceConfig.Proxy;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import static org.junit.Assert.assertEquals;
+
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { TestServiceConfig.class })
+@ContextConfiguration(classes = {TestServiceConfig.class})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LocalOnlyStrategyTest {
 
     @Autowired
@@ -30,7 +32,6 @@ public class LocalOnlyStrategyTest {
         assertEquals(0, endpoint.invokeCount);
         assertEquals(1, override.invokeCount);
     }
-
 
 
 }

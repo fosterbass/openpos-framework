@@ -1,5 +1,4 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Subscription } from 'rxjs';
@@ -11,6 +10,9 @@ import { KeyPressProvider } from '../../providers/keypress.provider';
 import { validateIcon, validateText } from '../../../utilites/test-utils';
 import { MembershipPointsDisplayComponentInterface } from './membership-points-display.interface';
 import { MembershipPointsDisplayComponent } from './membership-points-display.component';
+import { MockComponent } from 'ng-mocks';
+import { IconComponent } from '../../components/icon/icon.component';
+
 
 class MockActionService { }
 class MockMatDialog { }
@@ -31,7 +33,8 @@ describe('MembershipPointsDisplayComponent', () => {
             TestBed.configureTestingModule({
                 imports: [HttpClientTestingModule],
                 declarations: [
-                    MembershipPointsDisplayComponent
+                    MembershipPointsDisplayComponent,
+                    MockComponent(IconComponent)
                 ],
                 providers: [
                     { provide: ActionService, useClass: MockActionService },
@@ -40,9 +43,6 @@ describe('MembershipPointsDisplayComponent', () => {
                     { provide: ElectronService, useClass: MockElectronService },
                     { provide: ClientContext, useValue: {} },
                     { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
-                ],
-                schemas: [
-                    NO_ERRORS_SCHEMA,
                 ]
             }).compileComponents();
             fixture = TestBed.createComponent(MembershipPointsDisplayComponent);

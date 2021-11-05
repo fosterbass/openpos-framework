@@ -1,5 +1,5 @@
 @import './sale/sale-theme';
-@import './sale/customer-details-dialog/customer-details-dialog-theme';
+@import './customer-details-dialog/customer-details-dialog-theme';
 @import './home/home-theme';
 @import './choose-options-dialog/choose-options-screen-dialog-theme';
 @import './return/return-theme';
@@ -12,6 +12,9 @@
 @import './simulated-peripheral-viewer/simulated-peripheral-theme';
 @import './customer-search-result-dialog/customer-search-result-dialog-theme';
 @import './loyalty-customer-form-dialog/loyalty-customer-form-dialog-theme';
+@import './membership/membership-details-dialog/membership-details-dialog-theme';
+@import './membership/membership-plan-details-dialog/membership-plan-details-dialog-theme';
+@import './membership/program-plan-select-dialog/program-plan-select-dialog-theme';
 
 @mixin screen-with-parts-themes($theme){
     @include sale-theme($theme);
@@ -27,4 +30,7 @@
     @include basic-product-option-part-theme($theme);
     @include swatch-product-option-part-theme($theme);
     @include loyalty-customer-form-dialog-theme($theme);
+    @include membership-details-dialog-theme($theme);
+    @include membership-plan-details-dialog-theme($theme);
+    @include program-plan-select-dialog-theme($theme);
 }

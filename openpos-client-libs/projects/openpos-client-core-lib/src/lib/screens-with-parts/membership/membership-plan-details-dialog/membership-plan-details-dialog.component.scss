@@ -1,0 +1,15 @@
+@import "../../../styles/mixins/typography";
+
+.dialog-outer{
+  display:grid;
+  grid-auto-flow: row;
+  grid-gap: 1em;
+  height: 100%;
+
+  .button-wrapper {
+    display: grid;
+    grid-template-columns: .25fr;
+    justify-content: end;
+  }
+
+}

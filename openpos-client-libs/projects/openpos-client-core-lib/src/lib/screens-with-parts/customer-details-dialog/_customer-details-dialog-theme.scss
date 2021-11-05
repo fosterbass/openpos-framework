@@ -109,20 +109,18 @@
                     font-size: $text-xs-mobile*1.5;
                 }
             }
-
-            &.mobile {
-                .mat-tab-label {
-                    font-size: $text-xs-mobile;
-                    padding-right: 3px;
-                    padding-left: 3px;
-                }
-            }
         }
 
         .tabs.mobile {
             mat-card {
                 margin: 0px;
                 padding: 0px;
+            }
+
+            .mat-tab-label {
+                font-size: $text-xs-mobile;
+                padding-right: 3px;
+                padding-left: 3px;
             }
 
             .no-items {

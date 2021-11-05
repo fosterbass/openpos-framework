@@ -13,6 +13,8 @@ import { validateDoesNotExist, validateExist, validateIcon, validateText } from 
 import { IActionItem } from '../../../core/actions/action-item.interface';
 import { By } from '@angular/platform-browser';
 import { Reward, RewardsLineItemComponentInterface } from './rewards-line-item.interface';
+import { MockComponent } from 'ng-mocks';
+import { IconComponent } from '../../components/icon/icon.component';
 
 class MockActionService { }
 class MockMatDialog { }
@@ -43,7 +45,8 @@ describe('RewardsLineItemComponent', () => {
             TestBed.configureTestingModule({
                 imports: [HttpClientTestingModule],
                 declarations: [
-                    RewardsLineItemComponent
+                    RewardsLineItemComponent,
+                    MockComponent(IconComponent)
                 ],
                 providers: [
                     { provide: ActionService, useClass: MockActionService },
@@ -248,7 +251,8 @@ describe('RewardsLineItemComponent', () => {
             TestBed.configureTestingModule({
                 imports: [HttpClientTestingModule],
                 declarations: [
-                    RewardsLineItemComponent
+                    RewardsLineItemComponent,
+                    MockComponent(IconComponent)
                 ],
                 providers: [
                     { provide: ActionService, useClass: MockActionService },
@@ -289,7 +293,8 @@ describe('RewardsLineItemComponent', () => {
             TestBed.configureTestingModule({
                 imports: [HttpClientTestingModule],
                 declarations: [
-                    RewardsLineItemComponent
+                    RewardsLineItemComponent,
+                    MockComponent(IconComponent)
                 ],
                 providers: [
                     { provide: ActionService, useClass: MockActionService },

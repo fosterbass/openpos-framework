@@ -38,7 +38,12 @@ import { TransactionDetailsComponent } from './transaction-details/transaction-d
 import { SimulatedPeripheralViewerComponent } from './simulated-peripheral-viewer/simulated-peripheral-viewer.component';
 import { CustomerSearchResultDialogComponent } from './customer-search-result-dialog/customer-search-result-dialog.component';
 import { LoyaltyCustomerFormDialogComponent } from './loyalty-customer-form-dialog/loyalty-customer-form-dialog.component';
-import { CustomerDetailsDialogComponent } from './sale/customer-details-dialog/customer-details-dialog.component';
+import { CustomerDetailsDialogComponent } from './customer-details-dialog/customer-details-dialog.component';
+import { MembershipDetailsDialogComponent } from './membership/membership-details-dialog/membership-details-dialog.component';
+import { MembershipPlanDetailsDialogComponent } from './membership/membership-plan-details-dialog/membership-plan-details-dialog.component';
+import { ProgramPlanSelectDialogComponent } from './membership/program-plan-select-dialog/program-plan-select-dialog.component';
+import {EnrollmentConfirmationDialogComponent} from './membership/enrollment-confirmation-dialog/enrollment-confirmation-dialog.component';
+
 
 const screens = [
     SelectionListScreenComponent,
@@ -76,12 +81,16 @@ const dialogs = [
     DynamicFormDialogComponent,
     ScanInputDialogComponent,
     CustomerDetailsDialogComponent,
+    MembershipDetailsDialogComponent,
+    MembershipPlanDetailsDialogComponent,
+    ProgramPlanSelectDialogComponent,
     AutoCompleteAddressDialogComponent,
     ErrorDialogComponent,
     DataTableDialogComponent,
     CustomerSearchResultDialogComponent,
     DataTableDialogComponent,
-    LoyaltyCustomerFormDialogComponent
+    LoyaltyCustomerFormDialogComponent,
+    EnrollmentConfirmationDialogComponent
 ];
 
 const parts = [

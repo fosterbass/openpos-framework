@@ -1,5 +1,4 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ActionService } from '../../../core/actions/action.service';
 import { MembershipDisplayComponent } from './membership-display.component';
 import { validateDoesNotExist, validateIcon, validateText } from '../../../utilites/test-utils';
@@ -12,6 +11,9 @@ import { TimeZoneContext } from '../../../core/client-context/time-zone-context'
 import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provider.interface';
 import { KeyPressProvider } from '../../providers/keypress.provider';
 import { Subscription } from 'rxjs';
+import { MockComponent } from 'ng-mocks';
+import { IconComponent } from '../../components/icon/icon.component';
+import { MatChip, MatChipList } from '@angular/material/chips';
 
 class MockActionService { }
 class MockMatDialog { }
@@ -31,7 +33,10 @@ describe('MembershipDisplayComponent', () => {
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
             declarations: [
-                MembershipDisplayComponent
+                MembershipDisplayComponent,
+                MockComponent(IconComponent),
+                MockComponent(MatChipList),
+                MockComponent(MatChip)
             ],
             providers: [
                 { provide: MatDialog, useClass: MockMatDialog },
@@ -40,9 +45,6 @@ describe('MembershipDisplayComponent', () => {
                 { provide: KeyPressProvider, useClass: MockKeyPressProvider },
                 { provide: ClientContext, useValue: {} },
                 { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
-            ],
-            schemas: [
-                NO_ERRORS_SCHEMA,
             ]
         }).compileComponents();
         fixture = TestBed.createComponent(MembershipDisplayComponent);

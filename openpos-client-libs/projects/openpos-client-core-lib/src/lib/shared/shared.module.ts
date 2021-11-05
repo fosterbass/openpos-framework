@@ -171,6 +171,9 @@ import { LocalizePipe } from './pipes/localize.pipe';
 import { ModalOverlayContainerDirective } from './modal-overlay-container/modal-overlay-container.directive';
 import { DisplayCustomerLookupComponent } from './screen-parts/display-customer-lookup/display-customer-lookup.component';
 import { MembershipDisplayComponent } from './screen-parts/membership-display/membership-display.component';
+import { EnrollmentLineItemComponent } from './screen-parts/enrollment-line-item/enrollment-line-item.component';
+import { PlanDetailsDisplayComponent } from './screen-parts/plan-details-display/plan-details-display.component';
+import { ProgramPlanDetailsComponent } from './screen-parts/program-plan-details/program-plan-details.component';
 import { ImageScannerComponent } from '../core/platform-plugins/barcode-scanners/image-scanner.component';
 import { RewardsLineItemComponent } from './screen-parts/rewards-line-item/rewards-line-item.component';
 import { PurchaseHistoryItemComponent } from './screen-parts/purchase-history-item/purchase-history-item.component';
@@ -184,6 +187,7 @@ import { KIOSK_MODE_PLATFORM } from '../core/platform-plugins/kiosk/kiosk-mode-p
 import { CapacitorKioskModePlatform } from '../core/platform-plugins/kiosk/capacitor-kiosk/capacitor-kiosk-platform.service';
 import { ScreenGestureComponent } from './screen-parts/screen-gesture/screen-gesture.component';
 import { DisableAutoCompleteDirective } from './directives/disable-auto-complete.directive';
+import { SafeHtmlPipe } from './pipes/safe-html.pipe';
 
 const screenParts = [
     TenderPartComponent,
@@ -205,6 +209,9 @@ const screenParts = [
     CustomerInformationComponent,
     MutableListItemWithLabelComponent,
     RewardsLineItemComponent,
+    EnrollmentLineItemComponent,
+    PlanDetailsDisplayComponent,
+    ProgramPlanDetailsComponent,
     RewardsHistoryLineItemComponent,
     PurchaseHistoryItemComponent,
     ProgressBarPartComponent,
@@ -347,6 +354,7 @@ const directives = [
 
 const pipes = [
     SafePipe,
+    SafeHtmlPipe,
     PhonePipe,
     HourMinSecPipe,
     LocalizedDatePipe,

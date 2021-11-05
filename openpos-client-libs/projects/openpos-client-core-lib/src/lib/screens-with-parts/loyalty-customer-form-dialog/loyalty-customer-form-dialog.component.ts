@@ -24,6 +24,7 @@ export class LoyaltyCustomerFormDialogComponent extends PosScreenDirective<Loyal
     firstNameField: any;
     lastNameField: IFormElement;
     loyaltyNumberField: IFormElement;
+    extensionAttributeField: IFormElement;
     phoneField: IFormElement;
     phoneFields: IFormElement[] = [];
     phoneLabelFields: IFormElement[] = [];
@@ -112,11 +113,13 @@ export class LoyaltyCustomerFormDialogComponent extends PosScreenDirective<Loyal
             'state',
             'postalCode',
             'country',
+            'extensionAttribute1',
         ];
 
         this.firstNameField = this.getFormElementById('firstName');
         this.lastNameField = this.getFormElementById('lastName');
         this.loyaltyNumberField = this.getFormElementById('loyaltyNumber');
+        this.extensionAttributeField = this.getFormElementById('extensionAttribute1');
         this.phoneField = this.getFormElementById('phone');
         this.emailField = this.getFormElementById('email');
 
