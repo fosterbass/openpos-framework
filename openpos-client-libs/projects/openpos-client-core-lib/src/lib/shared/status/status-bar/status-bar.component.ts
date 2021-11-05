@@ -33,11 +33,11 @@ export class StatusBarComponent {
     elementRef: ElementRef,
     locale: LocaleService
   ) {
-    this.systemInfo$ = statusService.getSystemInfo().pipe(
+    this.systemInfo$ = this.statusService.getSystemInfo().pipe(
       map(message => message as SystemInfo),
       tap(() => render2.addClass(elementRef.nativeElement, 'show'))
     );
-    this.statusList$ = statusService.getStatus().pipe(
+    this.statusList$ = this.statusService.getStatus().pipe(
       map(statusMap => Array.from(statusMap.values()))
     );
 
