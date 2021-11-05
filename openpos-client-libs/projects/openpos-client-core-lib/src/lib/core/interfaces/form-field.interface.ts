@@ -6,6 +6,7 @@ export interface IFormElement {
     elementType?: string;
     inputType?: string;
     label?: string;
+    additionalStyle?: string;
     id: string;
     value?: string;
     values?: string[];
