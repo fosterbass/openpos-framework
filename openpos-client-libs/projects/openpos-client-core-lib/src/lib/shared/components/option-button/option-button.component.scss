@@ -40,6 +40,13 @@
             place-items: center;
             justify-content: stretch;
             gap: 5px;
+
+            &.mobile {
+                place-items: flex-start;
+                grid-template-columns: auto;
+                grid-template-areas: "line"
+                "additional";
+            }
         }
         .option-line {
             grid-area: line;
@@ -61,6 +68,8 @@
 
         .option-additional {
             grid-area: additional;
+
+            &.mobile { padding: 0; }
         }
     }
 }
