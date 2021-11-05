@@ -188,16 +188,14 @@ public class EndpointFilterManager {
         } else {
             ObjectFinder<?> finder = new ObjectFinder<>(filterTemplate.getOutputType());
             finder.searchRecursive(argument, (parentObject, targetObject, field) -> {
-                if (parentObject == argument) {
-                    Object result = invokeFilter(filterTemplate, context, targetObject);
-                    if (result != null && result != targetObject) {
-                        try {
-                            field.setAccessible(true);
-                            field.set(parentObject, result);
-                        } catch (Exception ex) {
-                            throw new PosServerException("Failed to replace nested object. Filter method " +
-                                    filterTemplate.getFilterMethod() + " attempted to replace " + targetObject + " with " + result, ex);
-                        }
+                Object result = invokeFilter(filterTemplate, context, targetObject);
+                if (result != null && result != targetObject) {
+                    try {
+                        field.setAccessible(true);
+                        field.set(parentObject, result);
+                    } catch (Exception ex) {
+                        throw new PosServerException("Failed to replace nested object. Filter method " +
+                                filterTemplate.getFilterMethod() + " attempted to replace " + targetObject + " with " + result, ex);
                     }
                 }
             });
