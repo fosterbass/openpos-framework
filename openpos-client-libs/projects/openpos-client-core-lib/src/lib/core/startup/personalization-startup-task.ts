@@ -12,7 +12,7 @@ import {
 } from 'rxjs/operators';
 import { IStartupTask } from './startup-task.interface';
 import { PersonalizationService } from '../personalization/personalization.service';
-import { concat, defer, iif, interval, Observable, of, throwError } from 'rxjs';
+import { concat, defer, iif, interval, Observable, of, Subscription, throwError } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { StartupTaskNames } from './startup-task-names';
 import { Injectable } from '@angular/core';
@@ -238,33 +238,18 @@ export class PersonalizationStartupTask implements IStartupTask {
 }
 
 function lastOrElse<T, R>(valueProject: (value: R) => Observable<T>, e: Observable<T>): (source: Observable<R>) => Observable<T> {
-    return (source) => new Observable(observer => {
+    return (source) => source.pipe(
+        last(null, undefined),
+        switchMap(
+            (value) => {
+                let observable = e;
 
-        let path = e;
+                if (value) {
+                    observable = valueProject(value);
+                }
 
-        const sourceSubscription = source.pipe(
-            last(),
-        ).subscribe({
-            next: value => {
-                path = valueProject(value);
-            },
-            error: () => { }
-        });
-
-        const pathSubscription = path.subscribe({
-            next: iv => observer.next(iv),
-            error: ie => observer.error(ie),
-            complete: () => observer.complete()
-        });
-
-        return () => {
-            if (pathSubscription) {
-                pathSubscription.unsubscribe();
+                return observable;
             }
-
-            if (sourceSubscription) {
-                sourceSubscription.unsubscribe();
-            }
-        };
-    });
+        )
+    );
 }

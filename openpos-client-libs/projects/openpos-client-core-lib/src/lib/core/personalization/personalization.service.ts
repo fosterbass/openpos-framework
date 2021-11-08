@@ -374,11 +374,13 @@ export class PersonalizationService {
     }
 
     private setFailovers(failovers: ServerLocation[]) {
-        failovers.forEach((value, index) => {
-            this.storage.setValue(`failover${index}ServerName`, value.address);
-            this.storage.setValue(`failover${index}Port`, value.port);
-            this.storage.setValue(`failover${index}Token`, value.token);
-        });
+        if (failovers) {
+            failovers.forEach((value, index) => {
+                this.storage.setValue(`failover${index}ServerName`, value.address);
+                this.storage.setValue(`failover${index}Port`, value.port);
+                this.storage.setValue(`failover${index}Token`, value.token);
+            });
+        }
 
         this.failovers = failovers;
     }
