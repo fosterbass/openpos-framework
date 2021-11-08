@@ -28,6 +28,7 @@ public class FormField implements IFormElement, IField, Serializable {
     private FieldElementType elementType = FieldElementType.Input;
     private FieldInputType inputType = FieldInputType.AlphanumericText;
     private String label;
+    private String additionalStyle;
     private String fieldId;
     /* has to be set to a blank value by default because null values are not serialized in nu commerce and therefore aren't bound on the client side */
     private String value = "";
@@ -134,7 +135,19 @@ public class FormField implements IFormElement, IField, Serializable {
         this.setLabel(label);
         return this;
     }
-    
+
+    public String getAdditionalStyle() {
+        return additionalStyle;
+    }
+
+    public void setAdditionalStyle(String additionalStyle) {
+        this.additionalStyle = additionalStyle;
+    }
+
+    public FormField additionalStyle(String additionalStyle) {
+        this.setAdditionalStyle(additionalStyle);
+        return this;
+    }
 
     @Override
     public String getId() {

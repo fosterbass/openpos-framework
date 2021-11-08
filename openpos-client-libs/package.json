@@ -9,6 +9,7 @@
     "develop:test": "grunt withTests",
     "build": "ng build && scss-bundle -c projects/openpos-client-core-lib/scss-bundle.config.json",
     "test": "ng test",
+    "test:debug": "ng test --browsers=Chrome --source-map --watch",
     "lint": "ng lint",
     "e2e": "ng e2e",
     "postinstall": "node projects/openpos-client-core-lib/version.js"

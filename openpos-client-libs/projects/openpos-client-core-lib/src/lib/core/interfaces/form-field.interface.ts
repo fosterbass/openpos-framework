@@ -7,6 +7,7 @@ export interface IFormElement {
     elementType?: string;
     inputType?: string;
     label?: string;
+    additionalStyle?: string;
     value?: string;
     values?: string[];
     placeholder?: string;
