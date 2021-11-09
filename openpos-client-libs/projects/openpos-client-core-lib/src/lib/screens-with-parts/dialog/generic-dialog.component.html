@@ -4,7 +4,7 @@
         <mat-dialog-content>
             <img *ngIf="screen.imageUrl" [src]="screen.imageUrl | imageUrl" alt="generic image" class="dialog-image">
             <ng-container *ngIf="messages && messages.length > 0">
-                <div *ngFor="let m of messages" [innerHTML]="m | markdownFormatter"></div>
+                <div class="word-wrap" *ngFor="let m of messages" [innerHTML]="m | markdownFormatter"></div>
             </ng-container>
             <ng-container *ngIf="lines && lines.length > 0">
                 <div *ngFor="let l of lines">
