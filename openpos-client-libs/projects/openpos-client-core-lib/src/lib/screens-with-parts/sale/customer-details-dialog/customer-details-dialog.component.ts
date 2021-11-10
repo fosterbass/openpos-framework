@@ -45,6 +45,17 @@ export class CustomerDetailsDialogComponent extends PosScreenDirective<CustomerD
   getRewardsLabel(): string {
     return this.screen.rewardsLabel + ((this.screen.customer.rewards) ? ' (' + this.screen.customer.rewards.length + ')' : '');
   }
+
+  hasAnyDisplayableCustomerInformation(): boolean {
+      const customer = this.screen.customer;
+      return customer != null && (
+          !!customer.email ||
+          !!customer.phoneNumber ||
+          !!customer.loyaltyNumber ||
+          !!customer.address ||
+          !!customer.birthDate
+      );
+    }
 }
 
 class ItemsHistoryFilterController {

@@ -38,8 +38,6 @@ export class LocationProviderDefault implements ILocationProvider {
 
     getCurrentLocation(coordinateBuffer: number): Observable<ILocationData> {
         if (navigator.geolocation && CONFIGURATION.googleApiKey) {
-            let zipCode = '';
-            let countryName = '';
             const previous = { latitude: 0, longitude: 0 };
             const buffer = coordinateBuffer;
             navigator.geolocation.watchPosition((position) => {
@@ -49,28 +47,10 @@ export class LocationProviderDefault implements ILocationProvider {
                     || long > previous.longitude + buffer || long < previous.longitude - buffer) {
                     previous.latitude = lat;
                     previous.longitude = long;
-                    const latlong = lat + ',' + long;
+                    const latlong = `${lat},${long}`;
                     console.log('calling google maps geocode api');
                     this.reverseGeocode(CONFIGURATION.googleApiKey, latlong)
-                        .then((response) => {
-                            console.log(response.results[0].address_components);
-                            for (const addressComponent of response.results[0].address_components) {
-                                for (const type of addressComponent.types) {
-                                    if (type === 'postal_code') {
-                                        zipCode = addressComponent.long_name;
-                                    }
-                                    if (type === 'country') {
-                                        countryName = addressComponent.long_name;
-                                    }
-                                }
-                            }
-
-                            this.$locationData.next({
-                                type: 'default',
-                                postalCode: zipCode,
-                                country: countryName
-                            } as ILocationData);
-                        })
+                        .then((response: GoogleGeocodeResponse) => this.extractZipAndCountry(response))
                         .catch((error) => console.log(error));
                 }
             });
@@ -86,5 +66,27 @@ export class LocationProviderDefault implements ILocationProvider {
         } catch (error) {
             return Promise.resolve(error.json());
         }
+    }
+
+    private extractZipAndCountry(googleResponse: GoogleGeocodeResponse): void {
+        let zipCode = '';
+        let countryName = '';
+        console.log(googleResponse.results[0].address_components);
+        for (const addressComponent of googleResponse.results[0].address_components) {
+            for (const type of addressComponent.types) {
+                if (type === 'postal_code') {
+                    zipCode = addressComponent.long_name;
+                }
+                if (type === 'country') {
+                    countryName = addressComponent.long_name;
+                }
+            }
+        }
+
+        this.$locationData.next({
+            type: 'default',
+            postalCode: zipCode,
+            country: countryName
+        } as ILocationData);
     }
 }

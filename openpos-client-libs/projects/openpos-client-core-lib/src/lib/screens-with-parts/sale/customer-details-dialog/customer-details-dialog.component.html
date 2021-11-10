@@ -45,7 +45,7 @@
     <div *ngIf="(isMobile | async) || (!(isMobile | async) && (screen.rewardTabEnabled || screen.rewardHistoryTabEnabled || screen.itemHistoryEnabled))"
          class="tabs" [ngClass]="{'tabs': true, 'mobile': (isMobile | async)}" responsive-class>
         <mat-tab-group mat-align-tabs="start" animationDuration="0ms">
-            <mat-tab class="contactTab" [label]="screen.contactLabel" *ngIf="isMobile | async">
+            <mat-tab class="contactTab" [label]="screen.contactLabel" *ngIf="(isMobile | async) && hasAnyDisplayableCustomerInformation()">
                 <mat-card class="customer-details muted-color">
                     <app-customer-information [customer]="screen.customer"></app-customer-information>
                 </mat-card>

@@ -1,7 +1,7 @@
 <button *ngIf="!screenData.customer && screenData.mobileLoyaltyButton" mat-raised-button class="mobile-loyalty-button"
     (click)="doAction(screenData.mobileLoyaltyButton)">
     <div class="mobile-loyalty-button-content">
-        <img *ngIf="screenData.mobileLoyaltyButton.icon" [src]="screenData.mobileLoyaltyButton.icon | imageUrl"
+        <img *ngIf="screenData.mobileLoyaltyButton.icon" alt="{{screenData.mobileLoyaltyButton.icon}}" [src]="screenData.mobileLoyaltyButton.icon | imageUrl"
              class="mobile-loyalty-button-image">
         <div class="mobile-loyalty-button-wrapper">
             <span responsive-class class="mobile-loyalty-button-text">{{screenData.mobileLoyaltyButton.title}}</span>
@@ -12,7 +12,7 @@
 <button *ngIf="screenData.customer && screenData.linkedCustomerButton" mat-raised-button
     class="mobile-loyalty-customer-outer" (click)="doAction(screenData.linkedCustomerButton)">
     <div class="mobile-loyalty-customer-content">
-        <img *ngIf="screenData.customer.icon" [src]="screenData.customer.icon | imageUrl" class="mobile-loyalty-image">
+        <img *ngIf="screenData.customer.icon" alt="{{screenData.customer.icon}}" [src]="screenData.customer.icon | imageUrl" class="mobile-loyalty-image">
         <div class="mobile-loyalty-customer-name">
             <div responsive-class *ngIf="screenData.customer.name" class="mobile-loyalty-name">
                 {{screenData.customer.name}}
