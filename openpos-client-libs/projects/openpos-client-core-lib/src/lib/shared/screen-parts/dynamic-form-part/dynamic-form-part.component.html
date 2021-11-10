@@ -1,5 +1,5 @@
 <app-scan-part></app-scan-part>
-<app-form *ngIf="screenData" (submitFormEvent)="submitForm()" [form]="form">
+<app-form *ngIf="screenData" (submitFormEvent)="submitForm()" [form]="form" [validateOnFirstLoad]="screenData.validateOnFirstLoad">
     <div responsive-class class="form-part-body">
         <app-content-card>
             <mat-card-content mat-dialog-conten class="form-content">

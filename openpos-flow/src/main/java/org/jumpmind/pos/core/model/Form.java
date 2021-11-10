@@ -36,6 +36,8 @@ public class Form implements Serializable {
     
     private String iconType;
 
+    private boolean validateOnFirstLoad;
+
     public Map<String, String> toMap() {
         return getFormElements()
                 .stream()
@@ -510,6 +512,14 @@ public class Form implements Serializable {
 	
 	public String getIconType() {
         return iconType;
+    }
+
+    public void setValidateOnFirstLoad(boolean value) {
+        this.validateOnFirstLoad = value;
+    }
+
+    public boolean getValidateOnFirstLoad() {
+        return this.validateOnFirstLoad;
     }
 
 	/**

@@ -5,4 +5,5 @@ export interface IForm {
   requiresAtLeastOneValue: boolean;
   formErrors: string[];
   name: string;
+  validateOnFirstLoad?: boolean;
 }

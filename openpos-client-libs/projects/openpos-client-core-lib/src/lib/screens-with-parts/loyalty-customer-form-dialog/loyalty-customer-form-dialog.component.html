@@ -1,7 +1,7 @@
 <app-dialog-header></app-dialog-header>
 <app-instructions *ngIf="screen.instructions" [instructions]="screen.instructions" [instructionsSize]="'text-sm'"></app-instructions>
 <mat-dialog-content>
-    <app-form (submitFormEvent)="submitForm()" [form]="screen.formGroup">
+    <app-form (submitFormEvent)="submitForm()" [form]="screen.formGroup" [validateOnFirstLoad]="screen.form.validateOnFirstLoad">
         <div responsive-class class="form-part-body loyalty-customer-form form-content">
             <app-content-card>
                 <mat-card-content>

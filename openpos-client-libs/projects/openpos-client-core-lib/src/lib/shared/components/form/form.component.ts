@@ -1,9 +1,17 @@
-import { Component, Input, Output, EventEmitter, ContentChild, ContentChildren } from '@angular/core';
-import { FormGroup, AbstractControl } from '@angular/forms';
+import {
+    AfterViewInit,
+    Component,
+    ContentChild,
+    ContentChildren,
+    EventEmitter,
+    Input,
+    Output,
+    QueryList
+} from '@angular/core';
+import { AbstractControl, FormGroup } from '@angular/forms';
 import { ShowErrorsComponent } from '../show-errors/show-errors.component';
 import { DynamicFormFieldComponent } from '../dynamic-form-field/dynamic-form-field.component';
-
-import type { QueryList } from '@angular/core';
+import { FormBuilder } from '../../../core/services/form-builder.service';
 
 /**
  * This is a component that wraps the form element so we can handle forms
@@ -14,19 +22,24 @@ import type { QueryList } from '@angular/core';
     templateUrl: './form.component.html',
     styleUrls: ['./form.component.scss']
 })
-export class FormComponent {
-
+export class FormComponent implements AfterViewInit {
     @ContentChildren(DynamicFormFieldComponent, {descendants: true}) children: QueryList<DynamicFormFieldComponent>;
     @ContentChild('formErrors') formErrors: ShowErrorsComponent;
 
     @Input()
     form: FormGroup;
 
+    @Input()
+    validateOnFirstLoad: boolean;
+
     /**
      * Submit event only emits if the form is valid
      */
     @Output()
     submitFormEvent = new EventEmitter();
+
+    constructor(private formBuilder: FormBuilder) {
+    }
 
     submitForm() {
         const shouldSubmit = this.form.valid && !this.form.pending;
@@ -60,5 +73,19 @@ export class FormComponent {
         }
 
         return shouldSubmit;
+    }
+
+    ngAfterViewInit(): void {
+        if (this.validateOnFirstLoad) {
+            // A setTimeout is required here. Forcing Angular to detect changes won't work here because
+            // we have to wait for the current change detection cycle to finish so that all values
+            // are set before validating the form.
+            //
+            // Without this, we get the dreaded Angular error: ExpressionChangedAfterItHasBeenCheckedError
+            setTimeout(() => {
+                this.formBuilder.markAllAsDirty(this.form);
+                this.form.updateValueAndValidity();
+            });
+        }
     }
 }
