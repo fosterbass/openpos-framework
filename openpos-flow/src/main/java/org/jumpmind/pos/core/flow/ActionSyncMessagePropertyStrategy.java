@@ -2,22 +2,22 @@ package org.jumpmind.pos.core.flow;
 
 import org.jumpmind.pos.core.screeninterceptor.IMessagePropertyStrategy;
 import org.jumpmind.pos.core.ui.ActionItem;
-import org.jumpmind.pos.core.ui.UIMessage;
+import org.jumpmind.pos.util.model.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
 @Component
-public class ActionSyncMessagePropertyStrategy implements IMessagePropertyStrategy<UIMessage> {
+public class ActionSyncMessagePropertyStrategy<T> implements IMessagePropertyStrategy<Message> {
 
     @Autowired
     StateManagerContainer stateManagerContainer;
 
-    public static final String GLOBAL_SYNC_ID = "Global";
+    public final static String GLOBAL_SYNC_ID = "Global";
 
     @Override
-    public Object doStrategy(String deviceId, Object property, Class<?> clazz, UIMessage message, Map<String, Object> messageContext) {
+    public Object doStrategy(String deviceId, Object property, Class<?> clazz, Message message, Map<String, Object> messageContext) {
         if (property instanceof ActionItem) {
             ActionItem actionItem = (ActionItem) property;
             String syncId = getSyncId(actionItem);
@@ -26,6 +26,7 @@ public class ActionSyncMessagePropertyStrategy implements IMessagePropertyStrate
                         append(ActionSyncId.SYNC_ID_DIVIDER).append(syncId).toString());
             }
         }
+
         return property;
     }
 
@@ -40,5 +41,4 @@ public class ActionSyncMessagePropertyStrategy implements IMessagePropertyStrate
         }
         return null;
     }
-
 }

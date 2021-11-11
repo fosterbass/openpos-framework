@@ -38,9 +38,9 @@ export class ReturnComponent extends PosScreenDirective<any> {
         super(injector);
         this.isMobile = media.observe(new Map([
             [MediaBreakpoints.MOBILE_PORTRAIT, true],
-            [MediaBreakpoints.MOBILE_LANDSCAPE, false],
+            [MediaBreakpoints.MOBILE_LANDSCAPE, true],
             [MediaBreakpoints.TABLET_PORTRAIT, true],
-            [MediaBreakpoints.TABLET_LANDSCAPE, false],
+            [MediaBreakpoints.TABLET_LANDSCAPE, true],
             [MediaBreakpoints.DESKTOP_PORTRAIT, false],
             [MediaBreakpoints.DESKTOP_LANDSCAPE, false]
         ]));

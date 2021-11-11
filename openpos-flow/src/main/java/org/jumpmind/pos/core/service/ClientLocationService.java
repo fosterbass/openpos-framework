@@ -1,5 +1,6 @@
 package org.jumpmind.pos.core.service;
 
+import org.jumpmind.pos.util.model.LocationData;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
