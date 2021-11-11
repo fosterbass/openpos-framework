@@ -224,6 +224,13 @@
                 }
             }
         }
+
+        .right-side-mobile {
+            grid-template-areas:
+                "price"
+                "promo"
+                "options";
+        }
     }
 }
 

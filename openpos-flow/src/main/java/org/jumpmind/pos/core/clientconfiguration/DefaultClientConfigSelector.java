@@ -3,12 +3,10 @@ package org.jumpmind.pos.core.clientconfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
-import java.lang.reflect.Array;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Component
 @ConfigurationProperties(prefix = "openpos.client-configuration")
@@ -20,6 +18,7 @@ public class DefaultClientConfigSelector implements IClientConfigSelector {
     private List<String> propertiesForTags = new ArrayList<>();
     private List<ClientConfigurationSet> clientConfigSets = new ArrayList<>();
     private Map<String, Map<String, String>> defaultConfigs = new HashMap<>();
+    String defaultTag = "default";
 
 
     @Override
@@ -45,9 +44,9 @@ public class DefaultClientConfigSelector implements IClientConfigSelector {
                 logger.info("Could not find personalization parameter {}", s);
             }
         });
-
+        sortDefaultFirst(tagsForSpecificity);
         // Start with default
-        tagGroups.add(Arrays.asList("default"));
+        tagGroups.add(Arrays.asList(defaultTag));
 
         List<List<String>> uniquePermuations = uniqueTagGroupCombinations(tagsForSpecificity);
         //sort so that they are in order of least specificity to most specificity ("a" comes before "a, b, c")
@@ -56,7 +55,7 @@ public class DefaultClientConfigSelector implements IClientConfigSelector {
 
         Map<List<String>, Map<String, Map<String,String>>> clientConfigsByTagsAndName = new HashMap<>();
 
-        clientConfigsByTagsAndName.put(Arrays.asList("default"), defaultConfigs);
+        clientConfigsByTagsAndName.put(Arrays.asList(defaultTag), defaultConfigs);
 
         clientConfigSets.forEach(clientConfigurationSet -> {
             clientConfigurationSet.getTags().sort(String::compareTo);
@@ -70,6 +69,19 @@ public class DefaultClientConfigSelector implements IClientConfigSelector {
         });
 
         return configurations;
+    }
+
+    private void sortDefaultFirst(List<String> tagsForSpecificity) {
+        tagsForSpecificity.sort((o1, o2) -> {
+            if (o1 == null && o2 == null) {
+                return 0;
+            } else if ((o1 == null || o1.equals(defaultTag)) && (o2 != null && !o2.equals(defaultTag))) {
+                return -1;
+            } else if ((o1 != null && !o1.equals(defaultTag)) && (o2 == null || o2.equals(defaultTag))) {
+                return 1;
+            }
+            return 0;
+        });
     }
 
     public static List<List<String>> uniqueTagGroupCombinations(List<String> tags) {

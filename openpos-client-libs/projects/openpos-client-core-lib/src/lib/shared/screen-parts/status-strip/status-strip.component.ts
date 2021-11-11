@@ -21,7 +21,7 @@ export class StatusStripComponent extends ScreenPartComponent<StatusStripInterfa
     date = interval(1000).pipe(map(() => Date.now()));
     timer = interval(1000).pipe(map(() => {
         if (this.screenData.timestampBegin) {
-            const timestampBegin = this.screenData.timestampBegin;
+            const timestampBegin = new Date(this.screenData.timestampBegin).getTime();
             return ((new Date()).getTime() - timestampBegin) / 1000;
         }
     }));

@@ -29,6 +29,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
@@ -86,7 +87,7 @@ public class EndpointInvoker implements InvocationHandler {
             build();
 
     private static ExecutorService instrumentationExecutor = Executors.newSingleThreadExecutor(factory);
-    protected HashMap<String, Boolean> endpointEnabledCache = new HashMap<>();
+    protected Map<String, Boolean> endpointEnabledCache = new ConcurrentHashMap<>();
 
     @EventListener
     public void onApplicationEvent(ContextRefreshedEvent event) {
@@ -435,6 +436,7 @@ public class EndpointInvoker implements InvocationHandler {
             }
             endpointEnabledCache.put(path, endpointSpecificConfig.isPresent());
         }
+
         return endpointEnabledCache.get(path);
     }
 

@@ -1,7 +1,7 @@
 <app-bacon-strip>
 <section class="item-details">
     <mat-card responsive-class class="padding-none page-gutter">
-        <div responsive-class class="item-card padding-none page-gutter page-element margin-bottom">
+        <div responsive-class class="padding-none page-gutter page-element margin-bottom" [ngClass]="{'item-card': !(isMobile | async)}">
             <h1 class="name" responsive-class>{{screen.itemName}}</h1>
             <app-carousel class="carousel" [imgUrls]="screen.imageUrls" [altImageUrl]="screen.alternateImageUrl" altImageText="Image Not Found">
             </app-carousel>
@@ -82,7 +82,7 @@
             </div>
         </mat-card>
 
-        <mat-card responsive-class *ngIf="screen.promotions" class="promotions page-gutter padding-none">
+        <mat-card responsive-class *ngIf="screen.promotions" class="page-gutter padding-none" [ngClass]="{'promotions': !(isMobile | async)}">
             <div responsive-class class="page-gutter page-element margin-bottom">
                 <h3 responsive-class class="icon-heading">
                     {{screen.promotions && screen.promotions.length > 0 ? screen.itemPromotionsTitle : screen.itemNoPromotionsTitle}}
