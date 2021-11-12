@@ -110,7 +110,7 @@
 
             &.has-single-item {
                 grid-template-areas: "title tender-list";
-                grid-template-columns: 1fr 1fr;
+                grid-template-columns: auto 1fr;
                 align-items: center;
 
                 .tender-list {

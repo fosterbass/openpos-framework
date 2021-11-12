@@ -3,11 +3,12 @@ import { ISellItem } from '../../../core/interfaces/sell-item.interface';
 import { SessionService } from '../../../core/services/session.service';
 import { IActionItem } from '../../../core/actions/action-item.interface';
 import { ActionService } from '../../../core/actions/action.service';
-import { Subscription } from 'rxjs';
+import {Observable, Subscription } from 'rxjs';
 import { CONFIGURATION } from '../../../configuration/configuration';
 import { KeyPressProvider } from '../../providers/keypress.provider';
 import { KeyboardClassKey } from '../../../keyboard/enums/keyboard-class-key.enum';
 import { KebabLabelButtonComponent } from '../kebab-label-button/kebab-label-button.component';
+import {MediaBreakpoints, OpenposMediaService} from '../../../core/media/openpos-media.service';
 
 @Component({
   selector: 'app-item-card',
@@ -49,8 +50,19 @@ export class ItemCardComponent implements OnDestroy {
   @ViewChild('kebab') kebab: KebabLabelButtonComponent;
   buttonSubscription: Subscription;
 
-  constructor(public actionService: ActionService, public session: SessionService, protected keyPresses: KeyPressProvider) {
+  isMobile$: Observable<boolean>;
+
+  constructor(public actionService: ActionService, public session: SessionService,
+              protected keyPresses: KeyPressProvider, private mediaService: OpenposMediaService) {
     this.createSubscription();
+    this.isMobile$ = mediaService.observe(new Map([
+      [MediaBreakpoints.MOBILE_PORTRAIT, true],
+      [MediaBreakpoints.MOBILE_LANDSCAPE, true],
+      [MediaBreakpoints.TABLET_PORTRAIT, true],
+      [MediaBreakpoints.TABLET_LANDSCAPE, true],
+      [MediaBreakpoints.DESKTOP_PORTRAIT, false],
+      [MediaBreakpoints.DESKTOP_LANDSCAPE, false]
+    ]));
   }
 
   public createSubscription() {

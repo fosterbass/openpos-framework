@@ -21,6 +21,10 @@
       }
     }
 
+    .option-item.mobile .mat-button-wrapper {
+      grid-template-columns: auto 1fr auto;
+    }
+
     .mat-badge-large.mat-badge-overlap.mat-badge-after {
       .mat-badge-content {
         right: -30px;
