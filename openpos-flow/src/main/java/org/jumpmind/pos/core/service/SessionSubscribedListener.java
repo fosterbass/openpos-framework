@@ -1,6 +1,5 @@
 package org.jumpmind.pos.core.service;
 
-import org.jumpmind.pos.core.flow.ScopeType;
 import org.jumpmind.pos.devices.model.DeviceModel;
 import org.jumpmind.pos.util.Version;
 import org.jumpmind.pos.util.event.DeviceConnectedEvent;
@@ -68,7 +67,7 @@ public class SessionSubscribedListener implements ApplicationListener<SessionSub
         Message<?> msg = event.getMessage();
         String sessionId = (String) msg.getHeaders().get("simpSessionId");
         Map<String, Object> queryParams = sessionAuthTracker.getQueryParams(sessionId);
-        Map<String, String> clientContext = sessionAuthTracker.getClientContext(sessionId);
+        Map<String, String> deviceVariables = sessionAuthTracker.getDeviceVariables(sessionId);
         String topicName = (String) msg.getHeaders().get("simpDestination");
         String compatibilityVersion = this.getHeader(msg, MessageUtils.COMPATIBILITY_VERSION_HEADER);
         String deviceId = topicName.substring(topicName.indexOf("/device/") + "/device/".length());
@@ -128,7 +127,7 @@ public class SessionSubscribedListener implements ApplicationListener<SessionSub
 
             stateManager.setSessionAuthenticated(sessionId, sessionAuthTracker.isSessionAuthenticated(sessionId));
             stateManager.setSessionCompatible(sessionId, sessionAuthTracker.isSessionCompatible(sessionId));
-            stateManager.setClientContext(clientContext);
+            stateManager.setDeviceVariables(deviceVariables);
             stateManager.getApplicationState().getScope().setDeviceScope("device", sessionAuthTracker.getDeviceModel(sessionId));
             stateManager.getApplicationState().getScope().setDeviceScope("powerStatus", sessionAuthTracker.getPowerStatus(sessionId));
 

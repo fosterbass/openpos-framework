@@ -24,6 +24,8 @@ public class DevicePersonalizationModel extends AbstractModel {
     private String deviceId;
     @ColumnDef
     private String appId;
+    @ColumnDef
+    private String businessUnitId;
 
     private List<DeviceParamModel> deviceParamModels;
 }

@@ -13,7 +13,7 @@ import org.jumpmind.pos.devices.service.model.PersonalizationParameters;
 import org.jumpmind.pos.util.BoxLogging;
 import org.jumpmind.pos.util.DefaultObjectMapper;
 import org.jumpmind.pos.util.Version;
-import org.jumpmind.pos.util.Versions;
+import org.jumpmind.pos.util.clientcontext.ClientContext;
 import org.jumpmind.pos.util.clientcontext.ClientContextConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +41,7 @@ public class SessionConnectListener implements ApplicationListener<SessionConnec
 
     Map<String, String> sessionAppIdMap = Collections.synchronizedMap(new HashMap<>());
 
-    Map<String, Map<String, String>> clientContext = Collections.synchronizedMap(new HashMap<>());
+    Map<String, Map<String, String>> deviceVariables = Collections.synchronizedMap(new HashMap<>());
 
     Map<String, DeviceModel> deviceModelMap = Collections.synchronizedMap(new HashMap<>());
 
@@ -102,10 +102,10 @@ public class SessionConnectListener implements ApplicationListener<SessionConnec
         sessionCompatible.put(sessionId, serverCompatibilityVersion == null || serverCompatibilityVersion.equals(compatibilityVersion));
 
         setPersonalizationResults(sessionId, deviceModel);
-        setClientContext(sessionId, event);
+        setDeviceVariables(sessionId, event);
     }
 
-    private void setClientContext(String sessionId, SessionConnectEvent event) {
+    private void setDeviceVariables(String sessionId, SessionConnectEvent event) {
         if(clientContextConfig != null && clientContextConfig.getParameters() != null) {
             Map<String, String> context = new HashMap<>();
             for(String param: clientContextConfig.getParameters()) {
@@ -116,7 +116,7 @@ public class SessionConnectListener implements ApplicationListener<SessionConnec
                     context.put(param, "?");
                 }
             }
-            clientContext.put(sessionId, context);
+            deviceVariables.put(sessionId, context);
         }
     }
 
@@ -130,6 +130,9 @@ public class SessionConnectListener implements ApplicationListener<SessionConnec
                 if(paramModel != null){
                     personalizationResults.put(prop, paramModel.getParamValue());
                 }
+            }
+            if (! personalizationResults.containsKey(ClientContext.BUSINESS_UNIT_ID)) {
+                personalizationResults.put(ClientContext.BUSINESS_UNIT_ID, deviceModel.getBusinessUnitId());
             }
             sessionPersonalizationResults.put(sessionId, personalizationResults);
         }
@@ -173,7 +176,7 @@ public class SessionConnectListener implements ApplicationListener<SessionConnec
         this.sessionCompatible.remove(sessionId);
     }
 
-    public Map<String, String> getClientContext(String sessionId) { return clientContext.get(sessionId); }
+    public Map<String, String> getDeviceVariables(String sessionId) { return deviceVariables.get(sessionId); }
 
     public DeviceModel getDeviceModel(String sessionId) { return deviceModelMap.get(sessionId); }
 

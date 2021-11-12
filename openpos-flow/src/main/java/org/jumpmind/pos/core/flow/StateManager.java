@@ -58,9 +58,9 @@ import org.jumpmind.pos.server.model.Action;
 import org.jumpmind.pos.server.service.IMessageService;
 import org.jumpmind.pos.util.ClassUtils;
 import org.jumpmind.pos.util.Versions;
+import org.jumpmind.pos.util.clientcontext.ClientContext;
 import org.jumpmind.pos.util.event.Event;
 import org.jumpmind.pos.util.event.EventPublisher;
-import org.jumpmind.pos.util.model.Message;
 import org.jumpmind.pos.util.model.PrintMessage;
 import org.jumpmind.pos.util.startup.DeviceStartupTaskConfig;
 import org.slf4j.Logger;
@@ -138,6 +138,9 @@ public class StateManager implements IStateManager {
     @Autowired
     EventPublisher eventPublisher;
 
+    @Autowired
+    ClientContext clientContext;
+
     ApplicationState applicationState = new ApplicationState();
 
     List<TransitionStepConfig> transitionStepConfigs;
@@ -152,7 +155,7 @@ public class StateManager implements IStateManager {
 
     Map<String, Boolean> sessionCompatible = new HashMap<>();
 
-    Map<String, String> clientContext = new HashMap<>();
+    Map<String, String> deviceVariables = new HashMap<>();
 
     IErrorHandler errorHandler;
 
@@ -230,6 +233,7 @@ public class StateManager implements IStateManager {
             public void run() {
                 try {
                     stateManagerContainer.setCurrentStateManager(StateManager.this);
+                    initClientContext();  // Init ClientContext threadLocal properties for this thread
                     transitionTo(new Action(startupAction), initialState);
                     runningFlag.set(true);
                     actionLoop();
@@ -352,13 +356,13 @@ public class StateManager implements IStateManager {
     }
 
     @Override
-    public void setClientContext(Map<String, String> clientContext) {
-        this.clientContext = clientContext;
+    public void setDeviceVariables(Map<String, String> deviceVariables) {
+        this.deviceVariables = deviceVariables;
     }
 
     @Override
-    public Map<String, String> getClientContext() {
-        return this.clientContext;
+    public Map<String, String> getDeviceVariables() {
+        return this.deviceVariables;
     }
 
     @Override
@@ -1222,6 +1226,14 @@ public class StateManager implements IStateManager {
     public void registerPersonalizationProperties(Map<String, String> personalizationProperties) {
         log.info("Registering personalization properties " + personalizationProperties.toString());
         applicationState.getScope().setScopeValue(ScopeType.Device, "personalizationProperties", personalizationProperties);
+    }
+
+    protected void initClientContext() {
+        ScopeValue scopeValue = getApplicationState().getScope().getScopeValue(ScopeType.Device, "personalizationProperties");
+        if (scopeValue != null && scopeValue.getValue() != null) {
+            Map<String, String> personalizationProperties = scopeValue.getValue();
+            personalizationProperties.entrySet().forEach(entry -> clientContext.put(entry.getKey(), entry.getValue()));
+        }
     }
 
     public Injector getInjector() {

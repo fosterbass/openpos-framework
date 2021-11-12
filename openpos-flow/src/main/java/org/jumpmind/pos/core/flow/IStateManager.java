@@ -73,8 +73,8 @@ public interface IStateManager {
     public boolean isAtRest();
     public void setErrorHandler(IErrorHandler errorHandler);
     public void sendConfigurationChangedMessage();
-    public void setClientContext(Map<String,String> context);
-    public Map<String, String> getClientContext();
+    public void setDeviceVariables(Map<String,String> deviceVariables);
+    public Map<String, String> getDeviceVariables();
     public void sendStartupCompleteMessage();
     public void sendPrintMessage(PrintMessage message);
     public int getActionQueueSize();

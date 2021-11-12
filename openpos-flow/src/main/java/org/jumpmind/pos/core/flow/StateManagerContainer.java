@@ -174,10 +174,10 @@ public class StateManagerContainer implements IStateManagerContainer, Applicatio
 
     public void setCurrentStateManager(IStateManager stateManager) {
         currentStateManager.set(stateManager);
-        if (stateManager != null && stateManager.getClientContext() != null) {
+        if (stateManager != null && stateManager.getDeviceVariables() != null) {
             setupLogging(stateManager.getDeviceId());
-            for (String property : stateManager.getClientContext().keySet()) {
-                clientContext.put(property, stateManager.getClientContext().get(property));
+            for (String property : stateManager.getDeviceVariables().keySet()) {
+                clientContext.put(property, stateManager.getDeviceVariables().get(property));
             }
 
             clientContext.put("deviceId", stateManager.getDeviceId());

@@ -3,6 +3,7 @@ package org.jumpmind.pos.devices;
 import lombok.extern.slf4j.Slf4j;
 import org.jumpmind.pos.devices.model.DeviceModel;
 import org.jumpmind.pos.devices.model.DevicesRepository;
+import org.jumpmind.pos.devices.service.strategy.IDeviceBusinessUnitIdStrategy;
 import org.jumpmind.pos.persist.ITagProvider;
 import org.jumpmind.pos.util.clientcontext.ClientContext;
 import org.jumpmind.pos.util.event.DeviceConnectedEvent;
@@ -16,6 +17,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.StreamSupport;
 
@@ -28,8 +30,8 @@ public class DeviceUpdater implements ApplicationListener<DeviceConnectedEvent> 
     @Autowired
     DevicesRepository devicesRepository;
 
-    @Value("${openpos.businessunitId:undefined}")
-    String businessUnitId;
+    @Resource(name="${openpos.personalization.deviceBusinessUnitIdStrategy:GetBusinessUnitIdFromConfigStrategy}")
+    protected IDeviceBusinessUnitIdStrategy deviceBusinessUnitIdStrategy;
 
     @Value("${openpos.installationId:'not set'}")
     String installationId;
@@ -48,13 +50,13 @@ public class DeviceUpdater implements ApplicationListener<DeviceConnectedEvent> 
 
     synchronized public void updateDevice(DeviceModel deviceModel) {
         deviceModel.setTimezoneOffset(clientContext.get("timezoneOffset"));
-        deviceModel.setBusinessUnitId(businessUnitId);
         deviceModel.setInstallationId(installationId);
         // TODO check properties also before using default
         deviceModel.setLocale(Locale.getDefault().toString());
         deviceModel.setLastUpdateTime(new Date());
         deviceModel.setLastUpdateBy("personalization");
         deviceModel.updateTags((AbstractEnvironment) env);
+        deviceModel.setBusinessUnitId(deviceBusinessUnitIdStrategy.getBusinessUnitId(deviceModel));
 
         if (this.tagProviders != null && tagProviders.size() > 0) {
             MutablePropertySources propSrcs = ((AbstractEnvironment) env).getPropertySources();
@@ -67,7 +69,7 @@ public class DeviceUpdater implements ApplicationListener<DeviceConnectedEvent> 
                         for (ITagProvider tagProvider :
                                 this.tagProviders) {
                             String name = env.getProperty(propName);
-                            String value = tagProvider.getTagValue(deviceModel.getDeviceId(), deviceModel.getAppId(), name, businessUnitId);
+                            String value = tagProvider.getTagValue(deviceModel.getDeviceId(), deviceModel.getAppId(), name, deviceModel.getBusinessUnitId());
                             if (isNotBlank(value)) {
                                 deviceModel.setTagValue(name, value);
                             }
