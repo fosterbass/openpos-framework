@@ -66,6 +66,7 @@ import { WedgeScannerPlugin } from './platform-plugins/barcode-scanners/wedge-sc
 import { ServerScannerPlugin } from './platform-plugins/barcode-scanners/server-scanner/server-scanner.service';
 import { ScanditScannerCordovaPlugin } from './platform-plugins/barcode-scanners/scandit-scanner-cordova/scandit-scanner-cordova.plugin';
 import { CapacitorStorageService } from './storage/capacitor/capacitor-storage.service';
+import { CordovaStorageService } from './storage/cordova/cordova-storage.service';
 import { Storage } from './storage/storage.service';
 import { STORAGE_CONTAINERS } from './storage/storage-container';
 import { CapacitorPrinterPlugin } from './platform-plugins/printers/capacitor-printer.plugin';
@@ -168,6 +169,7 @@ registerLocaleData(locale_frCA, 'fr-CA');
         { provide: PLATFORMS, useExisting: CapacitorIosPlatform, multi: true },
         { provide: PLATFORMS, useExisting: CapacitorAndroidPlatform, multi: true },
         { provide: STORAGE_CONTAINERS, useClass: CapacitorStorageService, multi: true },
+        { provide: STORAGE_CONTAINERS, useClass: CordovaStorageService, multi: true },
         CapacitorPrinterPlugin,
         { provide: PRINTERS, useExisting: CapacitorPrinterPlugin, multi: true },
         LocationService,

@@ -27,6 +27,13 @@ export class Storage {
         this.container$ = of(container);
     }
 
+    isAvailable(): Observable<boolean> {
+        return this.container$.pipe(
+            take(1),
+            switchMap(container => container.isAvailable())
+        );
+    }
+
     getValue(key: string): Observable<string | undefined> {
         return this.container$.pipe(
             take(1),
@@ -45,6 +52,13 @@ export class Storage {
         return this.container$.pipe(
             take(1),
             switchMap(container => container.remove(key))
+        );
+    }
+
+    clear(): Observable<void> {
+        return this.container$.pipe(
+            take(1),
+            switchMap(container => container.clear())
         );
     }
 }

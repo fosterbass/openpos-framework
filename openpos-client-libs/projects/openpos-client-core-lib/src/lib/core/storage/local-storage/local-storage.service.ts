@@ -10,6 +10,10 @@ export class LocalStorageService implements StorageContainer {
         return 'localStorage';
     }
 
+    isAvailable(): Observable<boolean> {
+        return of(true);
+    }
+
     isSupported(): boolean {
         return true;
     }
@@ -31,6 +35,11 @@ export class LocalStorageService implements StorageContainer {
 
     remove(key: string): Observable<void> {
         localStorage.removeItem(key);
+        return EMPTY;
+    }
+
+    clear(): Observable<void> {
+        localStorage.clear();
         return EMPTY;
     }
 }

@@ -1,7 +1,7 @@
 import { Injectable, Inject, Optional } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { PersonalizationConfigResponse } from './personalization-config-response.interface';
-import { BehaviorSubject, Observable, throwError, zip, merge } from 'rxjs';
+import { BehaviorSubject, Observable, throwError, zip, merge, of, concat } from 'rxjs';
 import { catchError, filter, map, take, tap, timeout } from 'rxjs/operators';
 import { PersonalizationRequest } from './personalization-request';
 import { PersonalizationResponse } from './personalization-response.interface';
@@ -59,15 +59,18 @@ export class PersonalizationService {
         ).subscribe(results => {
             console.log('Storage results', results);
             if (results[0]) {
-                this.deviceToken$.next(results[0]);
+                const deviceToken = results[0] !== 'null' ? results[0] : null;
+                this.deviceToken$.next(deviceToken);
             }
 
             if (results[1]) {
-                this.serverName$.next(results[1]);
+                const serverName = results[1] !== 'null' ? results[1] : null;
+                this.serverName$.next(serverName);
             }
 
             if (results[2]) {
-                this.serverPort$.next(results[2]);
+                const serverPort = results[2] !== 'null' ? results[2] : null;
+                this.serverPort$.next(serverPort);
             }
 
             if (results[3]) {
@@ -254,14 +257,16 @@ export class PersonalizationService {
     }
 
     public dePersonalize() {
-        zip(
-            this.storage.remove('serverName'),
-            this.storage.remove('serverPort'),
-            this.storage.remove('deviceToken'),
-            this.storage.remove('theme'),
-            this.storage.remove('sslEnabled'),
-            this.storage.remove('skipAutoPersonalization')
-        ).subscribe();
+        this.remove(this.deviceId$, null);
+        this.remove(this.appId$, null);
+        this.remove(this.serverName$, this.storage.remove('serverName'));
+        this.remove(this.serverPort$, this.storage.remove('serverPort'));
+        this.remove(this.deviceToken$, this.storage.remove('deviceToken'));
+        this.remove(null, this.storage.remove('theme'));
+        this.remove(this.sslEnabled$, this.storage.remove('sslEnabled'));
+        this.remove(this.skipAutoPersonalization$, this.storage.remove('skipAutoPersonalization'));
+        this.remove(this.isManagedServer$, this.storage.remove(PersonalizationService.OPENPOS_MANAGED_SERVER_PROPERTY));
+        this.remove(this.personalizationProperties$, null);
     }
 
 
@@ -402,5 +407,28 @@ export class PersonalizationService {
 
     public refreshApp() {
         window.location.reload();
+    }
+
+    public clearStorage(): Observable<void> {
+        return concat(
+            this.storage.clear(),
+            of(this.remove(this.deviceId$, null)),
+            of(this.remove(this.serverName$, null)),
+            of(this.remove(this.serverPort$, null)),
+            of(this.remove(this.deviceToken$, null)),
+            of(this.remove(this.sslEnabled$, null)),
+            of(this.remove(this.isManagedServer$, null)),
+            of(this.remove(this.skipAutoPersonalization$, null)),
+            of(this.remove(this.personalizationProperties$, null))
+        );
+    }
+
+    private remove(fieldSubject: BehaviorSubject<any>, storageField: Observable<void>) {
+        if (fieldSubject) {
+            fieldSubject.next(null);
+        }
+        if (storageField) {
+            storageField.subscribe();
+        }
     }
 }

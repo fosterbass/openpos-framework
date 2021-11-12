@@ -59,7 +59,7 @@ public class PersonalizationEndpointTest {
 
     @Test
     public void personalizationRequestForDeviceWithSameDeviceIdNewAppIdShouldFail() throws Exception {
-        String deviceId = "00145-001";
+        String deviceId = "00145-100";
         personalizeNewDeviceToGenerateAuth(deviceId);
         mvc.perform(
                 new MockPostRequestBuilder("/devices/personalize")
@@ -96,20 +96,24 @@ public class PersonalizationEndpointTest {
     }
 
     @Test
-    public void personalizationRequestForExistingDeviceShouldFailIfAuthTokenIsNotProvided() throws Exception {
-        String deviceId = "0145-003";
-        personalizeNewDeviceToGenerateAuth(deviceId);
-        mvc.perform(
-                new MockPostRequestBuilder("/devices/personalize")
-                        .content(
-                                PersonalizationRequest.builder()
-                                        .deviceId(deviceId)
-                                        .appId("pos")
-                                        .build()
-                        )
-                        .build()
-        )
-                .andExpect(status().is5xxServerError());
+    public void personalizationRequestForExistingDeviceWithSameAppIdShouldSucceedIfAuthTokenIsNull() throws Exception {
+        String result = mvc.perform(
+                        new MockPostRequestBuilder("/devices/personalize")
+                                .content(
+                                        PersonalizationRequest.builder()
+                                                .deviceId("11111-111")
+                                                .appId("server")
+                                                .build()
+                                )
+                                .build()
+                )
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        PersonalizationResponse response = mapper.readValue(result, PersonalizationResponse.class);
+        assertNotNull(response.getDeviceModel());
+        assertNotNull(response.getAuthToken());
+
     }
 
     @Test

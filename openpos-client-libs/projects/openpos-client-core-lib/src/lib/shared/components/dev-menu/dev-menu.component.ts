@@ -508,8 +508,11 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
     }
 
     public onDevClearLocalStorage() {
-        this.personalization.dePersonalize();
-        this.personalization.refreshApp();
+        this.personalization.clearStorage().subscribe({
+            next: () => this.personalization.refreshApp(),
+            error: (error) => console.error(error),
+            complete: () => this.personalization.refreshApp()
+        });
     }
 
     public onOpenSimulator() {

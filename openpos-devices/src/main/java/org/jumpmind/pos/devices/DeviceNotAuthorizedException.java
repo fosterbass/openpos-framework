@@ -8,4 +8,8 @@ public class DeviceNotAuthorizedException extends DevicesException {
     public DeviceNotAuthorizedException() {
         super("Device not authorized");
     }
+
+    public DeviceNotAuthorizedException(String message) {
+        super(message);
+    }
 }
