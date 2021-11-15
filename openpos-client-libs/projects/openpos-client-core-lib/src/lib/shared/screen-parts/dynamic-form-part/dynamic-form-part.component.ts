@@ -1,9 +1,12 @@
+import type { QueryList } from '@angular/core';
 import {
-    AfterViewInit, ChangeDetectorRef,
+    AfterViewInit,
+    ChangeDetectorRef,
     Component,
     EventEmitter,
     Injector,
-    Input, OnInit,
+    Input,
+    OnInit,
     Output,
     ViewChild,
     ViewChildren
@@ -18,8 +21,6 @@ import { IFormElement } from '../../../core/interfaces/form-field.interface';
 import { IActionItem } from '../../../core/actions/action-item.interface';
 import { IDynamicFormPartEventArg } from './dynamic-form-part-event-arg.interface';
 import { takeUntil, tap } from 'rxjs/operators';
-
-import type { QueryList } from '@angular/core';
 
 @Component({
     selector: 'app-dynamic-form-part',
@@ -86,7 +87,6 @@ export class DynamicFormPartComponent extends ScreenPartComponent<IForm> impleme
             });
         });
 
-
         if (this.screenData && this.screenData.formElements) {
             this.screenData.formElements.forEach(element => {
                 if (element.elementType === 'Button') {
@@ -116,7 +116,6 @@ export class DynamicFormPartComponent extends ScreenPartComponent<IForm> impleme
                 setTimeout(() => elementToFocus.focus());
             }
         });
-
     }
 
     @Input()
@@ -137,7 +136,7 @@ export class DynamicFormPartComponent extends ScreenPartComponent<IForm> impleme
                         // Show errors for each of the fields where necessary
                         Object.keys(this.form.controls).forEach(f => {
                             const control = this.form.get(f);
-                            control.markAsTouched({ onlySelf: true });
+                            control.markAsTouched({onlySelf: true});
                         });
                         throw Error('form is invalid');
                     }

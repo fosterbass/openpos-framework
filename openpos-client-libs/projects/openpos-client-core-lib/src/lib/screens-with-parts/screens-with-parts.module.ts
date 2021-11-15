@@ -43,13 +43,15 @@ import { MembershipDetailsDialogComponent } from './membership/membership-detail
 import { MembershipPlanDetailsDialogComponent } from './membership/membership-plan-details-dialog/membership-plan-details-dialog.component';
 import { ProgramPlanSelectDialogComponent } from './membership/program-plan-select-dialog/program-plan-select-dialog.component';
 import {EnrollmentConfirmationDialogComponent} from './membership/enrollment-confirmation-dialog/enrollment-confirmation-dialog.component';
-
+import { PromptWithInfoScanGiftCardScreenDialogComponent} from './prompt-with-info-scan-gift-card/prompt-with-info-scan-gift-card-screen-dialog.component';
+import { PromptInfoScanGiftCardScreenComponent } from './prompt-with-info-scan-gift-card/prompt-info-scan-gift-card-screen.component';
 
 const screens = [
     SelectionListScreenComponent,
     PromptScreenComponent,
     PromptWithOptionsScreenComponent,
     PromptWithInfoScreenComponent,
+    PromptInfoScanGiftCardScreenComponent,
     HomeComponent,
     ReturnComponent,
     MobileReturnReceiptsSheetComponent,
@@ -74,6 +76,7 @@ const dialogs = [
     PromptScreenDialogComponent,
     PromptWithOptionsScreenDialogComponent,
     PromptWithInfoScreenDialogComponent,
+    PromptWithInfoScanGiftCardScreenDialogComponent,
     ChooseOptionsScreenDialogComponent,
     ReturnTransDetailsDialogComponent,
     ConfirmDialogComponent,

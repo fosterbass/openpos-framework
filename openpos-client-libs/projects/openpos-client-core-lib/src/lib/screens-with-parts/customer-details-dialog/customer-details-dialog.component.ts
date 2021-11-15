@@ -91,6 +91,16 @@ export class CustomerDetailsDialogComponent extends PosScreenDirective<CustomerD
     return CONFIGURATION.enableKeybinds && !!menuItem.keybind && menuItem.keybind !== 'Enter';
   }
 
+  hasAnyDisplayableCustomerInformation(): boolean {
+      const customer = this.screen.customer;
+      return customer != null && (
+          !!customer.email ||
+          !!customer.phoneNumber ||
+          !!customer.loyaltyNumber ||
+          !!customer.address ||
+          !!customer.birthDate
+      );
+    }
 }
 
 class ItemsHistoryFilterController {

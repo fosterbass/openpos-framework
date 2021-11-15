@@ -2,6 +2,7 @@ package org.jumpmind.pos.print;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 import java.util.EnumSet;
 
@@ -13,6 +14,7 @@ public class PrintException extends RuntimeException {
         OutOfPaper
     }
 
+    @Getter
     final EnumSet<StatusCode> status;
 
     private static String createMessageFromStatus(EnumSet<StatusCode> status) {

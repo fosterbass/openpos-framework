@@ -12,7 +12,7 @@ import java.util.*;
  */
 public class PrinterTester {
 
-    private static IOpenposPrinter createPrinter() {
+    private static EscpPOSPrinter createPrinter() {
 
         File pwd = new File(".");
         System.out.println(pwd.getAbsolutePath());
@@ -31,9 +31,9 @@ public class PrinterTester {
         settings.put("usbProductId", "ANY");
 
 
-        IOpenposPrinter printer = null;
+        EscpPOSPrinter printer = null;
         try {
-            printer = (IOpenposPrinter) Class.forName(EscpPOSPrinter.class.getName()).newInstance();
+            printer = (EscpPOSPrinter) Class.forName(EscpPOSPrinter.class.getName()).newInstance();
             printer.init(settings, null);
             printer.open("printerName", null);
         } catch (Exception ex) {
@@ -45,7 +45,7 @@ public class PrinterTester {
     public static void main(String[] args) throws Exception {
 
         try {
-            IOpenposPrinter printer = createPrinter();
+            EscpPOSPrinter printer = createPrinter();
 
             // reset method.
 //            printer.printNormal(0, printer.getCommand(PrinterCommands.ESC_P_MODE));

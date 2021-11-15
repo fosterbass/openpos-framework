@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { FormGroup, FormControl, Validators, ValidatorFn } from '@angular/forms';
+import { AbstractControl, FormArray, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { IFormElement } from '../interfaces/form-field.interface';
 import { IForm } from '../interfaces/form.interface';
 
@@ -13,14 +13,15 @@ import { CustomDateValidator } from '../../shared/validators/custom-date-validat
 })
 export class FormBuilder {
 
-    constructor(private validatorService: ValidatorsService) { }
+    constructor(private validatorService: ValidatorsService) {
+    }
 
     group(form: IForm, extraValidators: ValidatorFn[] = []): FormGroup {
         const group: any = {};
         if (form.formElements) {
             form.formElements.forEach((element) => {
                 group[element.id] = new FormControl(element.value,
-                    ! this.isReadOnlyElement(element) ? this.createControlValidators(element) : []
+                    !this.isReadOnlyElement(element) ? this.createControlValidators(element) : []
                 );
 
                 // For a DATE type element, there is also a hidden field to handle picking of dates using
@@ -142,4 +143,18 @@ export class FormBuilder {
         return validators;
     }
 
+    public markAllAsDirty(control: AbstractControl): void {
+        if (!control) {
+            return;
+        }
+
+        if (control instanceof FormGroup) {
+            const controls = control.controls;
+            Object.keys(controls).forEach(id => this.markAllAsDirty(controls[id]));
+        } else if (control instanceof FormArray) {
+            control.controls.forEach(c => this.markAllAsDirty(c));
+        } else if (control instanceof FormControl) {
+            control.markAsDirty();
+        }
+    }
 }

@@ -23,17 +23,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-public class EscpPOSPrinter implements IOpenposPrinter {
+public class EscpPOSPrinter extends AbstractPOSPrinter implements IOpenposPrinter {
 
-    PrinterCommands printerCommands = new PrinterCommandPlaceholders();
     int receiptLineSpacing;
     PrintWriter writer;
     PeripheralConnection peripheralConnection;
-    Map<String, Object> settings;
     EscpImagePrinter imagePrinter;
     IConnectionFactory connectionFactory;
     boolean deviceEnabled = true;
-    private String printerName;
 
     @Delegate
     UnsupportedJposMethods unsupportedJposMethods = new UnsupportedJposMethods();
@@ -43,17 +40,6 @@ public class EscpPOSPrinter implements IOpenposPrinter {
     // 11/25/2020 = This was added specifically to support reading the cash drawer status over USB on the Toshiba
     // TcX (Suremark) printer.
     boolean unsolicitedStatusMode = false;
-
-    static final int STATUS_RECEIPT_PAPER_LOW = 0b00000001;
-    static final int STATUS_COVER_OPEN = 0b00000010;
-    static final int STATUS_RECEIPT_PAPER_OUT = 0b00000100;
-    static final int STATUS_JAM = 0b00001000;
-    static final int SLIP_LEADING_EDGE_SENSOR_COVERED = 0b00100000;
-    static final int SLIP_TRAILING_EDGE_SENSOR_COVERED = 0b01000000;
-    static final int THERMAL_HEAD_OR_VOLTAGE_OUT_OF_RANGE = 0b10000000;
-
-    int currentPrintStation = POSPrinterConst.PTR_S_RECEIPT;
-    protected IPrinterStatusReporter printerStatusReporter;
 
     public EscpPOSPrinter() {
         this.settings = new HashMap<>();
@@ -140,29 +126,12 @@ public class EscpPOSPrinter implements IOpenposPrinter {
 
     @Override
     public void cutPaper(int percentage) {
-        printNormal(0, printerCommands.get(PrinterCommands.CUT_FEED));  // epson will cut through barcode without some feed
         printNormal(0, printerCommands.get(PrinterCommands.CUT_PAPER));
     }
 
     @Override
     public void openCashDrawer(String cashDrawerId) {
         printNormal(0, printerCommands.get(PrinterCommands.CASH_DRAWER_OPEN));
-    }
-
-    @Override
-    public int waitForDrawerClose(String cashDrawerId, long timeout) {
-        long startTime = System.currentTimeMillis();
-        int drawerState = DRAWER_OPEN;
-        try {
-            while (drawerState != DRAWER_CLOSED && System.currentTimeMillis() - startTime < timeout) {
-                    Thread.sleep(1000);
-                    drawerState = isDrawerOpen(cashDrawerId) ? DRAWER_OPEN : DRAWER_CLOSED;
-            }
-        } catch (Exception e) {
-            String msg = String.format("Failure to read the status of the drawer: %s", cashDrawerId);
-            throw new PrintException(msg, e);
-        }
-        return drawerState;
     }
 
     public boolean isDrawerOpen(String cashDrawerId) {
@@ -208,6 +177,7 @@ public class EscpPOSPrinter implements IOpenposPrinter {
 
         switch (symbology) {
             case POSPrinterConst.PTR_BCS_Code128:
+            case POSPrinterConst.PTR_BCS_Code128_Parsed:
                 substitutions.put("barcodeType", printerCommands.get(PrinterCommands.BARCODE_TYPE_CODE_128));
 
                 if (StringUtils.isNumeric(data)) {
@@ -262,7 +232,7 @@ public class EscpPOSPrinter implements IOpenposPrinter {
         File file = new File(fileName);
         if (file.exists()) {
             try {
-                printImage(new FileInputStream(new File(fileName)));
+                printImage(fileName, new FileInputStream(new File(fileName)));
             } catch (Exception ex) {
                 throw new PrintException("Failed to open image file to print: '" + fileName + "'", ex);
             }
@@ -273,7 +243,7 @@ public class EscpPOSPrinter implements IOpenposPrinter {
     }
 
     @Override
-    public void printImage(InputStream image) {
+    public void printImage(String name, InputStream image) {
         try {
             if (image == null) {
                 throw new PrintException("Image input stream cannot be null.");
@@ -302,10 +272,7 @@ public class EscpPOSPrinter implements IOpenposPrinter {
         this.receiptLineSpacing = receiptLineSpacing;
     }
 
-    public String getCommand(String commandName) {
-        return printerCommands.get(commandName);
-    }
-
+    @Override
     public void init(Map<String, Object> settings, IPrinterStatusReporter printerStatusReporter) {
         this.printerStatusReporter = printerStatusReporter;
         this.settings = settings;
@@ -313,12 +280,6 @@ public class EscpPOSPrinter implements IOpenposPrinter {
         this.refreshPrinterCommandsFromSettings();
     }
 
-    @Override
-    public String getPrinterName() {
-        return printerName;
-    }
-
-    @Override
     public PeripheralConnection getPeripheralConnection() {
         return peripheralConnection;
     }
@@ -332,32 +293,6 @@ public class EscpPOSPrinter implements IOpenposPrinter {
             }
             throw new PrintException("Failed to create the connection factory for " + getClass().getName(), ex);
         }
-    }
-
-    private void refreshPrinterCommandsFromSettings() {
-        this.printerCommands = new PrinterCommands();
-        String printerCommandLocations = (String) settings.get("printerCommandLocations");
-        String[] locationsSplit = printerCommandLocations.split(",");
-        for (String printerCommandLocation : locationsSplit) {
-            printerCommands.load(Thread.currentThread().getContextClassLoader().getResource(printerCommandLocation.trim()));
-        }
-    }
-
-    @Override
-    public int getPrintWidth() {
-        Object printWidthObject = settings.get("printWidth");
-        Integer printWidth = null;
-        if(printWidthObject != null) {
-            if(printWidthObject instanceof String) {
-                printWidth = Integer.parseInt((String) printWidthObject);
-            } else {
-                printWidth = (Integer) printWidthObject;
-            }
-        }
-        if (printWidth == null) {
-            printWidth = 48;
-        }
-        return printWidth;
     }
 
     @Override
@@ -390,20 +325,6 @@ public class EscpPOSPrinter implements IOpenposPrinter {
                 printerStatusReporter.reportStatus(Status.Error, ex.getMessage());
             }
             throw new PrintException("readPrinterStatus() failed ", ex);
-        }
-    }
-
-    @Override
-    public void printSlip(String text, int timeoutInMillis) {
-        try {
-            beginSlipMode();
-            printNormal(POSPrinterConst.PTR_S_SLIP, text);
-            endSlipMode();
-        } catch (Exception ex) {
-            if (printerStatusReporter != null) {
-                printerStatusReporter.reportStatus(Status.Error, ex.getMessage());
-            }
-            throw new PrintException("Failed to print to slip station " + text, ex);
         }
     }
 
@@ -465,6 +386,7 @@ public class EscpPOSPrinter implements IOpenposPrinter {
         }
     }
 
+    // TODO should this be beingInsertion
     @Override
     public void beginSlipMode() {
         try {
