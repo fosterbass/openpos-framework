@@ -16,17 +16,15 @@ import java.util.Map;
 
 import static org.jumpmind.pos.print.ZebraCommands.*;
 
-public class ZebraPrinter implements IOpenposPrinter {
+public class ZebraPrinter extends AbstractPOSPrinter {
 
     boolean deviceEnabled = true;
 
     PeripheralConnection peripheralConnection;
-    Map<String, Object> settings;
     IConnectionFactory connectionFactory;
     ZebraImagePrinter imagePrinter;
     PrintWriter writer;
     private String printerName;
-    private IPrinterStatusReporter printerStatusReporter;
 
     @Delegate
     UnsupportedJposMethods unsupportedJposMethods = new UnsupportedJposMethods();
@@ -112,7 +110,7 @@ public class ZebraPrinter implements IOpenposPrinter {
     }
 
     @Override
-    public void printImage(InputStream image) {
+    public void printImage(String name, InputStream image) {
         try {
             if (image == null) {
                 throw new PrintException("Image input stream cannot be null.");
@@ -215,7 +213,6 @@ public class ZebraPrinter implements IOpenposPrinter {
         return null;
     }
 
-    @Override
     public PeripheralConnection getPeripheralConnection() {
         return peripheralConnection;
     }
@@ -228,11 +225,6 @@ public class ZebraPrinter implements IOpenposPrinter {
     @Override
     public boolean isDrawerOpen(String cashDrawerId) {
         return false;
-    }
-
-    @Override
-    public int waitForDrawerClose(String cashDrawerId, long timeout) {
-        return 0;
     }
 
     @Override

@@ -10,7 +10,7 @@ public interface IOpenposPrinter extends POSPrinterService19 {
     static final int DRAWER_OPEN = 0;
     static final int DRAWER_CLOSED = 1;
 
-    public void printImage(InputStream image);
+    public void printImage(String name, InputStream image);
 
     public default boolean supportsPrintDivider() {
         return false;
@@ -30,8 +30,6 @@ public interface IOpenposPrinter extends POSPrinterService19 {
 
     public String getPrinterName();
 
-    public PeripheralConnection getPeripheralConnection();
-
     int readPrinterStatus();
 
     public boolean isDrawerOpen(String cashDrawerId);
@@ -50,4 +48,6 @@ public interface IOpenposPrinter extends POSPrinterService19 {
      * @return raw MICR string as read from the document.
      */
     public String readMicr();
+
+    public void lineFeedAndCutPaper();
 }
