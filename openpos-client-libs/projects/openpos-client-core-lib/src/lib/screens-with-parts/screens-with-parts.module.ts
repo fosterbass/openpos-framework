@@ -39,12 +39,15 @@ import { SimulatedPeripheralViewerComponent } from './simulated-peripheral-viewe
 import { CustomerSearchResultDialogComponent } from './customer-search-result-dialog/customer-search-result-dialog.component';
 import { LoyaltyCustomerFormDialogComponent } from './loyalty-customer-form-dialog/loyalty-customer-form-dialog.component';
 import { CustomerDetailsDialogComponent } from './sale/customer-details-dialog/customer-details-dialog.component';
+import { PromptWithInfoScanGiftCardScreenDialogComponent} from './prompt-with-info-scan-gift-card/prompt-with-info-scan-gift-card-screen-dialog.component';
+import { PromptInfoScanGiftCardScreenComponent } from './prompt-with-info-scan-gift-card/prompt-info-scan-gift-card-screen.component';
 
 const screens = [
     SelectionListScreenComponent,
     PromptScreenComponent,
     PromptWithOptionsScreenComponent,
     PromptWithInfoScreenComponent,
+    PromptInfoScanGiftCardScreenComponent,
     HomeComponent,
     ReturnComponent,
     MobileReturnReceiptsSheetComponent,
@@ -69,6 +72,7 @@ const dialogs = [
     PromptScreenDialogComponent,
     PromptWithOptionsScreenDialogComponent,
     PromptWithInfoScreenDialogComponent,
+    PromptWithInfoScanGiftCardScreenDialogComponent,
     ChooseOptionsScreenDialogComponent,
     ReturnTransDetailsDialogComponent,
     ConfirmDialogComponent,

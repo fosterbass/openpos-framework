@@ -15,6 +15,7 @@ export interface PromptFormPartInterface {
     editable: boolean;
     responseType: FieldInputType;
     actionButton: IActionItem;
+    secondaryActionButton: IActionItem;
     otherActions: IActionItem[];
     minLength: number;
     maxLength: number;
@@ -23,6 +24,8 @@ export interface PromptFormPartInterface {
     validationPatterns: Array<string>;
     scanEnabled: boolean;
     keyboardPreference: string;
+    isRequiredInputField: boolean;
+    isGiftCardScanEnabled: boolean;
     validators: Validator[];
     validationMessages: Map<string, string>;
     promptPosition: PromptPosition;

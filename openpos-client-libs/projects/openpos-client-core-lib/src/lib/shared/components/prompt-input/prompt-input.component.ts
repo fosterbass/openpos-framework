@@ -1,5 +1,5 @@
 import { FormGroup, FormControl, FormGroupDirective, NgForm } from '@angular/forms';
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, EventEmitter, Output } from '@angular/core';
 import { ErrorStateMatcher } from '@angular/material/core';
 
 import { BarcodeScanner } from '../../../core/platform-plugins/barcode-scanners/barcode-scanner.service';
@@ -28,11 +28,12 @@ export class PromptInputComponent implements OnInit, OnDestroy {
 
     @Input() scanActionName?: string;
 
+    @Output() valueChange = new EventEmitter<string>();
+
     inputType: string;
     checked = true;
     errorMatcher = new MyErrorStateMatcher();
     keyboardLayout = 'en-US';
-
     showScanner = false;
 
     constructor(

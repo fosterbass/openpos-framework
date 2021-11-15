@@ -6,6 +6,7 @@ import { IActionItem } from '../../../core/actions/action-item.interface';
 import { PromptFormPartInterface } from './prompt-form-part.interface';
 import { CONFIGURATION } from '../../../configuration/configuration';
 import { merge } from 'rxjs';
+import {ActionItem} from '../../../core/actions/action-item';
 
 @Component({
     selector: 'app-prompt-form-part',
@@ -20,8 +21,11 @@ export class PromptFormPartComponent extends ScreenPartComponent<PromptFormPartI
     promptFormGroup: FormGroup;
     initialized = false;
     instructions: string;
+    previousInputLength: number;
     inputControlName = 'promptInputControl';
     hiddenInputControlName = 'promptInputHiddenDateControl';
+    primaryActionButton: ActionItem;
+    secondaryActionButton: ActionItem;
 
     get autoFocusPrompt(): boolean {
         // default to true if not properly defined... it is the way
@@ -41,7 +45,10 @@ export class PromptFormPartComponent extends ScreenPartComponent<PromptFormPartI
 
         const group: any = {};
         const validators: ValidatorFn[] = [];
-        validators.push(Validators.required);
+        if (this.screenData.isRequiredInputField !== false) {
+            validators.push(Validators.required);
+        }
+
         if (this.screenData.responseType) {
             validators.push(this.validatorsService.getValidator(this.screenData.responseType.toString()));
         }
@@ -91,6 +98,8 @@ export class PromptFormPartComponent extends ScreenPartComponent<PromptFormPartI
 
     ngAfterViewInit(): void {
         this.initialized = true;
+        this.primaryActionButton = this.screenData.actionButton;
+        this.secondaryActionButton = this.screenData.secondaryActionButton;
     }
 
     onAction(menuItm: IActionItem) {
@@ -102,6 +111,16 @@ export class PromptFormPartComponent extends ScreenPartComponent<PromptFormPartI
             const payload = this.promptFormGroup.value[this.inputControlName];
             if (this.screenData.actionButton) {
                 this.doAction({ action: this.screenData.actionButton.action }, payload);
+            }
+        }
+    }
+
+    onPromptInputChange(event): void {
+        if (this.screenData.isGiftCardScanEnabled) {
+            if (event.target.value.length === 0) {
+                this.screenData.actionButton = this.primaryActionButton;
+            } else {
+                this.screenData.actionButton = this.secondaryActionButton;
             }
         }
     }

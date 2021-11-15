@@ -61,7 +61,7 @@
                                       [validationMessages]="screenData.validationMessages"
                                       [keyboardPreference]="screenData.keyboardPreference" [scanEnabled]="screenData.scanEnabled" [readOnly]="!screenData.editable"
                                       [scanActionName]="screenData.scan?.scanActionName"
-                                      [autoFocus]="autoFocusPrompt">
+                                      [autoFocus]="autoFocusPrompt" (valueChange)="onPromptInputChange($event)">
                     </app-prompt-input>
                     <app-instructions *ngIf="instructions" [instructions]="instructions" [instructionsSize]="'text-sm'"></app-instructions>
                     <div #optionsRef>
