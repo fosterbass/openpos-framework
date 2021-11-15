@@ -11,7 +11,7 @@ import java.io.InputStream;
 public class ToshibaMobilePrinter extends EscpPOSPrinter {
 
     @Override
-    public void printImage(InputStream image) {
+    public void printImage(String fileName, InputStream image) {
         // images not supported yet 5/13/2021. Protocol should be the same as the base implementation,
         // but they are not working over Mac bluetooth connection. Should test on windows next.
     }
