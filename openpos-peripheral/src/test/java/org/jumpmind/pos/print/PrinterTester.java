@@ -73,7 +73,7 @@ public class PrinterTester {
 //            final String BARCODE = "ABCS1234234";
             String BARCODE = "01870960100062020093000000000067";
 //            BARCODE = "123";
-            printer.printBarCode(POSPrinterConst.PTR_S_RECEIPT, BARCODE, POSPrinterConst.PTR_BCS_Code128, 50, 50,
+            printer.printBarCode(POSPrinterConst.PTR_S_RECEIPT, BARCODE, POSPrinterConst.PTR_BCS_Code128_Parsed, 50, 50,
                     POSPrinterConst.PTR_BC_CENTER, POSPrinterConst.PTR_BC_TEXT_BELOW);
 
 //            printer.printNormal(0, printer.getCommand(PrinterCommands.PROP_BARCODE_WIDTH));
