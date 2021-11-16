@@ -10,17 +10,14 @@ public class YamlConfigProviderTest {
     @Test
     public void testLoadResources() {
         YamlConfigProvider provider = new YamlConfigProvider();
-        provider.load("pos", "testflows");
-        
-        provider.load("selfcheckout", "testflows");
-        provider.load("selfcheckout", "testflows/selfcheckout");
-        
+        provider.load("pos","testflows", "TestFlow");
+        provider.load("selfcheckout","testflows", "SelfCheckoutFlow");
     }
 
     @Test
     public void testExtendFlow() {
         YamlConfigProvider provider = new YamlConfigProvider();
-        provider.load("pos", "testflows");
+        provider.load("pos","testflows", "TestFlow");
 
         FlowConfig config = provider.getConfigByName("pos", "11111", "TestFlow");
 
@@ -31,7 +28,7 @@ public class YamlConfigProviderTest {
     @Test
     public void testOverrideFlow() {
         YamlConfigProvider provider = new YamlConfigProvider();
-        provider.load("pos", "testflows");
+        provider.load("pos","testflows", "TestFlow");
 
         FlowConfig config = provider.getConfigByName("pos", "11111", "TestFlow");
         assertEquals("StateToOverride", config.getStateConfig(YamlTestStates.OverrideState.class).getStateName());

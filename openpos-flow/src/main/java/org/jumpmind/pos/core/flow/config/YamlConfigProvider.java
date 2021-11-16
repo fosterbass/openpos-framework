@@ -19,6 +19,7 @@ public class YamlConfigProvider implements IFlowConfigProvider {
     protected Map<String, List<FlowConfig>> loadedFlowConfigs = new LinkedHashMap<>();
     protected Map<String, List<YamlFlowConfig>> loadedYamlFlowConfigs = new HashMap<>();
     protected Map<String, String> appIdToStartFlowName = new HashMap<>();
+    protected Map<String, String> appIdToFlowPath = new HashMap<>();
 
     private Map<String, List<TransitionStepConfig>> transitionSteps = new HashMap<>();
 
@@ -33,7 +34,10 @@ public class YamlConfigProvider implements IFlowConfigProvider {
     @Override
     public void load(String appId, String path, String startFlowName) {
         appIdToStartFlowName.put(appId, startFlowName);
-        load(appId, path);
+        if (!appIdToFlowPath.values().contains(path)) {
+            load(path);
+        }
+        appIdToFlowPath.put(appId, path);
     }
 
     @Bean
@@ -41,7 +45,7 @@ public class YamlConfigProvider implements IFlowConfigProvider {
         return new ArrayList<>(appIdToStartFlowName.keySet());
     }
 
-    public void load(String appId, String path) {
+    public void load(String path) {
         try {
             ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(Thread.currentThread().getContextClassLoader());
 
@@ -53,34 +57,36 @@ public class YamlConfigProvider implements IFlowConfigProvider {
             for (int i = resources.size() - 1; i >= 0; --i) {
                 Resource resource = resources.get(i);
                 // first pass needs to load all raw YAML.
-                yamlFlowConfigs.addAll(loadYamlResource(appId, path, resource));
+                yamlFlowConfigs.addAll(loadYamlResource(path, resource));
             }
 
             // second pass here needed to convert
-            loadYamlFlowConfigs(appId, yamlFlowConfigs);
+            loadYamlFlowConfigs(path, yamlFlowConfigs);
 
-            transitionSteps.put(appId, flowConfigConverter.convertTransitionSteps(new YamlTransitionStepProvider().loadTransitionSteps(resolver, appId, path, flowConfigLoader), yamlFlowConfigs));
+            transitionSteps.put(path, flowConfigConverter.
+                    convertTransitionSteps(new YamlTransitionStepProvider().
+                            loadTransitionSteps(resolver, path, flowConfigLoader), yamlFlowConfigs));
 
         } catch (Exception ex) {
-            throw new FlowException(String.format("Failed to load YML flow config for appId '%s' and path '%s'", appId, path), ex);
+            throw new FlowException(String.format("Failed to load YML flow config for path '%s'", path), ex);
         }
     }
 
-    public void load(String appId, InputStream resource) {
+    public void load(String path, InputStream resource) {
         List<YamlFlowConfig> yamlFlowConfigs = new ArrayList<>();
-        yamlFlowConfigs.addAll(loadYamlResource(appId, resource, false));
+        yamlFlowConfigs.addAll(loadYamlResource(path, resource, false));
         // second pass here needs to then convert
-        loadYamlFlowConfigs(appId, yamlFlowConfigs);
+        loadYamlFlowConfigs(path, yamlFlowConfigs);
     }
 
     @Override
     public List<TransitionStepConfig> getTransitionStepConfig(String appId, String nodeId) {
-        return transitionSteps.get(appId);
+        return transitionSteps.get(appIdToFlowPath.get(appId));
     }
 
     @Override
     public FlowConfig getConfigByName(String appId, String deviceId, String name) {
-        List<FlowConfig> flowConfigs = loadedFlowConfigs.get(appId);
+        List<FlowConfig> flowConfigs = loadedFlowConfigs.get(appIdToFlowPath.get(appId));
         if (flowConfigs != null && !flowConfigs.isEmpty()) {
             return flowConfigs.stream().filter(flowConfig -> name.equals(flowConfig.getName())).findAny().orElse(null);
         } else {
@@ -93,7 +99,7 @@ public class YamlConfigProvider implements IFlowConfigProvider {
         if (appIdToStartFlowName.containsKey(appId)) {
             return getConfigByName(appId, deviceId, appIdToStartFlowName.get(appId));
         } else {
-            List<FlowConfig> flowConfigs = loadedFlowConfigs.get(appId);
+            List<FlowConfig> flowConfigs = loadedFlowConfigs.get(appIdToFlowPath.get(appId));
             if (flowConfigs != null && !flowConfigs.isEmpty()) {
                 return flowConfigs.get(0);
             } else {
@@ -122,9 +128,9 @@ public class YamlConfigProvider implements IFlowConfigProvider {
         });
     }
 
-    protected List<YamlFlowConfig> loadYamlResource(String appId, InputStream resource, boolean isExtension) {
+    protected List<YamlFlowConfig> loadYamlResource(String path, InputStream resource, boolean isExtension) {
         List<YamlFlowConfig> yamlFlowConfigs = flowConfigLoader.loadYamlFlowConfigs(resource);
-        List<YamlFlowConfig> existingYamlFlowConfigs = loadedYamlFlowConfigs.computeIfAbsent(appId, k -> new ArrayList<>());
+        List<YamlFlowConfig> existingYamlFlowConfigs = loadedYamlFlowConfigs.computeIfAbsent(path, k -> new ArrayList<>());
 
         for (YamlFlowConfig flowConfig : yamlFlowConfigs) {
             YamlFlowConfig match = existingYamlFlowConfigs.stream().filter(flowConfig1 -> flowConfig.getFlowName().equals(flowConfig1.getFlowName())).findFirst().orElse(null);
@@ -154,20 +160,21 @@ public class YamlConfigProvider implements IFlowConfigProvider {
         }
     }
 
-    protected List<YamlFlowConfig> loadYamlResource(String appId, String path, Resource resource) {
-        log.info("Loading flow config from {} for {}", resource.toString(), appId);
+    protected List<YamlFlowConfig> loadYamlResource(String path, Resource resource) {
+        log.info("Loading flow config from {}", resource.toString());
         try {
-            return loadYamlResource(appId, resource.getInputStream(), resource.getFilename() != null && resource.getFilename().endsWith("-flow-ext.yml"));
+            boolean isExtension = resource.getFilename() != null && resource.getFilename().endsWith("-flow-ext.yml");
+            return loadYamlResource(path, resource.getInputStream(), isExtension);
         } catch (Exception ex) {
             throw new FlowException(String.format("Failed while loading resource %s", resource), ex);
         }
     }
 
-    protected void loadYamlFlowConfigs(String appId, List<YamlFlowConfig> yamlFlowConfigs) {
-        List<YamlFlowConfig> existingYamlFlowConfigs = loadedYamlFlowConfigs.get(appId);
+    protected void loadYamlFlowConfigs(String path, List<YamlFlowConfig> yamlFlowConfigs) {
+        List<YamlFlowConfig> existingYamlFlowConfigs = loadedYamlFlowConfigs.get(path);
 
         List<FlowConfig> existingFlowConfigs = new ArrayList<>();
-        loadedFlowConfigs.put(appId, existingFlowConfigs);
+        loadedFlowConfigs.put(path, existingFlowConfigs);
 
         List<FlowConfig> flowConfigs = flowConfigConverter.convertFlowConfigs(existingYamlFlowConfigs, yamlFlowConfigs);
         existingFlowConfigs.addAll(flowConfigs);

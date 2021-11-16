@@ -25,7 +25,7 @@ public class StateManagerTestUtils {
         FlowConfig flowConfig = null;
 
         if (yamlConfigPath != null) {
-            provider.load("pos", Thread.currentThread().getContextClassLoader().getResourceAsStream(yamlConfigPath));
+            provider.load("pos", yamlConfigPath, "TestFlow");
             flowConfig = provider.getConfigByName("pos", "100-1", "TestDoubleSubstateExitFlow");
         }
         
