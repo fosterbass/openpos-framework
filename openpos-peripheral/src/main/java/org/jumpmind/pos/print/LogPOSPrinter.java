@@ -975,6 +975,7 @@ public class LogPOSPrinter extends AbstractPOSPrinter {
     public void printBarCode(int station, String data, int symbology, int height, int width, int alignment, int textPosition) throws JposException {
         switch (symbology) {
             case POSPrinterConst.PTR_BCS_Code128:
+            case POSPrinterConst.PTR_BCS_Code128_Parsed:
                 buff.append("<BARCODE_CODE128>" + data + "</BARCODE_CODE128>\n");
                 break;
             case POSPrinterConst.PTR_BCS_Code39:
