@@ -8,4 +8,5 @@ import java.util.Map;
 public class PrinterConfig {
     Map<String, Object> settings;
     String styleSheet;
+    boolean pingEnabled = true;
 }

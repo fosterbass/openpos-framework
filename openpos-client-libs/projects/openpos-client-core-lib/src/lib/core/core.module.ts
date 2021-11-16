@@ -69,6 +69,7 @@ import { CapacitorStorageService } from './storage/capacitor/capacitor-storage.s
 import { CordovaStorageService } from './storage/cordova/cordova-storage.service';
 import { Storage } from './storage/storage.service';
 import { STORAGE_CONTAINERS } from './storage/storage-container';
+import { ZebraBluetoothPrinterCordovaPlugin } from './platform-plugins/cordova-plugins/zebra-bluetooth-printer-cordova-plugin';
 import { CapacitorPrinterPlugin } from './platform-plugins/printers/capacitor-printer.plugin';
 import { ZEROCONF_TOKEN } from './startup/zeroconf/zeroconf';
 import { MDnsZeroconf } from './startup/zeroconf/mdns-zeroconf';
@@ -80,6 +81,7 @@ import { CommerceServerSinkModule } from './logging/commerce-server/commerce-ser
 import { NewRelicSinkModule } from './logging/new-relic/new-relic-sink.module';
 import { ConfigProvidersModule } from './platforms/config-provider/config-providers.module';
 import { PowerModule } from './platform-plugins/power/power.module';
+import { CordovaService } from './services/cordova.service';
 
 registerLocaleData(locale_enCA, 'en-CA');
 registerLocaleData(locale_frCA, 'fr-CA');
@@ -165,6 +167,7 @@ registerLocaleData(locale_frCA, 'fr-CA');
         { provide: PLUGINS, useExisting: ScanditScannerCordovaPlugin, multi: true },
         { provide: PLUGINS, useExisting: CapacitorStatusBarPlatformPlugin, multi: true },
         { provide: PLUGINS, useExisting: ScanditCapacitorImageScanner, multi: true },
+        { provide: PLUGINS, useExisting: ZebraBluetoothPrinterCordovaPlugin, multi: true, deps: [CordovaService, SessionService]},
         { provide: PLATFORMS, useExisting: CordovaPlatform, multi: true },
         { provide: PLATFORMS, useExisting: CapacitorIosPlatform, multi: true },
         { provide: PLATFORMS, useExisting: CapacitorAndroidPlatform, multi: true },
@@ -172,6 +175,7 @@ registerLocaleData(locale_frCA, 'fr-CA');
         { provide: STORAGE_CONTAINERS, useClass: CordovaStorageService, multi: true },
         CapacitorPrinterPlugin,
         { provide: PRINTERS, useExisting: CapacitorPrinterPlugin, multi: true },
+        { provide: PRINTERS, useExisting: ZebraBluetoothPrinterCordovaPlugin, multi: true, deps: [CordovaService, SessionService]},
         LocationService,
         { provide: PROVIDERS, useExisting: LocationProviderDefault, multi: true },
         TrainingOverlayService,

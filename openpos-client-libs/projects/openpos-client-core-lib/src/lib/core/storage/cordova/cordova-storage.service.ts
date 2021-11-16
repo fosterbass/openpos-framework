@@ -42,7 +42,7 @@ export class CordovaStorageService implements StorageContainer {
     getValue(key: string): Observable<string | undefined> {
         // use Observable default constructor
         // cleanup subscription / use return.
-        return Observable.create(observer => {
+        return new Observable(observer => {
             // pipe.map
             this.subscription = this.cordovaService.onDeviceReady.subscribe(message => {
                 if (message) {
@@ -103,11 +103,11 @@ export class CordovaStorageService implements StorageContainer {
                 () => {
                     NativeStorage.getString(key,
                         (value) => {
-                            if (value.code === undefined) {
-                                console.info(`Removed local storage key '${key}' successfully`);
-                                observer.complete();
-                            } else if (value === null || value === undefined) {
+                            if (value === null || value === undefined) {
                                 console.info(`Removed local storage key '${key}' successfully. Value is null/undefined.`);
+                                observer.complete();
+                            } else if (value.code === undefined) {
+                                console.info(`Removed local storage key '${key}' successfully`);
                                 observer.complete();
                             } else {
                                 NativeStorage.putString(key, null,

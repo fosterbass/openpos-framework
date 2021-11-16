@@ -12,6 +12,7 @@ import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.jumpmind.pos.print.ZebraCommands.*;
@@ -65,6 +66,12 @@ public class ZebraPrinter extends AbstractPOSPrinter {
         this.writer = new PrintWriter(peripheralConnection.getOut());
         imagePrinter = new ZebraImagePrinter();
         writer.print(COMMAND_ENABLE_LINE_PRINT);
+        if (settings.containsKey("initialLineCommands")) {
+            LinkedHashMap<String, String> initialLineCommands = (LinkedHashMap<String, String>) settings.get("initialLineCommands");
+            if (initialLineCommands != null) {
+                initialLineCommands.forEach((k,cmd) -> writer.print(cmd));
+            }
+        }
         writer.flush();
     }
 
