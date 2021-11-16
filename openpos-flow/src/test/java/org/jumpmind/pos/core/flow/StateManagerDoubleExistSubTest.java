@@ -23,7 +23,7 @@ public class StateManagerDoubleExistSubTest {
 
     @Test
     public void testDoubleSubTransitionExit() throws Exception {
-        StateManager stateManager = StateManagerTestUtils.buildStateManager(injector, "testflows/test-double-sub-exit-flow.yml");
+        StateManager stateManager = StateManagerTestUtils.buildStateManager(injector, "testflows");
         
         assertEquals(OrderDetailsState.class, stateManager.getCurrentState().getClass());
 

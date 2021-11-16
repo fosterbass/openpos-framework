@@ -15,7 +15,7 @@ import java.util.Map;
 @Slf4j
 public class YamlTransitionStepProvider {
 
-    public List<YamlTransitionStepConfig> loadTransitionSteps(ResourcePatternResolver resolver, String appId, String path, YamlFlowConfigFileLoader flowConfigLoader) {
+    public List<YamlTransitionStepConfig> loadTransitionSteps(ResourcePatternResolver resolver, String path, YamlFlowConfigFileLoader flowConfigLoader) {
         try {
             Resource[] resources = resolver.getResources("classpath*:/" + path + "/*-steps.yml");
             if (resources == null || resources.length == 0) {
@@ -25,7 +25,7 @@ public class YamlTransitionStepProvider {
                 return loadYamlTransitionStepConfigs(resources[0].getInputStream(), flowConfigLoader);
             }
         } catch (Exception ex) {
-            throw new FlowException(String.format("Failed to load YML transition steps for appId %s and path %s", appId, path), ex);
+            throw new FlowException(String.format("Failed to load YML transition steps for path %s", path), ex);
         }
     }
 
