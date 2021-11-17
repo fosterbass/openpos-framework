@@ -57,6 +57,7 @@ import org.jumpmind.pos.server.model.Action;
 import org.jumpmind.pos.server.service.IMessageService;
 import org.jumpmind.pos.util.ClassUtils;
 import org.jumpmind.pos.util.Versions;
+import org.jumpmind.pos.util.event.AppEvent;
 import org.jumpmind.pos.util.event.Event;
 import org.jumpmind.pos.util.event.EventPublisher;
 import org.jumpmind.pos.util.model.Message;
@@ -790,7 +791,10 @@ public class StateManager implements IStateManager {
     }
 
     protected void processEvent(Event event) {
-        lastInteractionTime.set(new Date());
+        if (event instanceof AppEvent &&
+                getDeviceId().equals(((AppEvent) event).getDeviceId())) {
+            lastInteractionTime.set(new Date());
+        }
         if (initialFlowConfig == null) {
             throw new FlowException("initialFlowConfig is null. This StateManager is likely misconfigured. " +
                     "Check your appId and Spring profiles. (appId=\"" + this.getAppId() +
