@@ -16,6 +16,11 @@
         grid-area: details;
         @extend %text-sm;
 
+        .name {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
         .value {
             font-weight: 500;
         }

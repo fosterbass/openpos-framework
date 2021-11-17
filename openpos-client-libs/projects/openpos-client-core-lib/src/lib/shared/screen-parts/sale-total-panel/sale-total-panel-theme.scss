@@ -150,21 +150,31 @@
 
         .sale-total-employee-sale-button {
             button {
-                @extend %text-sm;
+                @extend %text-xs;
+                padding-top: 4px;
+                padding-bottom: 4px;
 
                 .mat-button-wrapper {
                     display: grid;
 
                     div {
                         line-height: normal;
+                        overflow: hidden;
+                        width: 100%;
+                        text-overflow: ellipsis;
+                        align-items: center;
+                    }
+
+                    .sale-total-employee-sale-name {
+                        display: grid;
+                        grid-template-columns: auto minmax(0, 1fr);
+                        grid-gap: 0 5px;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        width: auto;
+                        font-size: .75rem;
                     }
                 }
-            }
-
-            .sale-total-employee-sale-name {
-                display: grid;
-                grid-template-columns: auto 1fr;
-                grid-gap: 0px 5px;
             }
         }
     }

@@ -3,6 +3,8 @@
 $loyalty-signup-icon: 72px;
 $loyalty-signup-icon-tablet: 56px;
 $loyalty-signup-column-gap: 8px;
+$linked-customer-column-gap: 5px;
+$sale-total-icon-size: 36px;
 
 .sale-total-wrapper {
     height: 100%;
@@ -19,8 +21,12 @@ $loyalty-signup-column-gap: 8px;
 
 .sale-total-header {
     margin-bottom: 16px;
+
+    &.tablet-landscape {
+        margin-bottom: 8px;
+    }
     .material-icons {
-        font-size: 36px;
+        font-size: $sale-total-icon-size;
     }
     .loyalty-arrow {
         vertical-align: top;
@@ -97,17 +103,23 @@ $loyalty-signup-column-gap: 8px;
         }
     }
     .linked-customer-summary {
-        padding: 5px;
+        padding: 0;
+
         .button-wrapper {
             vertical-align: inherit;
             width: 100%;
             text-align: left;
-            padding: 10px;
+            padding: 16px;
+
+            &.tablet {
+                padding: 8px;
+            }
+
             .grid-container {
                 display: grid;
                 grid-template-columns: 1fr 10fr;
                 grid-template-rows: auto 1fr;
-                gap: 10px 5px;
+                gap: $linked-customer-column-gap;
                 grid-template-areas:
                     "Icon              Name"
                     "Memberships       Memberships"
@@ -115,21 +127,25 @@ $loyalty-signup-column-gap: 8px;
 
                 &.tablet,
                 &.mobile {
-                    gap: 5px;
+                    gap: $linked-customer-column-gap;
                 }
 
                 .name {
                     grid-area: Name;
                     white-space: normal;
+                    overflow: hidden;
 
-                    .membership-customer-email {
+                    .membership-customer-email,
+                    .customer-name {
                         overflow: hidden;
                         text-overflow: ellipsis;
                         white-space: normal;
                     }
                     .customer-name {
-                        @extend %text-md;
+                        @extend %text-sm;
                         line-height: normal;
+                        white-space: nowrap;
+                        font-size: 1rem;
                     }
                     .membership-customer-email,
                     .membership-tier {
@@ -148,6 +164,11 @@ $loyalty-signup-column-gap: 8px;
                 .icon {
                     grid-area: Icon;
                     display: inline-block;
+                    margin-top: -6px;
+
+                    &.tablet {
+                        margin-top: -8px;
+                    }
                 }
                 .memberships {
                     overflow: hidden;
@@ -156,12 +177,30 @@ $loyalty-signup-column-gap: 8px;
                     grid-area: Memberships;
                     display: flex;
                     flex-direction: row;
-                    div{
+                    overflow-y: auto;
+                    // Fix scrollbar showing when nothing is overflowing
+                    padding-bottom: 4px;
+
+                    &.desktop-landscape {
+                        // Show 2 memberships before scrolling
+                        max-height: 48px;
+                    }
+
+                    &.tablet-landscape {
+                        // Show 2 memberships before scrolling
+                        max-height: 38px;
+                    }
+
+                    &.rewards-hidden,
+                    &.desktop-portrait {
+                        // Show 4 memberships before scrolling
+                        max-height: 102px;
+                    }
+
+                    div {
                         display: flex;
+                        gap: .125rem;
                         flex-wrap: wrap;
-                        app-membership-display{
-                            margin: .2em .2em;
-                        }
                     }
 
                     .customer-missing-info {
@@ -187,6 +226,10 @@ $loyalty-signup-column-gap: 8px;
     grid-area: MembershipRewards;
 }
 
+.membership-no-rewards {
+    line-height: normal;
+}
+
 .membership-rewards-title {
     @extend %text-xs;
     font-weight: normal;
@@ -204,13 +247,21 @@ $loyalty-signup-column-gap: 8px;
     list-style: none;
     padding: 0;
     margin: 0;
-    /* Show 3 items before scrolling */
-    max-height: 4.5rem;
-    overflow: auto;
+    overflow-y: auto;
+
+    &.desktop-portrait {
+        // Show 4 rewards before scrolling
+        max-height: 78px;
+    }
+
+    &.desktop-landscape {
+        // Show 2 rewards before scrolling
+        max-height: 2.5rem;
+    }
 
     &.tablet,
     &.mobile {
-        /* Show 2 items before scrolling */
+        // Show 2 rewards before scrolling
         max-height: 2rem;
     }
 }
@@ -284,6 +335,11 @@ app-scandit-native {
     display: flex;
     flex-direction: column;
     padding: 8px 0;
+
+    &.tablet {
+        padding: 4px 0;
+    }
+
     .item-count {
         display: flex;
         height: fit-content;
@@ -316,6 +372,10 @@ app-scandit-native {
     padding-top: 16px;
     padding-bottom: 16px;
     overflow-y: auto;
+
+    &.tablet {
+        padding: 8px;
+    }
 
     .sale-total-content {
         grid-area: content;
@@ -352,17 +412,14 @@ app-scandit-native {
             border-top-width: 1px;
 
             .sale-total-total-title {
-                @extend %text-lg;
+                @extend %text-md;
                 padding-top: 8px;
                 padding-bottom: 8px;
-
-                &.small-desktop-landscape {
-                    @extend %text-md;
-                }
             }
 
             .sale-total-total-amount {
                 @extend %text-xl;
+                font-size: 2.5rem;
 
                 &.small-desktop-landscape {
                     @extend %text-lg;
@@ -398,6 +455,10 @@ app-scandit-native {
         align-self: end;
         grid-row-gap: 16px;
 
+        &.tablet {
+            grid-row-gap: 8px;
+        }
+
         .sale-total-tax-exempt-label-no-customer {
             @extend %text-sm;
             text-align: center;
@@ -408,6 +469,10 @@ app-scandit-native {
         .sale-total-button {
             min-height: 70px;
             width: 100%;
+
+            &.tablet {
+                min-height: 60px;
+            }
         }
     }
 

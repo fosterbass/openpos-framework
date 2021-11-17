@@ -1,6 +1,6 @@
 <app-bacon-strip class="sale-bacon-strip" [(sidenavOpened)]="sidenavOpened">
     <div class="sale-outer">
-        <div *ngIf="!(isMobile$ | async)" class="sale-body">
+        <div *ngIf="!(isMobile$ | async)" class="sale-body" responsive-class>
             <section class="orders" *ngIf="screen.orders && screen.orders.length > 0">
                 <div class="orders-content">
                     <strong class="orders-label muted-color" responsiveClass>
