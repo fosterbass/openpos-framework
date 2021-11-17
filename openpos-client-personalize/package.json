@@ -52,7 +52,7 @@
     "@types/jasminewd2": "^2.0.3",
     "@types/node": "^10.5.1",
     "codelyzer": "^4.4.4",
-    "electron": "^4.1.4",
+    "electron": "^11.5.0",
     "electron-packager": "^13.0.1",
     "jasmine-core": "~2.6.2",
     "jasmine-marbles": "^0.3.1",
