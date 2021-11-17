@@ -23,11 +23,13 @@ export class SaleTotalPanelComponent extends ScreenPartComponent<SaleTotalPanelI
     screenDataUpdated() {
         if (this.screenData.loyaltyButton) {
             const title = this.screenData.loyaltyButton.title as string;
-            const parts = title.split(this.loyaltyIconToken);
-            if (parts && parts.length > 0) {
-                this.loyaltyBefore = parts[0].trim();
-                if (parts.length > 1) {
-                    this.loyaltyAfter = parts[1].trim();
+            if (title.indexOf(this.loyaltyIconToken) >= 0) {
+                const parts = title.split(this.loyaltyIconToken, 2);
+                if (parts && parts.length > 0) {
+                    this.loyaltyBefore = parts[0].trim();
+                    if (parts.length > 1) {
+                        this.loyaltyAfter = parts[1].trim();
+                    }
                 }
             }
         }

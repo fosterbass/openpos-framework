@@ -42,10 +42,12 @@
                               *ngIf="!screenData.readOnly && !screenData.customer && screenData.loyaltyButton"
                               [actionItem]="screenData.loyaltyButton"
                               (actionClick)="doMenuItemAction(screenData.loyaltyButton)"
-                              (click)="doMenuItemAction(screenData.loyaltyButton)" class="sale-total-loyalty-button">
-            <span *ngIf="loyaltyBefore">{{loyaltyBefore}}</span>
-            <img [src]="screenData.loyaltyButton.icon | imageUrl" class="sale-total-loyalty-button-icon">
-            <span *ngIf="loyaltyAfter">{{loyaltyAfter}}</span>
+                              (click)="doMenuItemAction(screenData.loyaltyButton)" class="sale-total-button">
+            <app-icon *ngIf="screenData.loyaltyButton.icon" [iconName]="screenData.loyaltyButton.icon">
+            </app-icon>
+            <span *ngIf="loyaltyBefore">loyaltyBefore={{loyaltyBefore}}</span>
+            <span *ngIf="screenData.loyaltyButton.icon && screenData.loyaltyButton.title">&nbsp;</span>{{screenData.loyaltyButton.title}}
+            <span *ngIf="loyaltyAfter">loyaltyAfter={{loyaltyAfter}}</span>
             <span *ngIf="keybindsEnabled(screenData.loyaltyButton)"
                   class="muted-color">{{screenData.loyaltyButton.keybindDisplayName}}</span>
         </app-secondary-button>

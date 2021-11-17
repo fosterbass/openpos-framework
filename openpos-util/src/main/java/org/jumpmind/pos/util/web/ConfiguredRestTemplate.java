@@ -1,41 +1,57 @@
 package org.jumpmind.pos.util.web;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.TrustStrategy;
 import org.jumpmind.pos.util.DefaultObjectMapper;
 import org.jumpmind.pos.util.model.ErrorResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpRequest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.client.BufferingClientHttpRequestFactory;
-import org.springframework.http.client.ClientHttpRequestExecution;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.*;
+import org.springframework.http.client.*;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.net.ssl.SSLContext;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+@Slf4j
 public class ConfiguredRestTemplate extends RestTemplate {
 
     ObjectMapper mapper;
 
-    static BufferingClientHttpRequestFactory build(int timeout) {
+    private Map<String, String> additionalHeaders;
+
+    static BufferingClientHttpRequestFactory build(int timeout, int connectTimeout) {
         HttpComponentsClientHttpRequestFactory httpRequestFactory = new HttpComponentsClientHttpRequestFactory();
         httpRequestFactory.setConnectionRequestTimeout(timeout * 1000);
-        httpRequestFactory.setConnectTimeout(timeout * 1000);
+        httpRequestFactory.setConnectTimeout(connectTimeout * 1000);
         httpRequestFactory.setReadTimeout(timeout * 1000);
+
+        try {
+            TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
+            SSLContext sslContext = org.apache.http.ssl.SSLContexts.custom()
+                .loadTrustMaterial(acceptingTrustStrategy)
+                .build();
+            SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext);
+            CloseableHttpClient httpClient = HttpClients.custom()
+                .setSSLSocketFactory(csf)
+                .build();
+            httpRequestFactory.setHttpClient(httpClient);
+        } catch (Exception ex) {
+            log.warn("Failed to configure accepting trust store", ex);
+        }
         return new BufferingClientHttpRequestFactory(httpRequestFactory);
     }
 
@@ -44,9 +60,26 @@ public class ConfiguredRestTemplate extends RestTemplate {
     }
 
     public ConfiguredRestTemplate(int timeout) {
-        super(build(timeout));
+        this(timeout, timeout);
+    }
+
+    public ConfiguredRestTemplate(int timeout, int connectTimeout) {
+        super(build(timeout, connectTimeout));
         this.mapper = DefaultObjectMapper.build();
-        getMessageConverters().add(0, new MappingJackson2HttpMessageConverter(this.mapper));
+        getMessageConverters().add(0, new MappingJackson2HttpMessageConverter(this.mapper) {
+
+            @Override
+            public boolean canRead(java.lang.Class<?> clazz,
+                                   org.springframework.http.MediaType mediaType) {
+                return super.canRead(mediaType);
+            }
+            @Override
+            public boolean canRead(java.lang.reflect.Type type,
+                                   java.lang.Class<?> contextClass,
+                                   org.springframework.http.MediaType mediaType) {
+                return super.canRead(mediaType);
+            }
+        });
         List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
         interceptors.add(new LoggingRequestInterceptor());
         setInterceptors(interceptors);
@@ -67,7 +100,7 @@ public class ConfiguredRestTemplate extends RestTemplate {
                 } else if (response.getStatusCode().series() == HttpStatus.Series.CLIENT_ERROR) {
 
                     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-                        throw new NotFoundException();
+                        throw new NotFoundException(response.getStatusCode().toString());
                     } else {
                         super.handleError(response);
                     }
@@ -75,6 +108,14 @@ public class ConfiguredRestTemplate extends RestTemplate {
                 }
             }
         });
+
+    }
+
+    public void addHeader(String name, String value){
+        if( additionalHeaders == null){
+            additionalHeaders = new HashMap<>();
+        }
+        additionalHeaders.put(name, value);
     }
 
     public void execute(String url, Object request, HttpMethod method, Object... args) {
@@ -105,6 +146,11 @@ public class ConfiguredRestTemplate extends RestTemplate {
     public HttpHeaders buildHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+
+        if( additionalHeaders != null){
+            additionalHeaders.forEach((s, s2) -> headers.set(s, s2));
+        }
+
         return headers;
     }
 
