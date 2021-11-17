@@ -1104,10 +1104,9 @@ public class StateManager implements IStateManager {
         }
 
         if (screen != null) {
-            ScreenConfig screenConfig = screensConfig.getConfig().get(screen.getId());
-            ScreenConfig defaultScreenConfig = screensConfig.getConfig().get("default");
-            sessionTimeoutMillis = screenConfig != null && screenConfig.getTimeout() != null ?  screenConfig.getTimeout()*1000 : defaultScreenConfig.getTimeout()*1000;
-            sessionTimeoutAction = new Action(screenConfig != null && screenConfig.getTimeoutAction() != null ?  screenConfig.getTimeoutAction() : defaultScreenConfig.getTimeoutAction());
+            ScreenConfig screenConfig = screensConfig.findScreenConfig(screen.getId());
+            sessionTimeoutMillis = screenConfig != null && screenConfig.getTimeout() != null ?  screenConfig.getTimeout()*1000 : 0;
+            sessionTimeoutAction = new Action(screenConfig != null && screenConfig.getTimeoutAction() != null ?  screenConfig.getTimeoutAction() : null);
         } else {
             sessionTimeoutMillis = 0;
             sessionTimeoutAction = null;
