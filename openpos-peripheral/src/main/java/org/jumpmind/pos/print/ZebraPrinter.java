@@ -133,6 +133,15 @@ public class ZebraPrinter extends AbstractPOSPrinter {
     }
 
     @Override
+    public void lineFeedAndCutPaper() {
+        try {
+            this.cutPaper(100);
+        } catch (JposException ex) {
+            throw new PrintException("Failed to cut paper", ex);
+        }
+    }
+
+    @Override
     public boolean supportsPrintDivider() {
         return true;
     }
