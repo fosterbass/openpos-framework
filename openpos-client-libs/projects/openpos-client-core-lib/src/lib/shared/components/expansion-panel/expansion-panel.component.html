@@ -1,0 +1,10 @@
+<div class="expansion-panel expansion-header">
+    <ng-content select="[header]"></ng-content>
+    <app-icon *ngIf="isExpanded()" class="pad-10" iconName="keyboard_arrow_up"
+              iconClass="md muted-color expand-icon" (click)="toggleExpanded()"></app-icon>
+    <app-icon *ngIf="!isExpanded()" class="pad-10" iconName="keyboard_arrow_down"
+              iconClass="md muted-color expand-icon" (click)="toggleExpanded()"></app-icon>
+</div>
+<div class="expansion-panel expansion-body" [@animationShowHide]="state">
+    <ng-content select="[content]"></ng-content>
+</div>

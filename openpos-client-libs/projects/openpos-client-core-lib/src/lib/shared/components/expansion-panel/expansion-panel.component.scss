@@ -1,0 +1,18 @@
+:host{
+  display: grid;
+}
+
+.expansion-header {
+  display: flex;
+}
+
+.expansion-body {
+  margin-top: 1px;
+  margin-left: 30px;
+}
+
+.expand-icon {
+  flex: 0 1 100%;
+  justify-content: end;
+  cursor: pointer;
+}
