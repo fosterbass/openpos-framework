@@ -25,9 +25,8 @@ export class PromptInputComponent implements OnInit, OnDestroy {
     @Input() scanEnabled = false;
     @Input() validationMessages: Map<string, string>;
     @Input() autoFocus = true;
-
     @Input() scanActionName?: string;
-
+    @Input() closeScanViewPortOnScan: boolean;
     @Output() valueChange = new EventEmitter<string>();
 
     inputType: string;
@@ -94,6 +93,9 @@ export class PromptInputComponent implements OnInit, OnDestroy {
 
     async onBarcodeScanned(data: ScanData) {
         if (this.scanActionName) {
+            if (this.closeScanViewPortOnScan) {
+                this.showScanner = false;
+            }
             await this._actionService.doAction({ action: this.scanActionName, queueIfBlocked: true }, data);
         } else {
             this.setFieldValue(data.data);

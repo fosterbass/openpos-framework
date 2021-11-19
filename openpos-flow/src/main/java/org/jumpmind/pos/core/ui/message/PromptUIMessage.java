@@ -40,6 +40,16 @@ public class PromptUIMessage extends UIMessage {
     private boolean showComments = false;
     private List<String> validationPatterns;
     private boolean scanEnabled;
+
+    public boolean isCloseScanViewPortOnScan() {
+        return closeScanViewPortOnScan;
+    }
+
+    public void setCloseScanViewPortOnScan(boolean closeScanViewPortOnScan) {
+        this.closeScanViewPortOnScan = closeScanViewPortOnScan;
+    }
+
+    private boolean closeScanViewPortOnScan;
     private BigDecimal min;
     private BigDecimal max;
     private String imageUrl;
