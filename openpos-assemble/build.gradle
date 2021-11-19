@@ -19,6 +19,7 @@ plugins {
 
 apply plugin: 'se.bjurr.gitchangelog.git-changelog-gradle-plugin'
 apply from: '../openpos-gradle/src/main/resources/java.gradle'
+apply from: '../openpos-gradle/src/main/resources/publish.gradle'
 apply from: '../openpos-gradle/src/main/resources/release.gradle'
 
 sonarqube {
