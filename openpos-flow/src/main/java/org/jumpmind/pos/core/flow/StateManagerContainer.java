@@ -26,6 +26,8 @@ import org.jumpmind.pos.core.error.IErrorHandler;
 import org.jumpmind.pos.core.flow.config.IFlowConfigProvider;
 import org.jumpmind.pos.core.flow.config.TransitionStepConfig;
 import org.jumpmind.pos.core.service.IScreenService;
+import org.jumpmind.pos.util.Version;
+import org.jumpmind.pos.util.Versions;
 import org.jumpmind.pos.util.clientcontext.ClientContext;
 import org.jumpmind.pos.util.event.Event;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.jumpmind.pos.util.AppUtils.setupLogging;
 
@@ -64,6 +67,8 @@ public class StateManagerContainer implements IStateManagerContainer, Applicatio
 
     ThreadLocal<IStateManager> currentStateManager = new InheritableThreadLocal<>();
 
+    private Map<String,String> versions;
+
     @Override
     public synchronized void removeSessionIdVariables(String sessionId) {
         for (StateManager stateManager : stateManagersByDeviceId.values()) {
@@ -89,6 +94,7 @@ public class StateManagerContainer implements IStateManagerContainer, Applicatio
             setCurrentStateManager(stateManager);
             clientContext.put("deviceId", deviceId);
             clientContext.put("appId", appId);
+            setClientContextVersions();
             if (personalizationProperties != null) {
                 personalizationProperties.entrySet().forEach(entry -> clientContext.put(entry.getKey(), entry.getValue()));
             }
@@ -176,6 +182,7 @@ public class StateManagerContainer implements IStateManagerContainer, Applicatio
 
             clientContext.put("deviceId", stateManager.getDeviceId());
             clientContext.put("appId", stateManager.getAppId());
+            setClientContextVersions();
             if (clientContextUpdaters != null) {
                 for (IClientContextUpdater clientContextUpdater : clientContextUpdaters) {
                     clientContextUpdater.update(clientContext, stateManager);
@@ -195,6 +202,19 @@ public class StateManagerContainer implements IStateManagerContainer, Applicatio
         for (StateManager stateManager : new ArrayList<>(stateManagersByDeviceId.values())) {
             stateManager.onEvent(event);
         }
+    }
+
+    private void setClientContextVersions() {
+        getVersions().entrySet().forEach(e ->
+            clientContext.put("version." + e.getKey(), e.getValue()));
+    }
+
+    private Map<String,String> getVersions() {
+        if (null == versions) {
+            versions = Versions.getVersions().stream().collect(Collectors.toMap(Version::getComponentName, Version::getVersion));
+        }
+
+        return versions;
     }
 
 }
