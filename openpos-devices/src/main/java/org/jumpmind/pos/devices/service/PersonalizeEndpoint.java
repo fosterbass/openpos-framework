@@ -32,6 +32,9 @@ public class PersonalizeEndpoint {
     @Autowired
     DeviceUpdater deviceUpdater;
 
+    @Autowired
+    IDevicesService devicesService;
+
     public PersonalizationResponse personalize(@RequestBody PersonalizationRequest request) {
         String authToken = request.getDeviceToken();
         final String deviceId = request.getDeviceId();
