@@ -12,12 +12,8 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.web.WebApplicationInitializer;
 
-import javax.annotation.PostConstruct;
 import javax.net.ssl.*;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import java.io.File;
 import java.net.CookieHandler;
 import java.net.CookieManager;
@@ -26,12 +22,12 @@ import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import static org.jumpmind.pos.util.AppUtils.*;
+
+import static org.jumpmind.pos.util.AppUtils.setupLogging;
 
 @SpringBootApplication
 @EnableScheduling
-@ComponentScan(
-        basePackages = {"org.jumpmind.pos"})
+@ComponentScan(basePackages = {"org.jumpmind.pos"})
 public class UpdateServer {
 
     @Autowired
@@ -44,7 +40,10 @@ public class UpdateServer {
         configureSsl();
         loadCookieManager();
 
-        new SpringApplicationBuilder().sources(UpdateServer.class).run(args);
+        new SpringApplicationBuilder()
+                .profiles("update-server", UpdateModule.NAME)
+                .sources(UpdateServer.class)
+                .run(args);
     }
 
     static void startupOutput() {
