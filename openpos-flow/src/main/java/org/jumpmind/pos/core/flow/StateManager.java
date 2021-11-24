@@ -20,12 +20,7 @@
 package org.jumpmind.pos.core.flow;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -47,6 +42,7 @@ import org.jumpmind.pos.core.service.spring.DeviceScope;
 import org.jumpmind.pos.core.ui.UIMessage;
 import org.jumpmind.pos.server.model.Action;
 import org.jumpmind.pos.server.service.IMessageService;
+import org.jumpmind.pos.util.ClassUtils;
 import org.jumpmind.pos.util.Versions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -326,14 +322,46 @@ public class StateManager implements IStateManager {
     }
 
     protected void refreshDeviceScope() {
-        for (String name : applicationState.getScope().getDeviceScope().keySet()) {
+        for (String name : new HashSet<>(applicationState.getScope().getDeviceScope().keySet())) {
+            if (!shouldWireDeviceBeanNamed(name)) {
+                continue;
+            }
             Object value = applicationState.getScopeValue(ScopeType.Device, name);
+            if (value == null || !shouldWireDeviceBean(value)) {
+                continue;
+            }
+
             performOutjections(value);
             if (DeviceScope.isDeviceScope(name)) {
                 performInjectionsOnSpringBean(value);
             } else {
                 injector.performInjections(value, applicationState.getScope(), applicationState.getCurrentContext());
             }
+        }
+    }
+
+    protected boolean shouldWireDeviceBean(Object value) {
+        Class<?> clazz = value.getClass();
+        if (ClassUtils.isSimpleType(clazz)
+            || Collection.class.isAssignableFrom(clazz)
+            || Map.class.isAssignableFrom(clazz)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    protected boolean shouldWireDeviceBeanNamed(String name) {
+        switch (name) {
+        case "stateManager":
+        case "queryParams":
+        case "device":
+        case "businessUnit":
+        case "deviceId":
+        case "personalizationProperties":
+            return false;
+        default:
+            return true;
         }
     }
 
