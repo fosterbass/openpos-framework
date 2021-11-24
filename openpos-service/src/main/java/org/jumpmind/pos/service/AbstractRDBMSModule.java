@@ -182,7 +182,8 @@ abstract public class AbstractRDBMSModule extends AbstractServiceFactory impleme
 
     protected IDatabasePlatform databasePlatform() {
         if (databasePlatform == null) {
-            databasePlatform = JdbcDatabasePlatformFactory.createNewPlatformInstance(getDataSource(), new SqlTemplateSettings(), false, false);
+            databasePlatform = JdbcDatabasePlatformFactory.getInstance().
+                    create(getDataSource(), new SqlTemplateSettings(), false, false);
         }
         return databasePlatform;
     }
