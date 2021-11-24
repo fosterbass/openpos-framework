@@ -190,6 +190,10 @@ export class WedgeScannerPlugin implements Scanner {
                 // skip the next value since we already accounted for it.
                 i += 4;
             } else if (WEDGE_SCANNER_ACCEPTED_KEYS.includes(e.key)) {
+                let key = e.key;
+                if (key === 'Enter') {
+                    key = '\n';
+                }
                 charList.push(e.key);
             }
         }
