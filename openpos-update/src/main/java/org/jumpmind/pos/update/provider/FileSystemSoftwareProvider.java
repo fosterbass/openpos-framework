@@ -80,9 +80,8 @@ public class FileSystemSoftwareProvider implements ISoftwareProvider {
     }
 
     Stream<FileVersionPair> getFiles() {
-        final Stream<File> files = Arrays.stream(Objects.requireNonNull(
-                new File(baseDir).listFiles((dir, name) -> name.endsWith("." + artifactExtension))
-        ));
+        final File[] filesList = new File(baseDir).listFiles((dir, name) -> name.endsWith("." + artifactExtension));
+        final Stream<File> files = filesList != null ? Arrays.stream(filesList) : Stream.empty();
 
         Stream<FileVersionPair> result;
 
