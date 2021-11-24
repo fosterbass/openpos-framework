@@ -1,5 +1,6 @@
 package org.jumpmind.pos.update.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jumpmind.pos.service.Endpoint;
 import org.jumpmind.pos.update.UpdateModule;
 import org.jumpmind.pos.update.model.InstallGroupModel;
@@ -24,6 +25,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Slf4j
 @Profile(UpdateModule.NAME)
 @Endpoint(path = "/update/installation/{installationId}")
 public class UpdateEndpoint {
@@ -40,6 +42,9 @@ public class UpdateEndpoint {
     @Value("${openpos.update.installBasePath}")
     String installBasePath;
 
+    @Value("${openpos.update.requireAssigment:false}")
+    boolean requireAssignment;
+
     Map<Version, String> versionToConfigXml = new ConcurrentHashMap<>();
 
     @Autowired
@@ -55,27 +60,8 @@ public class UpdateEndpoint {
         provider = softwareProviderFactory.getSoftwareProvider();
     }
 
-    public void update(
-            String installationId,
-            HttpServletResponse response
-    ) throws Exception {
-        Version version = null;
-        InstallGroupModel installGroupModel = installRepository.findInstallGroup(installationId);
-
-        if (installGroupModel != null) {
-            if ("*".equals(installGroupModel.getTargetVersion())) {
-                version = provider.getLatestVersion();
-            } else {
-                try {
-                    version = versionFactory.fromString(installGroupModel.getTargetVersion());
-                } catch (IllegalArgumentException ignored) {
-                    response.sendError(HttpServletResponse.SC_CONFLICT, "server has invalid version for target group");
-                    return;
-                }
-            }
-        } else {
-            version = provider.getLatestVersion();
-        }
+    public void update(String installationId, HttpServletResponse response) throws IOException {
+        Version version = getExpectedVersion(installationId);
 
         if (version == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -101,7 +87,37 @@ public class UpdateEndpoint {
         response.flushBuffer();
     }
 
-    Configuration buildConfiguration(Version version, Path fromZip) throws IOException {
+    private Version getExpectedVersion(String installationId) {
+        Version version = null;
+        InstallGroupModel installGroupModel = installRepository.findInstallGroup(installationId);
+
+        if (installGroupModel != null) {
+            if ("*".equals(installGroupModel.getTargetVersion())) {
+                version = getLatestExpectedVersion();
+            } else {
+                try {
+                    version = versionFactory.fromString(installGroupModel.getTargetVersion());
+                } catch (IllegalArgumentException ex) {
+                    log.error(
+                            "could not parse version '{}' from the targeted install group '{}'; no update shall be provided",
+                            installGroupModel.getTargetVersion(),
+                            installGroupModel,
+                            ex
+                    );
+                }
+            }
+        } else if (!requireAssignment) {
+            version = getLatestExpectedVersion();
+        }
+
+        return version;
+    }
+
+    private Version getLatestExpectedVersion() {
+        return provider.getLatestVersion();
+    }
+
+    private Configuration buildConfiguration(Version version, Path fromZip) throws IOException {
         Configuration.Builder configBuilder = Configuration.builder()
                 .baseUri(installUrl + "/update/download/" + version.getVersionString() +"/")
                 .basePath(installBasePath)

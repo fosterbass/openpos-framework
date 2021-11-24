@@ -22,7 +22,7 @@ public class Versioning {
 
     private static final NoopVersionFactory NOOP_VERSION_FACTORY = new NoopVersionFactory();
 
-    public Version fromString(String version) {
+    public Version fromString(String version) throws IllegalArgumentException {
         return getConfiguredFactory().fromString(version);
     }
 
