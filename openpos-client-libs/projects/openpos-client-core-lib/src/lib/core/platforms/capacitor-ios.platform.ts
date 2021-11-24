@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Capacitor, Plugins } from '@capacitor/core';
+import { Capacitor } from '@capacitor/core';
 import { Observable, of } from 'rxjs';
 import { IPlatformInterface } from './platform.interface';
 
@@ -17,7 +17,6 @@ export class CapacitorIosPlatform implements IPlatformInterface {
 
     platformReady(): Observable<string> {
         // the capacitor platform doesn't have 'ready' phase, its just ready...
-        const plugins = Object.keys(Plugins).join(', ');
-        return of('capacitor for iOS loaded', 'capacitor plugins loaded: ' + plugins);
+        return of('capacitor for iOS loaded');
     }
 }

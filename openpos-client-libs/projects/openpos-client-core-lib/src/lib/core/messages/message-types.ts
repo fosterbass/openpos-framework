@@ -30,4 +30,5 @@ export class MessageTypes {
     static CLOSE_STATUS_DETAILS = 'CloseStatusDetails';
     static DATA_CLEAR = 'DataClear';
     static LOYALTY_SIGNUP = 'LoyaltySignup';
+    static PUSH_REGISTER = 'PushNotificationRegister';
 }

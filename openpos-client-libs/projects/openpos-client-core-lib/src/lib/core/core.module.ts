@@ -81,6 +81,7 @@ import { CommerceServerSinkModule } from './logging/commerce-server/commerce-ser
 import { NewRelicSinkModule } from './logging/new-relic/new-relic-sink.module';
 import { ConfigProvidersModule } from './platforms/config-provider/config-providers.module';
 import { PowerModule } from './platform-plugins/power/power.module';
+import { PushNotificationService } from './services/push-notification.service';
 import { CordovaService } from './services/cordova.service';
 
 registerLocaleData(locale_enCA, 'en-CA');
@@ -201,6 +202,7 @@ export class CoreModule {
         toastService: ToastService,
         uiDataService: UIDataMessageService,
         clientExecutableService: ClientExecutableService,
+        pushNotificationService: PushNotificationService,
         keyProvider: KeyPressProvider) {
         throwIfAlreadyLoaded(parentModule, 'CoreModule');
         AppInjector.instance = this.injector;
