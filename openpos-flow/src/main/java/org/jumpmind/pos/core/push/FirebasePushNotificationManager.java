@@ -33,9 +33,13 @@ public class FirebasePushNotificationManager {
     protected void init() {
         try {
             InputStream is = FirebasePushNotificationManager.class.getResourceAsStream("/push/jumpmind-firebase-token.json");
-            FirebaseOptions options = FirebaseOptions.builder()
-                    .setCredentials(GoogleCredentials.fromStream(is)).build();
-            firebaseApp = FirebaseApp.initializeApp(options);
+            if (is != null) {
+                FirebaseOptions options = FirebaseOptions.builder()
+                        .setCredentials(GoogleCredentials.fromStream(is)).build();
+                firebaseApp = FirebaseApp.initializeApp(options);
+            } else {
+                log.info("Unable to find google firebase access token. Will not be able to send push notifications.");
+            }
         } catch (IOException e) {
             log.info("Unable to find google firebase access token. Will not be able to send push notifications.");
         }
