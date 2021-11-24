@@ -11,6 +11,7 @@ import org.jumpmind.pos.update.versioning.Versioning;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.MediaType;
 import org.update4j.Configuration;
 import org.update4j.FileMetadata;
 
@@ -96,6 +97,7 @@ public class UpdateEndpoint {
         }
 
         response.getWriter().print(versionToConfigXml.get(version));
+        response.setContentType(MediaType.APPLICATION_XML_VALUE);
         response.flushBuffer();
     }
 
