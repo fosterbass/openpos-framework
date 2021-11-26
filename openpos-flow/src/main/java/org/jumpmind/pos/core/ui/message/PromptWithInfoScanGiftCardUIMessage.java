@@ -29,9 +29,12 @@ public class PromptWithInfoScanGiftCardUIMessage extends PromptWithInfoUIMessage
     public PromptWithInfoScanGiftCardUIMessage(boolean isRequiredInputField, boolean isScanGiftCardEnabled) {
         this.isRequiredInputField = isRequiredInputField;
         this.isGiftCardScanEnabled = isScanGiftCardEnabled;
+        this.setAutoFocus(false);
     }
     
-    public PromptWithInfoScanGiftCardUIMessage() {}
+    public PromptWithInfoScanGiftCardUIMessage() {
+        this.setAutoFocus(false);
+    }
     
     
 }
