@@ -1,4 +1,5 @@
 apply from: '../openpos-gradle/src/main/resources/java.gradle'
+apply from: '../openpos-gradle/src/main/resources/publish.gradle'
 
 dependencies {
     implementation "net.java.dev.jna:jna:$jnaVersion"

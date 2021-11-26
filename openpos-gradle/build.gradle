@@ -1,1 +1,2 @@
 apply from: 'src/main/resources/java.gradle'
+apply from: 'src/main/resources/publish.gradle'
