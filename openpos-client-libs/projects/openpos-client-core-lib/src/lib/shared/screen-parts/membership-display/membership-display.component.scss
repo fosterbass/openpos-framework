@@ -3,6 +3,8 @@
 mat-chip {
   text-transform: uppercase;
   min-height: 2em;
+  display: grid;
+  grid-template-columns: min-content minmax(0, 1fr);
 
   &.mat-standard-chip {
     padding: .1em 1.25em;
@@ -32,6 +34,7 @@ mat-chip {
 }
 
 .membership-name {
-    overflow: hidden;
-    text-overflow: ellipsis;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

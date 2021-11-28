@@ -32,4 +32,5 @@ export interface PromptFormPartInterface {
     info: DisplayProperty[];
     scan?: ScanInterface;
     autoFocus: boolean;
+    closeScanViewPortOnScan: boolean;
 }

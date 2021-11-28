@@ -19,6 +19,10 @@
             overflow-y: hidden;
             max-height: 100%;
 
+            &.tablet {
+                padding: 8px;
+            }
+
             .orders{
                 display:grid;
                 grid-template-columns: 1fr auto;
