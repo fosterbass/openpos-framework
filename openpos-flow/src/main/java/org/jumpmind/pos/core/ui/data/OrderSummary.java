@@ -18,6 +18,7 @@ public class OrderSummary implements Serializable {
     private OrderCustomer customer;
     private boolean priorityFlag;
     private String orderType;
+    private String orderTypeLabel;
     private String orderTypeIcon;
     private String itemCount;
     private String itemCountLabel;
@@ -35,6 +36,7 @@ public class OrderSummary implements Serializable {
     private String orderTotalLabel;
     private String amountDue;
     private String amountDueLabel;
+    private String paymentStatus;
     private TimeUnitLabels timeUnitLabels;
 }
 

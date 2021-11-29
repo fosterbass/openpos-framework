@@ -71,7 +71,7 @@ Now that the theme has been set up it can be used to style components. The estab
 An example component theme file:
 
 ```scss
-@mixin order-detail-theme($theme){
+@mixin order-pick-theme($theme){
     $app-primary: mat-color(map-get($theme, primary));
     $app-accent: mat-color(map-get($theme, accent));
     $app-warn: mat-color(map-get($theme, warn));

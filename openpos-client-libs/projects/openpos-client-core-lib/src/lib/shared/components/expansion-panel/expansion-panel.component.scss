@@ -1,9 +1,13 @@
+@import "../../../styles/variables/spacing";
+
 :host{
   display: grid;
 }
 
 .expansion-header {
-  display: flex;
+  @extend %sub-element;
+  display: grid;
+  grid-template-columns: 1fr auto;
 }
 
 .expansion-body {

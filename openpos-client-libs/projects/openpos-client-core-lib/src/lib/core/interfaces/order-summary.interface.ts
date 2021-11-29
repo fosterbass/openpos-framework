@@ -9,6 +9,7 @@ export interface IOrderSummary {
     priorityFlag: boolean;
     orderType: string;
     orderTypeIcon: string;
+    orderTypeLabel: string;
     itemCount: string;
     itemCountLabel: string;
     itemCountIcon: string;
@@ -25,5 +26,6 @@ export interface IOrderSummary {
     orderTotalLabel: string;
     amountDue: string;
     amountDueLabel: string;
+    paymentStatus: string;
     timeUnitLabels: TimeUnitLabels;
 }
