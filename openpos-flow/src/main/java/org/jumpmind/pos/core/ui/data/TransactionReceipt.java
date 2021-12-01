@@ -18,6 +18,8 @@ public class TransactionReceipt implements Serializable {
 
     private String webOrderId;
 
+    private String webOrderLabel;
+
     private List<TransactionReceiptLine> transactionInfoSection = new ArrayList<>();
 
     private List<TransactionReceiptLine> totalsInfoSection = new ArrayList<>();
@@ -25,6 +27,10 @@ public class TransactionReceipt implements Serializable {
     private Total transactionTotal;
 
     private String icon;
+
+    private String webOrderIcon;
+
+    private String webOrderStyleClasses;
 
     private String barcode;
 

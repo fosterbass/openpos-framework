@@ -2,9 +2,9 @@
 
     <img *ngIf="receipt.icon" [src]="receipt.icon | imageUrl" class="receipt-icon">
 
-    <div *ngIf="receipt.webOrderId" responsive-class class="muted-color web-order">
-        <app-icon iconName="computer" iconClass="material-icons sm"></app-icon>
-        <kbd>Web Order</kbd>
+    <div *ngIf="receipt.webOrderId" responsive-class class="{{receipt.webOrderStyleClasses}}">
+        <app-icon iconName="{{receipt.webOrderIcon}}" iconClass="material-icons sm"></app-icon>
+        <kbd>{{receipt.webOrderLabel}}</kbd>
     </div>
     
     <section class="transaction-info">
