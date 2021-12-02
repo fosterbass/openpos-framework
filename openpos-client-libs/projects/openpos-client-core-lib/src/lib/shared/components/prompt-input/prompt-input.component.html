@@ -19,7 +19,7 @@
                     <ng-template #noAutoFocusA>
                         <input matInput [errorStateMatcher]="errorMatcher" [formControlName]="'promptInputControl'"
                             [formatterName]="responseType" [attr.minlength]="minLength" [attr.maxlength]="maxLength"
-                            [readonly]="readOnly" [attr.type]="isNumericField() ? 'tel' : 'text'" [keyboardLayout]="keyboardLayout"
+                            [readonly]="readOnly" [attr.type]="isNumericField() ? 'tel' : 'text'" [keyboardLayout]="keyboardLayout"  (keyup)="valueChange.emit($event)"
                             class="prompt-input" autoSelectOnFocus responsive-class>
                     </ng-template>
 
