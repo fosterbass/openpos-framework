@@ -2,10 +2,10 @@
     <div class="leftside" [class.expanded]="searchExpanded">
         <app-icon-button *ngIf="iconButtonName" [iconName]="iconButtonName"
                          [title]="screenData.headerText"
-                         [iconClass]="'md'" (buttonClick)="buttonClick()">
+                         [iconClass]="'md'" (buttonClick)="buttonClick()" style="color: white;">
         </app-icon-button>
         <app-icon-button *ngIf="helpTextService.isAvailable() | async" iconName="help"
-            (click)="helpTextService.toggle()"></app-icon-button>
+            (click)="helpTextService.toggle()" style="color: white;"></app-icon-button>
         <app-search-expand-input *ngIf="searchEnabled && (isMobile | async)" (expanded)="onSearchExpand($event)"
             class="bacon-strip-search"></app-search-expand-input>
     </div>
