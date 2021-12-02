@@ -14,7 +14,7 @@ openpos:
         initialDelay: 10000
 
   update:
-    installUrl: http://localhost:6142
+    installUrl: http://localhost:6145
     installBasePath: ${dollar}{user.dir}
     fileSystemSoftwareProvider:
       artifactExtension: zip

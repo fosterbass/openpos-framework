@@ -88,6 +88,8 @@ public class WrapperConfig {
         return getProperty(properties, "wrapper.server.pidfile", "tmp/server.pid");
     }
 
+    public File getInstallLockFile() { return new File(getProperty(properties, "wrapper.updater.lockfile", "tmp/update.lock")); }
+
     public long getLogFileMaxSize() {
         String str = getProperty(properties, "wrapper.logfile.maxsize", "10M").toUpperCase();
         int multiplier = 1;

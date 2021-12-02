@@ -22,7 +22,7 @@ import java.util.zip.ZipFile;
 @Profile(UpdateModule.NAME)
 @Endpoint(path = DownloadEndpoint.PATH + "{version}/**")
 public class DownloadEndpoint {
-    final static String PATH = "/update/download/";
+    static final String PATH = "/update/download/";
 
     @Autowired
     Versioning versionFactory;

@@ -12,6 +12,8 @@ import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
@@ -250,7 +252,12 @@ public abstract class WrapperService {
         int symPid = readPidFromFile(config.getServerPidFile());
         int wrapperPid = readPidFromFile(config.getWrapperPidFile());
         if (!isPidRunning(symPid) && !isPidRunning(wrapperPid)) {
-            throw new WrapperException(Constants.RC_SERVER_NOT_RUNNING, 0, "Server is not running");
+            try {
+                throw new WrapperException(Constants.RC_SERVER_NOT_RUNNING, 0, "Server is not running");
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw e;
+            }
         }
         System.out.println("Waiting for server to stop");
         if (!(stopProcess(wrapperPid, "wrapper") && stopProcess(symPid, "application"))) {
@@ -315,20 +322,59 @@ public abstract class WrapperService {
         }
     }
 
+    private void tryUpdateInstallCleanup() {
+        final File lockFile = config.getInstallLockFile();
+        if (lockFile.exists()) {
+            try (final FileChannel lockFileChannel = FileChannel.open(lockFile.toPath(), StandardOpenOption.READ, StandardOpenOption.DELETE_ON_CLOSE);
+                 final FileLock lock = lockFileChannel.lock()
+            ) {
+            } catch (IOException ex) {
+                return;
+            }
+
+            try {
+                // just give a little install jvm to close
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                return;
+            }
+        }
+
+        final File tempDir = new File(System.getProperty("java.io.tmpdir"));
+
+        Arrays.stream(tempDir.listFiles())
+                .filter(file -> file.isDirectory() && file.getName().startsWith("libs-bak"))
+                .forEach(File::delete);
+    }
+
     public void installUpdate(String updateFile) {
-        if (isRunning()) {
-            stop();
-        }
-
-        System.out.println("about to run update on " + updateFile);
-
         try {
-            Archive.read(updateFile).install();
-        } catch (IOException ex) {
-            System.err.println("failed to install update at: " + updateFile);
-        }
+            if (isRunning()) {
+                stop();
+            }
 
-        start();
+            final File lockFile = config.getInstallLockFile();
+            if (!lockFile.mkdirs()) {
+                System.err.println("cannot create lock file for update");
+                return;
+            }
+
+            try(final FileChannel lockFileChannel = FileChannel.open(lockFile.toPath(), StandardOpenOption.CREATE_NEW, StandardOpenOption.DELETE_ON_CLOSE);
+                final FileLock lock = lockFileChannel.lock()
+            ) {
+                System.out.println("about to run update on " + updateFile);
+
+                try {
+                    Archive.read(updateFile).install();
+                } catch (IOException ex) {
+                    System.err.println("failed to install update at: " + updateFile);
+                }
+            }
+        } catch (IOException ex) {
+            System.err.println("cannot create lock file for update: " + ex.getMessage());
+        } finally {
+            start();
+        }
     }
 
     public boolean isRunning() {
@@ -434,6 +480,8 @@ public abstract class WrapperService {
     private void doUpdateInstall(File updateFile) {
         System.out.println("installing pending update...");
 
+        tryUpdateInstallCleanup();
+
         final File jarFile = new File(WrapperService.class.getProtectionDomain()
                 .getCodeSource()
                 .getLocation()
@@ -467,16 +515,6 @@ public abstract class WrapperService {
             }
 
             try {
-//                final String[] args = new String[]
-//                        {
-//                                config.getJavaCommand(),
-//                                "-classpath " + libCpyDir.toString() + "/*",
-//                                "org.jumpmind.pos.wrapper.ServiceWrapper",
-//                                "install-update",
-//                                "\"" + config.configFile + "\"",
-//                                "\"" + updateFile.getAbsolutePath() + "\""
-//                        };
-
                 final ArrayList<String> args = getWrapperCommandForOtherWrapper(
                         Paths.get(libCpyDir.getAbsolutePath(), jarFile.getName()).toString(),
                         "install-update",
@@ -571,23 +609,25 @@ public abstract class WrapperService {
 
             System.out.println("config before sync: " + configuration.getFiles().stream().findFirst().get().getUri().toString());
 
+            System.out.println("base uri: " + configuration.getBaseUri());
+
             //configuration = configuration.sync(config.getWorkingDirectory().toPath());
 
             //System.out.println("config after sync: " + configuration.getFiles().stream().findFirst().get().getUri().toString());
 
-            configuration.getFiles().forEach(file -> {
-                try {
-                    boolean requiresUpdate = file.requiresUpdate();
-
-                     System.out.println("file '" + file.getPath().toString() + "'    check: " +  String.format("%x", file.getChecksum()));
-
-                    if (requiresUpdate) {
-                        System.out.println("file requires update: " + file.getPath().toString());
-                    }
-                } catch (IOException ex) {
-                    System.out.println("cannot read file '" + file.getPath().toString() + "'");
-                }
-            });
+//            configuration.getFiles().forEach(file -> {
+//                try {
+//                    boolean requiresUpdate = file.requiresUpdate();
+//
+//                     System.out.println("file '" + file.getPath().toString() + "'    check: " +  String.format("%x", file.getChecksum()));
+//
+//                    if (requiresUpdate) {
+//                        System.out.println("file requires update: " + file.getPath().toString());
+//                    }
+//                } catch (IOException ex) {
+//                    System.out.println("cannot read file '" + file.getPath().toString() + "'");
+//                }
+//            });
 
             if (!configuration.requiresUpdate()) {
                 System.out.println("no update found");
@@ -617,6 +657,7 @@ public abstract class WrapperService {
 
         if (result.getException() != null) {
             System.err.println("failed to get update: " + result.getException().getMessage());
+            result.getException().printStackTrace();
             return;
         }
 

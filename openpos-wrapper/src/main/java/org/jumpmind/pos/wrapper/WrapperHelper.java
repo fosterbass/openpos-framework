@@ -44,7 +44,7 @@ public class WrapperHelper {
                 service.console();
             } else if (args[0].equalsIgnoreCase("install-update")) {
                 if (args.length != 3) {
-                    System.out.println("ERROR: invalid number of arguments; expected 4");
+                    System.out.println("ERROR: invalid number of arguments; expected 3");
                     printUsage();
                     System.exit(Constants.RC_INVALID_ARGUMENT);
                     return;
