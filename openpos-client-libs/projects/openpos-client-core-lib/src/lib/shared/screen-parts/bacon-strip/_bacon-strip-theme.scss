@@ -13,7 +13,8 @@
 
     app-bacon-strip{
         >.container{
-            background-color: $app-primary;
+            
+            background: linear-gradient(to left, #14823B 50%, #e81f12 50%);
             color: $app-primary-contrast;
         }
 
