@@ -17,22 +17,16 @@ import java.nio.channels.FileLock;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
+import java.util.logging.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.jumpmind.pos.wrapper.Constants.Status;
 
-import com.sun.jna.Platform;
-import org.update4j.Archive;
-import org.update4j.Configuration;
-import org.update4j.UpdateOptions;
-import org.update4j.UpdateResult;
+import org.update4j.*;
 import org.update4j.service.UpdateHandler;
-import org.update4j.util.FileUtils;
 
 public abstract class WrapperService {
 
@@ -48,12 +42,15 @@ public abstract class WrapperService {
 
     private static WrapperService instance;
 
+    private static final String APPLICATION_NAME = "application";
+
     public static WrapperService getInstance() {
-        if (Platform.isWindows()) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             instance = new WindowsService();
         } else {
             instance = new UnixService();
         }
+
         return instance;
     }
 
@@ -69,36 +66,47 @@ public abstract class WrapperService {
 
         tryAutoUpdate();
 
-        System.out.println("Waiting for server to start");
+        logger.info("Waiting for server to start");
         ArrayList<String> cmdLine = getWrapperCommand("exec");
         Process process = null;
         boolean success = false;
         int rc = 0;
+
         try {
             ProcessBuilder pb = new ProcessBuilder(cmdLine);
             pb.redirectErrorStream(true);
             process = pb.start();
-            if (!(success = waitForPid(getProcessPid(process)))) {
+
+            success = waitForPid(getProcessPid(process));
+            if (!success) {
                 rc = process.exitValue();
             }
         } catch (IOException e) {
             rc = -1;
-            System.out.println(e.getMessage());
+            logger.info(e.getMessage());
         }
 
         if (success) {
-            System.out.println("Started");
+            logger.info("Started");
         } else {
-            System.err.println(commandToString(cmdLine));
             try {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-                String line = null;
-                while ((line = reader.readLine()) != null) {
-                    System.err.println(line);
+                if (process == null) {
+                    logger.severe("failed to start process and unable to read process stdout");
+                    return;
                 }
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                String line;
+
+                while ((line = reader.readLine()) != null) {
+                    logger.severe(line);
+                }
+
                 reader.close();
             } catch (Exception e) {
+                logger.severe(() -> "failed to start process and an error occurred attempt to read the process stdout: " + e.getMessage());
             }
+
             throw new WrapperException(Constants.RC_FAIL_EXECUTION, rc, "Failed second stage");
         }
     }
@@ -119,10 +127,20 @@ public abstract class WrapperService {
     protected void execJava(boolean isConsole) {
         try {
             LogManager.getLogManager().reset();
-            new File(config.getLogFile()).getParentFile().mkdirs();
-            WrapperLogHandler handler = new WrapperLogHandler(config.getLogFile(), config.getLogFileMaxSize(), config.getLogFileMaxFiles());
+
+            final File logsFile = new File(config.getLogFile());
+
+            Files.createDirectories(logsFile.getParentFile().toPath());
+
+            final WrapperLogHandler handler = new WrapperLogHandler(
+                    config.getLogFile(),
+                    config.getLogFileMaxSize(),
+                    config.getLogFileMaxFiles()
+            );
+
             handler.setFormatter(new WrapperLogFormatter());
-            Logger rootLogger = Logger.getLogger("");
+
+            final Logger rootLogger = Logger.getLogger("");
             rootLogger.setLevel(Level.parse(config.getLogFileLogLevel()));
             rootLogger.addHandler(handler);
         } catch (IOException e) {
@@ -132,24 +150,29 @@ public abstract class WrapperService {
         try {
             int pid = getCurrentPid();
             writePidToFile(pid, config.getWrapperPidFile());
-            logger.log(Level.INFO, "Started wrapper as PID " + pid);
+            logger.info(() -> "Started wrapper as PID " + pid);
 
             ArrayList<String> cmd = config.getCommand(isConsole);
             String cmdString = commandToString(cmd);
-            boolean usingHeapDump = cmdString.indexOf("-XX:+HeapDumpOnOutOfMemoryError") != -1;
-            logger.log(Level.INFO, "Working directory is " + config.getJavaProcessWorkingDirectory().getCanonicalPath());
+            boolean usingHeapDump = cmdString.contains("-XX:+HeapDumpOnOutOfMemoryError");
+
+            final String canonicalPath = config.getJavaProcessWorkingDirectory().getCanonicalPath();
+            logger.info(() -> "Working directory is " + canonicalPath);
 
             long startTime = 0;
             int startCount = 0;
-            boolean startProcess = true, restartDetected = false;
+            boolean startProcess = true;
+            boolean restartDetected = false;
             int serverPid = 0;
 
             while (keepRunning) {
                 if (startProcess) {
-                    logger.log(Level.INFO, "Executing " + cmdString);
+                    logger.info(() -> "Executing " + cmdString);
+
                     if (startCount == 0) {
                         updateStatus(Status.START_PENDING);
                     }
+
                     startTime = System.currentTimeMillis();
                     ProcessBuilder pb = new ProcessBuilder(cmd);
                     pb.directory(config.getJavaProcessWorkingDirectory());
@@ -158,13 +181,15 @@ public abstract class WrapperService {
                     try {
                         child = pb.start();
                     } catch (IOException e) {
-                        logger.log(Level.SEVERE, "Failed to execute: " + e.getMessage());
+                        logger.severe(() -> "Failed to execute: " + e.getMessage());
                         updateStatus(Status.STOPPED);
                         throw new WrapperException(Constants.RC_FAIL_EXECUTION, -1, "Failed executing server", e);
                     }
 
-                    serverPid = getProcessPid(child);
-                    logger.log(Level.INFO, "Started server as PID " + serverPid);
+                    final int serverPidCapture =  getProcessPid(child);
+                    logger.info(() -> "Started server as PID " + serverPidCapture);
+
+                    serverPid = serverPidCapture;
                     writePidToFile(serverPid, config.getServerPidFile());
 
                     if (startCount == 0) {
@@ -175,13 +200,12 @@ public abstract class WrapperService {
                     startCount++;
                 } else {
                     try {
-                        logger.log(Level.INFO, "Watching output of java process");
+                        logger.info("Watching output of java process");
                         childReader = new BufferedReader(new InputStreamReader(child.getInputStream()));
                         String line = null;
 
                         while ((line = childReader.readLine()) != null || child.isAlive()) {
                             if (line != null) {
-                                System.out.println(line);
                                 logger.log(Level.INFO, line, "java");
                                 if ((usingHeapDump && line.matches("Heap dump file created.*"))
                                         || (!usingHeapDump && line.matches("java.lang.OutOfMemoryError.*"))
@@ -189,7 +213,7 @@ public abstract class WrapperService {
                                     logger.log(Level.SEVERE, "Stopping server because its output matches a failure condition");
                                     child.destroy();
                                     childReader.close();
-                                    stopProcess(serverPid, "application");
+                                    stopProcess(serverPid, APPLICATION_NAME);
                                     break;
                                 }
                                 if (line.equalsIgnoreCase("Restarting")) {
@@ -197,20 +221,23 @@ public abstract class WrapperService {
                                 }
                             }
                         }
-                        logger.log(Level.INFO, "End of output from java process");
+                        logger.info("End of output from java process");
                     } catch (IOException e) {
                         logger.log(Level.SEVERE, "Error while reading from process");
                     }
 
                     if (restartDetected) {
-                        logger.log(Level.INFO, "Restart detected");
+                        logger.info("Restart detected");
                         restartDetected = false;
                         startProcess = true;
                     } else if (keepRunning) {
-                        logger.log(Level.SEVERE, "Unexpected exit from server: " + exitValue(serverPid));
+                        final int serverPidCapture = serverPid;
+                        logger.severe(() -> "Unexpected exit from server: " + exitValue(serverPidCapture));
+
                         long runTime = System.currentTimeMillis() - startTime;
+
                         if (System.currentTimeMillis() - startTime < 7000) {
-                            logger.log(Level.SEVERE, "Stopping because server exited too quickly after only " + runTime + " milliseconds");
+                            logger.severe(() -> "Stopping because server exited too quickly after only " + runTime + " milliseconds");
                             shutdown(Constants.RC_SERVER_EXITED);
                             throw new WrapperException(Constants.RC_SERVER_EXITED, exitValue(serverPid), "Unexpected exit from server");
                         } else {
@@ -219,14 +246,14 @@ public abstract class WrapperService {
                     }
                 }
             }
-        } catch (Throwable ex) {
+        } catch (Exception ex) {
             // The default logging config doesn't show the stack trace here, so
             // include it in the message.
             try {
-                logger.log(Level.SEVERE, "Exception caught.\r\n" + getStackTrace(ex));
+                logger.severe(() -> "Exception caught.\r\n" + getStackTrace(ex));
                 updateStatus(Status.STOPPED);
                 throw new WrapperException(Constants.RC_SERVER_EXITED, child.exitValue(), "Exception caught.");
-            } catch (Throwable ex2) {
+            } catch (Exception ex2) {
                 ex.printStackTrace();
             }
         }
@@ -238,7 +265,7 @@ public abstract class WrapperService {
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "Killing the child process explicitly because we could not get an exit value");
             child.destroy();
-            stopProcess(pid, "application");
+            stopProcess(pid, APPLICATION_NAME);
             try {
                 return child.exitValue();
             } catch (Exception ex2) {
@@ -259,11 +286,11 @@ public abstract class WrapperService {
                 throw e;
             }
         }
-        System.out.println("Waiting for server to stop");
-        if (!(stopProcess(wrapperPid, "wrapper") && stopProcess(symPid, "application"))) {
+        logger.info("Waiting for server to stop");
+        if (!(stopProcess(wrapperPid, "wrapper") && stopProcess(symPid, APPLICATION_NAME))) {
             throw new WrapperException(Constants.RC_FAIL_STOP_SERVER, 0, "Server did not stop");
         }
-        System.out.println("Stopped");
+        logger.info("Stopped");
     }
 
     protected boolean stopProcess(int pid, String name) {
@@ -271,7 +298,7 @@ public abstract class WrapperService {
         if (waitForPid(pid)) {
             killProcess(pid, true);
             if (waitForPid(pid)) {
-                System.out.println("ERROR: '" + name + "' did not stop");
+                logger.info(() -> "ERROR: '" + name + "' did not stop");
                 return false;
             }
         }
@@ -281,24 +308,23 @@ public abstract class WrapperService {
     protected void shutdown(int code) {
         if (keepRunning) {
             keepRunning = false;
-            new Thread() {
-                @Override
-                public void run() {
-                    logger.log(Level.INFO, "Stopping server");
-                    child.destroy();
-                    try {
-                        childReader.close();
-                    } catch (IOException e) {
-                    }
-                    logger.log(Level.INFO, "Stopping wrapper");
-                    deletePidFile(config.getWrapperPidFile());
-                    deletePidFile(config.getServerPidFile());
-                    updateStatus(Status.STOPPED);
-                    System.exit(code);
+            new Thread(() -> {
+                logger.info("Stopping server");
+                child.destroy();
+
+                try {
+                    childReader.close();
+                } catch (IOException ignored) {
                 }
-            }.start();
+
+                logger.info("Stopping wrapper");
+                deletePidFile(config.getWrapperPidFile());
+                deletePidFile(config.getServerPidFile());
+                updateStatus(Status.STOPPED);
+                System.exit(code);
+            }).start();
         } else {
-        	logger.log(Level.INFO, "Shutdown was requested, but it should have already been shutdown");
+        	logger.info("Shutdown was requested, but it should have already been shutdown");
         }
     }
 
@@ -306,6 +332,7 @@ public abstract class WrapperService {
         if (isRunning()) {
             stop();
         }
+
         start();
     }
 
@@ -314,37 +341,67 @@ public abstract class WrapperService {
 
     public void status() {
         boolean isRunning = isRunning();
-        System.out.println("Installed: " + isInstalled());
-        System.out.println("Running: " + isRunning);
+        logger.info(() -> "Installed: " + isInstalled());
+        logger.info(() -> "Running: " + isRunning);
         if (isRunning) {
-            System.out.println("Wrapper PID: " + readPidFromFile(config.getWrapperPidFile()));
-            System.out.println("Server PID: " + readPidFromFile(config.getServerPidFile()));
+            logger.info(() -> "Wrapper PID: " + readPidFromFile(config.getWrapperPidFile()));
+            logger.info(() -> "Server PID: " + readPidFromFile(config.getServerPidFile()));
         }
     }
 
     private void tryUpdateInstallCleanup() {
+        logger.info("about tro try cleanup");
+
         final File lockFile = config.getInstallLockFile();
         if (lockFile.exists()) {
-            try (final FileChannel lockFileChannel = FileChannel.open(lockFile.toPath(), StandardOpenOption.READ, StandardOpenOption.DELETE_ON_CLOSE);
-                 final FileLock lock = lockFileChannel.lock()
-            ) {
-            } catch (IOException ex) {
-                return;
-            }
 
-            try {
-                // just give a little install jvm to close
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
+            // using auto close feature + catch
+            //noinspection EmptyTryBlock
+            try (final FileChannel lockFileChannel = FileChannel.open(lockFile.toPath(), StandardOpenOption.READ, StandardOpenOption.DELETE_ON_CLOSE);
+                 final FileLock ignored = lockFileChannel.lock()
+            ) {
+
+            } catch (IOException ex) {
+                logger.log(Level.WARNING, ex, () -> "failed to acquire update lock");
                 return;
             }
         }
 
         final File tempDir = new File(System.getProperty("java.io.tmpdir"));
 
-        Arrays.stream(tempDir.listFiles())
+        final File[] files = tempDir.listFiles();
+
+        if (files == null) {
+            return;
+        }
+
+        Arrays.stream(files)
                 .filter(file -> file.isDirectory() && file.getName().startsWith("libs-bak"))
-                .forEach(File::delete);
+                .forEach(file -> {
+                    try {
+                        final Boolean successfullyDeletedContents = Files.walk(file.toPath())
+                                .map(subfile -> {
+                                    try {
+                                        Files.delete(subfile);
+                                        return true;
+                                    } catch (IOException e) {
+                                        logger.warning(() ->"failed to delete file: " + e.getMessage());
+                                        return false;
+                                    }
+                                })
+                                .reduce((last, cur) -> last && cur)
+
+                                // if it was `none` then there were likely no contents
+                                .orElse(true);
+
+                        if (Boolean.TRUE.equals(successfullyDeletedContents)) {
+                            Files.delete(file.toPath());
+                            logger.info(() -> "deleted lib backup: " + file.getName());
+                        }
+                    } catch (IOException e) {
+                        logger.warning(() -> "failed to delete temp directory: " + e.getMessage());
+                    }
+                });
     }
 
     public void installUpdate(String updateFile) {
@@ -354,31 +411,27 @@ public abstract class WrapperService {
             }
 
             final File lockFile = config.getInstallLockFile();
-            if (!lockFile.mkdirs()) {
-                System.err.println("cannot create lock file for update");
-                return;
-            }
 
-            try(final FileChannel lockFileChannel = FileChannel.open(lockFile.toPath(), StandardOpenOption.CREATE_NEW, StandardOpenOption.DELETE_ON_CLOSE);
-                final FileLock lock = lockFileChannel.lock()
+            try(final FileChannel lockFileChannel = FileChannel.open(lockFile.toPath(), StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE, StandardOpenOption.DELETE_ON_CLOSE);
+                final FileLock ignored = lockFileChannel.lock()
             ) {
-                System.out.println("about to run update on " + updateFile);
+                logger.fine(() -> "preparing to install update: '" + updateFile + "'");
 
                 try {
                     Archive.read(updateFile).install();
                 } catch (IOException ex) {
-                    System.err.println("failed to install update at: " + updateFile);
+                    logger.severe(() -> "failed to install update at: " + updateFile + "; " + ex.getMessage());
                 }
             }
         } catch (IOException ex) {
-            System.err.println("cannot create lock file for update: " + ex.getMessage());
+            logger.severe(() -> "cannot create lock file for update: " + ex.getMessage());
         } finally {
             start();
         }
     }
 
     public boolean isRunning() {
-        return isPidRunning(readPidFromFile(config.getWrapperPidFile())) || isPidRunning(readPidFromFile(config.getServerPidFile()));
+        return isPidRunning(getWrapperPid()) || isPidRunning(getServerPid());
     }
 
     public int getWrapperPid() {
@@ -418,6 +471,7 @@ public abstract class WrapperService {
         return cmd;
     }
 
+    @SuppressWarnings("unused")
     protected ArrayList<String> getPrivilegedCommand() {
         ArrayList<String> cmd = new ArrayList<>();
         String quote = getWrapperCommandQuote();
@@ -426,51 +480,63 @@ public abstract class WrapperService {
     }
 
     protected String getWrapperCommandQuote() {
-        return "";
+        return StringUtils.EMPTY;
     }
 
     protected int readPidFromFile(String filename) {
         int pid = 0;
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(filename));
+        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             pid = Integer.parseInt(reader.readLine());
-            reader.close();
         } catch (FileNotFoundException e) {
+            logger.log(Level.WARNING, e, () -> "failed to read process id from file; file '" + filename + "' was not found");
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, e, () -> "failed to read process id from file '" + filename + "'");
         }
+
         return pid;
     }
 
     protected void writePidToFile(int pid, String filename) {
         try {
-            new File(filename).getParentFile().mkdirs();
-            FileWriter writer = new FileWriter(filename, false);
-            writer.write(String.valueOf(pid));
-            writer.close();
+            final File file = new File(filename);
+            Files.createDirectories(file.getParentFile().toPath());
+
+            try (FileWriter writer = new FileWriter(filename, false)) {
+                writer.write(String.valueOf(pid));
+            }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.warning(() -> "failed to create process id lockfile for process '" + pid + "' at '" + filename + "': " + e.getMessage());
         }
     }
 
     protected void deletePidFile(String filename) {
-        new File(filename).delete();
+        try {
+            Files.delete(FileSystems.getDefault().getPath(filename));
+        } catch (IOException e) {
+            logger.warning(() -> "failed to delete process id lockfile at '" + filename + "': " + e.getMessage());
+        }
     }
 
     protected boolean waitForPid(int pid) {
+        logger.info(() -> "waiting for process '" + pid + "' to start");
+
         int seconds = 0;
         while (seconds <= 5) {
-            System.out.print(".");
             if (!isPidRunning(pid)) {
                 break;
             }
+
+            logger.finest(() -> "process has not started yet; going to sleep for 1s");
+
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
+
             seconds++;
         }
-        System.out.println("");
+
         return isPidRunning(pid);
     }
 
@@ -478,7 +544,7 @@ public abstract class WrapperService {
     }
 
     private void doUpdateInstall(File updateFile) {
-        System.out.println("installing pending update...");
+        logger.info("installing pending update...");
 
         tryUpdateInstallCleanup();
 
@@ -494,51 +560,50 @@ public abstract class WrapperService {
         try {
             libCpyDir = Files.createTempDirectory("libs-bak").toFile();
         } catch (IOException ex) {
-            System.err.println("failed to copy lib dir for update; could not create directory" + ex.getMessage());
+            logger.severe(() -> "failed to copy lib dir for update; could not create directory" + ex.getMessage());
             return;
         }
 
         // copy all the libs to a temp directory that we'll move execution over to.
-        if (libCpyDir.exists() && libCpyDir.delete() && libCpyDir.mkdirs()) {
-            try (final Stream<Path> paths = Files.walk(jarDirectory.toPath())) {
-                paths.forEach(f -> {
-                    final Path to = Paths.get(libCpyDir.toString(), f.toString().substring(jarDirectory.toString().length()));
+        try (final Stream<Path> paths = Files.walk(jarDirectory.toPath())) {
+            paths.forEach(f -> {
+                final Path to = Paths.get(libCpyDir.toString(), f.toString().substring(jarDirectory.toString().length()));
 
-                    try {
-                        Files.copy(f, to, StandardCopyOption.REPLACE_EXISTING);
-                    } catch (IOException ignored) {
-                        System.err.println("failed to copy file `" + f.toString() + "`");
-                    }
-                });
-            } catch (IOException ignored) {
-                return;
-            }
-
-            try {
-                final ArrayList<String> args = getWrapperCommandForOtherWrapper(
-                        Paths.get(libCpyDir.getAbsolutePath(), jarFile.getName()).toString(),
-                        "install-update",
-                        getWrapperCommandQuote() + updateFile + getWrapperCommandQuote()
-                );
-
-                System.out.println("about to run: " + StringUtils.join(args, ' '));
-
-                new ProcessBuilder()
-                        .command(args)
-                        .directory(config.getWorkingDirectory())
-                        .start();
-            } catch (IOException ex) {
-                logger.log(Level.WARNING, "failed to start process" + ex.getMessage());
-                return;
-            }
-
-            System.exit(0);
+                try {
+                    Files.createDirectories(to);
+                    Files.copy(f, to, StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException ignored) {
+                    logger.warning(() -> "failed to copy file `" + f + "`");
+                }
+            });
+        } catch (IOException ignored) {
+            return;
         }
+
+        try {
+            final ArrayList<String> args = getWrapperCommandForOtherWrapper(
+                    Paths.get(libCpyDir.getAbsolutePath(), jarFile.getName()).toString(),
+                    "install-update",
+                    getWrapperCommandQuote() + updateFile + getWrapperCommandQuote()
+            );
+
+            logger.info(() -> "starting out of process update");
+
+            new ProcessBuilder()
+                    .command(args)
+                    .directory(config.getWorkingDirectory())
+                    .start();
+        } catch (IOException ex) {
+            logger.warning(() -> "failed to start process" + ex.getMessage());
+            return;
+        }
+
+        System.exit(0);
     }
 
     protected final void tryAutoUpdate() {
         if (config == null || !config.isAutoUpdateEnabled()) {
-            System.out.println("auto-update disabled; skipping...");
+            logger.info("auto-update disabled; skipping...");
             return;
         }
 
@@ -551,37 +616,35 @@ public abstract class WrapperService {
 
         final String server = config.getAutoUpdateServer();
         if (StringUtils.isEmpty(server)) {
-            System.out.println("auto-update from server disabled; skipping...");
+            logger.info("auto-update from server disabled; skipping...");
             return;
         }
 
         String installationId = config.getInstallationId();
 
         if (StringUtils.isEmpty(installationId)) {
-            System.out.println("missing installation id");
+            logger.info("missing installation id");
             return;
         }
 
-        String endpoint = StringUtils.stripEnd(server, "/");
-        endpoint += "/update/installation/" + installationId;
-
+        final String endpoint = StringUtils.stripEnd(server, "/") + "/update/installation/" + installationId;
         final URL url;
 
         try {
             url = new URL(endpoint);
         } catch (MalformedURLException ex) {
-            System.err.println("invalid url '" + endpoint + "'; cannot update from server...");
+            logger.severe(() -> "invalid url '" + endpoint + "'; cannot update from server...");
             return;
         }
 
-        System.out.println("looking for updates at '" + endpoint + "'");
+        logger.info(() -> "searching for updates from '" + endpoint + "'");
 
         final URLConnection connection;
 
         try {
             connection = url.openConnection();
-        } catch (IOException ignored) {
-            System.err.println("failed to download update from server");
+        } catch (IOException e) {
+            logger.severe(() ->"failed to download update from server: " + e.getMessage());
             return;
         }
 
@@ -605,36 +668,14 @@ public abstract class WrapperService {
                 configuration = Configuration.read(reader, properties);
             }
 
-            System.out.println("working dir: " + config.getWorkingDirectory().toPath());
-
-            System.out.println("config before sync: " + configuration.getFiles().stream().findFirst().get().getUri().toString());
-
-            System.out.println("base uri: " + configuration.getBaseUri());
-
-            //configuration = configuration.sync(config.getWorkingDirectory().toPath());
-
-            //System.out.println("config after sync: " + configuration.getFiles().stream().findFirst().get().getUri().toString());
-
-//            configuration.getFiles().forEach(file -> {
-//                try {
-//                    boolean requiresUpdate = file.requiresUpdate();
-//
-//                     System.out.println("file '" + file.getPath().toString() + "'    check: " +  String.format("%x", file.getChecksum()));
-//
-//                    if (requiresUpdate) {
-//                        System.out.println("file requires update: " + file.getPath().toString());
-//                    }
-//                } catch (IOException ex) {
-//                    System.out.println("cannot read file '" + file.getPath().toString() + "'");
-//                }
-//            });
-
-            if (!configuration.requiresUpdate()) {
-                System.out.println("no update found");
+            if (configuration.requiresUpdate()) {
+                logger.info(() -> "update found; downloading update from '" + configuration.getBaseUri().toString() + "'");
+            } else {
+                logger.info("no update found");
                 return;
             }
-        } catch (IOException ignored) {
-            System.err.println("failed to download update manifest");
+        } catch (IOException e) {
+            logger.severe(() -> "failed to download update manifest: " + e.getMessage());
             return;
         }
 
@@ -642,22 +683,30 @@ public abstract class WrapperService {
 
         try {
             tempFile = Files.createTempFile("jmc", ".zip");
-        } catch (IOException ignored) {
-            System.err.println("failed to install update; cannot create temp file where update will be download to");
+
+            logger.fine(() -> "creating temp file at '" + tempFile.toString() + "'");
+
+            // let update4js create the file otherwise it won't download anything
+            Files.deleteIfExists(tempFile);
+        } catch (IOException e) {
+            logger.severe(() ->"failed to install update; cannot create temp file where update will be download to: " + e.getMessage());
             return;
         }
 
-        System.out.println("creating temp file at '" + tempFile.toString() + "'");
-
-        // let update4js create the file otherwise it won't download anything
-        tempFile.toFile().delete();
-
         final UpdateResult result = configuration.update(UpdateOptions.archive(tempFile).updateHandler(new UpdateHandler() {
+            @Override
+            public void startDownloadFile(FileMetadata file) {
+                logger.fine(() -> "downloading update file '" + file.getPath() + "' with checksum '" + file.getChecksum() + "'");
+            }
+
+            @Override
+            public void doneDownloadFile(FileMetadata file, Path path) {
+                logger.fine(() -> "finished downloading file '" + file.getPath() + "'");
+            }
         }));
 
         if (result.getException() != null) {
-            System.err.println("failed to get update: " + result.getException().getMessage());
-            result.getException().printStackTrace();
+            logger.log(Level.SEVERE, result.getException(), () -> "failed to get update: " + result.getException().getMessage());
             return;
         }
 
@@ -672,6 +721,7 @@ public abstract class WrapperService {
     }
 
     class ShutdownHook extends Thread {
+        @Override
         public void run() {
             shutdown(0);
         }
@@ -683,8 +733,10 @@ public abstract class WrapperService {
 
     public abstract boolean isInstalled();
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public abstract boolean isPrivileged();
 
+    @SuppressWarnings("UnusedReturnValue")
     protected abstract boolean setWorkingDirectory(String dir);
 
     protected abstract int getProcessPid(Process process);
