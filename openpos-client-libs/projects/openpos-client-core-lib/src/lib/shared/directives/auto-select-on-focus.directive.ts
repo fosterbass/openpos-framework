@@ -50,6 +50,11 @@ export class AutoSelectOnFocusDirective {
             // console.info('autoSelect: cordova click event, selectingRange');
             this.element.nativeElement.setSelectionRange(0, 9999);
         }
+        // on touch event remove the text selection
+        // to keep the cursor at end pass text length in setSelectionRange
+        if (this.touchEvent) {
+            this.element.nativeElement.setSelectionRange(this.element.nativeElement.value.length, this.element.nativeElement.value.length);
+        }
     }
 
 }
