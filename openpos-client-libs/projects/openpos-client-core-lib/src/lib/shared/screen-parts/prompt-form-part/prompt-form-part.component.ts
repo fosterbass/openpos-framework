@@ -1,5 +1,5 @@
 import { ScreenPartComponent } from '../screen-part';
-import { AfterViewInit, Component, OnInit, ViewChild, Injector } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild, Injector, ChangeDetectorRef } from '@angular/core';
 import { Validators, FormControl, FormGroup, ValidatorFn } from '@angular/forms';
 import { ValidatorsService } from '../../../core/services/validators.service';
 import { IActionItem } from '../../../core/actions/action-item.interface';
@@ -36,7 +36,7 @@ export class PromptFormPartComponent extends ScreenPartComponent<PromptFormPartI
         return this.screenData.autoFocus;
     }
 
-    constructor(private validatorsService: ValidatorsService, injector: Injector) {
+    constructor(private validatorsService: ValidatorsService, injector: Injector, private changeDetectorRef: ChangeDetectorRef) {
         super(injector);
     }
 
@@ -119,9 +119,12 @@ export class PromptFormPartComponent extends ScreenPartComponent<PromptFormPartI
         if (this.screenData.isGiftCardScanEnabled) {
             if (event.target.value.length === 0) {
                 this.screenData.actionButton = this.primaryActionButton;
+
             } else {
                 this.screenData.actionButton = this.secondaryActionButton;
+
             }
+            this.changeDetectorRef.detectChanges();
         }
     }
 
