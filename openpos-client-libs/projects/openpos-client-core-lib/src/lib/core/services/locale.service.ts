@@ -51,7 +51,8 @@ export class LocaleService {
             return of(text);
         } else {
             const url = `http${this.personalization.getSslEnabled$().getValue() ? 's' : ''}` +
-                `://${this.personalization.getServerName$().getValue()}:${this.personalization.getServerPort$().getValue()}/rest/i18n/value`;
+                `://${this.personalization.getServerName$().getValue()}:` +
+                `${this.personalization.getServerPort$().getValue()}/rest/i18n/value`;
 
             return this.displayLocale$.pipe(
                 distinct(), switchMap(l => this.http.post(url, {
