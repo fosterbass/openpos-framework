@@ -182,6 +182,7 @@ import { KIOSK_MODE_PLATFORM } from '../core/platform-plugins/kiosk/kiosk-mode-p
 import { CapacitorKioskModePlatform } from '../core/platform-plugins/kiosk/capacitor-kiosk/capacitor-kiosk-platform.service';
 import { ScreenGestureComponent } from './screen-parts/screen-gesture/screen-gesture.component';
 import { DisableAutoCompleteDirective } from './directives/disable-auto-complete.directive';
+import { PromptFormPartCardComponent } from './screen-parts/prompt-form-part-card/prompt-form-part-card.component';
 
 const screenParts = [
     TenderPartComponent,
@@ -194,6 +195,7 @@ const screenParts = [
     SaleFooterComponent,
     SaleItemListComponent,
     PromptFormPartComponent,
+    PromptFormPartCardComponent,
     DynamicFormPartComponent,
     AutoCompleteAddressPartComponent,
     MembershipDisplayComponent,

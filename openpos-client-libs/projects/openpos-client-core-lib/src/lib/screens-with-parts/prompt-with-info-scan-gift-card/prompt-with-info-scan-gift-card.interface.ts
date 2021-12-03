@@ -3,4 +3,5 @@ import {PromptWithInfoInterface} from '../prompt-with-info/prompt-with-info.inte
 export interface PromptWithInfoScanGiftCardInterface extends PromptWithInfoInterface {
     isRequired: boolean;
     isScanGiftCardEnabled: boolean;
+    isExpiryDateEnabled: boolean;
 }
