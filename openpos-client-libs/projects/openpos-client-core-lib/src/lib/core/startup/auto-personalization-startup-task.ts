@@ -1,7 +1,7 @@
-import {catchError, first, flatMap, switchMap, take, tap, timeout} from 'rxjs/operators';
+import {catchError, first, flatMap, map, switchMap, takeUntil, tap, timeout} from 'rxjs/operators';
 import {IStartupTask} from './startup-task.interface';
 import {PersonalizationService} from '../personalization/personalization.service';
-import {concat, Observable, of, Subject} from 'rxjs';
+import {concat, defer, EMPTY, Observable, of, Subject, throwError} from 'rxjs';
 import {MatDialog} from '@angular/material';
 import {Injectable} from '@angular/core';
 import {StartupTaskData} from './startup-task-data';
@@ -9,6 +9,8 @@ import {Zeroconf, ZeroconfService} from "@ionic-native/zeroconf";
 import {StartupTaskNames} from "./startup-task-names";
 import {WrapperService} from "../services/wrapper.service";
 import {Configuration} from "../../configuration/configuration";
+import {EnterpriseConfigService} from "../platform-plugins/enterprise-config/enterprise-config.service";
+import {AutoPersonalizationRequest} from "../personalization/auto-personalization-request.interface";
 
 
 @Injectable({
@@ -20,7 +22,8 @@ export class AutoPersonalizationStartupTask implements IStartupTask {
     private readonly TYPE = '_jmc-personalize._tcp.';
     private readonly DOMAIN = 'local.';
 
-    constructor(protected personalization: PersonalizationService, protected matDialog: MatDialog, protected wrapperService: WrapperService) {
+    constructor(protected personalization: PersonalizationService, protected matDialog: MatDialog, protected wrapperService: WrapperService,
+                protected enterpriseConfigService: EnterpriseConfigService) {
     }
 
     execute(data: StartupTaskData): Observable<string> {
@@ -36,7 +39,8 @@ export class AutoPersonalizationStartupTask implements IStartupTask {
                         message.complete();
                     } else {
                         console.log('[AutoPersonalizationTask] saved session not found, trying personalization with Zero conf')
-                        return this.personalizeUsingZeroConf(message).subscribe();
+                        console.log(`[AutoPersonalizationTask] config: ${JSON.stringify(this.enterpriseConfigService.getConfiguration())}`)
+                        return this.personalizeUsingEnterpriseConfig(message).subscribe();
                     }
                 })
             } else {
@@ -60,6 +64,34 @@ export class AutoPersonalizationStartupTask implements IStartupTask {
         );
     }
 */
+
+    personalizeUsingEnterpriseConfig(observer: Subject<string>): Observable<string> {
+        return defer( () => {
+            const config = this.enterpriseConfigService.getConfiguration();
+            if (config && config.hasOwnProperty('jmc_autoPersonalizeUrl')) {
+                const url = config['jmc_autoPersonalizeUrl'];
+                console.info(`[AutoPersonalizationTask] Attempting auto-personalization using URL from Enterprise Configuration: ${url}`);
+                observer.next(`Attempting auto-personalization using URL from Enterprise Configuration`);
+                return this.wrapperService.getDeviceName().pipe(
+                    switchMap(deviceName => {
+                        observer.next(`Device name is: ${deviceName}`);
+                        return this.attemptAutoPersonalize(observer, url, {deviceName: deviceName, additionalAttributes: config}).pipe(
+                            catchError(e => {
+                                console.log(`[AutoPersonalizationTask] error during auto-personalize using URL from Enterprise Configuration: ${url}`);
+                                this.logPersonalizationError(e);
+                                return this.personalizeUsingZeroConf(observer);
+                            })
+                        );
+                    })
+                );
+            } else {
+                observer.next(`No Enterprise Configuration found, falling back to auto-personalization with Zero conf`);
+                return this.personalizeUsingZeroConf(observer);
+            }
+        });
+
+    }
+
     personalizeUsingZeroConf(observer: Subject<string>): Observable<string> {
         let serviceConfig: ZeroconfService = null;
 
@@ -75,7 +107,7 @@ export class AutoPersonalizationStartupTask implements IStartupTask {
                     }),
                     flatMap(() => {
                         const url = `${serviceConfig.hostname}:${serviceConfig.port}/${serviceConfig.txtRecord.path}`;
-                        return this.attemptAutoPersonalize(observer, url, deviceName);
+                        return this.attemptAutoPersonalize(observer, url, {deviceName: deviceName});
                     }),
                     catchError(e => {
                         console.log('[AutoPersonalizationTask] error during Zeroconf.watch');
@@ -92,13 +124,14 @@ export class AutoPersonalizationStartupTask implements IStartupTask {
         const servicePath = Configuration.autoPersonalizationServicePath;
         if (!!servicePath) {
             let name: string = null;
+            // @ts-ignore
             return concat(
                 of("Attempting to retrieve personalization params via hostname"),
                 this.wrapperService.getDeviceName().pipe(
                     tap(deviceName => name = deviceName),
-                    flatMap(() => this.attemptAutoPersonalize(observer, Configuration.autoPersonalizationServicePath, name)),
+                    flatMap(() => this.attemptAutoPersonalize(observer, Configuration.autoPersonalizationServicePath, {deviceName: name})),
+                    // This is causing a ts-lint error, but I cannot figure out why
                     catchError(e => {
-                        observer.next()
                         this.logPersonalizationError(e);
                         observer.complete();
                         return of("");
@@ -109,28 +142,47 @@ export class AutoPersonalizationStartupTask implements IStartupTask {
         }
     }
 
-    private attemptAutoPersonalize(observer: Subject<string>, url: string, deviceName: string): Observable<string> {
-        return this.personalization.getAutoPersonalizationParameters(deviceName, url)
-            .pipe(
-                flatMap(info => {
-                    if (info) {
-                        // Handle case when personalizationParams come through as a Javascript object
-                        if (info.personalizationParams && ! (info.personalizationParams instanceof Map)) {
-                            info.personalizationParams = new Map<string, string>(Object.entries(info.personalizationParams));
-                        }
-                        observer.next('Storing personalization parameters received from server.');
-                        this.personalization.store(info.serverAddress, info.serverPort, info.deviceId, info.appId, info.personalizationParams, info.sslEnabled);
-                        observer.complete();
-                        return of("");
+    private attemptAutoPersonalize(observer: Subject<string>, url: string, request: AutoPersonalizationRequest): Observable<string> {
+            // @ts-ignore
+        return this.personalization.getAutoPersonalizationParameters(request, url).pipe(
+            flatMap(info => {
+                if (info) {
+                    const stopSignal$ = new Subject();
+                    // Handle case when personalizationParams come through as a Javascript object
+                    if (info.personalizationParams && ! (info.personalizationParams instanceof Map)) {
+                        info.personalizationParams = new Map<string, string>(Object.entries(info.personalizationParams));
                     }
-                    observer.complete();
-                }),
-                catchError(e => {
-                    console.log('[AutoPersonalizationTask] error during attempt to Auto personalize');
-                    observer.next(`Error during auto-personalization to host '${url}': ${JSON.stringify(e)}`);
-                    this.logPersonalizationError(e);
-                    throw(e);
-                }));
+                    observer.next('Personalizing with parameters received from server...');
+                    return this.personalization.personalize(
+                        info.serverAddress,
+                        info.serverPort,
+                        info.deviceId,
+                        info.appId,
+                        info.personalizationParams,
+                        info.sslEnabled).pipe(
+                            map(msg => {
+                                observer.next(msg);
+                                observer.complete();
+                                stopSignal$.next();
+                            }),
+                            takeUntil(stopSignal$),
+                            catchError(e => {
+                                this.logPersonalizationError(e);
+                                return throwError(e);
+                            })
+                        );
+                } else {
+                    return EMPTY;
+                }
+            }),
+            // This is causing a ts-lint error, but I cannot figure out why
+            catchError(e => {
+                console.log('[AutoPersonalizationTask] error during attempt to Auto personalize');
+                observer.next(`Error during auto-personalization to host '${url}': ${JSON.stringify(e)}`);
+                this.logPersonalizationError(e);
+                return throwError(e);
+            })
+        );
     }
 
     private logPersonalizationError(error: any): void {

@@ -6,6 +6,7 @@ import {catchError, map, tap, timeout} from 'rxjs/operators';
 import {PersonalizationRequest} from './personalization-request';
 import {PersonalizationResponse} from './personalization-response.interface';
 import {AutoPersonalizationParametersResponse} from "./device-personalization.interface";
+import {AutoPersonalizationRequest} from "./auto-personalization-request.interface";
 import {Configuration} from "../../configuration/configuration";
 import {WrapperService} from "../services/wrapper.service";
 import { Storage } from '../storage/storage.service';
@@ -58,10 +59,11 @@ export class PersonalizationService {
         return this.wrapperService.shouldAutoPersonalize();
     }
 
-    public getAutoPersonalizationParameters(deviceName: string, url: string): Observable<AutoPersonalizationParametersResponse> {
+    public getAutoPersonalizationParameters(request: AutoPersonalizationRequest, url: string): Observable<AutoPersonalizationParametersResponse> {
         const protocol = this.sslEnabled$.getValue() ? 'https://' : 'http://';
         url = protocol + url;
-        return this.http.get<AutoPersonalizationParametersResponse>(url, { params: { deviceName: deviceName }})
+
+        return this.http.post<AutoPersonalizationParametersResponse>(url, request)
             .pipe(
                 timeout(Configuration.autoPersonalizationRequestTimeoutMillis),
                 tap(response => {

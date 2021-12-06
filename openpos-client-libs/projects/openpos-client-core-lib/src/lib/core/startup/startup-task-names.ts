@@ -6,4 +6,5 @@ export class StartupTaskNames {
     static readonly AUDIO_STARTUP = 'AudioStartup';
     static readonly PLUGIN_INIT = 'PluginInit';
     static readonly PLATFORM_READY = 'DeviceReady';
+    static readonly ENTERPRISE_CONFIG = 'EnterpriseConfigStartup';
 }

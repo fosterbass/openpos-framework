@@ -83,6 +83,12 @@ import { CordovaStorageService } from './storage/cordova/cordova-storage.service
 import { Storage } from './storage/storage.service';
 import { STORAGE_CONTAINERS } from './storage/storage-container';
 import {ZebraBluetoothPrinterCordovaPlugin} from "./platform-plugins/cordova-plugins/zebra-bluetooth-printer-cordova-plugin";
+import {AirwatchCordovaPlugin} from "./platform-plugins/cordova-plugins/airwatch-cordova-plugin";
+import {
+    ENTERPRISE_CONFIGS,
+    EnterpriseConfigService
+} from "./platform-plugins/enterprise-config/enterprise-config.service";
+import {EnterpriseConfigStartupTask} from "./startup/enterprise-config-startup-task";
 
 registerLocaleData(locale_enCA, 'en-CA');
 registerLocaleData(locale_frCA, 'fr-CA');
@@ -130,7 +136,7 @@ registerLocaleData(locale_frCA, 'fr-CA');
         MediaMatcher,
         StompRService,
         ScannerService,
-        { provide: STARTUP_TASKS, useClass: AutoPersonalizationStartupTask, multi: true, deps: [PersonalizationService, MatDialog, WrapperService]},
+        { provide: STARTUP_TASKS, useClass: AutoPersonalizationStartupTask, multi: true, deps: [PersonalizationService, MatDialog, WrapperService, EnterpriseConfigService]},
         { provide: STARTUP_TASKS, useClass: PersonalizationStartupTask, multi: true, deps: [PersonalizationService, MatDialog]},
         { provide: STARTUP_TASKS, useClass: SubscribeToSessionTask, multi: true, deps: [SessionService, Router]},
         { provide: STARTUP_TASKS, useClass: DialogServiceStartupTask, multi: true, deps: [DialogService]},
@@ -138,6 +144,7 @@ registerLocaleData(locale_frCA, 'fr-CA');
         { provide: STARTUP_TASKS, useClass: FinalStartupTask, multi: true, deps: [SessionService]},
         { provide: STARTUP_TASKS, useClass: PlatformReadyStartupTask, multi: true },
         { provide: STARTUP_TASKS, useClass: PluginStartupTask, multi: true },
+        { provide: STARTUP_TASKS, useClass: EnterpriseConfigStartupTask, multi: true, deps: [EnterpriseConfigService]},
         { provide: STARTUP_FAILED_COMPONENT, useValue: StartupFailedComponent},
         AilaScannerCordovaPlugin,
         ScanditScannerCordovaPlugin,
@@ -156,6 +163,7 @@ registerLocaleData(locale_frCA, 'fr-CA');
         { provide: PLUGINS, useExisting: InfineaScannerCapacitorPlugin, multi: true },
         { provide: PLUGINS, useExisting: Dpp255CapacitorPlugin, multi: true },
         { provide: PLUGINS, useExisting: ZebraBluetoothPrinterCordovaPlugin, multi: true, deps: [CordovaService, SessionService]},
+        { provide: PLUGINS, useExisting: AirwatchCordovaPlugin, multi: true, deps: [CordovaService]},
         { provide: SCANNERS, useExisting: ServerScannerPlugin, multi: true, deps: [SessionService]},
         { provide: PLATFORMS, useExisting: CordovaPlatform, multi: true},
         { provide: STORAGE_CONTAINERS, useClass: CapacitorStorageService, multi: true },
@@ -163,7 +171,7 @@ registerLocaleData(locale_frCA, 'fr-CA');
         BrowserPrinterPlugin,
         { provide: PRINTERS, useExisting: BrowserPrinterPlugin, multi: true},
         { provide: PRINTERS, useExisting: Dpp255CapacitorPlugin, multi: true},
-
+        { provide: ENTERPRISE_CONFIGS, useExisting: AirwatchCordovaPlugin, multi: true, deps: [CordovaService]},
         LocationService,
         { provide: PROVIDERS, useExisting: LocationProviderDefault, multi: true},
         TrainingOverlayService,
