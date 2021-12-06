@@ -73,7 +73,7 @@ export class HomeComponent extends PosScreen<HomeInterface> {
 
     // Menu items per page
     media.mediaObservableFromMap(new Map([
-      ['xs', 3],
+      ['xs', 6],
       ['sm', Math.round(this.pageSize/2)],
       ['md', this.pageSize],
       ['lg', this.pageSize],

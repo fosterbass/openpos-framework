@@ -34,7 +34,7 @@
                                 <app-currency-text [amountText]="item.amount"></app-currency-text>
                             </span>
                         </div>	
-                        <div fxAlign="right" >
+                        <div fxAlign="right" *ngIf="!condensedListDisplay" >
                             <button *ngIf="isAnyActionPresent() && selectedItems.length == 0 && itemActions.length > 1" mat-icon-button color="primary" (click)="openItemDialog(item)">
                                 <mat-icon>more_vert</mat-icon>
                             </button>

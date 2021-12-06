@@ -7,7 +7,7 @@
 
     <div class="home-content-wrapper" klass.xs="xs">
         <div class="home-content" klass.xs="xs">
-            <div *ngIf="!(isMobile | async) && screen.menuItems.length > 0" class="button-grid">
+            <div *ngIf="screen.menuItems.length > 0" class="button-grid">
                 <div class="menu-button-border" *ngFor="let menuItem of screen.menuItems | paginate: paginationSettings"
                     [matBadge]="getNotificationForButton(menuItem)?.value" matBadgePosition="above after"
                     matBadgeSize="large" matBadgeColor="accent" [matBadgeHidden]="!getNotificationForButton(menuItem)"
@@ -15,7 +15,8 @@
                     <button class="menu-button" mat-raised-button gdAuto="column" color=primary
                         [disabled]="!menuItem.enabled" (click)="doAction(menuItem)" [actionItem]="menuItem">
                         <div class="menu-button-content">
-                            <app-icon iconName="{{menuItem.icon}}" iconClass="material-icons mat-64"></app-icon>
+                            <app-icon *ngIf="!(isMobile | async)" iconName="{{menuItem.icon}}" iconClass="material-icons mat-64"></app-icon>
+                            <app-icon *ngIf="(isMobile | async)" iconName="{{menuItem.icon}}" iconClass="material-icons mat-32"></app-icon>
                             <div class="menu-button-title">{{menuItem.title}}</div>
                             <div *ngIf="menuItem.keybind && keybindsEnabled()" style="padding-bottom: 8px;"
                                 class="text-xs">
@@ -25,20 +26,6 @@
                     </button>
                 </div>
             </div>
-
-            <mat-card *ngIf="(isMobile | async) && screen.menuItems.length > 0" class="menu-list">
-                <mat-nav-list>
-                    <mat-list-item *ngFor="let menuItem of screen.menuItems" (click)="doAction(menuItem)">
-                        <app-icon class="primary text-lg" iconName="{{menuItem.icon}}" iconClass="material-icons">
-                        </app-icon>
-                        <span class="primary text-lg">&nbsp;{{menuItem.title}}</span>
-                        <span *ngIf="getNotificationForButton(menuItem)"
-                            [matBadge]="getNotificationForButton(menuItem).value" matBadgePosition="above after"
-                            matBadgeSize="medium" matBadgeColor="accent" class="notification-badge"></span>
-                        <mat-icon class="material-icons">keyboard_arrow_right</mat-icon>
-                    </mat-list-item>
-                </mat-nav-list>
-            </mat-card>
         </div>
     </div>
 

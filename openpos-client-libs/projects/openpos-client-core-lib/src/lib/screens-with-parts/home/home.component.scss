@@ -48,6 +48,7 @@
 .menu-button {
   min-width: 160px;
   min-height: 160px;
+  align-items: center !important;
 }
 
 .menu-button-content {
@@ -102,5 +103,26 @@ mat-button-toggle-group {
     place-content: center;
     place-items: stretch;
     grid-template-columns: repeat(auto-fit, 240px);
+  }
+}
+
+
+@media (max-width: 600px) {
+  .menu-button-border{
+    margin:2px;
+    padding:3px;
+    width: 98px;
+  }
+  .menu-button {
+    min-width: 82px;
+    min-height: 82px;
+    align-items: center;
+  }
+  
+  .button-grid {
+    grid-template-columns: repeat(auto-fit, 120px);
+  }
+  .menu-button-title {
+    font-size: 12px!important;
   }
 }
