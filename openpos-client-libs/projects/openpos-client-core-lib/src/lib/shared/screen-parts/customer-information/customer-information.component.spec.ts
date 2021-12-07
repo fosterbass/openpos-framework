@@ -53,6 +53,12 @@ describe('CustomerInformationComponent', () => {
             email: 'b.bobert@gmail.com',
             phoneNumber: '1118798322',
             loyaltyNumber: 's321111111',
+            accountNumberLabel: 'AccountNumber',
+            accountNumber: '4567898909876540',
+            creditLimitLabel: 'Credit Limit',
+            creditLimit: '$2500.00',
+            expiryDateLabel: 'Valid Thru',
+            expiryDate: '08/24',
             address: {
                 line1: '123 Mockingbird Lane',
                 city: 'Columbus',

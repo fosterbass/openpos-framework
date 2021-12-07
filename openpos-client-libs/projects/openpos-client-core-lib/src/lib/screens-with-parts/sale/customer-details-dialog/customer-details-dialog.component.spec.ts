@@ -241,7 +241,7 @@ describe('CustomerDetailsDialog', () => {
         describe('plccLookup button', () => {
           let button;
           let configuration;
-          const selector = 'mat-dialog-actions .plccLookup';
+          const selector = 'mat-dialog-actions .button';
           const setButtonConfiguration = (conf) => {
              component.screen.plccLookupButton = conf;
            };
