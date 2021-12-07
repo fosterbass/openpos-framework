@@ -2,22 +2,7 @@
     <!-- The mat-card tag below was copied from transaction.component. -->
 
     <mat-card fxFlex="0 1 100%" class="page-content-card scrollable-content-card serrated-edge" fxLayout="column" fxLayoutAlign="start" style="padding-top:6px;">
-        <mat-toolbar *ngIf="areAnyItemsSelected()" class="page-content-card" color="primary" style="padding-top:20px;padding-bottom:20px;">
-            <span>{{selectedItems.length}} Item{{selectedItems.length === 1 ? '' : 's'}} Selected</span>
-            <span fxFlex="1 1 auto"></span>
-            <span>
-                <button *ngIf="!screen.readOnly && isAddActionPresent() && 
-                (selectedItems.length > 1 || (selectedItems.length === 1 && itemActions.length === 1))" mat-icon-button color="primary-inverse" 
-                (click)="addItemsToSale(selectedItems)">
-                    <mat-icon>add_circle</mat-icon>
-                </button>
-                <button *ngIf="!screen.readOnly && isAddActionPresent() && 
-                selectedItems.length === 1 && itemActions.length > 1" mat-icon-button color="primary-inverse" 
-                (click)="openItemDialog(selectedItems[0])">
-                    <mat-icon>more_vert</mat-icon>
-                </button>
-            </span>
-        </mat-toolbar>
+
         <mat-card-content #scrollList ngClass.xs="xs" style="padding-top:6px;">
             <app-selectable-item-list [listData]="listData" [configuration]="listConfig" 
             [selectedItemList]="selectedItems" (selectedItemListChange)="onItemListChange($event)">
@@ -34,8 +19,8 @@
                                 <app-currency-text [amountText]="item.amount"></app-currency-text>
                             </span>
                         </div>	
-                        <div fxAlign="right" *ngIf="!condensedListDisplay" >
-                            <button *ngIf="isAnyActionPresent() && selectedItems.length == 0 && itemActions.length > 1" mat-icon-button color="primary" (click)="openItemDialog(item)">
+                        <div fxAlign="right" >
+                            <button *ngIf="!condensedListDisplay && isAnyActionPresent() && selectedItems.length == 0 && itemActions.length > 1" mat-icon-button color="primary" (click)="openItemDialog(item)">
                                 <mat-icon>more_vert</mat-icon>
                             </button>
                             <button *ngIf="isAnyActionPresent() && !isAddActionPresent() && 
@@ -62,6 +47,22 @@
                 <mat-icon class="material-icons mat-48">keyboard_arrow_right</mat-icon>
 			</button>
         </mat-card-actions>
+        <mat-toolbar *ngIf="areAnyItemsSelected()" class="page-content-card" color="primary" style="padding-top:10px;padding-bottom:10px;" fxLayoutGap="30px">
+            <span>{{selectedItems.length}} Item(s)</span>
+            <span fxFlex="1 1 auto"></span>
+      
+                <button *ngIf="!screen.readOnly && isAddActionPresent() && 
+                (selectedItems.length > 1 || (selectedItems.length === 1))" mat-mini-fab color="primary-inverse" 
+                (click)="addItemsToSale(selectedItems)">
+                   <mat-icon>add_circle</mat-icon>
+                </button>
+                <button style="margin-left:20px;"*ngIf="isAnyActionPresent() && 
+                            selectedItems.length == 1 " mat-mini-fab color="primary-inverse" 
+                            (click)="showItemDetailScreen(selectedItems)">
+                               <mat-icon>keyboard_arrow_right</mat-icon>
+                </button>
 
+ 
+        </mat-toolbar>
     </mat-card>
 </div>
