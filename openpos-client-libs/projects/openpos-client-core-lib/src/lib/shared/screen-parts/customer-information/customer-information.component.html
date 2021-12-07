@@ -7,6 +7,24 @@
 <div *ngIf="customer.loyaltyNumber" class="details-row loyalty-number" responsive-class>
     <app-icon [iconName]="screenData.loyaltyNumberIcon" [iconClass]="'material-icons mat-18'"></app-icon>{{customer.loyaltyNumber}}
 </div>
+<div *ngIf="customer.accountNumberLabel" class="details-row accountNumber-Label" responsive-class>
+     {{customer.accountNumberLabel}}
+</div>
+<div *ngIf="customer.accountNumber" class="details-row-account-details" responsive-class>
+    {{customer.accountNumber}}
+</div>
+<div *ngIf="customer.creditLimitLabel" class="details-row creditLimit-Label" responsive-class>
+    {{customer.creditLimitLabel}}
+</div>
+<div *ngIf="customer.creditLimit" class="details-row-account-details" responsive-class>
+    {{customer.creditLimit}}
+</div>
+<div *ngIf="customer.expiryDateLabel" class="details-row expiryDate-Label" responsive-class>
+    {{customer.expiryDateLabel}}
+</div>
+<div *ngIf="customer.expiryDate" class="details-row-account-details" responsive-class>
+    {{customer.expiryDate}}
+</div>
 <div *ngIf="customer.address" class="details-row address" responsive-class>
     <app-icon [iconName]="screenData.locationIcon" [iconClass]="'material-icons mat-18'"></app-icon>
     <div class="address-details" *ngIf="customer.address">

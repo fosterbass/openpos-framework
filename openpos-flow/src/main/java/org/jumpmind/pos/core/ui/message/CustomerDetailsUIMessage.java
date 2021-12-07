@@ -10,6 +10,7 @@ public class CustomerDetailsUIMessage extends UIMessage {
 
     private String title;
 
+    private ActionItem plccLookupButton;
     private ActionItem unlinkButton;
     private ActionItem editButton;
     private ActionItem doneButton;

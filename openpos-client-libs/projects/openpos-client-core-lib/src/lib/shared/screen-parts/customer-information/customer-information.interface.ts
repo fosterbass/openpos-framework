@@ -6,6 +6,12 @@ import { IActionItem } from '../../../core/actions/action-item.interface';
 export interface CustomerDetails {
     name: string;
     loyaltyNumber: string;
+    accountNumberLabel: string;
+    accountNumber: string;
+    creditLimitLabel: string;
+    creditLimit: string;
+    expiryDateLabel: string;
+    expiryDate: string;
     phoneNumber: string;
     email: string;
     address: {

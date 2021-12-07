@@ -204,7 +204,7 @@ describe('CustomerDetailsDialog', () => {
             component.screen.editButton = conf;
           };
 
-          beforeEach(() => {
+          beforeEach(() =>  {
             configuration = {
               title: 'Some Title'
             } as IActionItem;
@@ -237,6 +237,49 @@ describe('CustomerDetailsDialog', () => {
             expect(component.doAction).toHaveBeenCalledWith(configuration);
           });
         });
+
+        describe('plccLookup button', () => {
+          let button;
+          let configuration;
+          const selector = 'mat-dialog-actions .plccLookup';
+          const setButtonConfiguration = (conf) => {
+             component.screen.plccLookupButton = conf;
+           };
+
+          beforeEach(() => {
+              configuration = {
+                title: 'Some Title'
+              } as IActionItem;
+              setButtonConfiguration(configuration);
+              fixture.detectChanges();
+              button = fixture.debugElement.query(By.css(selector));
+          });
+
+          it('renders when the button configuration is set', () => {
+              expect(button.nativeElement).toBeDefined();
+          });
+
+          it('does not render when the configuration is undefined', () => {
+              setButtonConfiguration(undefined);
+              fixture.detectChanges();
+              validateDoesNotExist(fixture, selector);
+          });
+
+          it('calls doAction with the configuration when an actionClick event is triggered', () => {
+              spyOn(component, 'doAction');
+              button = fixture.debugElement.query(By.css(selector));
+              button.nativeElement.dispatchEvent(new Event('actionClick'));
+              expect(component.doAction).toHaveBeenCalledWith(configuration);
+          });
+
+          it('calls doAction with the configuration when the button is clicked', () => {
+              spyOn(component, 'doAction');
+              button = fixture.debugElement.query(By.css(selector));
+              button.nativeElement.click();
+              expect(component.doAction).toHaveBeenCalledWith(configuration);
+          });
+        });
+
         describe('unlink button', () => {
           let button;
           let configuration;

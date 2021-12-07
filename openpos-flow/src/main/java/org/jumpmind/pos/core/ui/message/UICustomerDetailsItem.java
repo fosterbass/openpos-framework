@@ -14,6 +14,12 @@ public class UICustomerDetailsItem extends SelectableItem implements Serializabl
     private String privacyRestrictedMessage;
     private String name;
     private String loyaltyNumber;
+    private String accountNumberLabel;
+    private String accountNumber;
+    private String creditLimitLabel;
+    private String creditLimit;
+    private String expiryDateLabel;
+    private String expiryDate;
     private BigDecimal loyaltyPoints;
     private String email;
     private String phoneNumber;
