@@ -102,6 +102,11 @@ export class TenderingComponent extends PosScreen<any> implements OnDestroy {
         this.onAction();
     }
 
+    onTender(action: IActionItem): void {
+        this.actionButton = action;
+        this.onAction();
+    }
+
     isTenderValid(): boolean {
         return this.tenderFormGroup.valid || this.tenderFormGroup.get('tenderAmtFld').disabled === true;
     }

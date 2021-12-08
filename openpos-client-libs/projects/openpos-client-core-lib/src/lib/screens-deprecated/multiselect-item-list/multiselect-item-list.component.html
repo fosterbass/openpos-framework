@@ -1,68 +1,79 @@
 <div fxFlexFill fxLayout="column" fxLayoutAlign="start" fxLayoutGap="6px">
     <!-- The mat-card tag below was copied from transaction.component. -->
 
-    <mat-card fxFlex="0 1 100%" class="page-content-card scrollable-content-card serrated-edge" fxLayout="column" fxLayoutAlign="start" style="padding-top:6px;">
+    <mat-card fxFlex="0 1 100%" class="page-content-card scrollable-content-card serrated-edge" fxLayout="column"
+        fxLayoutAlign="start" style="padding-top:6px;">
 
         <mat-card-content #scrollList ngClass.xs="xs" style="padding-top:6px;">
-            <app-selectable-item-list [listData]="listData" [configuration]="listConfig" 
-            [selectedItemList]="selectedItems" (selectedItemListChange)="onItemListChange($event)">
+            <app-selectable-item-list [listData]="listData" [configuration]="listConfig"
+                [selectedItemList]="selectedItems" (selectedItemListChange)="onItemListChange($event)">
                 <ng-template let-item>
                     <div fxLayoutAlign="space-between" fxLayout.xs="column">
-                        <div fxFlex="90" fxAlign="left" >
-                            {{item.description}}<br/>
+                        <div fxFlex="90" fxAlign="left">
+                            {{item.description}}<br />
                             <span class="muted-color">
                                 {{item.subtitle}}&nbsp;
                             </span>
-                        </div>	
-                        <div fxAlign="right">
-                            <span class="primary text-md">
+                        </div>
+                        <div
+                            style="align-items:center;display:inline-grid;grid-template-columns:auto auto auto auto auto;">
+
+                            <span class="primary text-md" align="center">
                                 <app-currency-text [amountText]="item.amount"></app-currency-text>
                             </span>
-                        </div>	
-                        <div fxAlign="right" >
-                            <button *ngIf="!condensedListDisplay && isAnyActionPresent() && selectedItems.length == 0 && itemActions.length > 1" mat-icon-button color="primary" (click)="openItemDialog(item)">
-                                <mat-icon>more_vert</mat-icon>
-                            </button>
-                            <button *ngIf="isAnyActionPresent() && !isAddActionPresent() && 
-                            selectedItems.length == 0 && itemActions.length === 1" mat-icon-button color="primary" 
-                            (click)="doItemAction(item)">
-                                <mat-icon>keyboard_arrow_right</mat-icon>
-                            </button>
-                            <button *ngIf="isAnyActionPresent() && isAddActionPresent() && 
-                            selectedItems.length == 0 && itemActions.length === 1" mat-icon-button color="primary" 
-                            (click)="addItemsToSale([item])">
-                                <mat-icon *ngIf="isAddActionPresent()">add_circle</mat-icon>
-                            </button>
+                            <div></div>
+                            <div align="right">
+                                <button
+                                    *ngIf="!condensedListDisplay && isAnyActionPresent() && selectedItems.length == 0 && itemActions.length > 1"
+                                    mat-icon-button color="primary" (click)="openItemDialog(item)">
+                                    <mat-icon>more_vert</mat-icon>
+                                </button>
+                            </div>
+                            <div align="right">
+                                <button *ngIf="isAnyActionPresent() && !isAddActionPresent() && 
+                            selectedItems.length == 0 && itemActions.length === 1" mat-mini-fab color="primary-inverse"
+                                    (click)="doItemAction(item)">
+                                    <mat-icon>keyboard_arrow_right</mat-icon>
+                                </button>
+                            </div>
+                            <div align="right">
+                                <button *ngIf="isAnyActionPresent() && isAddActionPresent() && 
+                            selectedItems.length == 0 && itemActions.length === 1" mat-mini-fab color="primary-inverse"
+                                    (click)="addItemsToSale([item])">
+                                    <mat-icon *ngIf="isAddActionPresent()">add_circle</mat-icon>
+                                </button>
+                            </div>
                         </div>
-                     </div>
+                    </div>
                 </ng-template>
-            </app-selectable-item-list> 
+            </app-selectable-item-list>
         </mat-card-content>
 
         <div *ngIf="screen.actionButton" fxFlex="1 1 auto"></div>
         <mat-card-actions *ngIf="screen.actionButton" fxLayoutAlign="end">
-			<button mat-raised-button (click)="onActionButtonClick()" color="primary">
+            <button mat-raised-button (click)="onActionButtonClick()" color="primary">
                 <span *ngIf="screen.actionButton.name" class="text-md">{{screen.actionButton.name}}</span>
                 <span *ngIf="!screen.actionButton.name" class="text-md">Next</span>
                 <mat-icon class="material-icons mat-48">keyboard_arrow_right</mat-icon>
-			</button>
+            </button>
         </mat-card-actions>
-        <mat-toolbar *ngIf="areAnyItemsSelected()" class="page-content-card" color="primary" style="padding-top:10px;padding-bottom:10px;" fxLayoutGap="30px">
+        <mat-toolbar *ngIf="areAnyItemsSelected()" class="page-content-card" color="primary"
+            style="padding-top:10px;padding-bottom:10px;" fxLayoutGap="30px">
             <span>{{selectedItems.length}} Item(s)</span>
             <span fxFlex="1 1 auto"></span>
-      
-                <button *ngIf="!screen.readOnly && isAddActionPresent() && 
-                (selectedItems.length > 1 || (selectedItems.length === 1))" mat-mini-fab color="primary-inverse" 
-                (click)="addItemsToSale(selectedItems)">
-                   <mat-icon>add_circle</mat-icon>
-                </button>
-                <button style="margin-left:20px;"*ngIf="isAnyActionPresent() && 
-                            selectedItems.length == 1 " mat-mini-fab color="primary-inverse" 
-                            (click)="showItemDetailScreen(selectedItems)">
-                               <mat-icon>keyboard_arrow_right</mat-icon>
-                </button>
 
- 
+            <button *ngIf="!screen.readOnly && isAddActionPresent() && 
+                (selectedItems.length > 1 || (selectedItems.length === 1))" mat-mini-fab color="primary-inverse"
+                (click)="addItemsToSale(selectedItems)">
+                <mat-icon>add_circle</mat-icon>
+            </button>
+            <button style="margin-left:20px;" *ngIf="isAnyActionPresent() && 
+                            selectedItems.length == 1 " mat-mini-fab color="primary-inverse"
+                (click)="showItemDetailScreen(selectedItems)">
+                <mat-icon>keyboard_arrow_right</mat-icon>
+            </button>
+
+
         </mat-toolbar>
     </mat-card>
 </div>

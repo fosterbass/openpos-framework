@@ -1,11 +1,17 @@
-<div fxFlexFill fxLayout="column" fxLayoutAlign="start">
-	<mat-card>
+<div fxFlexFill fxLayout="column" >
+	<mat-card fxFlex="1 1 auto" align="top">
 		<mat-card-title>
 			{{pinPadStatus}}
 		</mat-card-title>
 		<mat-card-content>
-				<mat-progress-bar mode="indeterminate" color="primary"></mat-progress-bar>
+		    <mat-progress-bar mode="indeterminate" color="primary"></mat-progress-bar>
 		</mat-card-content>
 	</mat-card>
-
+		
+    <div *ngFor="let tender of screen.template.localMenuItems" fxShow.sm="true" fxShow.gt-sm="false" align="end" style="padding-left:15px;">
+        <button *ngIf="bypassEnabled"  mat-mini-fab (click)="doMenuItemAction(tender)" color=primary-inverse>          
+            <app-icon *ngIf="tender.icon && bypassEnabled"  [iconName]="tender.icon"></app-icon>  
+        </button>
+    </div>
+	
 </div>
