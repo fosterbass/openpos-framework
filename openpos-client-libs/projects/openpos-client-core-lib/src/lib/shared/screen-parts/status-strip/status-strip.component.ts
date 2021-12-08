@@ -1,9 +1,7 @@
-import { map } from 'rxjs/operators';
 import { ScreenPartComponent } from '../screen-part';
 import { StatusStripInterface } from './status-strip.interface';
 import { MatDialog } from '@angular/material/dialog';
-import { interval, of, timer } from 'rxjs';
-import { Component, Injector, Input } from '@angular/core';
+import { Component, Injector, Input, OnDestroy } from '@angular/core';
 import { ScreenPart } from '../../decorators/screen-part.decorator';
 @ScreenPart({
     name: 'statusStrip'
@@ -13,23 +11,41 @@ import { ScreenPart } from '../../decorators/screen-part.decorator';
     templateUrl: './status-strip.component.html',
     styleUrls: ['./status-strip.component.scss'],
 })
-export class StatusStripComponent extends ScreenPartComponent<StatusStripInterface> {
+export class StatusStripComponent extends ScreenPartComponent<StatusStripInterface> implements OnDestroy {
 
     @Input()
     showTimestamps = true;
 
-    date = interval(1000).pipe(map(() => Date.now()));
-    timer = interval(1000).pipe(map(() => {
-        if (this.screenData.timestampBegin) {
-            const timestampBegin = new Date(this.screenData.timestampBegin).getTime();
-            return ((new Date()).getTime() - timestampBegin) / 1000;
-        }
-    }));
+    date = Date.now();
+    timer: number;
+    dateInterval: NodeJS.Timeout;
+    timerInterval: NodeJS.Timeout;
 
     constructor(protected dialog: MatDialog, injector: Injector) {
         super(injector);
     }
 
     screenDataUpdated() {
+        this.dateInterval = setInterval(() => {
+            this.date = Date.now();
+        }, 1000);
+
+        this.timerInterval = setInterval(() => {
+            if (this.screenData.timestampBegin) {
+                const timestampBegin = new Date(this.screenData.timestampBegin).getTime();
+                this.timer = ((new Date()).getTime() - timestampBegin) / 1000;
+            }
+        }, 1000);
     }
+
+    ngOnDestroy() {
+        super.ngOnDestroy();
+        if (this.dateInterval) {
+            clearInterval(this.dateInterval);
+        }
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+        }
+    }
+
 }

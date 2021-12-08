@@ -140,13 +140,10 @@ $loyalty-signup-column-gap: 8px;
 
                     .customer-name {
                         @extend %text-md;
+                        line-height: 1.25em;
                         overflow: hidden;
                         text-overflow: ellipsis;
                         white-space: normal;
-                    }
-                    .customer-name {
-                        @extend %text-md;
-                        line-height: 1.25em;
 
                         &.desktop-portrait {
                             font-size: $text-sm;
