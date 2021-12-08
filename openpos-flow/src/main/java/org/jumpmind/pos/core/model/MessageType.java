@@ -26,4 +26,6 @@ public final class MessageType {
     public static final String HideWatermark = "HideWatermark";
     public static final String ClientExecutable = "ClientExecutable";
     public static final String DataClear = "DataClear";
+    public static final String ExitClientApp = "ExitClientApp";
+
 }

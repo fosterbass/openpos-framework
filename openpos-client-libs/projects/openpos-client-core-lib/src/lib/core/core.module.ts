@@ -84,6 +84,7 @@ import { Storage } from './storage/storage.service';
 import { STORAGE_CONTAINERS } from './storage/storage-container';
 import {ZebraBluetoothPrinterCordovaPlugin} from "./platform-plugins/cordova-plugins/zebra-bluetooth-printer-cordova-plugin";
 import {AirwatchCordovaPlugin} from "./platform-plugins/cordova-plugins/airwatch-cordova-plugin";
+import {ExitAppPlugin} from "./platform-plugins/cordova-plugins/auto-exit";
 import {
     ENTERPRISE_CONFIGS,
     EnterpriseConfigService
@@ -164,6 +165,7 @@ registerLocaleData(locale_frCA, 'fr-CA');
         { provide: PLUGINS, useExisting: Dpp255CapacitorPlugin, multi: true },
         { provide: PLUGINS, useExisting: ZebraBluetoothPrinterCordovaPlugin, multi: true, deps: [CordovaService, SessionService]},
         { provide: PLUGINS, useExisting: AirwatchCordovaPlugin, multi: true, deps: [CordovaService]},
+        { provide: PLUGINS, useExisting: ExitAppPlugin, multi: true },
         { provide: SCANNERS, useExisting: ServerScannerPlugin, multi: true, deps: [SessionService]},
         { provide: PLATFORMS, useExisting: CordovaPlatform, multi: true},
         { provide: STORAGE_CONTAINERS, useClass: CapacitorStorageService, multi: true },
