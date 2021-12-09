@@ -86,10 +86,11 @@ public class Versions {
 
     protected int formatVersion(String version) {
         if (version != null && !"@version@".equals(version)) {
-            final String SNAPSHOT = "-SNAPSHOT";
+            final String SNAPSHOT_INDICATOR = "-";
             StringBuilder formattedVersion = new StringBuilder();
-            if (version.endsWith(SNAPSHOT)) {
-                version = version.substring(0, version.length() - SNAPSHOT.length());
+            if (version.contains(SNAPSHOT_INDICATOR)) {
+                int snapshotIndicatorIndex = version.indexOf(SNAPSHOT_INDICATOR);
+                version = version.substring(0, snapshotIndicatorIndex);
             }
             for (int i = 0; i < 3; i++) {
                 if (version.indexOf(".") >= 0) {
