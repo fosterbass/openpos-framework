@@ -205,9 +205,8 @@ public class StateManagerContainer implements IStateManagerContainer, Applicatio
     }
 
     private void setClientContextVersions() {
-        getVersions().entrySet().forEach(e -> {
-            clientContext.put("version." + e.getKey(), e.getValue());
-        });
+        getVersions().entrySet().forEach(e ->
+            clientContext.put("version." + e.getKey(), e.getValue()));
     }
 
     private Map<String,String> getVersions() {
