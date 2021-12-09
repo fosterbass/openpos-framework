@@ -65,7 +65,7 @@ export class OptionsListComponent extends ScreenPartComponent<OptionsListInterfa
             this.options = [];
             this.overflowOptions = [];
             for (let i = 0; i < this.screenData.options.length; i++) {
-                if (i < this.listSize - 1) {
+                if (i < this.listSize) {
                     this.options.push(this.screenData.options[i]);
                 } else {
                     this.overflowOptions.push(this.screenData.options[i]);

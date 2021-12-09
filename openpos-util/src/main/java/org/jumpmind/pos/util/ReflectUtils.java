@@ -60,7 +60,7 @@ public class ReflectUtils {
 
             if (value instanceof String) {
                 try {
-                    value = DateUtils.parseDate((String) value, "yyyyMMdd", "yyyyMMdd hh:mm:ss", "yyyy-MM-dd hh:mm:ss.SSS");
+                    value = DateUtils.parseDate((String) value, "yyyyMMdd", "yyyyMMdd hh:mm:ss", "yyyy-MM-dd hh:mm:ss.SSS", "yyyy-MM-dd HH:mm:ss");
                 } catch (ParseException e) {
                     throw new ReflectionException("Failed to parse this string " + value + " to a date value.  You might need to add a new date pattern to the list", e);
                 }
