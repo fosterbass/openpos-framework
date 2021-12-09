@@ -8,10 +8,13 @@
 		</mat-card-content>
 	</mat-card>
 		
-    <div *ngFor="let tender of screen.template.localMenuItems" fxShow.sm="true" fxShow.gt-sm="false" align="end" style="padding-left:15px;">
-        <button *ngIf="bypassEnabled"  mat-mini-fab (click)="doMenuItemAction(tender)" color=primary-inverse>          
-            <app-icon *ngIf="tender.icon && bypassEnabled"  [iconName]="tender.icon"></app-icon>  
+    <div *ngFor="let tender of screen.template.localMenuItems"   fxShow.sm="true" fxShow.gt-sm="false" align="end" style="padding-left:15px;">
+        <div *ngIf="bypassEnabled"  (click)="doMenuItemAction(tender)" style="width:auto;text-align:center;">
+        <button mat-mini-fab color=primary-inverse>          
+            <app-icon *ngIf="tender.icon"  [iconName]="tender.icon"></app-icon>   
         </button>
+        <div style="font-size:14px;padding-top:10px;">Exception Bypass PIN Pad</div>  
+        <div>
     </div>
 	
 </div>

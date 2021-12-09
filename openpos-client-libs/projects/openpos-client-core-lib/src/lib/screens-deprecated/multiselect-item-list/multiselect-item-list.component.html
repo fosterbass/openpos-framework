@@ -57,23 +57,25 @@
                 <mat-icon class="material-icons mat-48">keyboard_arrow_right</mat-icon>
             </button>
         </mat-card-actions>
-        <mat-toolbar *ngIf="areAnyItemsSelected()" class="page-content-card" color="primary"
-            style="padding-top:10px;padding-bottom:10px;" fxLayoutGap="30px">
-            <span>{{selectedItems.length}} Item(s)</span>
+        <mat-toolbar *ngIf="areAnyItemsSelected()" class="page-content-card" color="primary-reversed"
+            style="padding:15px;height:80px;" fxLayoutGap="15px">
+            <span color="primary">{{selectedItems.length}} Item(s)</span>
             <span fxFlex="1 1 auto"></span>
-
-            <button *ngIf="!screen.readOnly && isAddActionPresent() && 
-                (selectedItems.length > 1 || (selectedItems.length === 1))" mat-mini-fab color="primary-inverse"
-                (click)="addItemsToSale(selectedItems)">
+            <div style="text-align:center" *ngIf="!screen.readOnly && isAddActionPresent() && 
+                (selectedItems.length > 1 || (selectedItems.length === 1))" (click)="addItemsToSale(selectedItems)">
+            <button  mat-mini-fab color="primary-inverse">
                 <mat-icon>add_circle</mat-icon>
             </button>
-            <button style="margin-left:20px;" *ngIf="isAnyActionPresent() && 
-                            selectedItems.length == 1 " mat-mini-fab color="primary-inverse"
-                (click)="showItemDetailScreen(selectedItems)">
+            
+            <div style="font-size:15px">Add to Sale</div>
+            </div>
+            <div style="text-align:center"  *ngIf="isAnyActionPresent() && 
+                            selectedItems.length == 1 " (click)="showItemDetailScreen(selectedItems)" >
+            <button mat-mini-fab color="primary-inverse">
                 <mat-icon>keyboard_arrow_right</mat-icon>
             </button>
-
-
+            <div style="font-size:15px">Details</div>
+            </div>
         </mat-toolbar>
     </mat-card>
 </div>
