@@ -4,7 +4,6 @@ import {filter, take, tap} from "rxjs/operators";
 import { SessionService } from '../../services/session.service';
 import {CordovaService} from "../../services/cordova.service";
 import { Injectable } from '@angular/core';
-import { ActionMessage } from '../../messages/action-message';
 import { MessageTypes } from '../../messages/message-types';
 
 @Injectable({
@@ -15,14 +14,20 @@ export class ExitAppPlugin implements IPlatformPlugin {
     private initialized = false;
     private ExitAppCordovaPlugin;
 
-    constructor(private sessionService: SessionService, protected cordovaService: CordovaService) { }
+    constructor( protected cordovaService: CordovaService, protected sessionService: SessionService) { }
 
     name(): string {
         return 'ExitAppCordovaPlugin';
     }
 
     pluginPresent(): boolean {
-        return !!window.hasOwnProperty('ExitApp');
+        let present = false;
+        if (window.hasOwnProperty('cordova')) {
+            if (window['cordova'].hasOwnProperty('plugins')) {
+                present = window['cordova'].plugins.hasOwnProperty('exit');
+            }
+        }
+        return present;
     }
 
     initialize(): Observable<string> {
@@ -35,9 +40,15 @@ export class ExitAppPlugin implements IPlatformPlugin {
                 filter(m => m === 'deviceready'),
                 take(1),
                 tap(() => {
-                    this.ExitAppCordovaPlugin = window['ExitApp'];
+                    this.ExitAppCordovaPlugin = window['cordova'].plugins['exit'];
+                    if (!this.ExitAppCordovaPlugin) {
+                        console.error(`Tried to initialize plugin ${this.name()} which is not present`);
+                        observer.error(`Tried to initialize plugin ${this.name()} which is not present`);
+                    }
+
                     this.sessionService.getMessages(MessageTypes.EXIT_CLIENT_APP).subscribe(message => this.exitApp());
                     this.initialized = true;
+                    console.info('ExitAppCordovaPlugin initialize completed' );
                     observer.next('ExitApp plugin successfully initialized');
                     observer.complete();
                 })
@@ -47,6 +58,6 @@ export class ExitAppPlugin implements IPlatformPlugin {
 
     private exitApp() {
         console.info('ExitApp - Exiting the app');
-        this.ExitAppCordovaPlugin.exitApp();
+        this.ExitAppCordovaPlugin();
     }
 }

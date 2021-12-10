@@ -165,7 +165,7 @@ registerLocaleData(locale_frCA, 'fr-CA');
         { provide: PLUGINS, useExisting: Dpp255CapacitorPlugin, multi: true },
         { provide: PLUGINS, useExisting: ZebraBluetoothPrinterCordovaPlugin, multi: true, deps: [CordovaService, SessionService]},
         { provide: PLUGINS, useExisting: AirwatchCordovaPlugin, multi: true, deps: [CordovaService]},
-        { provide: PLUGINS, useExisting: ExitAppPlugin, multi: true },
+        { provide: PLUGINS, useExisting: ExitAppPlugin, multi: true, deps: [CordovaService, SessionService] },
         { provide: SCANNERS, useExisting: ServerScannerPlugin, multi: true, deps: [SessionService]},
         { provide: PLATFORMS, useExisting: CordovaPlatform, multi: true},
         { provide: STORAGE_CONTAINERS, useClass: CapacitorStorageService, multi: true },
