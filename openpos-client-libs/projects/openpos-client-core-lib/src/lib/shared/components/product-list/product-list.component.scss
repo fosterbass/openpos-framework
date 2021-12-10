@@ -26,3 +26,8 @@ mat-list-item.disabled{
     text-decoration: none;
     pointer-events: none;
 }
+
+.location-detail{
+    display:grid;
+    grid-template-columns:auto auto auto auto;
+    }
