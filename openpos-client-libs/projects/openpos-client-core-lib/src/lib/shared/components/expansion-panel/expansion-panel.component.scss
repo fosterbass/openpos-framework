@@ -1,18 +1,19 @@
-:host{
-  display: grid;
-}
+@import "../../../styles/variables/spacing";
 
 .expansion-header {
-  display: flex;
+  @extend %sub-element;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  cursor: pointer;
+
 }
 
 .expansion-body {
   margin-top: 1px;
-  margin-left: 30px;
+  margin-left: .75em;
 }
 
 .expand-icon {
   flex: 0 1 100%;
   justify-content: end;
-  cursor: pointer;
 }

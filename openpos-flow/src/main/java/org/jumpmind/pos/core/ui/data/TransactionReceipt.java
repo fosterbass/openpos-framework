@@ -13,12 +13,20 @@ public class TransactionReceipt implements Serializable {
 
     private long transactionNumber;
     private String webOrderId;
+
+    private String webOrderLabel;
+
     private List<TransactionReceiptLine> transactionInfoSection = new ArrayList<>();
     private List<TransactionReceiptLine> totalsInfoSection = new ArrayList<>();
     private Total transactionTotal;
     private String icon;
     private List<TenderItem> tenderInfoSection;
     private String tenderInfoSectionTitle;
+
+    private String webOrderIcon;
+
+    private String webOrderStyleClasses;
+
     private String barcode;
 
     public void addTransactionInfoLine(TransactionReceiptLine line) {
