@@ -68,8 +68,7 @@ export class PersonalizationService {
                 timeout(Configuration.autoPersonalizationRequestTimeoutMillis),
                 tap(response => {
                     if (response) {
-                        console.log('Auto personalization response received.', response);
-                        response.sslEnabled = this.sslEnabled$.getValue();
+                        console.log('Auto personalization response received.', JSON.stringify(response));
                     }
                 }));
     }
@@ -132,7 +131,7 @@ export class PersonalizationService {
         if (personalizationParameters) {
             personalizationParameters.forEach((value, key) => request.personalizationParameters[key] = value);
         }
-
+        console.info(`[PersonalizationService] sending personalizationRequest: ${JSON.stringify(request)}, to url: ${url}`);
         return this.http.post<PersonalizationResponse>(url, request).pipe(
             map((response: PersonalizationResponse) => {
                 console.info(`personalizing with server: ${serverName}, port: ${serverPort}, deviceId: ${request.deviceId}`);

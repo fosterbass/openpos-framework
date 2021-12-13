@@ -19,6 +19,7 @@ public class PersonalizeMeResponse {
     private String serverPort;
     private String deviceId;
     private String appId;
+    private boolean sslEnabled = false;
     private Map<String,String> personalizationParams;
     @JsonIgnore
     private String personalizationParamsString;
@@ -29,6 +30,7 @@ public class PersonalizeMeResponse {
         this.serverPort = model.getServerPort();
         this.deviceId = model.getDeviceId();
         this.appId = model.getAppId();
+        this.sslEnabled = model.isSslEnabledFlag();
         this.personalizationParamsString = model.getPersonalizationParams();
     }
 
