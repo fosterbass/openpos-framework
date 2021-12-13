@@ -19,7 +19,8 @@ import { ISelectableListData } from '../../shared/components/selectable-item-lis
   })
 @Component({
     selector: 'app-multiselect-item-list',
-    templateUrl: './multiselect-item-list.component.html'
+    templateUrl: './multiselect-item-list.component.html',
+    styleUrls: ['./multiselect-item-list.component.scss']
 })
 export class MultiselectItemListComponent extends PosScreen<any> implements OnInit, AfterViewInit, AfterViewChecked {
 
