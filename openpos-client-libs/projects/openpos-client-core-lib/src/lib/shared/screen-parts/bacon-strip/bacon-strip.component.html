@@ -19,6 +19,7 @@
                           *ngIf="screenData.operatorMenu"
                           [iconName]="screenData.operatorIcon"
                           iconClass="md"
+                          [color]="'white'"
                           [menuItems]="screenData.operatorMenu"
                           (menuItemClick)="doAction($event)">
         </app-kebab-button>
