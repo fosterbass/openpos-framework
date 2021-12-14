@@ -11,7 +11,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-@Profile(UpdateModule.NAME)
 @Configuration("UpdateModule")
 @EnableTransactionManagement()
 @Conditional(ModuleEnabledCondition.class)
@@ -21,6 +20,7 @@ public class UpdateModule extends AbstractRDBMSModule {
     public static final String NAME = "update";
 
     IUpdateService updateService;
+    IUpdateManagementService updateManagementService;
 
     @Override
     protected String getArtifactName() {
@@ -68,10 +68,20 @@ public class UpdateModule extends AbstractRDBMSModule {
     }
 
     @Bean
+    @Profile(UpdateModule.NAME)
     protected IUpdateService updateService() {
         if( updateService == null ){
             updateService = buildService(IUpdateService.class);
         }
         return updateService;
+    }
+
+    @Bean
+    protected IUpdateManagementService updateManagementService() {
+        if (updateManagementService == null) {
+            updateManagementService = buildService(IUpdateManagementService.class);
+        }
+
+        return updateManagementService;
     }
 }

@@ -24,7 +24,7 @@ spring:
     console: 
       enabled: true
 db:
-  url: jdbc:openpos:h2:tcp://localhost:1995/./work/LOCALDB;LOCK_TIMEOUT=60000;DB_CLOSE_ON_EXIT=FALSE;MV_STORE=FALSE
+  url: jdbc:openpos:h2:tcp://localhost:19952/./work/LOCALDB;LOCK_TIMEOUT=60000;DB_CLOSE_ON_EXIT=FALSE;MV_STORE=FALSE
   user:
   password:
   driver: org.h2.Driver
@@ -32,4 +32,4 @@ db:
     DOC__startServer: "Whether to start an H2 database server as part of this server process.  Running H2 in server mode has proven to be more stable than in true embedded mode"
     startServer: true
     DOC__port: "The port to start the H2 server on.  Note the default db.url is referencing this port"
-    port: 1995
+    port: 19952

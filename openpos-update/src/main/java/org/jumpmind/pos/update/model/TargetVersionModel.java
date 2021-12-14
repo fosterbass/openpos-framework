@@ -6,17 +6,18 @@ import org.jumpmind.pos.persist.AbstractModel;
 import org.jumpmind.pos.persist.ColumnDef;
 import org.jumpmind.pos.persist.TableDef;
 
-import java.io.Serializable;
+import java.util.Date;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@TableDef(name = "install_group", primaryKey = {"groupId"})
-public class InstallGroupModel extends AbstractModel implements Serializable {
+@TableDef(name = "target_version", primaryKey = { "groupId", "effectiveTime" })
+public class TargetVersionModel extends AbstractModel {
     @ColumnDef
     String groupId;
 
     @ColumnDef
-    String groupName;
+    Date effectiveTime;
 
-    String targetVersion;
+    @ColumnDef
+    String version;
 }
