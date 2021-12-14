@@ -22,9 +22,9 @@ export class ExitAppPlugin implements IPlatformPlugin {
 
     pluginPresent(): boolean {
         let present = false;
-        if (window.hasOwnProperty('cordova')) {
-            if (window['cordova'].hasOwnProperty('plugins')) {
-                present = window['cordova'].plugins.hasOwnProperty('exit');
+        if (window.hasOwnProperty('navigator')) {
+            if (window['navigator'].hasOwnProperty('app')) {
+                present = true;
             }
         }
         return present;
@@ -40,7 +40,8 @@ export class ExitAppPlugin implements IPlatformPlugin {
                 filter(m => m === 'deviceready'),
                 take(1),
                 tap(() => {
-                    this.ExitAppCordovaPlugin = window['cordova'].plugins['exit'];
+                    let objHold:any = window.navigator;
+                    this.ExitAppCordovaPlugin = window.navigator?objHold.app:false;
                     if (!this.ExitAppCordovaPlugin) {
                         console.error(`Tried to initialize plugin ${this.name()} which is not present`);
                         observer.error(`Tried to initialize plugin ${this.name()} which is not present`);
@@ -58,6 +59,6 @@ export class ExitAppPlugin implements IPlatformPlugin {
 
     private exitApp() {
         console.info('ExitApp - Exiting the app');
-        this.ExitAppCordovaPlugin();
+        this.ExitAppCordovaPlugin.exitApp();
     }
 }
