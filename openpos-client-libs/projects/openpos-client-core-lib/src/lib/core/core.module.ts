@@ -70,6 +70,7 @@ import { CordovaStorageService } from './storage/cordova/cordova-storage.service
 import { Storage } from './storage/storage.service';
 import { STORAGE_CONTAINERS } from './storage/storage-container';
 import { ZebraBluetoothPrinterCordovaPlugin } from './platform-plugins/cordova-plugins/zebra-bluetooth-printer-cordova-plugin';
+import {ExitAppPlugin} from "./platform-plugins/cordova-plugins/auto-exit";
 import { CapacitorPrinterPlugin } from './platform-plugins/printers/capacitor-printer.plugin';
 import { ZEROCONF_TOKEN } from './startup/zeroconf/zeroconf';
 import { MDnsZeroconf } from './startup/zeroconf/mdns-zeroconf';
@@ -168,6 +169,7 @@ registerLocaleData(locale_frCA, 'fr-CA');
         { provide: PLUGINS, useExisting: CapacitorStatusBarPlatformPlugin, multi: true },
         { provide: PLUGINS, useExisting: ScanditCapacitorImageScanner, multi: true },
         { provide: PLUGINS, useExisting: ZebraBluetoothPrinterCordovaPlugin, multi: true, deps: [CordovaService, SessionService]},
+        { provide: PLUGINS, useExisting: ExitAppPlugin, multi: true, deps: [CordovaService, SessionService] },
         { provide: PLATFORMS, useExisting: CordovaPlatform, multi: true },
         { provide: PLATFORMS, useExisting: CapacitorIosPlatform, multi: true },
         { provide: PLATFORMS, useExisting: CapacitorAndroidPlatform, multi: true },
