@@ -19,6 +19,7 @@ public class CustomerDetailsUIMessage extends UIMessage {
     private String rewardsDataKey;
 
     private ActionItem backButton;
+    private ActionItem plccLookupButton;
     private ActionItem unlinkButton;
     private ActionItem editButton;
     private ActionItem doneButton;

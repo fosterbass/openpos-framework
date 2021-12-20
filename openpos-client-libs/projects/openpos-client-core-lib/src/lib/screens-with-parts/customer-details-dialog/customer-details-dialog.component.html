@@ -357,6 +357,15 @@
             {{menuItem.keybindDisplayName}}
         </span>
     </app-secondary-button>
+    <app-secondary-button responsive-class
+                          class="button"
+                          *ngIf="screen.plccLookupButton"
+                          [disabled]="!screen.plccLookupButton?.enabled"
+                          [actionItem]="screen.plccLookupButton"
+                          (actionClick)="doAction(screen.plccLookupButton)"
+                          (click)="doAction(screen.plccLookupButton)">
+        <span>{{screen.plccLookupButton.title}}</span>
+    </app-secondary-button>
     <app-secondary-button responsive-class class="unlink" *ngIf="screen.unlinkButton"
         [disabled]="!screen.unlinkButton?.enabled"
         (actionClick)="doAction(screen.unlinkButton)" (click)="doAction(screen.unlinkButton)">

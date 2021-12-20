@@ -29,6 +29,7 @@ export class ShowErrorsComponent {
         gt_0: () => 'Value must be greater than 0',
         minvalue: () => 'Value is less than minimum permitted',
         maxvalue: () => 'Value is greater than maximum permitted',
+        minDate: () => 'Date is invalid, it is less than minimum permitted',
     };
 
     @Input()

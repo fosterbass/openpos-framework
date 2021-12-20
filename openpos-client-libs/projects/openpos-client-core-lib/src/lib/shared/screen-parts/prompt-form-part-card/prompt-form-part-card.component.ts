@@ -1,31 +1,36 @@
 import { ScreenPartComponent } from '../screen-part';
-import { AfterViewInit, Component, OnInit, ViewChild, Injector, ChangeDetectorRef } from '@angular/core';
-import { Validators, FormControl, FormGroup, ValidatorFn } from '@angular/forms';
+import { AfterViewInit, Component, OnInit, ViewChild, Injector } from '@angular/core';
+import { AbstractControl, Validators, ValidationErrors, FormControl, FormGroup, ValidatorFn } from '@angular/forms';
 import { ValidatorsService } from '../../../core/services/validators.service';
 import { IActionItem } from '../../../core/actions/action-item.interface';
-import { PromptFormPartInterface } from './prompt-form-part.interface';
+import { PromptFormPartCardInterface } from './prompt-form-part-card.interface';
 import { CONFIGURATION } from '../../../configuration/configuration';
 import { merge } from 'rxjs';
 import {ActionItem} from '../../../core/actions/action-item';
+import { CustomDateValidator } from '../../validators/custom-date-validators';
 
 @Component({
-    selector: 'app-prompt-form-part',
-    templateUrl: './prompt-form-part.component.html',
-    styleUrls: ['./prompt-form-part.component.scss']
+    selector: 'app-prompt-form-part-card',
+    templateUrl: './prompt-form-part-card.component.html',
+    styleUrls: ['./prompt-form-part-card.component.scss']
 })
-export class PromptFormPartComponent extends ScreenPartComponent<PromptFormPartInterface> implements AfterViewInit, OnInit {
+export class PromptFormPartCardComponent extends ScreenPartComponent<PromptFormPartCardInterface> implements AfterViewInit, OnInit {
 
     @ViewChild('optionsRef') options;
 
     stop$ = merge(this.beforeScreenDataUpdated$, this.destroyed$);
     promptFormGroup: FormGroup;
+    promptDateFormGroup: FormGroup;
     initialized = false;
     instructions: string;
     previousInputLength: number;
     inputControlName = 'promptInputControl';
     hiddenInputControlName = 'promptInputHiddenDateControl';
+    inputDateControlName = 'promptDateInputControl';
+    hiddenDateInputControlName = 'promptDateInputHiddenDateControl';
     primaryActionButton: ActionItem;
     secondaryActionButton: ActionItem;
+    public today: Date = new Date();
 
     get autoFocusPrompt(): boolean {
         // default to true if not properly defined... it is the way
@@ -36,13 +41,12 @@ export class PromptFormPartComponent extends ScreenPartComponent<PromptFormPartI
         return this.screenData.autoFocus;
     }
 
-    constructor(private validatorsService: ValidatorsService, injector: Injector, private changeDetectorRef: ChangeDetectorRef) {
+    constructor(private validatorsService: ValidatorsService, injector: Injector) {
         super(injector);
     }
 
     screenDataUpdated() {
         this.instructions = this.screenData.instructions;
-
         const group: any = {};
         const validators: ValidatorFn[] = [];
         if (this.screenData.isRequiredInputField !== false) {
@@ -86,6 +90,16 @@ export class PromptFormPartComponent extends ScreenPartComponent<PromptFormPartI
             this.screenData.responseType.toString().toLowerCase().indexOf('date') >= 0) {
             group[this.hiddenInputControlName] = new FormControl();
         }
+        if (this.screenData.isExpiryDateEnabled) {
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            group[this.inputDateControlName] = new FormControl('', [Validators.required, CustomDateValidator.minDate(yesterday.getTime())]);
+            group[this.hiddenDateInputControlName] = new FormControl('', Validators.required);
+        } else {
+            group[this.inputDateControlName] = new FormControl();
+            group[this.hiddenDateInputControlName] = new FormControl();
+        }
+
         this.promptFormGroup = new FormGroup(group);
 
         this.keyPressProvider.subscribe(this.screenData.actionButton, 100, () => this.onFormSubmit(), this.stop$);
@@ -109,23 +123,21 @@ export class PromptFormPartComponent extends ScreenPartComponent<PromptFormPartI
     onFormSubmit(): void {
         if (this.promptFormGroup.valid && this.options.nativeElement.children.length === 0) {
             const payload = this.promptFormGroup.value[this.inputControlName];
+            const payload2 = this.promptFormGroup.value[this.inputDateControlName];
             if (this.screenData.actionButton) {
-                this.doAction({ action: this.screenData.actionButton.action }, payload);
+                this.doAction({ action: this.screenData.actionButton.action }, {creditCardNumber: payload, expiryDate: payload2});
             }
         }
     }
 
     onPromptInputChange(event): void {
-        if (this.screenData.isGiftCardScanEnabled) {
-            if (event.target.value.length === 0) {
-                this.screenData.actionButton = this.primaryActionButton;
-
-            } else {
-                this.screenData.actionButton = this.secondaryActionButton;
-
-            }
-            this.changeDetectorRef.detectChanges();
-        }
+       if (this.screenData.isGiftCardScanEnabled && !this.screenData.isExpiryDateEnabled) {
+           if (event.target.value.length === 0) {
+                    this.screenData.actionButton = this.primaryActionButton;
+           } else {
+                    this.screenData.actionButton = this.secondaryActionButton;
+           }
+       }
     }
 
 }

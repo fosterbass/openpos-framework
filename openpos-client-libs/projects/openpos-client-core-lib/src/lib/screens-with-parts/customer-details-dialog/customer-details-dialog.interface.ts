@@ -14,6 +14,7 @@ export interface CustomerDetailsDialogInterface extends IAbstractScreen {
     appliedLabel: string;
     backButton: IActionItem;
     editButton: IActionItem;
+    plccLookupButton: IActionItem;
     unlinkButton: IActionItem;
     doneButton: IActionItem;
     additionalActions: IActionItem[];
