@@ -54,6 +54,12 @@
   width: 64px;
 }
 
+.material-icons.mat-90 {
+  font-size: 90px;
+  height: 90px;
+  width: 90px;
+}
+
 .material-icons.mat-128 {
   font-size: 128px;
   height: 128px;
@@ -68,41 +74,49 @@
 
 .mat-icon-button.xs,
   .material-icons.xs {
-    @extend .material-icons, .mat-18;
+    @extend .material-icons.mat-18;
     &.mobile{
-      @extend .material-icons, .mat-18;
+      @extend .material-icons.mat-18;
     }
   }
 
 .mat-icon-button.sm,
   .material-icons.sm {
-    @extend .material-icons, .mat-30;
+    @extend .material-icons.mat-30;
     &.mobile{
-      @extend .material-icons, .mat-18;
+      @extend .material-icons.mat-24;
     }
   }
 
   .mat-icon-button.md,
   .material-icons.md {
-    @extend .material-icons, .mat-40;
+    @extend .material-icons.mat-40;
     &.mobile{
-      @extend .material-icons, .mat-24;
+      @extend .material-icons.mat-30;
     }
   }
 
   .mat-icon-button.lg,
   .material-icons.lg {
-    @extend .material-icons, .mat-64;
+    @extend .material-icons.mat-64;
     &.mobile{
-      @extend .material-icons, .mat-48;
+      @extend .material-icons.mat-48;
     }
   }
 
   .mat-icon-button.xl,
   .material-icons.xl {
-    @extend .material-icons, .mat-128;
+    @extend .material-icons.mat-128;
     &.mobile{
-      @extend .material-icons, .mat-64;
+      @extend .material-icons.mat-64;
+    }
+  }
+
+  .mat-icon-button.xxl,
+  .material-icons.xxl {
+    @extend .material-icons.mat-180;
+    &.mobile{
+      @extend .material-icons.mat-90;
     }
   }
 }

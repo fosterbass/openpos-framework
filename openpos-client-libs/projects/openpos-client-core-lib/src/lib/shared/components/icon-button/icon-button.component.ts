@@ -14,7 +14,8 @@ export class IconButtonComponent {
 
     @Output() buttonClick = new EventEmitter();
 
-    clickFn(): void {
-        this.buttonClick.emit();
+    clickFn(event: any): void {
+        this.buttonClick.emit(event);
+        event.stopPropagation();
     }
 }
