@@ -1,8 +1,6 @@
 package org.jumpmind.pos.core.content;
 
-import java.io.IOException;
-import java.io.InputStream;
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.Resource;
@@ -10,7 +8,11 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 @Component("classPathContentProvider")
+@Slf4j
 @Scope("device")
 public class ClassPathContentProvider extends AbstractFileContentProvider {
 
@@ -25,33 +27,15 @@ public class ClassPathContentProvider extends AbstractFileContentProvider {
         String contentPath = getMostSpecificContent(deviceId, key, classPathContent);
 
         if (contentPath != null) {
-            StringBuilder urlBuilder = new StringBuilder(AbstractFileContentProvider.SERVER_URL);
-            urlBuilder.append(contentPath);
-            urlBuilder.append(PROVIDER_TOKEN);
-            urlBuilder.append("classPathContentProvider");
-            if (this.contentVersion != null) {
-                urlBuilder.append(VERSION_TOKEN);
-                urlBuilder.append(this.contentVersion);
-            }
-
-            return urlBuilder.toString();
+            return buildContentUrlToProvider("classPathContentProvider", contentPath);
         }
 
         return null;
     }
 
-    public void setBaseContentPath(String baseContentPath) {
-        this.baseContentPath = baseContentPath;
-    }
-
-    public String getBaseContentPath() {
-        return this.baseContentPath;
-    }
-
     @Override
     public InputStream getContentInputStream(String contentPath) throws IOException {
         InputStream inputStream = null;
-
         if (isFileSupported(contentPath)) {
             inputStream = getResourceInputStream(contentPath, this.baseContentPath);
 
@@ -82,5 +66,4 @@ public class ClassPathContentProvider extends AbstractFileContentProvider {
 
         return null;
     }
-
 }
