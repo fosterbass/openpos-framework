@@ -50,6 +50,11 @@
                     <app-customer-information [customer]="screen.customer"></app-customer-information>
                 </mat-card>
             </mat-tab>
+            <mat-tab class="plccAccountTab" [label]="screen.plccAccountDetailsLabel" *ngIf="(isMobile | async) && hasAnyPlccDisplayableAccountInformation()">
+                <mat-card class="customer-details muted-color">
+                    <app-customer-information [customer]="screen.customer"></app-customer-information>
+                </mat-card>
+            </mat-tab>
             <mat-tab *ngIf="screen.rewardTabEnabled"
                     class="rewardsTab" [label]="getRewardsLabel()">
                 <mat-card [ngClass]="{'rewardsContent': true, 'with-points': !(isMobile | async) && screen.membershipPointsEnabled, 'no-promotions': !(screen.customer.rewards && screen.customer.rewards.length)}">

@@ -25,6 +25,7 @@ public class CustomerDetailsUIMessage extends UIMessage {
 
     private String membershipLabel;
     private String contactLabel;
+    private String plccAccountDetailsLabel;
     private String noPromotionsLabel;
     private String rewardsLabel;
     private String expiresLabel;

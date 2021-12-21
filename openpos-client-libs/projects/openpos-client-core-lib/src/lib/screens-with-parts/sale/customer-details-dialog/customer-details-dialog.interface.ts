@@ -14,6 +14,7 @@ export interface CustomerDetailsDialogInterface extends IAbstractScreen {
     unlinkButton: IActionItem;
     doneButton: IActionItem;
     contactLabel: string;
+    plccAccountDetailsLabel: string;
     rewardsLabel: string;
     rewardTabEnabled: boolean;
     rewardHistoryLabel: string;
