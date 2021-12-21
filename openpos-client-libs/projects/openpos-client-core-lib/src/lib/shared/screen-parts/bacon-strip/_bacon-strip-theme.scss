@@ -20,5 +20,12 @@
         .mat-drawer-backdrop.mat-drawer-shown{
             background-color: rgba(0, 0, 0, 0.7);
         }
+        
+    }
+
+    .icon {
+        app-icon {
+            color: mat-color($theme, openpos-link-customer-color) !important;
+        }
     }
 }
