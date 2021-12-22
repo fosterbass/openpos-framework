@@ -1,33 +1,30 @@
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
 import { Component, OnDestroy } from '@angular/core';
 import { IScreen } from '../../../shared/components/dynamic-screen/screen.interface';
 import { ScreenComponent } from '../../../shared/decorators/screen-component.decorator';
-import { StartupService } from '../../services/startup.service';
+import { SplashScreen } from '../../services/splash-screen.service';
 
 @ScreenComponent({
     name: 'SplashScreen'
 })
 @Component({
+    selector: 'app-splash-screen',
     templateUrl: './splash-screen.component.html',
     styleUrls: ['./splash-screen.component.scss']
 })
 export class SplashScreenComponent implements IScreen, OnDestroy {
+    message$: Observable<string | null>;
 
-    message: string;
     private destroy$ = new Subject();
 
-    constructor(startupService: StartupService) {
-        startupService.startupTaskMessages$.pipe(
-            tap(m => this.message = m),
+    constructor(splashScreen: SplashScreen) {
+        this.message$ = splashScreen.observeMessage().pipe(
             takeUntil(this.destroy$)
-        ).subscribe();
+        );
     }
 
     show(screen: any): void {
-        if (screen.message) {
-            this.message = screen.message;
-        }
     }
 
     ngOnDestroy(): void {
