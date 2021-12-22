@@ -1,10 +1,10 @@
 package org.jumpmind.pos.persist;
 
-import org.springframework.core.env.Environment;
+import org.jumpmind.pos.util.model.IDeviceAttributes;
 
 
 public interface ITagProvider {
 
-    public String getTagValue(String deviceId, String businessUnitId, String tagName);
+    String getTagValue(IDeviceAttributes deviceAttributes, String tagName);
 
 }

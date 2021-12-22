@@ -110,7 +110,7 @@ public class PersonalizeEndpoint {
                     .forEach(propName -> {
                         for (ITagProvider tagProvider:
                                 this.tagProviders) {
-                            String value = tagProvider.getTagValue(deviceId, deviceModel.getBusinessUnitId(), propName);
+                            String value = tagProvider.getTagValue(deviceModel, propName);
                             if (isNotBlank(value)) {
                                 deviceModel.setTagValue(propName, value);
                             }
