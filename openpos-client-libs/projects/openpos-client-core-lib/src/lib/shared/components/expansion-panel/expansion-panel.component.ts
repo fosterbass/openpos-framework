@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnChanges } from '@angular/core';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 
 @Component({
@@ -18,13 +18,17 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
         ]),
     ],
 })
-export class ExpansionPanelComponent {
+export class ExpansionPanelComponent implements OnChanges {
 
     @Input()
     expanded = true;
+
     state = 'open';
 
     constructor() {
+    }
+
+    ngOnChanges(): void {
         if (!this.expanded) {
             this.state = 'close';
         }
