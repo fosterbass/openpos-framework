@@ -1,0 +1,63 @@
+<div *ngIf="rootFormGroup && screen" class="prompt-outer">
+    <app-dialog-header></app-dialog-header>
+
+    <form class="prompt-content" [formGroup]="rootFormGroup" (submit)="onFormSubmit()">
+        <app-content-card>
+            <ng-container *ngFor="let control of screen.items">
+                <div class="item-group" [ngSwitch]="control.type">
+                    <div *ngSwitchCase="'text'" class="flex col">
+                        <mat-form-field responsive-class>
+                            <mat-label responsive-class>{{ control.label }}</mat-label>
+                            <input matInput responsive-class [type]="control.kind === 'Number' ? 'tel' : 'text'"
+                                [formControlName]="control.id" [attr.minlength]="control.minimumLength"
+                                [attr.maxlength]="control.maximumLength" [placeholder]="control.placeholder"
+                                (focus)="onInputFocused(control)" (blur)="onInputBlurred()">
+                            <button class="barcode-toggle" *ngIf="controlSupportsBarcodeScanInput(control)" matSuffix
+                                mat-flat-button type="button"
+                                [color]="activeImageScanInput == control ? 'warn' : undefined"
+                                (click)="toggleScanForControl(control)">
+                                <app-icon iconName="barcode"></app-icon>
+                            </button>
+
+                            <!-- hide while the image scanner is opened -->
+                            <mat-hint *ngIf="activeImageScanInput !== control && control.hint" class="text-sm">{{
+                                control.hint }}</mat-hint>
+                            <mat-error *ngIf="activeImageScanInput !== control" class="text-sm">
+                                <app-show-errors [control]="rootFormGroup.controls[control.id]"></app-show-errors>
+                            </mat-error>
+                        </mat-form-field>
+
+                        <app-image-scanner
+                            *ngIf="controlSupportsBarcodeScanInput(control) && activeImageScanInput == control"
+                            (scan)="acceptScanInputForControl(control, $event)">
+                        </app-image-scanner>
+                    </div>
+
+                    <mat-form-field *ngSwitchCase="'date'" responsive-class>
+                        <mat-label responsive-class>{{ control.label }}</mat-label>
+                        <input responsive-class type="tel" matInput [formControlName]="control.id"
+                            [textMask]="getTextMask(control)" [placeholder]="getDatePlaceholder(control)">
+
+                        <!-- The text mask causes issues with the date picker in regards to the `formControlName` being duplicated. Handle date picking into a hidden input field. -->
+                        <input hidden type="text" [matDatepicker]="picker"
+                            (dateChange)="onDatePickerPicked(control, $event.value)">
+                        <mat-datepicker-toggle matPrefix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker touchUi></mat-datepicker>
+                        <mat-hint *ngIf="control.hint" class="text-sm">{{ control.hint }}</mat-hint>
+                        <mat-error class="text-sm">
+                            <app-show-errors [control]="rootFormGroup.controls[control.id]"></app-show-errors>
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+            </ng-container>
+        </app-content-card>
+
+        <mat-dialog-actions class="prompt-buttons">
+            <app-primary-button *ngIf="screen.submitAction" [disabled]="!rootFormGroup.valid">
+                <span>{{ screen.submitAction.title }}</span>
+                <app-icon *ngIf="screen.submitAction.icon" iconClass="md" [iconName]="screen.submitAction.icon">
+                </app-icon>
+            </app-primary-button>
+        </mat-dialog-actions>
+    </form>
+</div>
