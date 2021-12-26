@@ -9,7 +9,7 @@ import { AutoPersonalizationParametersResponse } from './device-personalization.
 import { CONFIGURATION } from '../../configuration/configuration';
 
 import { Storage } from '../storage/storage.service';
-import { Zeroconf, ZEROCONF_TOKEN } from '../startup/zeroconf/zeroconf';
+import { Zeroconf, ZEROCONF_TOKEN } from '../zeroconf/zeroconf';
 import { ServerLocation } from './server-location';
 
 @Injectable({

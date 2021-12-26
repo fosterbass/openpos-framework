@@ -107,8 +107,21 @@ export class KeyPressProvider implements OnDestroy {
     }
 
     registerKeyPressSource(source$: Observable<KeyboardEvent>) {
-        this.keyPressSources.push(source$);
-        this.keypressSourceRegistered$.next(source$);
+        const registerableKeySource$ = source$.pipe(
+            filter((event: KeyboardEvent) => {
+                const isEnterKey = event.key === 'Enter';
+                const isInHtmlFormElement = this.isElementInForm(event.target as HTMLElement);
+                if (isInHtmlFormElement && isEnterKey) { return false; }
+                return this.keyHasSubscribers(event);
+            })
+        );
+
+        this.keyPressSources.push(registerableKeySource$);
+        this.keypressSourceRegistered$.next(registerableKeySource$);
+    }
+
+    isElementInForm(element: HTMLElement): boolean {
+        return !!element.closest('form');
     }
 
     unregisterKeyPressSource(source$: Observable<KeyboardEvent>) {

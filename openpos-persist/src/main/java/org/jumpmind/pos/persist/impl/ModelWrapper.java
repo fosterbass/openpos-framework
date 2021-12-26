@@ -492,6 +492,7 @@ public class ModelWrapper {
         boolean equals = col1.equals(col2);
         if (!equals) {
             if (col1.getName().equalsIgnoreCase(col2.getName())) {
+                equals |= col1.isOfBinaryType() && col2.isOfBinaryType();
                 equals |= col1.isOfTextType() && col2.isOfTextType();
                 equals |= col2.isOfNumericType() && col2.isOfNumericType();
             }
