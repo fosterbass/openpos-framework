@@ -1,10 +1,11 @@
 import { Component, Output, EventEmitter, OnDestroy, OnInit, ElementRef } from '@angular/core';
-import { interval, merge, Observable, Subscription, throwError } from 'rxjs';
-import { delay, distinctUntilChanged, map, takeWhile } from 'rxjs/operators';
+import { combineLatest, interval, merge, Observable, Subscription, throwError } from 'rxjs';
+import { delay, distinctUntilChanged, filter, map, startWith, switchMapTo, takeWhile } from 'rxjs/operators';
 
 import { ScanData, ScannerViewRef } from './scanner';
 
 import { BarcodeScanner } from './barcode-scanner.service';
+import { LockScreenService } from '../../lock-screen/lock-screen.service';
 
 @Component({
     selector: 'app-image-scanner',
@@ -34,7 +35,8 @@ export class ImageScannerComponent implements OnInit, OnDestroy, ScannerViewRef 
 
     constructor(
         private _elementRef: ElementRef<HTMLElement>,
-        private _scanners: BarcodeScanner
+        private _scanners: BarcodeScanner,
+        private _lockScreen: LockScreenService
     ) { }
 
     private static _makeObservableListener(
@@ -130,22 +132,42 @@ export class ImageScannerComponent implements OnInit, OnDestroy, ScannerViewRef 
             })
         );
 
-        this._scanSubscription = this._scanners.beginImageScanning(this)
-            .subscribe({
-                next: data => {
-                    this.scan.emit(data);
-                },
-                error: e => {
-                    console.log('unexpected error durring image scanning', e);
+        this._lockScreen.enabled$.pipe(
+            takeWhile(locked => !locked),
+            switchMapTo(this._scanners.beginImageScanning(this))
+        )
 
-                    this._scanSubscription = undefined;
-                    this.scanChanged.emit(false);
-                },
-                complete: () => {
-                    this._scanSubscription = undefined;
-                    this.scanChanged.emit(false);
-                }
-            });
+        this._scanSubscription = combineLatest([
+            this._scanners.beginImageScanning(this).pipe(
+
+                // combineLatest will wait for the first emission of a value. As soon as we start 
+                // scanning, prime the rest of the stream by pumping a value through.
+                startWith(<ScanData>null)
+            ),
+            this._lockScreen.enabled$
+        ]).pipe(
+
+            // auto complete if locked
+            takeWhile(args => !args[1]),
+
+            // turn the stream back into scan data
+            filter(args => !!args[0]),
+            map(args => args[0]!),
+        ).subscribe({
+            next: data => {
+                this.scan.emit(data);
+            },
+            error: e => {
+                console.log('unexpected error during image scanning', e);
+
+                this._scanSubscription = undefined;
+                this.scanChanged.emit(false);
+            },
+            complete: () => {
+                this._scanSubscription = undefined;
+                this.scanChanged.emit(false);
+            }
+        });
     }
 
     ngOnDestroy(): void {
