@@ -12,7 +12,7 @@ import {
 } from 'rxjs/operators';
 import { IStartupTask } from './startup-task.interface';
 import { PersonalizationService } from '../personalization/personalization.service';
-import { concat, defer, iif, interval, Observable, of, Subscription, throwError } from 'rxjs';
+import { concat, defer, iif, interval, Observable, of, throwError } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { StartupTaskNames } from './startup-task-names';
 import { Injectable } from '@angular/core';
@@ -20,8 +20,7 @@ import { StartupTaskData } from './startup-task-data';
 import { Params } from '@angular/router';
 import { PersonalizationComponent } from '../personalization/personalization.component';
 import { Zeroconf, ZeroconfService, ZEROCONF_TOKEN } from './zeroconf/zeroconf';
-import { Inject } from '@angular/core';
-import { Optional } from '@angular/core';
+import { Inject, Optional } from '@angular/core';
 
 @Injectable({
     providedIn: 'root',

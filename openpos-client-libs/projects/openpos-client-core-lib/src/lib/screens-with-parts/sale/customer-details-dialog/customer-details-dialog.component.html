@@ -152,36 +152,17 @@
     </div>
 </div>
 <mat-dialog-actions align="end" class="buttons">
-    <app-secondary-button responsive-class
+    <app-secondary-button responsive-class *ngFor="let button of screen.secondaryButtons"
                           class="button"
-                          *ngIf="screen.plccLookupButton"
-                          [disabled]="!screen.plccLookupButton?.enabled"
-                          [actionItem]="screen.plccLookupButton"
-                          (actionClick)="doAction(screen.plccLookupButton)"
-                          (click)="doAction(screen.plccLookupButton)">
-        <span>{{screen.plccLookupButton.title}}</span>
-    </app-secondary-button>
-    <app-secondary-button responsive-class
-                          class="unlink"
-                          *ngIf="screen.unlinkButton"
-                          [disabled]="!screen.unlinkButton?.enabled"
-                          [actionItem]="screen.unlinkButton"
-                          (actionClick)="doAction(screen.unlinkButton)"
-                          (click)="doAction(screen.unlinkButton)">
-        <span>{{screen.unlinkButton.title}}</span>
-    </app-secondary-button>
-    <app-secondary-button responsive-class
-                          class="edit"
-                          *ngIf="screen.editButton"
-                          [disabled]="!screen.editButton?.enabled"
-                          [actionItem]="screen.editButton"
-                          (actionClick)="doAction(screen.editButton)"
-                          (click)="doAction(screen.editButton)">
-        <span>{{screen.editButton.title}}</span>
+                          [disabled]="!button?.enabled"
+                          [actionItem]="button"
+                          (actionClick)="doAction(button)"
+                          (click)="doAction(button)">
+        <span>{{button.title}}</span>
     </app-secondary-button>
     <app-primary-button responsive-class
-                        class="done"
                         *ngIf="screen.doneButton"
+                        class="button"
                         [disabled]="!screen.doneButton?.enabled"
                         [actionItem]="screen.doneButton"
                         (actionClick)="doAction(screen.doneButton)"

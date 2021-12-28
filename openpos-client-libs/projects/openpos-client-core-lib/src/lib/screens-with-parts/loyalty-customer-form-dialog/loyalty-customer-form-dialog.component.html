@@ -149,7 +149,7 @@
                 <app-secondary-button *ngIf="screen.secondaryButton" (buttonClick)="secondaryButtonClicked()">
                     <span>{{screen.secondaryButton.title}}</span>
                 </app-secondary-button>
-                <app-primary-button *ngIf="screen.submitButton" type="submit" [disabled]="!screen.formGroup.valid || screen.formGroup.pending">
+                <app-primary-button *ngIf="screen.submitButton" type="submit" [disabled]="!screen.formGroup.valid || screen.formGroup.pending || (screen.formGroup.pristine && screen.enableSubmitButtonOnFormChange)">
                     <span>{{screen.submitButton.title}}</span>
                 </app-primary-button>
             </mat-card-actions>

@@ -4,15 +4,15 @@ import lombok.Data;
 import org.jumpmind.pos.core.ui.ActionItem;
 import org.jumpmind.pos.core.ui.UIMessage;
 
+import java.util.List;
+
 @Data
 public class CustomerDetailsUIMessage extends UIMessage {
     private static final long serialVersionUID = 1L;
 
     private String title;
 
-    private ActionItem plccLookupButton;
-    private ActionItem unlinkButton;
-    private ActionItem editButton;
+    private List<ActionItem> secondaryButtons;
     private ActionItem doneButton;
 
     private UICustomerDetailsItem customer;
