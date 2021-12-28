@@ -67,9 +67,13 @@ module.exports = function(grunt) {
 
     grunt.registerTask('default', ['exec:install', 'clean', 'mkdir', 'create-package', 'concurrent:target']);
     grunt.registerTask('withTests', ['exec:install', 'clean', 'mkdir', 'create-package', 'concurrent:withTests'])
-    grunt.registerTask('watch-build', ['exec:build']);
+    grunt.registerTask('watch-build', ['pre-watch-build', 'exec:build']);
     grunt.registerTask('watch-bundle', ['exec:bundle']);
     grunt.registerTask('test', ['exec:test']);
+
+    grunt.registerTask('pre-watch-build', 'PRE watch build..', function() {
+        grunt.log.write("pre-watch-build"); // This is used by commerce-client as a signal to know the actual build/watch phase has started.
+    });
     
     grunt.registerTask('wait', 'wait:pause', function() {
         var done = this.async();
