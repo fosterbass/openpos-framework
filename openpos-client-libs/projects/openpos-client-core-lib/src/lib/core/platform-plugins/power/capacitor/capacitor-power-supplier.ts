@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { Capacitor, registerPlugin } from '@capacitor/core';
 import { Observable } from 'rxjs';
 import { PowerStatus, PowerSupplier } from '../power-supplier';
@@ -27,6 +27,8 @@ export class CapacitorPowerSupplier implements PowerSupplier {
         return Capacitor.isPluginAvailable('Power');
     }
 
+    constructor(private _ngZone: NgZone) { }
+
     observePowerStatus(): Observable<PowerStatus> {
         return new Observable(observer => {
             if (!Capacitor.isPluginAvailable('Power')) {
@@ -39,7 +41,9 @@ export class CapacitorPowerSupplier implements PowerSupplier {
             });
 
             power.addListener('batteryStatusChanged', details => {
-                observer.next(details.state);
+                this._ngZone.run(() => {
+                    observer.next(details.state);
+                });
             });
 
             return () => {
