@@ -3,6 +3,7 @@
     [ngClass]="iconClass"
     class="icon-button material-icons"
     [disabled]="disabled"
-    (click)="clickFn()">
+    (click)="clickFn()"
+    tabindex="-1">
     <app-icon [iconName]="iconName" [iconClass]="iconClass" [ngStyle]="{'color': color}"></app-icon>
 </button>
