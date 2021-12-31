@@ -10,6 +10,7 @@
             max-width: 100%;
             &[disabled] {
                 border-color: $disabled-border;
+                border-style: none;
             }
         }
     }

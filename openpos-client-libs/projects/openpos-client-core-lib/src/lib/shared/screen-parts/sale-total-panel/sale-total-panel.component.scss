@@ -139,6 +139,15 @@ $sale-total-icon-size: 36px;
                     ".                 MembershipDetails MembershipDetails"
                     "Memberships       Memberships       Memberships"
                     "MembershipRewards MembershipRewards MembershipRewards";
+                   
+                &.tablet-landscape {
+                    grid-template-areas:
+                    "Icon              Name              Name"
+                    "LoyaltyIcon       LoyaltyIcon       LoyaltyIcon"
+                    ".                 MembershipDetails MembershipDetails"
+                    "Memberships       Memberships       Memberships"
+                    "MembershipRewards MembershipRewards MembershipRewards";
+                }    
 
                 &.tablet,
                 &.mobile {
@@ -203,6 +212,11 @@ $sale-total-icon-size: 36px;
                     grid-area: LoyaltyIcon;
                     display: inline-block;
                     align-self: end;
+
+                    &.tablet-landscape {
+                        margin-left: auto;
+                        padding-right: 7px;
+                    }
 
                     .sale-total-loyalty-button-icon {
                         max-height: 24px;
