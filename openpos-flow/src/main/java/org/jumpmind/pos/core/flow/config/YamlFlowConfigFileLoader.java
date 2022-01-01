@@ -138,17 +138,22 @@ public class YamlFlowConfigFileLoader {
 
         if (!StringUtils.isEmpty(returnActionSingle) && !StringUtils.isEmpty(returnActionsMultiple)) {
             throw new FlowException("Invalid flow config: both ReturnAction and ReturnActions (plural) defined "
-                    + "for a substate. Only one or of the other can be specified. substae: " + nestedStateConfig);
+                    + "for a substate. Only one or of the other can be specified. substate: " + nestedStateConfig);
         }
 
-        String returnActions = null;
+        if (StringUtils.isEmpty(returnActionSingle) && StringUtils.isEmpty(returnActionsMultiple)) {
+            throw new FlowException("Invalid flow config: a ReturnAction or ReturnActions (plural) must be defined for a substate. substate:" + nestedStateConfig);
+        }
+
+        String returnActions;
         if (!StringUtils.isEmpty(returnActionSingle)) {
             returnActions = returnActionSingle;
         } else {
             returnActions = returnActionsMultiple;
         }
 
-        return Arrays.asList(returnActions.split(";")).stream().
-                map(s -> s.trim()).collect(Collectors.toList());
+        return Arrays.stream(returnActions.split(";"))
+                .map(String::trim)
+                .collect(Collectors.toList());
     }
 }

@@ -1,0 +1,35 @@
+server:
+  jetty:
+    DOC__max-http-form-post-size: "SymmetricDS sends ACKs as post messages.  If you send too many batches the post can exceed the default size"
+    max-http-form-post-size: 10MB
+  DOC__port: "The port that the web server will use.  The default port is a shout out to the 614 area code"
+  port: 6145
+
+spring:
+  config:
+
+    # Spring >2.4 changes configuration a little which causes some problems, for now lets turn this legacy processing on
+    # to match the behavior pre-upgrade. See https://stackoverflow.com/a/64911924/1148915
+    use-legacy-processing: true
+  datasource:
+    DOC__initialize: "Turn off Spring Boot's database connection pool in favor of maintaining our own"
+    initialize: false
+  main:
+    allow-bean-definition-overriding: true
+  servlet:
+    multipart:
+      maxFileSize: 100MB
+      maxRequestSize: 100MB
+  h2:
+    console: 
+      enabled: true
+db:
+  url: jdbc:openpos:h2:tcp://localhost:19952/./work/LOCALDB;LOCK_TIMEOUT=60000;DB_CLOSE_ON_EXIT=FALSE;MV_STORE=FALSE
+  user:
+  password:
+  driver: org.h2.Driver
+  h2:
+    DOC__startServer: "Whether to start an H2 database server as part of this server process.  Running H2 in server mode has proven to be more stable than in true embedded mode"
+    startServer: true
+    DOC__port: "The port to start the H2 server on.  Note the default db.url is referencing this port"
+    port: 19952
