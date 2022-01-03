@@ -19,7 +19,6 @@ import java.nio.file.Path;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-@Profile(UpdateModule.NAME)
 @Endpoint(path = DownloadEndpoint.PATH + "{version}/**")
 public class DownloadEndpoint {
     static final String PATH = "/update/download/";

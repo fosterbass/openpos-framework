@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
-@Profile(UpdateModule.NAME)
 @Endpoint(path = "/update/installation/{installationId}")
 public class UpdateEndpoint {
 
