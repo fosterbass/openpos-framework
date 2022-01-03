@@ -68,7 +68,6 @@ public class UpdateModule extends AbstractRDBMSModule {
     }
 
     @Bean
-    @Profile(UpdateModule.NAME)
     protected IUpdateService updateService() {
         if( updateService == null ){
             updateService = buildService(IUpdateService.class);
