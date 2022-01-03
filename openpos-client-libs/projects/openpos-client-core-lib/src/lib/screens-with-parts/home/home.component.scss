@@ -13,9 +13,9 @@
   border-radius: 4px;
 
   &.tablet {
-    margin: 15px;
-    padding: 15px;
-  }
+    margin: 18px;
+    padding: 18px;
+  }  
 
   &.mobile {
     margin: 6px;
@@ -30,11 +30,10 @@
   align-content: center;
 
   &.tablet {
-    min-width: 130px;
-    min-height: 130px;
+    min-width: 140px;
+    min-height: 140px;
     line-height: 16px;
-    font-weight: normal;
-    font-size: .75rem;
+    font-size: .9rem;
   }
 
   &.mobile {

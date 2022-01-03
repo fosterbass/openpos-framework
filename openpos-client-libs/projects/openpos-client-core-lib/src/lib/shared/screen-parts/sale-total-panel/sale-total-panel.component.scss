@@ -139,15 +139,26 @@ $sale-total-icon-size: 36px;
                     ".                 MembershipDetails MembershipDetails"
                     "Memberships       Memberships       Memberships"
                     "MembershipRewards MembershipRewards MembershipRewards";
+                   
+                &.tablet-landscape {
+                    grid-template-areas:
+                    "Icon              Name              Name"
+                    "LoyaltyIcon       LoyaltyIcon       LoyaltyIcon"
+                    ".                 MembershipDetails MembershipDetails"
+                    "Memberships       Memberships       Memberships"
+                    "MembershipRewards MembershipRewards MembershipRewards";
+                }    
 
                 &.tablet,
                 &.mobile {
-                    gap: $linked-customer-column-gap;
+                    column-gap: $linked-customer-column-gap;
+                    row-gap: 0px;
                 }
                 .name {
                     grid-area: Name;
                     white-space: normal;
                     align-self: center;
+                    margin-top: 8px;
 
                     .customer-name {
                         @extend %text-md;
@@ -175,10 +186,10 @@ $sale-total-icon-size: 36px;
                 .icon {
                     grid-area: Icon;
                     display: inline-block;
-                    margin-top: -6px;
+                    margin-top: 8px;
 
                     &.tablet {
-                        margin-top: -8px;
+                        margin-top: 10px;
                     }
                 }
                 .membership-details {
@@ -201,6 +212,12 @@ $sale-total-icon-size: 36px;
                 .loyalty-icon {
                     grid-area: LoyaltyIcon;
                     display: inline-block;
+                    align-self: end;
+
+                    &.tablet-landscape {
+                        margin-left: auto;
+                        padding-right: 7px;
+                    }
 
                     .sale-total-loyalty-button-icon {
                         max-height: 24px;
