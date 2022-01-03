@@ -151,7 +151,8 @@ $sale-total-icon-size: 36px;
 
                 &.tablet,
                 &.mobile {
-                    gap: $linked-customer-column-gap;
+                    column-gap: $linked-customer-column-gap;
+                    row-gap: 0px;
                 }
                 .name {
                     grid-area: Name;
