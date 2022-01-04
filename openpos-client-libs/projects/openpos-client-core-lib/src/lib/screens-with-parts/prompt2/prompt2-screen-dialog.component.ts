@@ -216,6 +216,14 @@ export class Prompt2ScreenDialogComponent extends PosScreenDirective<PromptPlusP
         this.rootFormGroup.patchValue({
             [control.id]: this.maskDate(control, date)
         });
+
+        // since date selection happens with a hidden input, we
+        // need to let the form validation know that the real
+        // input we filled out had data entered into and was
+        // implicitly "touched". This makes form validation show
+        // up.
+        this.rootFormGroup.controls[control.id].markAsTouched();
+        this.rootFormGroup.controls[control.id].markAsDirty();
     }
 
     maskDate(control: BaseFormControl, date: Date): string {
