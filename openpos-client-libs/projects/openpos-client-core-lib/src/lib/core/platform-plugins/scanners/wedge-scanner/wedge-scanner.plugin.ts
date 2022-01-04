@@ -215,4 +215,7 @@ interface ControlSequence { modifiers: string[]; key: string; }
     triggerScan() {
     }
 
+    public getStartSequence(): string {
+        return this.startSequence;
+    }
 }

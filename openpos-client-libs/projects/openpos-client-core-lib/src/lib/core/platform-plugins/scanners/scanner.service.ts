@@ -21,4 +21,8 @@ export class ScannerService {
     public triggerScan() {
         this.scanners.forEach(s => s.triggerScan());
     }
+
+    public getScanners(){
+        return this.scanners;
+    }
 }

@@ -7,6 +7,9 @@ import {MediaBreakpoints, OpenposMediaService} from "../../core/media/openpos-me
 import {IFormElement} from "../../core/interfaces/form-field.interface";
 import {FormBuilder} from "../../core/services/form-builder.service";
 import {ShowErrorsComponent} from "../../shared/components/show-errors/show-errors.component";
+import { ScannerService } from '../../core/platform-plugins/scanners/scanner.service';
+import {WedgeScannerPlugin} from "../../core/platform-plugins/scanners/wedge-scanner/wedge-scanner.plugin";
+
 
 @DialogComponent({
     name: 'LoyaltyCustomerDialog',
@@ -42,12 +45,21 @@ export class LoyaltyCustomerFormDialogComponent extends PosScreen<LoyaltyCustome
     countryField : IFormElement;
     addressIconLocationClass : string;
 
-    constructor(injector: Injector, private media: OpenposMediaService, private formBuilder: FormBuilder) {
+    scanStartControlCharacter : string;
+
+    constructor(injector: Injector, private media: OpenposMediaService, private formBuilder: FormBuilder,
+                private scannerService: ScannerService) {
         super(injector);
         this.initIsMobile();
     }
 
-    ngOnInit() {}
+    ngOnInit() {
+        const wedgeScannerPlugin = this.scannerService.getScanners().find(
+                        scanner => scanner instanceof WedgeScannerPlugin);
+        if ( wedgeScannerPlugin  ) {
+            this.scanStartControlCharacter = (wedgeScannerPlugin as WedgeScannerPlugin).getStartSequence();
+        }
+    }
 
     initIsMobile(): void {
         this.isMobile = this.media.observe(new Map([
@@ -66,6 +78,20 @@ export class LoyaltyCustomerFormDialogComponent extends PosScreen<LoyaltyCustome
 
     anyAddressFieldsPresent() : boolean {
         return !!(this.line1Field || this.line2Field || this.cityField || this.stateField || this.postalCodeField || this.countryField);
+    }
+
+    onScanFieldChanged(formElement: IFormElement) : void {
+        let loyaltyNumber = this.screen.formGroup.value[this.loyaltyNumberField.id];
+        if ( loyaltyNumber != null && this.scanStartControlCharacter != null &&
+            loyaltyNumber.startsWith(this.scanStartControlCharacter)) {
+            console.info(`Stripping the scan control character from the start ${loyaltyNumber}`) ;
+            formElement.value = loyaltyNumber.substr(this.scanStartControlCharacter.length);
+            // Update the stripped string into the form control as well
+            const patchGroup = {};
+            patchGroup[formElement.id] = formElement.value;
+            this.screen.formGroup.patchValue(patchGroup);
+        }
+        this.onFieldChanged(formElement);
     }
 
     onFieldChanged(formElement: IFormElement) : void {
