@@ -38,6 +38,7 @@ public class InstallRepository {
     public InstallGroupModel findInstallGroup(String installationId) {
         final Map<String, Object> params = new HashMap<>();
         params.put("installationId", installationId);
+        params.put("now", new Date());
 
         return dbSession.query(findGroupForInstallation, params, 1)
                 .stream()
