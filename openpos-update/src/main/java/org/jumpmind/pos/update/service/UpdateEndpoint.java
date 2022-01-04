@@ -2,7 +2,6 @@ package org.jumpmind.pos.update.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jumpmind.pos.service.Endpoint;
-import org.jumpmind.pos.update.UpdateModule;
 import org.jumpmind.pos.update.model.InstallGroupModel;
 import org.jumpmind.pos.update.model.InstallRepository;
 import org.jumpmind.pos.update.provider.ISoftwareProvider;
@@ -11,7 +10,6 @@ import org.jumpmind.pos.update.versioning.Version;
 import org.jumpmind.pos.update.versioning.Versioning;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.update4j.Configuration;
 import org.update4j.FileMetadata;

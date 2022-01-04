@@ -2,13 +2,11 @@ package org.jumpmind.pos.update.service;
 
 import org.apache.commons.io.IOUtils;
 import org.jumpmind.pos.service.Endpoint;
-import org.jumpmind.pos.update.UpdateModule;
 import org.jumpmind.pos.update.provider.ISoftwareProvider;
 import org.jumpmind.pos.update.provider.SoftwareProviderFactory;
 import org.jumpmind.pos.update.versioning.Version;
 import org.jumpmind.pos.update.versioning.Versioning;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.web.servlet.HandlerMapping;
 
 import javax.annotation.PostConstruct;

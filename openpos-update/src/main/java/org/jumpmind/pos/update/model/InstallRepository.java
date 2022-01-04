@@ -3,18 +3,14 @@ package org.jumpmind.pos.update.model;
 import org.apache.commons.lang3.StringUtils;
 import org.jumpmind.pos.persist.DBSession;
 import org.jumpmind.pos.persist.Query;
-import org.jumpmind.pos.update.UpdateModule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@Profile(UpdateModule.NAME)
 @Component
 public class InstallRepository {
 

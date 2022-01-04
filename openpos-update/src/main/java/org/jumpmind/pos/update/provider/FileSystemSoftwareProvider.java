@@ -3,13 +3,11 @@ package org.jumpmind.pos.update.provider;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
-import org.jumpmind.pos.update.UpdateModule;
 import org.jumpmind.pos.update.versioning.Version;
 import org.jumpmind.pos.update.versioning.Versioning;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -17,7 +15,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -25,7 +22,6 @@ import java.util.stream.Stream;
 
 import static java.util.Comparator.naturalOrder;
 
-@Profile(UpdateModule.NAME)
 @Component
 @Lazy
 public class FileSystemSoftwareProvider implements ISoftwareProvider {
