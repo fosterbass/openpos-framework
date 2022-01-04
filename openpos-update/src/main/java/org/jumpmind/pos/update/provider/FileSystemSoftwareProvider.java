@@ -26,13 +26,13 @@ import static java.util.Comparator.naturalOrder;
 @Lazy
 public class FileSystemSoftwareProvider implements ISoftwareProvider {
 
-    @Value("${openpos.update.fileSystemSoftwareProvider.artifactExtension}")
+    @Value("${openpos.update.fileSystemSoftwareProvider.artifactExtension:zip}")
     String artifactExtension;
 
-    @Value("${openpos.update.fileSystemSoftwareProvider.baseDir}")
+    @Value("${openpos.update.fileSystemSoftwareProvider.baseDir:/}")
     String baseDir;
 
-    @Value("${openpos.update.fileSystemSoftwareProvider.namePattern}")
+    @Value("${openpos.update.fileSystemSoftwareProvider.namePattern:^(\\w+-)+(?<version>(\\d+)(\\.(\\d+)(\\.(\\d+))?)?(-+([\\w-]+[\\w\\-.]+))?(\\+([\\w-]+[\\w\\-.]+))?)\\.zip$}")
     String fileNamePattern;
 
     @Value("${openpos.update.fileSystemSoftwareProvider.namePatternIgnoreCase:false}")
