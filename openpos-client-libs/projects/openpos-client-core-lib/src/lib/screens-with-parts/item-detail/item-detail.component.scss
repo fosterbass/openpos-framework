@@ -146,8 +146,7 @@ app-bacon-strip{
     min-height: 0;
     margin-top: 0;
     @extend %text-md;
-    &.mobile,
-    &.tablet {
+    &.mobile {
         width: auto;
         align-self: auto;
     }

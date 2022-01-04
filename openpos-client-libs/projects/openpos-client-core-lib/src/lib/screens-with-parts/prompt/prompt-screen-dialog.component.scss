@@ -16,10 +16,11 @@
     
         .prompt-image {
             max-width: 100%;
-            justify-self: left;
+            margin-left: auto;
+            margin-right: auto;
 
             &.tablet {
-                max-height: 6rem;
+                max-height: 8rem;
             }
 
             &.mobile {
