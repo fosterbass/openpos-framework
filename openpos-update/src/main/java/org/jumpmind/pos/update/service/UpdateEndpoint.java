@@ -33,10 +33,10 @@ public class UpdateEndpoint {
     @Value("${openpos.update.softwareProvider:fileSystemSoftwareProvider}")
     String softwareProvider;
 
-    @Value("${openpos.update.installUrl}")
+    @Value("${openpos.update.installUrl:set me}")
     String installUrl;
 
-    @Value("${openpos.update.installBasePath}")
+    @Value("${openpos.update.installBasePath:set me}")
     String installBasePath;
 
     @Value("${openpos.update.requireAssigment:false}")
