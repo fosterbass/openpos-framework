@@ -28,6 +28,15 @@
         }
     }
 
+    .middle {
+        .screenlogo {
+            @at-root .container.mobile .middle .screenlogo {
+                max-width: 100%;
+                max-height: 75%;
+            }
+        }
+    }
+
     .rightside {
         justify-self: end;
         display:grid;
@@ -74,11 +83,15 @@
 
     &.mobile {
         min-height: 40px;
-        grid-template-columns: 1fr auto;
+        &.container-search-is-expanded {
+            grid-template-columns: 1fr auto;
+        }
     }
 
     &.tablet-portrait {
-        grid-template-columns: 1fr auto;
+        &.container-search-is-expanded {
+            grid-template-columns: 1fr auto;
+        }
     }
 
     .bacon-strip-search {
