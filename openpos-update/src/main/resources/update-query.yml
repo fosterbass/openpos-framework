@@ -25,12 +25,8 @@ queries:
         tv.version as target_version
       from InstallGroupModel g
       join InstallGroupMemberModel gm on g.group_id = gm.group_id
-      left join (
-        SELECT group_id, version, effective_time
-        FROM TargetVersionModel
-        WHERE effective_time <= ${now}
-      ) tv
-    where: gm.installation_id = ${installationId}
+      left join TargetVersionModel tv on g.group_id = tv.group_id
+    where: gm.installation_id = ${installationId} and tv.effective_time <= ${now}
     orderBy: tv.version desc
 
   # Gets all versions assigned to the specified group. This includes past
