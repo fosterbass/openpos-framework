@@ -117,6 +117,8 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
 
     isInKioskMode = false;
 
+    brand: string;
+
     @ViewChild('devMenuPanel') devMenuPanel: MatExpansionPanel;
 
     constructor(
@@ -408,6 +410,7 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
             // Sigh.  But I am leaving this in for now at least so that *a* DevMenu shows.
             this.cd.detectChanges();
         }
+        this.brand = this.personalization.getPersonalizationProperties$().getValue().get('brandId');
     }
 
     public onDevMenuRefresh() {
@@ -570,6 +573,13 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
 
         });
         return prom;
+    }
+
+    public onChangeBrand(): void {
+        this.session.publish('DevTools::Brand', DevMenuComponent.MSG_TYPE, { brand: this.brand });
+        this.personalization.setPersonalizationProperties(
+            this.personalization.getPersonalizationProperties$().getValue().set('brandId', this.brand)
+        );
     }
 
     public onLogfileSelected(logFilename: string): void {

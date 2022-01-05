@@ -1,9 +1,6 @@
 package org.jumpmind.pos.core.service;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-
+import jpos.events.DataEvent;
 import org.jumpmind.pos.core.flow.IStateManager;
 import org.jumpmind.pos.core.flow.IStateManagerContainer;
 import org.jumpmind.pos.core.flow.ScopeValue;
@@ -29,7 +26,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import jpos.events.DataEvent;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 
 @Component
 public class DevToolsActionListener implements IActionListener {
@@ -106,6 +105,8 @@ public class DevToolsActionListener implements IActionListener {
                 stateManager.getApplicationState().getCurrentContext().removeFlowScope(scopeId);
             }
 
+        } else if (action.getName().contains("::Brand")) {
+            updateBrand(deviceId, ((Map<String, String>) action.getData()).get("brand"));
         }
 
         messageService.sendMessage(deviceId, createMessage(stateManager, deviceId));
@@ -219,6 +220,21 @@ public class DevToolsActionListener implements IActionListener {
         customDeviceMap.put("customerDisplayProtocol", customerDisplayProtocol);
         customDeviceMap.put("pairedDeviceId", deviceId);
         message.put("customerDisplay", customDeviceMap);
+    }
+
+    private void updateBrand(String deviceId, String brand) {
+        try {
+            DeviceModel currentDevice = devicesRepository.getDevice(deviceId);
+            currentDevice.setTagValue("brand", brand);
+            currentDevice.getDeviceParamModels()
+                    .stream()
+                    .filter(param -> "brandId".equals(param.getParamName()))
+                    .findFirst()
+                    .ifPresent(existingBrand -> existingBrand.setParamValue(brand));
+            devicesRepository.saveDevice(currentDevice);
+            stateManagerFactory.changeBrand(deviceId, brand);
+        } catch (DeviceNotFoundException ex) {
+        }
     }
 
     private void setCurrentStateAndActions(IStateManager sm, Message message) {

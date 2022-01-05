@@ -328,7 +328,7 @@ export class PersonalizationService {
         return this.primaryServer;
     }
 
-    private setPersonalizationProperties(personalizationProperties?: Map<string, string>) {
+    public setPersonalizationProperties(personalizationProperties?: Map<string, string>) {
         this.personalizationProperties$.next(personalizationProperties);
     }
 

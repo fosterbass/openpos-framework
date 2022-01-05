@@ -120,6 +120,15 @@ public class StateManagerContainer implements IStateManagerContainer, Applicatio
         }
     }
 
+    @Override
+    public void changeBrand(String deviceId, String brand) {
+        IStateManager stateManager = stateManagersByDeviceId.get(deviceId);
+        Map<String, String> properties = stateManager.getApplicationState().getScopeValue("personalizationProperties");
+        properties.put("brandId", brand);
+        stateManager.sendConfigurationChangedMessage();
+        stateManager.reset();
+    }
+
     private List<TransitionStepConfig> createTransitionSteps(String appId, String deviceId) {
         List<TransitionStepConfig> transitionStepConfigs = flowConfigProvider.getTransitionStepConfig(appId, deviceId);
         if (CollectionUtils.isEmpty(transitionStepConfigs)) {
