@@ -1,11 +1,16 @@
-@import "../../../styles/mixins/typography";
+@import '../../../styles/mixins/typography';
+@import '../../../styles/variables/spacing';
 
+:host {
+  display: flex;
+  flex-direction: column;
+  row-gap: $x-small-space;
+}
 .material-icons {
   display: inline-block;
   margin-right: 1em;
 }
 .details-row {
-  margin-top: 10px;
   &.tablet-portrait {
     font-size: $text-sm;
   }
