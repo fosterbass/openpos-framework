@@ -1,18 +1,19 @@
 import { IPlatformPlugin } from '../platform-plugin.interface';
-import { Observable, Subject,of } from 'rxjs';
-import {filter, take, tap} from "rxjs/operators";
+import { Observable, Subject, of } from 'rxjs';
+import {filter, take, tap} from 'rxjs/operators';
 import { SessionService } from '../../services/session.service';
-import {CordovaService} from "../../services/cordova.service";
+import {CordovaService} from '../../services/cordova.service';
 import { Injectable } from '@angular/core';
 import { MessageTypes } from '../../messages/message-types';
 
 @Injectable({
     providedIn: 'root'
 })
+// Cordova Android plugin to auto close the app
 export class ExitAppPlugin implements IPlatformPlugin {
 
     private initialized = false;
-    private ExitAppCordovaPlugin;
+    private exitAppCordovaPlugin;
 
     constructor( protected cordovaService: CordovaService, protected sessionService: SessionService) { }
 
@@ -23,6 +24,7 @@ export class ExitAppPlugin implements IPlatformPlugin {
     pluginPresent(): boolean {
         let present = false;
         if (window.hasOwnProperty('navigator')) {
+            // tslint:disable-next-line:no-string-literal
             if (window['navigator'].hasOwnProperty('app')) {
                 present = true;
             }
@@ -40,9 +42,9 @@ export class ExitAppPlugin implements IPlatformPlugin {
                 filter(m => m === 'deviceready'),
                 take(1),
                 tap(() => {
-                    let objHold:any = window.navigator;
-                    this.ExitAppCordovaPlugin = window.navigator?objHold.app:false;
-                    if (!this.ExitAppCordovaPlugin) {
+                    const objHold: any = window.navigator;
+                    this.exitAppCordovaPlugin = window.navigator ? objHold.app : false;
+                    if (!this.exitAppCordovaPlugin) {
                         console.error(`Tried to initialize plugin ${this.name()} which is not present`);
                         observer.error(`Tried to initialize plugin ${this.name()} which is not present`);
                     }
@@ -59,6 +61,6 @@ export class ExitAppPlugin implements IPlatformPlugin {
 
     private exitApp() {
         console.info('ExitApp - Exiting the app');
-        this.ExitAppCordovaPlugin.exitApp();
+        this.exitAppCordovaPlugin.exitApp();
     }
 }

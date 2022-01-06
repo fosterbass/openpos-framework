@@ -57,7 +57,7 @@ import { CordovaStorageService } from './storage/cordova/cordova-storage.service
 import { Storage } from './storage/storage.service';
 import { STORAGE_CONTAINERS } from './storage/storage-container';
 import { ZebraBluetoothPrinterCordovaPlugin } from './platform-plugins/cordova-plugins/zebra-bluetooth-printer-cordova-plugin';
-import {ExitAppPlugin} from "./platform-plugins/cordova-plugins/auto-exit";
+import { ExitAppPlugin } from './platform-plugins/cordova-plugins/auto-exit';
 import { CapacitorPrinterPlugin } from './platform-plugins/printers/capacitor-printer.plugin';
 import { ZEROCONF_TOKEN } from './zeroconf/zeroconf';
 import { MDnsZeroconf } from './zeroconf/mdns-zeroconf';
