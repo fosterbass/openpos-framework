@@ -164,7 +164,7 @@ public class ApplicationState {
         this.dataMessageProviderMap = dataMessageProviderMap;
     }
 
-    public Object getScopeValue(ScopeType scopeType, String name) {
+    public <T> T getScopeValue(ScopeType scopeType, String name) {
         ScopeValue scopeValue = null;
         switch (scopeType) {
             case Device:
