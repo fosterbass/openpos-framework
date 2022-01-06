@@ -1,9 +1,10 @@
 import { Injectable, Type, ComponentFactoryResolver, ComponentFactory } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { IScreen } from '../../shared/components/dynamic-screen/screen.interface';
 import { PersonalizationService } from '../personalization/personalization.service';
 import { DiscoveryService } from '../discovery/discovery.service';
+import { catchError } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root',
@@ -63,7 +64,12 @@ export class ScreenService {
             httpParams.searchTerm = searchTerm;
         }
         console.info(`Requesting field values from the server using url: ${url}, params: '${JSON.stringify(httpParams)}'`);
-        return this.http.get(url, { params: httpParams });
+        return this.http.get(url, { params: httpParams }).pipe(
+            catchError(err => {
+                console.error(`Failed to get field values for url: '${url}'. Error: ${JSON.stringify(err)}`);
+                return throwError(err);
+            })
+        );
     }
 
 }
