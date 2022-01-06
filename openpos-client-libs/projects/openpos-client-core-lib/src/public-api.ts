@@ -18,15 +18,8 @@ export * from './lib/shared/components/dynamic-screen/dynamic-screen.component';
 export * from './lib/shared/components/dynamic-screen/screen.interface';
 export * from './lib/shared/components/loader/loader-state';
 export * from './lib/shared/components/loader/loader.component';
-export * from './lib/shared/components/openpos-app/openpos-app.component';
+export * from './lib/core/components/openpos-app/openpos-app.component';
 export * from './lib/core/personalization/personalization.component';
-export * from './lib/core/startup/final-startup-task';
-export * from './lib/core/startup/personalization-startup-task';
-export * from './lib/core/startup/startup-failed.component';
-export * from './lib/core/startup/startup-task-data';
-export * from './lib/core/startup/startup-task-names';
-export * from './lib/core/startup/startup.component';
-export * from './lib/core/startup/subscribe-to-session-task';
 
 export * from './lib/core/interfaces/abstract-screen-template.interface';
 export * from './lib/core/interfaces/abstract-screen.interface';
@@ -59,7 +52,6 @@ export * from './lib/core/interfaces/ping-params.interface';
 export * from './lib/core/interfaces/ping-result.interface';
 export * from './lib/core/interfaces/selection-mode.enum';
 export * from './lib/core/interfaces/sell-item.interface';
-export * from './lib/core/startup/startup-task.interface';
 export * from './lib/core/interfaces/system-status-type.enum';
 export * from './lib/core/interfaces/system-status.interface';
 export * from './lib/core/interfaces/tender-item.interface';
@@ -88,7 +80,6 @@ export * from './lib/core/oldplugins/scan';
 
 export * from './lib/core/platform-plugins/barcode-scanners/barcode-scanner.service';
 export * from './lib/core/platform-plugins/cordova-plugins/android-content-provider-plugin';
-export * from './lib/core/startup/plugin-startup-task';
 export * from './lib/core/messages/single-sign-on-message';
 
 export * from './lib/core/services/app-version';
@@ -113,7 +104,6 @@ export * from './lib/core/discovery/discovery.service';
 export * from './lib/core/services/old-plugin.service';
 export * from './lib/core/services/screen.service';
 export * from './lib/core/services/session.service';
-export * from './lib/core/services/startup.service';
 export * from './lib/core/services/toast.service';
 export * from './lib/core/services/training-overlay.service';
 export * from './lib/core/services/validators.service';
@@ -146,7 +136,6 @@ export * from './lib/core/audio/audio-interaction-set.interface';
 export * from './lib/core/audio/audio-message.interface';
 export * from './lib/core/audio/audio-preload-message.interface';
 export * from './lib/core/audio/audio-repository.service';
-export * from './lib/core/audio/audio-startup-task';
 
 export { MatKeyboardModule } from './lib/keyboard/keyboard.module';
 export * from './lib/keyboard/classes/keyboard-ref.class';
@@ -425,3 +414,6 @@ export * from './lib/shared/pipes/localized-date-no-time.pipe';
 export * from './lib/shared/components/rounded-input/rounded-input.component';
 export * from './lib/shared/screen-parts/prompt-button-row/prompt-button-row.component';
 export * from './lib/shared/directives/stay-focused.directive';
+
+export * from './lib/core/startup/startup-task';
+export { startupSequence } from './lib/core/startup/startup-sequence';

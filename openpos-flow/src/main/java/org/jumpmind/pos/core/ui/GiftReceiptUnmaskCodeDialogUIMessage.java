@@ -19,15 +19,13 @@ public class GiftReceiptUnmaskCodeDialogUIMessage extends UIMessage {
     public static final String GIFT_RECEIPT_UNMASK_CODE_WINDOW_ID = "GiftCodeChecker";
 
     private String enterCodeLabel;
-    private String enterGiftCode;
-    private String showValue;
+    private String showValueLabel;
+    private String showValueAction;
     private String resultLabel;
     private String resultValue;
-    private String currencySymbol;
-    private String incorrectResultValue;
     private String unmaskCode;
     private String placeholder;
-    private boolean autofocus;
+    private boolean isEnteredGiftCodeValid;
     private PromptButtonRowPart promptButtonRow;
 
     public void setButtons(List<ActionItem> buttons) {

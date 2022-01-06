@@ -688,11 +688,11 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
     }
 
     public toggleChromiumDevTools() {
-        this.electron.remote.getCurrentWindow().webContents.toggleDevTools();
+        this.electron.ipcRenderer.send('toggleDevTools');
     }
 
     public exitElectronApp() {
-        this.electron.remote.getCurrentWindow().close();
+        this.electron.ipcRenderer.send('exitApp');
     }
 
     public getLocalTheme(): Observable<string> {
