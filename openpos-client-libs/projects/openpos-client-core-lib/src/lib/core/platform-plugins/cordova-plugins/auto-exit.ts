@@ -9,7 +9,7 @@ import { MessageTypes } from '../../messages/message-types';
 @Injectable({
     providedIn: 'root'
 })
-// Cordova Android plugin to auto close the app
+// Depends on the Cordova plugin cordova-plugin-app-exit@0.0.1
 export class ExitAppPlugin implements IPlatformPlugin {
 
     private initialized = false;
