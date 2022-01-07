@@ -90,6 +90,7 @@ export class SessionService implements IMessageHandler<any> {
     private authToken: string;
 
     private stompDebug = false;
+    private stompUrl: string;
 
     public inBackground = false;
 
@@ -269,17 +270,9 @@ export class SessionService implements IMessageHandler<any> {
         const url: string = await this.negotiateWebsocketUrl();
         if (url) {
             console.info('creating new stomp service at: ' + url);
+            this.stompUrl = url;
 
-            this.stompService.config = {
-                url,
-                headers: this.getHeaders(),
-                heartbeat_in: 0, // Typical value 0 - disabled
-                heartbeat_out: 20000, // Typical value 20000 - every 20 seconds
-                reconnect_delay: 250,  // Typical value is 5000, 0 disables.
-                debug: this.stompDebug
-            };
-
-            this.stompService.initAndConnect();
+            this.connectToStomp();
 
             const currentTopic = this.buildTopicName();
 
@@ -320,11 +313,27 @@ export class SessionService implements IMessageHandler<any> {
 
     }
 
+    public connectToStomp(): void {
+        if (this.stompService.connected()) {
+            this.stompService.disconnect();
+        }
+        this.stompService.config = {
+            url: this.stompUrl,
+            headers: this.getHeaders(),
+            heartbeat_in: 0, // Typical value 0 - disabled
+            heartbeat_out: 20000, // Typical value 20000 - every 20 seconds
+            reconnect_delay: 250,  // Typical value is 5000, 0 disables.
+            debug: this.stompDebug
+        };
+
+        this.stompService.initAndConnect();
+    }
+
     private handleStompState(stompState: string) {
         if (stompState === 'CONNECTED') {
             this.reconnecting = false;
             this.connectedOnce = true;
-            console.info('STOMP connecting');
+            console.info('STOMP connecting', this.stompService);
             if (!this.onServerConnect.value) {
                 this.onServerConnect.next(true);
             }

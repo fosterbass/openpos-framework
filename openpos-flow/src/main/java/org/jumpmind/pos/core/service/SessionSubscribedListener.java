@@ -1,9 +1,6 @@
 package org.jumpmind.pos.core.service;
 
-import org.jumpmind.pos.core.flow.ScopeType;
-import org.jumpmind.pos.devices.model.DeviceModel;
-import org.jumpmind.pos.util.Version;
-import org.jumpmind.pos.util.event.DeviceConnectedEvent;
+import org.apache.commons.lang3.StringUtils;
 import org.jumpmind.pos.core.flow.IStateManager;
 import org.jumpmind.pos.core.flow.IStateManagerContainer;
 import org.jumpmind.pos.core.ui.DialogProperties;
@@ -11,12 +8,15 @@ import org.jumpmind.pos.core.ui.IconType;
 import org.jumpmind.pos.core.ui.message.DialogUIMessage;
 import org.jumpmind.pos.core.ui.messagepart.DialogHeaderPart;
 import org.jumpmind.pos.core.ui.messagepart.MessagePartConstants;
-import org.jumpmind.pos.server.config.MessageUtils;
+import org.jumpmind.pos.devices.model.DeviceModel;
 import org.jumpmind.pos.devices.service.model.PersonalizationParameters;
+import org.jumpmind.pos.server.config.MessageUtils;
 import org.jumpmind.pos.server.config.SessionSubscribedEvent;
 import org.jumpmind.pos.server.service.IMessageService;
 import org.jumpmind.pos.server.service.SessionConnectListener;
+import org.jumpmind.pos.util.Version;
 import org.jumpmind.pos.util.Versions;
+import org.jumpmind.pos.util.event.DeviceConnectedEvent;
 import org.jumpmind.pos.util.event.EventPublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +28,7 @@ import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -71,7 +72,7 @@ public class SessionSubscribedListener implements ApplicationListener<SessionSub
         Map<String, String> clientContext = sessionAuthTracker.getClientContext(sessionId);
         String topicName = (String) msg.getHeaders().get("simpDestination");
         String compatibilityVersion = this.getHeader(msg, MessageUtils.COMPATIBILITY_VERSION_HEADER);
-        String deviceId = topicName.substring(topicName.indexOf("/device/") + "/device/".length());
+        String deviceId = StringUtils.isNotBlank(topicName) ? topicName.substring(topicName.indexOf("/device/") + "/device/".length()) : "";
         setupLogging(deviceId);
         Map<String, String> personalizationProperties = sessionAuthTracker.getPersonalizationResults(sessionId);
 
@@ -84,7 +85,7 @@ public class SessionSubscribedListener implements ApplicationListener<SessionSub
                 header.setHeaderIcon(IconType.Error);
                 header.setHeaderText("Failed Authentication");
                 errorDialog.addMessagePart(MessagePartConstants.DialogHeader, header);
-                errorDialog.setMessage(Arrays.asList("The client and server authentication tokens did not match"));
+                errorDialog.setMessage(Collections.singletonList("The client and server authentication tokens did not match"));
                 messageService.sendMessage(deviceId, errorDialog);
                 return;
             } else if (!sessionAuthTracker.isSessionCompatible(sessionId)) {
@@ -133,7 +134,7 @@ public class SessionSubscribedListener implements ApplicationListener<SessionSub
             stateManager.getApplicationState().getScope().setDeviceScope("powerStatus", sessionAuthTracker.getPowerStatus(sessionId));
 
             eventPublisher.publish(new DeviceConnectedEvent(deviceId, appId, stateManager.getPairedDeviceId(),
-                    (List<Version>)queryParams.get("deviceVersions")));
+                    (List<Version>) queryParams.get("deviceVersions")));
 
             if (!created) {
                 stateManager.refreshScreen();
@@ -147,7 +148,7 @@ public class SessionSubscribedListener implements ApplicationListener<SessionSub
             header.setHeaderIcon(IconType.Error);
             header.setHeaderText("Failed To Subscribe");
             errorDialog.addMessagePart(MessagePartConstants.DialogHeader, header);
-            errorDialog.setMessage(Arrays.asList(ex.getMessage()));
+            errorDialog.setMessage(Collections.singletonList(ex.getMessage()));
             messageService.sendMessage(deviceId, errorDialog);
         } finally {
             stateManagerContainer.setCurrentStateManager(null);
