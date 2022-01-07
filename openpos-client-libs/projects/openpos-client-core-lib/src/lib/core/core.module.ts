@@ -58,6 +58,7 @@ import { Storage } from './storage/storage.service';
 import { STORAGE_CONTAINERS } from './storage/storage-container';
 import { ZebraBluetoothPrinterCordovaPlugin } from './platform-plugins/cordova-plugins/zebra-bluetooth-printer-cordova-plugin';
 import { CapacitorPrinterPlugin } from './platform-plugins/printers/capacitor-printer.plugin';
+import { AirwatchCordovaPlugin } from './platform-plugins/cordova-plugins/airwatch-cordova-plugin';
 import { ZEROCONF_TOKEN } from './zeroconf/zeroconf';
 import { MDnsZeroconf } from './zeroconf/mdns-zeroconf';
 import { CapacitorZeroconf } from './zeroconf/capacitor-zeroconf';
@@ -72,6 +73,7 @@ import { CordovaService } from './services/cordova.service';
 import { OpenposAppComponent } from './components/openpos-app/openpos-app.component';
 import { PLATFORMS } from './platforms/platform.interface';
 import { PLUGINS } from './platform-plugins/platform-plugin.interface';
+import { ENTERPRISE_CONFIGS } from './platform-plugins/enterprise-config/enterprise-config.service';
 
 registerLocaleData(locale_enCA, 'en-CA');
 registerLocaleData(locale_frCA, 'fr-CA');
@@ -141,6 +143,7 @@ registerLocaleData(locale_frCA, 'fr-CA');
         { provide: PLUGINS, useExisting: ScanditScannerCordovaPlugin, multi: true },
         { provide: PLUGINS, useExisting: ScanditCapacitorImageScanner, multi: true },
         { provide: PLUGINS, useExisting: ZebraBluetoothPrinterCordovaPlugin, multi: true, deps: [CordovaService, SessionService] },
+        { provide: PLUGINS, useExisting: AirwatchCordovaPlugin, multi: true, deps: [CordovaService]},
         { provide: PLATFORMS, useExisting: CordovaPlatform, multi: true },
         { provide: PLATFORMS, useExisting: CapacitorIosPlatform, multi: true },
         { provide: PLATFORMS, useExisting: CapacitorAndroidPlatform, multi: true },
@@ -151,6 +154,7 @@ registerLocaleData(locale_frCA, 'fr-CA');
         { provide: PRINTERS, useExisting: ZebraBluetoothPrinterCordovaPlugin, multi: true, deps: [CordovaService, SessionService] },
         LocationService,
         { provide: PROVIDERS, useExisting: LocationProviderDefault, multi: true },
+        { provide: ENTERPRISE_CONFIGS, useExisting: AirwatchCordovaPlugin, multi: true, deps: [CordovaService]},
         TrainingOverlayService,
         ConfigurationService,
         KeyPressProvider,

@@ -26,6 +26,8 @@ public class DevicePersonalizationModel extends AbstractModel {
     private String appId;
     @ColumnDef
     private String businessUnitId;
+    @ColumnDef
+    private boolean sslEnabledFlag;
 
     private List<DeviceParamModel> deviceParamModels;
 }

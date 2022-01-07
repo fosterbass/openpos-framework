@@ -70,16 +70,4 @@ export class MDnsZeroconf implements Zeroconf {
         });
     }
 
-    deviceName(): Observable<string> {
-        return new Observable(observer => {
-            const hostname = this._electron.ipcRenderer.sendSync('get-hostname');
-
-            if (hostname) {
-                observer.next(hostname);
-                observer.complete();
-            } else {
-                observer.error('failed to retrieve hostname for this device');
-            }
-        });
-    }
 }

@@ -3,6 +3,8 @@ import { first, last, take, timeout } from 'rxjs/operators';
 import { PersonalizationService } from '../../personalization/personalization.service';
 import { Zeroconf, ZeroconfResult } from '../../zeroconf/zeroconf';
 import { AutoPersonalizationStartupTask } from './auto-personalization.startup-task';
+import { AppPlatformService } from '../../services/app-platform.service';
+import { CONFIGURATION } from '../../../configuration/configuration';
 
 @Injectable({
     providedIn: 'root'
@@ -11,7 +13,7 @@ export class ZeroConfPersonalizationStartupTask extends AutoPersonalizationStart
     private static readonly TYPE = '_jmc-personalize._tcp.';
     private static readonly DOMAIN = '';
 
-    constructor(personalization: PersonalizationService) {
+    constructor(personalization: PersonalizationService, private appPlatform: AppPlatformService) {
         super(personalization);
     }
 
@@ -52,13 +54,13 @@ export class ZeroConfPersonalizationStartupTask extends AutoPersonalizationStart
         let deviceName: string;
 
         try {
-            deviceName = await provider.deviceName().pipe(
+            deviceName = await this.appPlatform.getDeviceName().pipe(
                 first()
             ).toPromise();
         } catch (e) {
             throw new Error('failed to get required device name for personalization');
         }
 
-        await this.personalize(deviceName);
+        await this.personalize({deviceName}, CONFIGURATION.autoPersonalizationServicePath);
     }
 }
