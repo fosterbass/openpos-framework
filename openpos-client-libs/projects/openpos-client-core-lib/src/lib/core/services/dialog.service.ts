@@ -32,6 +32,8 @@ export class DialogService {
     private lastDialogType: string;
 
     private lastDialogId: string;
+ 
+    private lastScreenSeq: number;
 
     public $dialogMessages = new BehaviorSubject<any>(null);
 
@@ -147,8 +149,9 @@ export class DialogService {
     private async openDialog(dialog: any) {
         // Must check dialogOpening here because updateDialog leaves the possibility that a closeDialog
         // could be invoked from elsewhere (OpenposScreenOutletDirective) before open actually runs.
-        if (! this.dialogOpening) {
-            this.log.info(`[DialogService] Not opening dialog because the dialog was already closed.`);
+	this.log.info(`openDialog: ${JSON.stringify(dialog)}`);
+        if (!dialog || dialog.sequenceNumber < this.lastScreenSeq) {
+            this.log.info(`[DialogService] Not opening dialog because the sequence is older than the last screen.`);
             return;
         }
 
@@ -216,6 +219,7 @@ export class DialogService {
 
             this.lastDialogType = dialog.screenType;
             this.lastDialogId = dialog.id;
+            this.lastScreenSeq = dialog.sequenceNumber;
         } finally {
             this.dialogOpening = false;
         }
