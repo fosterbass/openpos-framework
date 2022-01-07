@@ -19,7 +19,7 @@ import static org.jumpmind.pos.util.RestApiSupport.REST_API_CONTEXT_PATH;
 @Endpoint(path = REST_API_CONTEXT_PATH + "/admin/personalizeMe")
 public class GetDevicePersonalizationModelEndpoint {
     @Autowired
-    private DevicesRepository repository;
+    protected DevicesRepository repository;
 
 
     public PersonalizeMeResponse personalizeMe(@RequestBody PersonalizeMeRequest request){
