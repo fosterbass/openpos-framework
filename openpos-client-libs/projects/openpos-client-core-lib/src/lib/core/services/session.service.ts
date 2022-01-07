@@ -18,7 +18,6 @@ import { IDeviceResponse } from '../oldplugins/device-response.interface';
 import { HttpClient } from '@angular/common/http';
 import { PingParams } from '../interfaces/ping-params.interface';
 import { PingResult } from '../interfaces/ping-result.interface';
-import { ElectronService } from 'ngx-electron';
 import { OpenposMessage } from '../messages/message';
 import { MessageTypes } from '../messages/message-types';
 import { ActionMessage } from '../messages/action-message';
@@ -106,8 +105,6 @@ export class SessionService implements IMessageHandler<any> {
 
     private queryParams = new Map();
 
-    private deletedLaunchFlg = false;
-
     private reconnecting = false;
 
     private reconnectTimerSub: Subscription;
@@ -126,7 +123,6 @@ export class SessionService implements IMessageHandler<any> {
         protected personalization: PersonalizationService,
         protected discovery: DiscoveryService,
         private http: HttpClient,
-        private electron: ElectronService,
         @Inject(CLIENTCONTEXT) private clientContexts: Array<IClientContext>,
         private appRef: ApplicationRef
     ) {
@@ -240,25 +236,6 @@ export class SessionService implements IMessageHandler<any> {
             for (const key of keys) {
                 headers[key] = personalizationProperties.get(key);
             }
-        }
-    }
-
-    /*
-     * Need to come up with a better way to enapsulate electron and node ... should put these reference behind our new platform interface
-     */
-    private deleteLaunchingFlg() {
-        const fs = this.electron.isElectronApp ? this.electron.remote.require('fs') : window.fs;
-        const launchingFile = 'launching.flg';
-        console.info('node.js fs exists? ' + fs);
-        console.info('launching.flg file exists? ' + (fs && fs.existsSync(launchingFile)));
-        if (fs && fs.existsSync(launchingFile)) {
-            fs.unlink(launchingFile, (err) => {
-                if (err) {
-                    console.info('unable to remove ' + launchingFile);
-                } else {
-                    console.info(launchingFile + ' was removed');
-                }
-            });
         }
     }
 
@@ -397,10 +374,6 @@ export class SessionService implements IMessageHandler<any> {
     }
 
     handle(message: any) {
-        if (!this.deletedLaunchFlg && message && message.type === 'ConfigChanged') {
-            this.deleteLaunchingFlg();
-            this.deletedLaunchFlg = true;
-        }
     }
 
     private logStompJson(json: any) {
