@@ -580,6 +580,7 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
         this.personalization.setPersonalizationProperties(
             this.personalization.getPersonalizationProperties$().getValue().set('brandId', this.brand)
         );
+        this.session.setStompConfig();
         this.onDevMenuClick();
     }
 
