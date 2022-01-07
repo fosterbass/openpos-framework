@@ -49,8 +49,8 @@ public class EndpointFilterManager {
 
         log.info("Found " + requestFilterTemplates.size() + " endpoint request filter(s) and " +
                 responseFilterTemplates.size() + " response filter(s).");
-        log.debug("requestFilterTemplates={}" + requestFilterTemplates);
-        log.debug("responseFilterTemplates={}" + responseFilterTemplates);
+        log.debug("requestFilterTemplates={}", requestFilterTemplates);
+        log.debug("responseFilterTemplates={}", responseFilterTemplates);
     }
 
     protected void loadFilter(Map.Entry<String, Object> beanEntry) {
@@ -190,16 +190,14 @@ public class EndpointFilterManager {
     private void doRecursiveSearch(EndpointInvocationContext context, EndpointFilterTemplate filterTemplate, Object argument) {
         ObjectFinder<?> finder = new ObjectFinder<>(filterTemplate.getOutputType());
         finder.searchRecursive(argument, (parentObject, targetObject, field) -> {
-            if (parentObject == argument) {
-                Object result = invokeFilter(filterTemplate, context, targetObject);
-                if (result != null && result != targetObject) {
-                    try {
-                        field.setAccessible(true);
-                        field.set(parentObject, result);
-                    } catch (Exception ex) {
-                        throw new PosServerException("Failed to replace nested object. Filter method " +
-                                filterTemplate.getFilterMethod() + " attempted to replace " + targetObject + " with " + result, ex);
-                    }
+            Object result = invokeFilter(filterTemplate, context, targetObject);
+            if (result != null && result != targetObject) {
+                try {
+                    field.setAccessible(true);
+                    field.set(parentObject, result);
+                } catch (Exception ex) {
+                    throw new PosServerException("Failed to replace nested object. Filter method " +
+                            filterTemplate.getFilterMethod() + " attempted to replace " + targetObject + " with " + result, ex);
                 }
             }
         });
