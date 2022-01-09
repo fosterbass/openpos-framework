@@ -9,15 +9,19 @@ import { QueryParamsPersonalization } from './tasks/query-params-personalization
 import { SavedSessionPersonalizationStartupTask } from './tasks/saved-session-personalization.startup-task';
 import { SessionConnectStartupTask } from './tasks/session-connect.startup-task';
 import { ZeroConfPersonalizationStartupTask } from './tasks/zero-conf-personalization.startup-task';
+import { EnterpriseConfigStartupTask } from './tasks/enterprise-config-startup-task';
+import { EnterpriseConfigPersonalizationStartupTask } from './tasks/enterprise-config-personalization.startup-task';
 
 export let startupSequence = all(
     withSplashMessage('Configuring platform...', PlatformDiscoveryStartupTask),
     optional(CapacitorHideStatusbarStartupTask),
+    withSplashMessage('Initializing Enterprise Config Service...', EnterpriseConfigStartupTask),
     InitializePersonalizationStartupTask,
     withSplashMessage(
         'Configuring Client Personalization...',
         oneOf(
             QueryParamsPersonalization,
+            EnterpriseConfigPersonalizationStartupTask,
             withSplashMessage('Performing Service Discovery...', ZeroConfPersonalizationStartupTask),
             SavedSessionPersonalizationStartupTask,
             ManualPersonalizeStartupTask

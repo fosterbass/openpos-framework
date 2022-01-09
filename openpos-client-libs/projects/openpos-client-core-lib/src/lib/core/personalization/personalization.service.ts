@@ -11,6 +11,7 @@ import { CONFIGURATION } from '../../configuration/configuration';
 import { Storage } from '../storage/storage.service';
 import { Zeroconf, ZEROCONF_TOKEN } from '../zeroconf/zeroconf';
 import { ServerLocation } from './server-location';
+import { AutoPersonalizationRequest } from './auto-personalization-request.interface';
 
 @Injectable({
     providedIn: 'root'
@@ -131,20 +132,23 @@ export class PersonalizationService {
         )));
     }
 
-    public getAutoPersonalizationParameters(deviceName: string, url: string): Observable<AutoPersonalizationParametersResponse> {
+    public getAutoPersonalizationParameters(request: AutoPersonalizationRequest, url: string):
+        Observable<AutoPersonalizationParametersResponse> {
+
         const protocol = this.sslEnabled$.getValue() ? 'https://' : 'http://';
         url += protocol + url;
 
-        return this.http.get<AutoPersonalizationParametersResponse>(url, { params: { deviceName } })
+        return this.http.put<AutoPersonalizationParametersResponse>(url, request)
             .pipe(
                 timeout(CONFIGURATION.autoPersonalizationRequestTimeoutMillis),
                 tap(response => {
                     if (response) {
-                        response.sslEnabled = this.sslEnabled$.getValue();
+                        console.info(`Auto personalization response received: ${JSON.stringify(response)}`);
                         this.setFailovers(response.failovers);
                         this.setPrimaryServer(new ServerLocation(response.serverAddress, response.serverPort, null));
                     }
-                }));
+                })
+            );
     }
 
     public personalizeFromSavedSession(): Observable<string> {
@@ -200,8 +204,7 @@ export class PersonalizationService {
             console.log('personalizationParams', personalizationParameters);
             personalizationParameters.forEach((value, key) => request.personalizationParameters[key] = value);
         }
-
-        console.log(`Sending personalization request to ${url}`);
+        console.info(`[PersonalizationService] sending personalizationRequest: ${JSON.stringify(request)}, to url: ${url}`);
         return this.http.post<PersonalizationResponse>(url, request).pipe(
             map((response: PersonalizationResponse) => {
                 console.info(`personalizing with server: ${serverName}, port: ${serverPort}, deviceId: ${request.deviceId}`);

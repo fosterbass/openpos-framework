@@ -740,7 +740,12 @@ public class StateManager implements IStateManager {
             log.warn("action passed to state manager was null.");
             return false;
         } else if (action.getName() == null) {
-            log.warn("An action was passed with a null name. An action must have a name. Data: " + action.getData());
+            try {
+                log.warn("An action was passed with a null name. An action must have a name. Data: {}, current state: {}", action.getData(),
+                        getCurrentState() != null ? getCurrentState().getClass().getSimpleName() : "unknown");
+            } catch (FlowException flowException) {
+                log.warn(String.format("An action was passed with a null name. An action must have a name. Data: %s, current state: undefined", action.getData()));
+            }
             return false;
         }
 

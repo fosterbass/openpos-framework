@@ -1,4 +1,4 @@
-import { Inject, Injectable, InjectionToken, Optional } from '@angular/core';
+import { Inject, Injectable, Optional } from '@angular/core';
 import { EMPTY, merge, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ImageScanner, IMAGE_SCANNERS, Scanner, SCANNERS } from '../../platform-plugins/barcode-scanners/scanner';
@@ -47,7 +47,7 @@ export class PlatformPluginsStartupTask implements StartupTask {
                 }
 
                 if (this._imageScanners && isRemovableImageScanner(this._imageScanners, plugin)) {
-                    this._scanners.splice(this._imageScanners.indexOf(plugin), 1);
+                    this._imageScanners.splice(this._imageScanners.indexOf(plugin), 1);
                 }
             }
 

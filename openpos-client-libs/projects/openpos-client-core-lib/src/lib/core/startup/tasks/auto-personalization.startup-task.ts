@@ -1,22 +1,22 @@
 import { Observable } from 'rxjs';
 import { first } from 'rxjs/operators';
-import { CONFIGURATION } from '../../../configuration/configuration';
 import { AutoPersonalizationParametersResponse } from '../../personalization/device-personalization.interface';
 import { PersonalizationService } from '../../personalization/personalization.service';
 import { StartupTask } from '../startup-task';
+import { AutoPersonalizationRequest } from '../../personalization/auto-personalization-request.interface';
 
 export abstract class AutoPersonalizationStartupTask implements StartupTask {
     constructor(protected personalization: PersonalizationService) { }
 
     abstract execute(): void | Promise<void> | Observable<any>;
 
-    protected async personalize(deviceName: string): Promise<void> {
+    protected async personalize(request: AutoPersonalizationRequest, url: string): Promise<void> {
         let info: AutoPersonalizationParametersResponse;
 
         try {
             info = await this.personalization.getAutoPersonalizationParameters(
-                deviceName,
-                CONFIGURATION.autoPersonalizationServicePath
+                request,
+                url
             ).pipe(
                 first()
             ).toPromise();
