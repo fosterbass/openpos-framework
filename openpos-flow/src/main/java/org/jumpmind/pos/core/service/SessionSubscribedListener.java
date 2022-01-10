@@ -1,6 +1,11 @@
 package org.jumpmind.pos.core.service;
 
+import io.prometheus.client.Gauge;
 import org.apache.commons.lang3.StringUtils;
+import org.jumpmind.pos.core.flow.ScopeType;
+import org.jumpmind.pos.devices.model.DeviceModel;
+import org.jumpmind.pos.util.Version;
+import org.jumpmind.pos.util.event.DeviceConnectedEvent;
 import org.jumpmind.pos.core.flow.IStateManager;
 import org.jumpmind.pos.core.flow.IStateManagerContainer;
 import org.jumpmind.pos.core.ui.DialogProperties;
@@ -36,7 +41,6 @@ import static org.jumpmind.pos.util.AppUtils.setupLogging;
 
 @Component
 public class SessionSubscribedListener implements ApplicationListener<SessionSubscribedEvent>, MessageUtils {
-
     final Logger log = LoggerFactory.getLogger(getClass());
 
     @Autowired
@@ -140,6 +144,7 @@ public class SessionSubscribedListener implements ApplicationListener<SessionSub
                 stateManager.refreshScreen();
             }
 
+            SubscribedSessionMetric.inc(deviceId);
         } catch (Exception ex) {
             log.error("Failed to subscribe to " + topicName, ex);
             DialogUIMessage errorDialog = new DialogUIMessage();
