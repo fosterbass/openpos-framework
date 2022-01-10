@@ -47,6 +47,7 @@ export interface DynamicTextInput extends BaseInputControl<string> {
   readonly pattern?: string;
   readonly allowBarcodeScanEntry?: boolean;
   readonly placeholder?: string;
+  readonly readOnly?: boolean;
 }
 
 export enum TextInputKind {

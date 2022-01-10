@@ -8,7 +8,7 @@
                     <div *ngSwitchCase="'text'" class="flex col">
                         <mat-form-field responsive-class>
                             <mat-label responsive-class>{{ control.label }}</mat-label>
-                            <input matInput responsive-class [type]="control.kind === 'Number' ? 'tel' : 'text'"
+                            <input matInput responsive-class [readonly]="control.readOnly" [type]="control.kind === 'Number' ? 'tel' : 'text'"
                                 [formControlName]="control.id" [attr.minlength]="control.minimumLength"
                                 [attr.maxlength]="control.maximumLength" [placeholder]="control.placeholder"
                                 (focus)="onInputFocused(control)" (blur)="onInputBlurred()">

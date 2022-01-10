@@ -13,9 +13,10 @@ public class TextPromptInput extends BaseInputPrompt<String> {
     private String pattern;
     private boolean allowBarcodeScanEntry;
     private String placeholder;
+    private boolean readOnly;
 
     public TextPromptInput(String id, String label, boolean required) {
-        this(id, label, null, TextPromptInputKind.Text, required,null, null, null, false, null, null);
+        this(id, label, null, TextPromptInputKind.Text, required,null, null, null, false, null, null,false);
     }
 
     @Builder
@@ -30,7 +31,8 @@ public class TextPromptInput extends BaseInputPrompt<String> {
             String pattern,
             boolean allowBarcodeScanEntry,
             String hint,
-            String placeholder
+            String placeholder,
+            boolean readOnly
     ) {
         super(id,  PromptItemTypes.TEXT, label, defaultValue, required, hint);
 
@@ -40,5 +42,6 @@ public class TextPromptInput extends BaseInputPrompt<String> {
         this.pattern = pattern;
         this.allowBarcodeScanEntry = allowBarcodeScanEntry;
         this.placeholder = placeholder;
+        this.readOnly = readOnly;
     }
 }
