@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @Builder
 public class PersonalizeMeResponse {
+    private String deviceToken;
     private String deviceName;
     private String serverAddress;
     private String serverPort;
