@@ -50,10 +50,6 @@ export class PlatformPluginsStartupTask implements StartupTask {
                     this._imageScanners.splice(this._imageScanners.indexOf(plugin), 1);
                 }
             }
-
-            unsupportedPlugins.forEach(plugin => {
-                this._plugins.splice(this._plugins.indexOf(plugin), 1);
-            });
         }
 
         if (this._plugins.length > 0) {
