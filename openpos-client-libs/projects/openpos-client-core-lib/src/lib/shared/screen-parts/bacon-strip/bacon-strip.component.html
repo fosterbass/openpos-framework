@@ -1,6 +1,5 @@
 <div class="container mat-elevation-z5" responsive-class>
     <div class="leftside" [class.expanded]="searchExpanded">
-        <input cdkFocusInitial mat-icon-button type='text' class="hidden-focus-button"/>    
         <app-icon-button *ngIf="iconButtonName" [iconName]="iconButtonName"
                          [title]="screenData.headerText"
                          [iconClass]="'md'" (buttonClick)="buttonClick()">
