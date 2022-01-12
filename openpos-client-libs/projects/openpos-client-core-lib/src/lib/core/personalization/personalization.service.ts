@@ -2,7 +2,7 @@ import { Injectable, Inject, Optional } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { PersonalizationConfigResponse } from './personalization-config-response.interface';
 import { BehaviorSubject, Observable, throwError, zip, merge } from 'rxjs';
-import { catchError, filter, map, take, tap, timeout } from 'rxjs/operators';
+import { catchError, filter, map, retry, take, tap, timeout } from 'rxjs/operators';
 import { PersonalizationRequest } from './personalization-request';
 import { PersonalizationResponse } from './personalization-response.interface';
 import { AutoPersonalizationParametersResponse } from './device-personalization.interface';
@@ -135,7 +135,10 @@ export class PersonalizationService {
         url += `${config.ipv4Addresses[0]}:${config.port}/${config.txtRecord.path}`;
         return this.http.get<AutoPersonalizationParametersResponse>(url, { params: { deviceName } })
             .pipe(
-                timeout(CONFIGURATION.autoPersonalizationRequestTimeoutMillis),
+                // on some platforms the first or early requests can fail, try a few times before
+                // giving up completely.
+                timeout(CONFIGURATION.autoPersonalizationRequestTimeoutMillis / 5),
+                retry(5),
                 tap(response => {
                     if (response) {
                         response.sslEnabled = this.sslEnabled$.getValue();

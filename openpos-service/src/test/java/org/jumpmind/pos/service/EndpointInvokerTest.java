@@ -56,7 +56,8 @@ public class EndpointInvokerTest {
         List<String> profileIds = new ArrayList<>();
         Method method = EndpointInvokerTest.class.getMethod("TestMethodNotAnnotated");
 
-        doReturn(new Object()).when(invocationStrategy).invoke(eq(profileIds), eq(null), eq(method), anyObject(), eq(null));
+        doReturn("LOCAL_ONLY").when(invocationStrategy).getStrategyName();
+        doReturn(new Object()).when(invocationStrategy).invoke(eq(profileIds), eq(null), eq(method), any(), eq(null));
 
         ServiceSpecificConfig config = getServiceSpecificConfig();
         String path = "/test/one";
@@ -68,8 +69,8 @@ public class EndpointInvokerTest {
         Object result = endpointInvoker.invokeStrategy(path, invocationStrategy, profileIds, config, null, method, null, null, null);
 
         verify(endpointInvoker, atLeastOnce()).startSample(path, invocationStrategy, config, null, method, null);
-        verify(invocationStrategy, atLeastOnce()).invoke(eq(profileIds), eq(null), eq(method), anyObject(), eq(null));
-        verify(endpointInvoker, atLeastOnce()).endSampleSuccess(anyObject(), eq(config), eq(null), eq(method), eq(null), anyObject());
+        verify(invocationStrategy, atLeastOnce()).invoke(eq(profileIds), eq(null), eq(method), any(), eq(null));
+        verify(endpointInvoker, atLeastOnce()).endSampleSuccess(any(), eq(config), eq(null), eq(method), eq(null), any());
         assertNotNull(result, "invokeStrategy should not return null in this case.");
     }
 
@@ -80,7 +81,9 @@ public class EndpointInvokerTest {
         Method method = EndpointInvokerTest.class.getMethod("TestMethodNotAnnotated");
 
         Exception exception = new Exception();
-        doThrow(exception).when(invocationStrategy).invoke(eq(profileIds), eq(null), eq(method), anyObject(), eq(null));
+
+        doReturn("LOCAL_ONLY").when(invocationStrategy).getStrategyName();
+        doThrow(exception).when(invocationStrategy).invoke(eq(profileIds), eq(null), eq(method), any(), eq(null));
 
 
         ServiceSpecificConfig config = getServiceSpecificConfig();
@@ -95,9 +98,9 @@ public class EndpointInvokerTest {
             Object result = endpointInvoker.invokeStrategy(path, invocationStrategy, profileIds, config, null, method, null, null, null);
         } catch (Throwable ex) {
             verify(endpointInvoker, atLeastOnce()).startSample(path, invocationStrategy, config, null, method, null);
-            verify(invocationStrategy, atLeastOnce()).invoke(eq(profileIds), eq(null), eq(method), anyObject(), eq(null));
-            verify(endpointInvoker, never()).endSampleSuccess(anyObject(), eq(null), eq(null), eq(method), eq(null), anyObject());
-            verify(endpointInvoker, atLeastOnce()).endSampleError(anyObject(), eq(config), eq(null), eq(method), eq(null), anyObject(), anyObject());
+            verify(invocationStrategy, atLeastOnce()).invoke(eq(profileIds), eq(null), eq(method), any(), eq(null));
+            verify(endpointInvoker, never()).endSampleSuccess(any(), eq(null), eq(null), eq(method), eq(null), any());
+            verify(endpointInvoker, atLeastOnce()).endSampleError(any(), eq(config), eq(null), eq(method), eq(null), any(), any());
             if (!ex.equals(exception)) {
                 throw ex;
             }
@@ -335,12 +338,12 @@ public class EndpointInvokerTest {
     }
 
     @Test
-    public void endSampleSetsDataAndSavesToDBSession() throws NoSuchMethodException, NoSuchFieldException, IllegalAccessException {
+    public void endSampleSetsDataAndSavesToDBSession() throws NoSuchFieldException, IllegalAccessException {
         ServiceSampleModel sampleModel = getServiceSampleModel();
 
         EndpointInvoker endpointInvoker = new EndpointInvoker();
 
-        Field executor = EndpointInvoker.class.getDeclaredField("instrumentationExecutor");
+        Field executor = EndpointInvoker.class.getDeclaredField("INSTRUMENTATION_EXECUTOR");
         executor.setAccessible(true);
 
 // This trick does not work on later versions of java.  Making EndpointInvoker.instrumentationExecutor non final
@@ -353,8 +356,8 @@ public class EndpointInvokerTest {
 
         endpointInvoker.endSample(sampleModel, null, null, null, null);
 
-        verify(sampleModel, atLeastOnce()).setEndTime(anyObject());
+        verify(sampleModel, atLeastOnce()).setEndTime(any());
         verify(sampleModel, atLeastOnce()).setDurationMs(anyLong());
-        verify(executorService, atLeastOnce()).execute(anyObject());
+        verify(executorService, atLeastOnce()).execute(any());
     }
 }

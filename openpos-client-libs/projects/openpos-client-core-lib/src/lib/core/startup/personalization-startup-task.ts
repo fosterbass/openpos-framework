@@ -159,13 +159,24 @@ export class PersonalizationStartupTask implements IStartupTask {
 
                         return concat(
                             of(`personalizing with server '${info.serverAddress}:${info.serverPort}' as '${info.deviceName}'`),
-                            this.personalization.personalize(
-                                info.serverAddress,
-                                info.serverPort,
-                                info.deviceId,
-                                info.appId,
-                                paramsMap,
-                                info.sslEnabled
+                            iif(
+                                () => !!info.deviceToken,
+
+                                this.personalization.personalizeWithToken(
+                                    info.serverAddress,
+                                    info.serverPort,
+                                    info.deviceToken,
+                                    info.sslEnabled
+                                ),
+
+                                this.personalization.personalize(
+                                    info.serverAddress,
+                                    info.serverPort,
+                                    info.deviceId,
+                                    info.appId,
+                                    paramsMap,
+                                    info.sslEnabled
+                                )
                             ).pipe(
                                 catchError(e => {
                                     console.error('failed to personalize from auto personalization data', e);

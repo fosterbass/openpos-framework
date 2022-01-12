@@ -6,6 +6,8 @@ dependencies {
     api "com.h2database:h2:${h2databaseVersion}"
     api "org.springframework:spring-jdbc:$springVersion"
     api "org.springframework:spring-tx:$springVersion"
+    implementation "io.prometheus:simpleclient:$prometheusVersion"
+
 	api project(":openpos-persist")
 	api project(":openpos-util")
 	testImplementation project(':openpos-test')
