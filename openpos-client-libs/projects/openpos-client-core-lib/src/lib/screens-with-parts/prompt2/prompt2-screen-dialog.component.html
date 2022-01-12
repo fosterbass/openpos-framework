@@ -8,13 +8,14 @@
                     <div *ngSwitchCase="'text'" class="flex col">
                         <mat-form-field responsive-class>
                             <mat-label responsive-class>{{ control.label }}</mat-label>
-                            <input matInput responsive-class [readonly]="control.readOnly" [type]="control.kind === 'Number' ? 'tel' : 'text'"
-                                [formControlName]="control.id" [attr.minlength]="control.minimumLength"
-                                [attr.maxlength]="control.maximumLength" [placeholder]="control.placeholder"
-                                (focus)="onInputFocused(control)" (blur)="onInputBlurred()">
+                            <input matInput responsive-class [readonly]="control.readOnly"
+                                [type]="control.kind === 'Number' ? 'tel' : 'text'" [formControlName]="control.id"
+                                [attr.minlength]="control.minimumLength" [attr.maxlength]="control.maximumLength"
+                                [placeholder]="control.placeholder" (focus)="onInputFocused(control)"
+                                (blur)="onInputBlurred()">
                             <button class="barcode-toggle" *ngIf="controlSupportsBarcodeScanInput(control)" matSuffix
                                 mat-flat-button type="button"
-                                [color]="activeImageScanInput == control ? 'warn' : undefined"
+                                [color]="activeImageScanInput == control ? 'primary' : undefined"
                                 (click)="toggleScanForControl(control)">
                                 <app-icon iconName="barcode"></app-icon>
                             </button>
