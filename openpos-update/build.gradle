@@ -8,5 +8,5 @@ dependencies {
     api group: 'org.update4j', name: 'update4j', version: '1.5.7'
     implementation platform('com.google.cloud:libraries-bom:23.0.0')
     implementation group: 'com.google.cloud', name: 'google-cloud-storage', version: '2.1.9'
-    implementation group: 'org.jfrog.artifactory.client', name: 'artifactory-java-client-services', version: '2.6.2'
+    implementation group: 'org.jfrog.artifactory.client', name: 'artifactory-java-client-services', version: '2.9.2'
 }
