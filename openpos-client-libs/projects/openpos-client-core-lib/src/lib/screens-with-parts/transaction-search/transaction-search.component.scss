@@ -52,21 +52,18 @@
 
     .transaction-search-options {
         grid-area: searchOptions;
-        display: grid;
-        grid-auto-flow: column;
-        grid-auto-columns: 1fr .3fr;
-        grid-column-gap: 24px;
+        display: flex;
+        gap: 24px;
         align-items: center;
 
-        &.change-search-mode-disabled {
-            grid-auto-columns: 1fr .2fr .2fr;
-        }
+        app-scan-or-search { flex-grow: 1; }
 
-        &.tablet-portrait,
-        &.mobile-landscape,
-        &.mobile-portrait,
-        &.desktop-portrait {
-            grid-auto-columns: 1fr .4fr;
+        &.change-search-mode-disabled {
+            display: grid;
+            grid-auto-flow: column;
+            grid-auto-columns: 1fr .2fr .2fr;
+            grid-column-gap: 24px;
+            align-items: center;
         }
     }
 
