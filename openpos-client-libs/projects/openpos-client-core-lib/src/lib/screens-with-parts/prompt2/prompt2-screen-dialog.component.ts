@@ -127,22 +127,7 @@ export class Prompt2ScreenDialogComponent extends PosScreenDirective<PromptPlusP
     onInputFocused(control: BaseFormControl) {
         if (instanceOfTextInput(control) && control.allowBarcodeScanEntry) {
             this._barcodeScanSubscription = this._barcodeScanner.beginScanning().subscribe(data => {
-                this.rootFormGroup.patchValue({
-                    [control.id]: data.data
-                });
-
-                const onlyScannable = this.screen.items
-                    .filter(instanceOfTextInput)
-                    .filter(t => t.allowBarcodeScanEntry)
-                    .length === 1;
-
-                if (this.screen.submitOnScan && onlyScannable) {
-                    if (this.screen.submitOnScanAction) {
-                        this.doAction(this.screen.submitOnScanAction, data);
-                    } else if (this.rootFormGroup.valid) {
-                        this.onFormSubmit();
-                    }
-                }
+                this.acceptScanInputForControl(control, data);
             });
         }
     }
@@ -202,11 +187,27 @@ export class Prompt2ScreenDialogComponent extends PosScreenDirective<PromptPlusP
     }
 
     acceptScanInputForControl(control: BaseFormControl, scan: ScanData) {
+        this._stopBarcodeScanning();
+
         if (instanceOfTextInput(control)) {
-            this.activeImageScanInput = undefined;
             this.rootFormGroup.patchValue({
                 [control.id]: scan.data
             });
+
+            // submit on scan will only work if there is only a single
+            // input that allows for scanned data.
+            const onlyScannable = this.screen.items
+                .filter(instanceOfTextInput)
+                .filter(t => t.allowBarcodeScanEntry)
+                .length === 1;
+
+            if (this.screen.submitOnScan && onlyScannable) {
+                if (this.screen.submitOnScanAction) {
+                    this.doAction(this.screen.submitOnScanAction, scan);
+                } else if (this.rootFormGroup.valid) {
+                    this.onFormSubmit();
+                }
+            }
         } else {
             throw new Error('only text controls can accept scan input');
         }
