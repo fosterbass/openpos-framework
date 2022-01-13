@@ -10,6 +10,7 @@ import java.util.List;
 @Data
 public class TransactionSearchUIMessage extends UIMessage {
     private ActionItem searchButton;
+    private ActionItem primaryButton;
     private ActionItem changeSearchModeButton;
     private ActionItem searchAllButton;
     private ActionItem clearButton;

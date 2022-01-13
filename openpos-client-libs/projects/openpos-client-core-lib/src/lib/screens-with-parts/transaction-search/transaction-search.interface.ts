@@ -4,6 +4,7 @@ import { TransactionSearchMode } from './transaction-search-mode.enum';
 
 export interface TransactionSearchInterface extends IAbstractScreen {
     searchButton: IActionItem;
+    primaryButton: IActionItem;
     clearButton: IActionItem;
     changeSearchModeButton: IActionItem;
     searchAllButton: IActionItem;
