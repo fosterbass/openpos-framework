@@ -11,9 +11,7 @@
                     [disabled]="!o.enabled">
                     <div gdColumns="auto 1fr" gdGap="6px" style="width: 100%;text-align: left;">
                         <span [ngClass]="{'muted-color' : !o.enabled}">{{o.displayValue}}</span>
-                        <mat-icon class="material-icons pull-right line-item-caret" [ngClass]="{'muted-color' : !o.enabled}" style="top: 10px;">
-                           keyboard_arrow_right
-                        </mat-icon>
+                        <app-icon [iconClass]="getOptionClasses(o)" [iconName]="'keyboard_arrow_right'"></app-icon>
                     </div>
                 </button>
             </div>

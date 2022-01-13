@@ -1,6 +1,6 @@
 <div class="item" responsive-class>
     <div *ngIf="item.imageUrl" class="image-container" responsive-class>
-        <img [src]="item.imageUrl | imageUrl">
+        <app-image [imageUrl]="item.imageUrl | imageUrl" altText="Image Not Found"></app-image>
     </div>
     <div class="left">
         <h3 class="title" responsive-class>{{ item.title }}</h3>
