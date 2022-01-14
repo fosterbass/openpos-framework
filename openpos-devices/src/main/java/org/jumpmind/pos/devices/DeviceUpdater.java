@@ -63,13 +63,13 @@ public class DeviceUpdater implements ApplicationListener<DeviceConnectedEvent> 
             StreamSupport.stream(propSrcs.spliterator(), false)
                     .filter(ps -> ps instanceof EnumerablePropertySource)
                     .map(ps -> ((EnumerablePropertySource<?>) ps).getPropertyNames())
-                    .flatMap(Arrays::<String>stream)
+                    .flatMap(Arrays::stream)
                     .filter(propName -> propName.startsWith("openpos.tagconfig.tags") && propName.contains("name"))
                     .forEach(propName -> {
                         for (ITagProvider tagProvider :
                                 this.tagProviders) {
                             String name = env.getProperty(propName);
-                            String value = tagProvider.getTagValue(deviceModel.getDeviceId(), deviceModel.getAppId(), name, deviceModel.getBusinessUnitId());
+                            String value = tagProvider.getTagValue(deviceModel, name);
                             if (isNotBlank(value)) {
                                 deviceModel.setTagValue(name, value);
                             }

@@ -1,8 +1,8 @@
 package org.jumpmind.pos.persist;
 
 
+import org.jumpmind.pos.util.model.IDeviceAttributes;
+
 public interface ITagProvider {
-
-    public String getTagValue(String deviceId, String appId, String tagName, String businessUnitId);
-
+    String getTagValue(IDeviceAttributes deviceAttributes, String tagName);
 }

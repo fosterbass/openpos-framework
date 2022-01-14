@@ -1,17 +1,15 @@
 package org.jumpmind.pos.devices.model;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
-import org.apache.commons.lang3.StringUtils;
 import org.jumpmind.pos.persist.*;
 import org.jumpmind.pos.persist.model.ITaggedModel;
+import org.jumpmind.pos.util.model.IDeviceAttributes;
 import org.jumpmind.util.AppUtils;
 import org.springframework.core.env.AbstractEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
@@ -27,7 +25,7 @@ import org.springframework.core.env.MutablePropertySources;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @TableDef(name = "device", description = "A device used to transaction commerce for a Business Unit",
         primaryKey = {"deviceId"})
-public class DeviceModel extends AbstractModel implements ITaggedModel {
+public class DeviceModel extends AbstractModel implements ITaggedModel, IDeviceAttributes {
 
     @ToString.Include
     @EqualsAndHashCode.Include
@@ -67,6 +65,8 @@ public class DeviceModel extends AbstractModel implements ITaggedModel {
     @Builder.Default
     private String deviceMode = DEVICE_MODE_DEFAULT;
 
+    private List<DeviceParamModel> deviceParamModels;
+
     public static final String DEVICE_MODE_DEFAULT  = "default";
     public static final String DEVICE_MODE_TRAINING = "training";
 
@@ -101,7 +101,7 @@ public class DeviceModel extends AbstractModel implements ITaggedModel {
         StreamSupport.stream(propSrcs.spliterator(), false)
                 .filter(ps -> ps instanceof EnumerablePropertySource)
                 .map(ps -> ((EnumerablePropertySource<?>) ps).getPropertyNames())
-                .flatMap(Arrays::<String>stream)
+                .flatMap(Arrays::stream)
                 .filter(propName -> propName.startsWith("openpos.tags"))
                 .forEach(propName ->
                         tags.put(propName.substring("openpos.tags".length() + 1), env.getProperty(propName) != null ? env.getProperty(propName) : "*"));
@@ -140,5 +140,13 @@ public class DeviceModel extends AbstractModel implements ITaggedModel {
         deviceMode = DEVICE_MODE_TRAINING;
     }
 
-    private List<DeviceParamModel> deviceParamModels;
+    @JsonIgnore
+    @Override
+    public Map<String,String> getDeviceParamsMap() {
+        if (this.deviceParamModels != null) {
+            return this.deviceParamModels.stream().collect(Collectors.toMap(DeviceParamModel::getParamName, DeviceParamModel::getParamValue));
+        }
+
+        return Collections.emptyMap();
+    }
 }
