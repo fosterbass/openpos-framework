@@ -19,6 +19,7 @@ import { filter, takeUntil } from 'rxjs/operators';
 import { IActionItem } from '../../../core/actions/action-item.interface';
 
 import type { QueryList } from '@angular/core';
+import { KeybindingZoneService } from '../../../core/keybindings/keybinding-zone.service';
 
 @ScreenPart({
   name: 'SaleItemCardList'
@@ -36,7 +37,10 @@ export class SaleItemCardListComponent extends ScreenPartComponent<SaleItemCardL
   @ViewChildren('items', { read: ElementRef }) private itemsRef: QueryList<ElementRef>;
   @Output() itemsChanged = new EventEmitter<ISellItem[]>();
 
-  constructor(injector: Injector, private dataMessageService: UIDataMessageService, protected keyPresses: KeyPressProvider) {
+  constructor(injector: Injector,
+              private dataMessageService: UIDataMessageService,
+              protected keyPresses: KeyPressProvider,
+              protected keybindingZoneService: KeybindingZoneService) {
     super(injector);
     this.stop$ = merge(this.beforeScreenDataUpdated$, this.destroyed$);
 
@@ -63,6 +67,12 @@ export class SaleItemCardListComponent extends ScreenPartComponent<SaleItemCardL
         }
       })
     );
+
+    this.keybindingZoneService.getKeyDownEvent('ArrowUp,ArrowDown,Tab')
+        .pipe(
+            filter(event => !event.domEvent.repeat),
+            takeUntil(this.destroyed$)
+        ).subscribe(event => this.handleArrowKey(event.domEvent));
   }
 
   itemsTrackByFn(index, item: ISellItem) {

@@ -9,12 +9,14 @@ import { ConfigurationService } from '../../../core/services/configuration.servi
 import { Observable } from 'rxjs';
 import { UIConfigMessage } from '../../../core/messages/ui-config-message';
 import { UIMessage } from '../../../core/messages/ui-message';
+import { KeybindingZoneService } from '../../../core/keybindings/keybinding-zone.service';
+import { KeybindingZoneScreenService } from '../../../core/keybindings/keybinding-zone-screen.service';
 
 @Component({
     selector: 'app-dynamic-screen',
     templateUrl: './dynamic-screen.component.html',
     styleUrls: ['./dynamic-screen.component.scss'],
-    providers: [MessageProvider, ActionService]
+    providers: [MessageProvider, ActionService, KeybindingZoneService, KeybindingZoneScreenService]
 })
 export class DynamicScreenComponent implements OnInit {
     @ViewChild(ToastContainerDirective, { static: true })
@@ -28,9 +30,12 @@ export class DynamicScreenComponent implements OnInit {
         private configuration: ConfigurationService,
         private messageProvider: MessageProvider,
         private toastrService: ToastrService,
-        private sessionService: SessionService
+        private sessionService: SessionService,
+        private keybindingZoneService: KeybindingZoneService,
+        private keybindingZoneScreenService: KeybindingZoneScreenService
     ) {
-        this.messageProvider.setMessageType('Screen');
+        this.keybindingZoneScreenService.start(MessageTypes.SCREEN);
+        this.messageProvider.setMessageType(MessageTypes.SCREEN);
         this.sessionService.getMessages(MessageTypes.WATERMARK).subscribe((message: WatermarkMessage) => {
             this.showWatermark = true;
             this.watermarkMessage = message?.screenMessage;

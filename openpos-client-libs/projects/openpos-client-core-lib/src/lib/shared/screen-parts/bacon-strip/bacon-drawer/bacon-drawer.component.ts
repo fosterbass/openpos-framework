@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Injector, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Injector, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { IActionItem } from '../../../../core/actions/action-item.interface';
 import { ScreenPart } from '../../../decorators/screen-part.decorator';
 import { ScreenPartComponent } from '../../screen-part';
@@ -7,12 +7,14 @@ import { KeyPressProvider } from '../../../providers/keypress.provider';
 import { CONFIGURATION } from '../../../../configuration/configuration';
 import { merge } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { KeybindingZoneService } from '../../../../core/keybindings/keybinding-zone.service';
 
 @ScreenPart({ name: 'baconStrip' })
 @Component({
   selector: 'app-bacon-drawer',
   templateUrl: './bacon-drawer.component.html',
-  styleUrls: ['./bacon-drawer.component.scss']
+  styleUrls: ['./bacon-drawer.component.scss'],
+  providers: [KeybindingZoneService]
 })
 export class BaconDrawerComponent extends ScreenPartComponent<BaconStripInterface> implements OnInit, OnDestroy {
   @Output()
@@ -20,12 +22,16 @@ export class BaconDrawerComponent extends ScreenPartComponent<BaconStripInterfac
   keyPressProvider: KeyPressProvider;
   stop$ = merge(this.beforeScreenDataUpdated$, this.destroyed$);
   keybindsEnabled: boolean;
+  keybindingZoneService: KeybindingZoneService;
 
   constructor(injector: Injector) {
     super(injector);
+    this.keybindingZoneService = injector.get(KeybindingZoneService);
+    this.keybindingZoneService.register('bacon-strip-drawer');
   }
 
   screenDataUpdated() {
+    this.keybindingZoneService.updateZone(this.screenData);
     this.keybindsEnabled = CONFIGURATION.enableKeybinds;
 
     if (this.keybindsEnabled) {
@@ -48,5 +54,10 @@ export class BaconDrawerComponent extends ScreenPartComponent<BaconStripInterfac
   buttonClick(action: IActionItem) {
     this.buttonClicked.emit();
     super.doAction(action);
+  }
+
+  ngOnDestroy() {
+    this.keybindingZoneService.unregister();
+    super.ngOnDestroy();
   }
 }

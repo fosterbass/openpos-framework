@@ -1,10 +1,11 @@
 import { Directive, ElementRef, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 import { KeyPressProvider } from '../providers/keypress.provider';
 import { fromEvent, Subject } from 'rxjs';
+import { DisabledKeyPressProvider } from '../providers/disabled-keypress.provider';
 
 @Directive({
     selector: '[appKeypressSource]',
-    providers: [KeyPressProvider]
+    providers: [{ provide: KeyPressProvider, useClass: DisabledKeyPressProvider }],
 })
 export class KeyPressSourceDirective implements OnInit, OnDestroy {
     keydown$ = new Subject<KeyboardEvent>();

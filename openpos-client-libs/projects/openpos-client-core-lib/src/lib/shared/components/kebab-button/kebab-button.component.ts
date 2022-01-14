@@ -74,9 +74,7 @@ export class KebabButtonComponent implements OnDestroy {
 
         // Ensure dialog gets closed, if it is still open due
         // to a screen change/refresh while it was open
-        if (this.dialogRef) {
-            this.dialogRef.close();
-        }
+        this.closeKebabMenu();
     }
 
     public openKebabMenu() {
@@ -99,6 +97,12 @@ export class KebabButtonComponent implements OnDestroy {
                 }
                 this.focusService.restoreInitialFocus();
             });
+        }
+    }
+
+    closeKebabMenu(): void {
+        if (this.dialogRef) {
+            this.dialogRef.close();
         }
     }
 

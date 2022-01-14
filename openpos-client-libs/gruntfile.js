@@ -35,7 +35,7 @@ module.exports = function(grunt) {
                 cmd: 'npm run scss-bundle -- -c projects/openpos-client-core-lib/scss-bundle.config.json --watch projects/openpos-client-core-lib/src'
             },
             test: {
-                cmd: 'npm test -- --karmaConfig=projects/openpos-client-core-lib/karma.conf.dev.js'
+                cmd: 'npm test -- --karmaConfig=projects/openpos-client-core-lib/karma.conf.dev.js --source-map'
             }
         },
         mkdir: {

@@ -1,14 +1,16 @@
-import { Component, Input, HostListener, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+import { Component, Input, HostListener, ViewChild, OnDestroy } from '@angular/core';
 import { ISellItem } from '../../../core/interfaces/sell-item.interface';
 import { SessionService } from '../../../core/services/session.service';
 import { IActionItem } from '../../../core/actions/action-item.interface';
 import { ActionService } from '../../../core/actions/action.service';
-import {Observable, Subscription } from 'rxjs';
+import {Observable, Subject, Subscription } from 'rxjs';
 import { CONFIGURATION } from '../../../configuration/configuration';
 import { KeyPressProvider } from '../../providers/keypress.provider';
 import { KeyboardClassKey } from '../../../keyboard/enums/keyboard-class-key.enum';
 import { KebabLabelButtonComponent } from '../kebab-label-button/kebab-label-button.component';
 import {MediaBreakpoints, OpenposMediaService} from '../../../core/media/openpos-media.service';
+import { KeybindingZoneService } from '../../../core/keybindings/keybinding-zone.service';
+import { filter, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-item-card',
@@ -16,7 +18,7 @@ import {MediaBreakpoints, OpenposMediaService} from '../../../core/media/openpos
   styleUrls: ['./item-card.component.scss']
 })
 export class ItemCardComponent implements OnDestroy {
-
+  private destroyed$ = new Subject();
   private _item: ISellItem;
 
   @Input() set item(item: ISellItem) {
@@ -53,7 +55,8 @@ export class ItemCardComponent implements OnDestroy {
   isMobile$: Observable<boolean>;
 
   constructor(public actionService: ActionService, public session: SessionService,
-              protected keyPresses: KeyPressProvider, private mediaService: OpenposMediaService) {
+              protected keyPresses: KeyPressProvider, private mediaService: OpenposMediaService,
+              private keybindingZoneService: KeybindingZoneService) {
     this.createSubscription();
     this.isMobile$ = mediaService.observe(new Map([
       [MediaBreakpoints.MOBILE_PORTRAIT, true],
@@ -72,19 +75,34 @@ export class ItemCardComponent implements OnDestroy {
         return;
       }
       if (event.type === 'keydown' && this.expanded) {
-        if (this.item.menuItems.length > 1) {
-          this.kebab.openKebabMenu();
-        } else {
-          this.doItemAction(this.item.menuItems[0], this.item.index);
-        }
+        this.handleKeyDown();
       }
     });
+
+    this.keybindingZoneService.getKeyDownEvent(' ')
+        .pipe(
+            filter(() => this.expanded),
+            filter(event => !event.domEvent.repeat),
+            takeUntil(this.destroyed$)
+        ).subscribe(() => this.handleKeyDown());
+  }
+
+  handleKeyDown(): void {
+    if (this.item.menuItems.length > 1) {
+      this.kebab.openKebabMenu();
+    } else {
+      this.doItemAction(this.item.menuItems[0], this.item.index);
+    }
   }
 
   ngOnDestroy() {
     if (this.buttonSubscription) {
       this.buttonSubscription.unsubscribe();
     }
+    if (this.kebab) {
+      this.kebab.closeKebabMenu();
+    }
+    this.destroyed$.next();
   }
 
   public doItemAction(action: IActionItem, payload: number) {

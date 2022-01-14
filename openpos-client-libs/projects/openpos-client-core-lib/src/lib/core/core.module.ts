@@ -73,6 +73,9 @@ import { CordovaService } from './services/cordova.service';
 import { OpenposAppComponent } from './components/openpos-app/openpos-app.component';
 import { PLATFORMS } from './platforms/platform.interface';
 import { PLUGINS } from './platform-plugins/platform-plugin.interface';
+import { KeybindingService } from './keybindings/keybinding.service';
+import { DisabledKeyPressProvider } from '../shared/providers/disabled-keypress.provider';
+import { KeybindingLockScreenService } from './keybindings/keybinding-lock-screen.service';
 import { ENTERPRISE_CONFIGS } from './platform-plugins/enterprise-config/enterprise-config.service';
 
 registerLocaleData(locale_enCA, 'en-CA');
@@ -158,6 +161,7 @@ registerLocaleData(locale_frCA, 'fr-CA');
         TrainingOverlayService,
         ConfigurationService,
         KeyPressProvider,
+        { provide: KeyPressProvider, useClass: DisabledKeyPressProvider },
         HelpTextService,
         { provide: CLIENTCONTEXT, useClass: TimeZoneContext, multi: true },
         { provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher },
@@ -178,7 +182,9 @@ export class CoreModule {
         toastService: ToastService,
         uiDataService: UIDataMessageService,
         clientExecutableService: ClientExecutableService,
-        keyProvider: KeyPressProvider) {
+        keyProvider: KeyPressProvider,
+        keybindingService: KeybindingService,
+        keybindingLockScreenService: KeybindingLockScreenService) {
         throwIfAlreadyLoaded(parentModule, 'CoreModule');
         AppInjector.instance = this.injector;
         keyProvider.registerKeyPressSource(fromEvent(document, 'keydown') as Observable<KeyboardEvent>);

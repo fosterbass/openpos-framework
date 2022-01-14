@@ -8,6 +8,9 @@ import { MediaBreakpoints, OpenposMediaService } from '../../../core/media/openp
 import { Observable } from 'rxjs';
 import { KeyPressProvider } from '../../providers/keypress.provider';
 import { CONFIGURATION } from '../../../configuration/configuration';
+import { KeybindingZoneService } from '../../../core/keybindings/keybinding-zone.service';
+import { BaconDrawerComponent } from './bacon-drawer/bacon-drawer.component';
+import { filter, takeUntil } from 'rxjs/operators';
 
 @ScreenPart({
     name: 'baconStrip'
@@ -18,11 +21,13 @@ import { CONFIGURATION } from '../../../configuration/configuration';
     styleUrls: ['./bacon-strip.component.scss']
 })
 export class BaconStripComponent extends ScreenPartComponent<BaconStripInterface> implements OnInit {
-
     iconButtonName: string;
 
-    @ViewChild(MatSidenav, { static: true })
+    @ViewChild(MatSidenav, {static: true})
     baconDrawer: MatSidenav;
+
+    @ViewChild(BaconDrawerComponent, {static: true})
+    baconDrawerComponent: BaconDrawerComponent;
 
     get sidenavOpened(): boolean {
         return this.baconDrawer.opened;
@@ -51,10 +56,10 @@ export class BaconStripComponent extends ScreenPartComponent<BaconStripInterface
         public helpTextService: HelpTextService,
         private media: OpenposMediaService,
         protected keyPresses: KeyPressProvider,
-        private changeDetector: ChangeDetectorRef
+        private changeDetector: ChangeDetectorRef,
+        private keybindingZoneService: KeybindingZoneService
     ) {
         super(injector);
-
         this.isMobile = media.observe(new Map([
             [MediaBreakpoints.MOBILE_PORTRAIT, true],
             [MediaBreakpoints.MOBILE_LANDSCAPE, true],
@@ -75,6 +80,12 @@ export class BaconStripComponent extends ScreenPartComponent<BaconStripInterface
                 }
             })
         );
+
+        this.keybindingZoneService.getKeyDownEvent('Escape')
+            .pipe(
+                filter(event => !event.domEvent.repeat),
+                takeUntil(this.destroyed$)
+            ).subscribe(() => this.buttonClick());
     }
 
     ngOnInit() {
@@ -82,8 +93,15 @@ export class BaconStripComponent extends ScreenPartComponent<BaconStripInterface
 
         if (this.baconDrawer) {
             this.baconDrawer.openedChange.subscribe(v => {
+                if (v) {
+                    this.baconDrawerComponent.keybindingZoneService.activate();
+                } else {
+                    this.baconDrawerComponent.keybindingZoneService.restorePreviousActivation();
+                }
+
                 this.sidenavOpenedChange.next(v);
                 this.changeDetector.detectChanges();
+                console.debug('[BaconStripComponent]: Toggled drawer', this);
             });
         }
     }
@@ -96,15 +114,26 @@ export class BaconStripComponent extends ScreenPartComponent<BaconStripInterface
         } else {
             this.iconButtonName = this.screenData.icon;
         }
+        this.keybindingZoneService.removeKeybinding('Escape');
     }
 
     buttonClick() {
         if (this.screenData.actions && this.screenData.actions.length === 1) {
             this.doAction(this.screenData.actions[0]);
         } else {
+            if (this.sidenavOpened) {
+                const escapeAction = this.baconDrawerComponent.keybindingZoneService.findActionByKey('Escape');
+
+                if (escapeAction) {
+                    this.doAction(escapeAction);
+                }
+            }
+
             this.baconDrawer.toggle();
             this.changeDetector.detectChanges();
         }
+
+        console.debug('[BaconStripComponent]', this);
     }
 
     onSearchExpand(expanded: boolean): void {

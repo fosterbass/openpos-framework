@@ -4,6 +4,7 @@ import { filter, map, take, takeUntil, tap } from 'rxjs/operators';
 import { CONFIGURATION } from '../../configuration/configuration';
 import { IActionItem } from '../../core/actions/action-item.interface';
 import { LockScreenService } from '../../core/lock-screen/lock-screen.service';
+import { KeybindingParserService } from '../../core/keybindings/keybinding-parser.service';
 
 /**
  * How to subscribe to keys, and keys with modifiers:
@@ -34,14 +35,7 @@ export class KeyPressProvider implements OnDestroy {
     // ctrl+p
     keyRegex;
 
-    constructor(private lockScreenService: LockScreenService) {
-        try {
-            this.keyRegex = new RegExp(/(?<key>(\\\+|[^+])+)/, 'g');
-        } catch (e) {
-            // This was observed on Android emulator:
-            // Invalid regular expression: /(?<key>(\\\+|[^+])+)/: Invalid group
-            console.log(`keyRegex failed to load: ${e.message}`);
-        }
+    constructor(private lockScreenService: LockScreenService, private keybindingParser: KeybindingParserService) {
         merge(
             this.keypressSourceRegistered$,
             this.keypressSourceUnregistered$
@@ -95,11 +89,7 @@ export class KeyPressProvider implements OnDestroy {
     }
 
     areEqual(keyBindingA: Keybinding, keyBindingB: Keybinding): boolean {
-        return this.unescapeKey(keyBindingA.key) === this.unescapeKey(keyBindingB.key) &&
-            keyBindingA.altKey === keyBindingB.altKey &&
-            keyBindingA.ctrlKey === keyBindingB.ctrlKey &&
-            keyBindingA.metaKey === keyBindingB.metaKey &&
-            keyBindingA.shiftKey === keyBindingB.shiftKey;
+        return this.keybindingParser.areEqual(keyBindingA, keyBindingB);
     }
 
     ngOnDestroy(): void {
@@ -260,93 +250,11 @@ export class KeyPressProvider implements OnDestroy {
     }
 
     getNormalizedKey(obj: KeyboardEvent | Keybinding | string): string {
-        const keyBinding = typeof obj === 'string' ? this.parse(obj as string)[0] : obj as Keybinding;
-        let normalizedKey = '';
-
-        if (!keyBinding) {
-            return normalizedKey;
-        }
-
-        // When the user autocompletes the form with the browser there's no "key" property on the KeyboardEvent
-        if (!keyBinding.key) {
-            return 'browser-autocomplete';
-        }
-
-        if (keyBinding.key !== 'Control') {
-            normalizedKey += (keyBinding.ctrlKey ? 'ctrl+' : '');
-        }
-        if (keyBinding.key !== 'Alt') {
-            normalizedKey += (keyBinding.altKey ? 'alt+' : '');
-        }
-        if (keyBinding.key !== 'Shift') {
-            normalizedKey += (keyBinding.shiftKey ? 'shift+' : '');
-        }
-        if (keyBinding.key !== 'Meta') {
-            normalizedKey += (keyBinding.metaKey ? 'meta+' : '');
-        }
-        normalizedKey += this.escapeKey(keyBinding.key);
-
-        return normalizedKey.toLowerCase();
+        return this.keybindingParser.getNormalizedKey(obj);
     }
 
     parse(key: string): Keybinding[] {
-        if (!key) {
-            return null;
-        }
-
-        const keys = this.splitKeys(key);
-        const keyBindings = [];
-
-        keys.forEach((theKey: string) => {
-            const keyParts =
-                Array.from(
-                    theKey.matchAll(this.keyRegex)
-                ).map((value: RegExpMatchArray) => value.groups.key);
-
-            if (keyParts.length === 0) {
-                return;
-            }
-
-            const keyBinding: Keybinding = {
-                key: this.unescapeKey(keyParts[keyParts.length - 1].toLowerCase())
-            };
-
-            for (let i = 0; i < keyParts.length - 1; i++) {
-                const keyPart = keyParts[i].toLowerCase();
-
-                // Being flexible with how developers want to specify key modifiers
-                switch (keyPart) {
-                    case 'command':
-                    case 'cmd':
-                    case 'mta':
-                    case 'met':
-                    case 'meta':
-                        keyBinding.metaKey = true;
-                        break;
-                    case 'alt':
-                    case 'opt':
-                    case 'option':
-                    case 'optn':
-                        keyBinding.altKey = true;
-                        break;
-                    case 'ctl':
-                    case 'ctr':
-                    case 'ctrl':
-                    case 'control':
-                        keyBinding.ctrlKey = true;
-                        break;
-                    case 'shft':
-                    case 'sft':
-                    case 'shift':
-                        keyBinding.shiftKey = true;
-                        break;
-                }
-            }
-
-            keyBindings.push(keyBinding);
-        });
-
-        return keyBindings;
+        return this.keybindingParser.parse(key);
     }
 
     /**
@@ -358,45 +266,15 @@ export class KeyPressProvider implements OnDestroy {
      * ctrl+p,ctrl+a,cmd+\,,p
      */
     splitKeys(keys: string): string[] {
-        const keyPressList = [];
-        let keyBuffer = '';
-
-        for (let i = 0; i < keys.length; i++) {
-            const char = keys[i];
-            const nextChar = keys[i + 1];
-
-            // If the delimiter is escaped, treat it as a key
-            if (char === this.keyEscape && (nextChar === this.keyDelimiter || nextChar === this.keyCombinationChar)) {
-                keyBuffer += this.keyEscape + nextChar;
-                i++;
-                // If we've reached the delimiter, and there's stuff in the buffer, add the buffer to the key list and flush buffer
-            } else if (char === this.keyDelimiter && keyBuffer) {
-                keyPressList.push(keyBuffer);
-                keyBuffer = '';
-                // Add the char to the key buffer
-            } else {
-                keyBuffer += char;
-            }
-        }
-
-        // Add what's left in the key buffer to the list
-        if (keyBuffer) {
-            keyPressList.push(keyBuffer);
-        }
-
-        return keyPressList;
+        return this.keybindingParser.splitKeys(keys);
     }
 
     unescapeKey(key: string): string {
-        return key.startsWith('\\') ? key.substr(1) : key;
+        return this.keybindingParser.unescapeKey(key);
     }
 
     escapeKey(key: string): string {
-        if (key && !key.startsWith(this.keyEscape) && (key === this.keyCombinationChar || key === this.keyDelimiter)) {
-            return this.keyEscape + key;
-        }
-
-        return key;
+        return this.keybindingParser.escapeKey(key);
     }
 }
 

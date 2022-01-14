@@ -326,6 +326,17 @@ export * from './lib/shared/screen-parts/status-strip/status-strip.interface';
 export * from './lib/shared/screen-parts/system-status/system-status.component';
 export * from './lib/shared/screen-parts/image-text-panel/image-text-panel.interface';
 
+export * from './lib/core/keybindings/keybinding-key.interface';
+export * from './lib/core/keybindings/keybinding-event.interface';
+export * from './lib/core/keybindings/keybinding-action.interface';
+export * from './lib/core/keybindings/keybinding-zone.interface';
+export * from './lib/core/keybindings/keybinding.service';
+export * from './lib/core/keybindings/keybinding-zone.service';
+export * from './lib/core/keybindings/keybinding-zone-screen.service';
+export * from './lib/core/keybindings/keybinding-lock-screen.service';
+export * from './lib/core/keybindings/keybinding-parser.service';
+export * from './lib/core/keybindings/keybinding-property-crawler.service';
+
 export * from './lib/shared/animations/glow.animation';
 export * from './lib/shared/animations/throb.animation';
 export * from './lib/shared/animations/gradient-inner-glow.animation';

@@ -12,13 +12,15 @@ import {
     AfterViewInit,
     QueryList
 } from '@angular/core';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subject, Subscription } from 'rxjs';
 import { ISelectableListData } from './selectable-list-data.interface';
 import { KeyPressProvider } from '../../providers/keypress.provider';
 import { CONFIGURATION } from '../../../configuration/configuration';
 import { SelectionMode } from '../../../core/interfaces/selection-mode.enum';
 import { SessionService } from '../../../core/services/session.service';
 import { ActionService } from '../../../core/actions/action.service';
+import { KeybindingZoneService } from '../../../core/keybindings/keybinding-zone.service';
+import { filter, takeUntil } from 'rxjs/operators';
 
 export class SelectableItemListComponentConfiguration {
     numItemsPerPage: number;
@@ -86,8 +88,12 @@ export class SelectableItemListComponent<ItemType> implements OnDestroy, OnInit,
 
     private selectedItemSubscription: Subscription;
     private subscriptions = new Subscription();
+    private destroyed$ = new Subject();
 
-    constructor(private keyPresses: KeyPressProvider, private actionService: ActionService, private session: SessionService) {
+    constructor(private keyPresses: KeyPressProvider,
+                private actionService: ActionService,
+                private session: SessionService,
+                private keybindingZoneService: KeybindingZoneService) {
 
         // we only want to be subscribed for keypresses when we have selected items
         // so watch the selected item changes and add remove the key bindings.
@@ -146,6 +152,24 @@ export class SelectableItemListComponent<ItemType> implements OnDestroy, OnInit,
                 }
             })
         );
+
+        this.keybindingZoneService.getKeyDownEvent('ArrowUp,ArrowDown')
+            .pipe(
+                filter(event => !event.domEvent.repeat),
+                takeUntil(this.destroyed$)
+            ).subscribe(event => this.handleArrowKey(event.domEvent));
+
+        this.keybindingZoneService.getKeyDownEvent('ArrowLeft,ArrowRight')
+            .pipe(
+                filter(event => !event.domEvent.repeat),
+                takeUntil(this.destroyed$)
+            ).subscribe(event => {
+                if (event.domEvent.key === 'ArrowLeft' && this.currentPage > 1) {
+                    this.onPrevPage();
+                } else if (event.domEvent.key === 'ArrowRight' && this.currentPage < this.numberOfPages) {
+                    this.onNextPage();
+                }
+            });
     }
 
     private updateKeySubscriptions() {
@@ -204,6 +228,7 @@ export class SelectableItemListComponent<ItemType> implements OnDestroy, OnInit,
         if (this.selectedItemSubscription) {
             this.selectedItemSubscription.unsubscribe();
         }
+        this.destroyed$.next();
     }
 
     updateResultsToShow(): void {

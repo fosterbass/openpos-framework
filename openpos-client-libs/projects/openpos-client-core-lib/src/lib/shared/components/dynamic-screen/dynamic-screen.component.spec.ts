@@ -12,6 +12,8 @@ import { MessageTypes } from '../../../core/messages/message-types';
 import { UIConfigMessage } from '../../../core/messages/ui-config-message';
 import { UIMessage } from '../../../core/messages/ui-message';
 import { StatusBarComponent } from '../../status/status-bar/status-bar.component';
+import { KeybindingZoneService } from '../../../core/keybindings/keybinding-zone.service';
+import { KeybindingZoneScreenService } from '../../../core/keybindings/keybinding-zone-screen.service';
 
 describe('DynamicScreenComponent', () => {
     let fixture: ComponentFixture<DynamicScreenComponent>;
@@ -24,6 +26,7 @@ describe('DynamicScreenComponent', () => {
     let messageType: string;
 
     const mockService = {
+        start: (): void => {},
         setMessageType: (type: string): void => {
             messageType = type;
         },
@@ -42,6 +45,7 @@ describe('DynamicScreenComponent', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             declarations: [DynamicScreenComponent, MockComponent(LoaderComponent), MockComponent(StatusBarComponent)],
+            providers: [KeybindingZoneService, KeybindingZoneScreenService]
         });
         TestBed.overrideComponent(DynamicScreenComponent, {
             set: {
@@ -50,6 +54,8 @@ describe('DynamicScreenComponent', () => {
                     { provide: MessageProvider, useValue: mockService },
                     { provide: ToastrService, useValue: mockService },
                     { provide: SessionService, useValue: mockService },
+                    { provide: KeybindingZoneService, useValue: mockService },
+                    { provide: KeybindingZoneScreenService, useValue: mockService }
                 ]
             }
         }).compileComponents();
