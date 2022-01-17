@@ -13,7 +13,6 @@ import org.jumpmind.pos.server.service.IMessageService;
 import org.jumpmind.pos.util.clientcontext.ClientContext;
 import org.jumpmind.pos.util.model.Message;
 import org.jumpmind.pos.util.startup.DeviceStartupTaskConfig;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 public class StateManagerTestUtils {
@@ -50,8 +49,10 @@ public class StateManagerTestUtils {
         TestUtil.setField(stateManager, "transitionStepConfigs", Arrays.asList(new TransitionStepConfig(TestTransitionStepCancel.class), new TransitionStepConfig(TestTransitionStepProceed.class)));
         TestUtil.setField(stateManager, "stateLifecycle", new StateLifecycle());
         TestUtil.setField(stateManager, "messageService", messageService);
+        ClientContext clientContext = new ClientContext();
+        TestUtil.setField(stateManager, "clientContext",clientContext);
         StateManagerContainer stateManagerContainer = new StateManagerContainer();
-        TestUtil.setField(stateManagerContainer, "clientContext", new ClientContext());
+        TestUtil.setField(stateManagerContainer, "clientContext", clientContext);
         TestUtil.setField(stateManager, "stateManagerContainer", stateManagerContainer);
 
         if (flowConfig != null) {

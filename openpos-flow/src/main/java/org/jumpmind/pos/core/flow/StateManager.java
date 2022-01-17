@@ -34,6 +34,7 @@ import static java.lang.String.*;
 
 import lombok.Getter;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.map.UnmodifiableMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.jumpmind.pos.core.clientconfiguration.ClientConfigChangedMessage;
@@ -728,7 +729,7 @@ public class StateManager implements IStateManager {
         }
 
         actionContext.parseSyncId();
-        
+
         boolean offered = actionQueue.offer(actionContext);
         if (!offered) {
             log.warn("StateManager failed to insert action {} into the queue", action);
@@ -1232,8 +1233,16 @@ public class StateManager implements IStateManager {
 
     @Override
     public void registerPersonalizationProperties(Map<String, String> personalizationProperties) {
-        log.info("Registering personalization properties " + personalizationProperties.toString());
+        if (personalizationProperties != null) {
+            log.info("Registering personalization properties " + personalizationProperties.toString());
+            personalizationProperties = UnmodifiableMap.unmodifiableMap(personalizationProperties);
+        }
         applicationState.getScope().setScopeValue(ScopeType.Device, "personalizationProperties", personalizationProperties);
+    }
+
+    @Override
+    public Map<String, String> getPersonalizationProperties() {
+        return applicationState.getScopeValue(ScopeType.Device, "personalizationProperties");
     }
 
     protected void initClientContext() {
@@ -1255,11 +1264,15 @@ public class StateManager implements IStateManager {
     public void sendConfigurationChangedMessage() {
         String deviceId = applicationState.getDeviceId();
 
-        Map<String, String> properties = applicationState.getScopeValue("personalizationProperties");
+        Map<String, String> properties = getPersonalizationProperties();
         if (properties == null) {
             properties = new HashMap<>();
         }
-        properties.put("appId", applicationState.getAppId());
+        if (! applicationState.getAppId().equals(properties.get("appId"))) {
+            Map<String,String> updatedProperties = new HashMap<>(properties);
+            updatedProperties.put("appId", applicationState.getAppId());
+            registerPersonalizationProperties(updatedProperties);
+        }
         List<String> additionalTags = applicationState.getScopeValue("additionalTagsForConfiguration");
 
         try {
