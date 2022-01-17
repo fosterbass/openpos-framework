@@ -1,8 +1,8 @@
 import { Injectable, Inject, Optional } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { PersonalizationConfigResponse } from './personalization-config-response.interface';
-import { BehaviorSubject, Observable, throwError, zip, merge } from 'rxjs';
-import { catchError, filter, map, retry, take, tap, timeout } from 'rxjs/operators';
+import { BehaviorSubject, Observable, throwError, zip, merge, concat, iif } from 'rxjs';
+import { catchError, filter, first, map, retry, switchMap, take, tap, timeout } from 'rxjs/operators';
 import { PersonalizationRequest } from './personalization-request';
 import { PersonalizationResponse } from './personalization-response.interface';
 import { AutoPersonalizationParametersResponse } from './device-personalization.interface';
@@ -135,17 +135,42 @@ export class PersonalizationService {
         url += `${config.ipv4Addresses[0]}:${config.port}/${config.txtRecord.path}`;
         return this.http.get<AutoPersonalizationParametersResponse>(url, { params: { deviceName } })
             .pipe(
-                // on some platforms the first or early requests can fail, try a few times before
-                // giving up completely.
                 timeout(CONFIGURATION.autoPersonalizationRequestTimeoutMillis / 5),
                 retry(5),
-                tap(response => {
-                    if (response) {
-                        response.sslEnabled = this.sslEnabled$.getValue();
-                        this.setFailovers(response.failovers);
-                        this.setPrimaryServer(new ServerLocation(response.serverAddress, response.serverPort, null));
+                catchError(e => {
+                    return this.storage.getValue('personalization_auto_in_refresh').pipe(
+                        first(null, 'false'),
+                        map(v => v || 'false'),
+                        switchMap((value) => iif(
+                            () => /false/i.test(value.trim()),
+
+                            this.storage.setValue('personalization_auto_in_refresh', 'true').pipe(
+                                tap({
+                                    complete: () => {
+                                        // for some reason on electron specifically running at the store
+                                        // the app won't let this network request through until the page
+                                        // is reloaded. I have no other explanation to be able to justify
+                                        // doing this... sorry.
+                                        location.reload();
+                                    }
+                                })
+                            ),
+
+                            throwError(e)
+                        )),
+                        map(() => ({} as AutoPersonalizationParametersResponse)),
+                    );
+                }),
+                tap({
+                    next: response => {
+                        if (response) {
+                            response.sslEnabled = this.sslEnabled$.getValue();
+                            this.setFailovers(response.failovers);
+                            this.setPrimaryServer(new ServerLocation(response.serverAddress, response.serverPort, null));
+                        }
                     }
-                }));
+                }),
+            );
     }
 
     public personalizeFromSavedSession(): Observable<string> {
@@ -203,57 +228,61 @@ export class PersonalizationService {
         }
 
         console.log(`Sending personalization request to ${url}`);
-        return this.http.post<PersonalizationResponse>(url, request).pipe(
-            map((response: PersonalizationResponse) => {
-                console.info(`personalizing with server: ${serverName}, port: ${serverPort}, deviceId: ${request.deviceId}`);
-                this.setServerName(serverName);
-                this.setServerPort(serverPort);
-                this.setDeviceId(response.deviceModel.deviceId);
-                this.setDeviceToken(response.authToken, serverName, serverPort);
-                this.setAppId(response.deviceModel.appId);
-                if (!personalizationParameters) {
-                    personalizationParameters = new Map<string, string>();
-                }
-                if (response.deviceModel.deviceParamModels) {
-                    response.deviceModel.deviceParamModels.forEach(value => {
-                        personalizationParameters.set(value.paramName, value.paramValue);
-                    });
-                }
 
-                this.setPersonalizationProperties(personalizationParameters);
+        return concat(
+            this.storage.remove('personalization_auto_in_refresh').pipe(map(() => /* this will never show up, just needed for type */ 'removed refresh')),
+            this.http.post<PersonalizationResponse>(url, request).pipe(
+                map((response: PersonalizationResponse) => {
+                    console.info(`personalizing with server: ${serverName}, port: ${serverPort}, deviceId: ${request.deviceId}`);
+                    this.setServerName(serverName);
+                    this.setServerPort(serverPort);
+                    this.setDeviceId(response.deviceModel.deviceId);
+                    this.setDeviceToken(response.authToken, serverName, serverPort);
+                    this.setAppId(response.deviceModel.appId);
+                    if (!personalizationParameters) {
+                        personalizationParameters = new Map<string, string>();
+                    }
+                    if (response.deviceModel.deviceParamModels) {
+                        response.deviceModel.deviceParamModels.forEach(value => {
+                            personalizationParameters.set(value.paramName, value.paramValue);
+                        });
+                    }
 
-                if (sslEnabled) {
-                    this.setSslEnabled(sslEnabled);
-                } else {
-                    this.setSslEnabled(false);
-                }
-                if (this.primaryServer) {
-                    this.primaryServer.active = this.primaryServer.address === this.serverName$.getValue() &&
-                        this.primaryServer.port === this.serverPort$.getValue();
-                }
+                    this.setPersonalizationProperties(personalizationParameters);
 
-                if (this.failovers) {
-                    this.failovers.forEach(f => {
-                        f.active = f.address === this.serverName$.getValue() && f.port === this.serverPort$.getValue();
-                    });
-                }
+                    if (sslEnabled) {
+                        this.setSslEnabled(sslEnabled);
+                    } else {
+                        this.setSslEnabled(false);
+                    }
+                    if (this.primaryServer) {
+                        this.primaryServer.active = this.primaryServer.address === this.serverName$.getValue() &&
+                            this.primaryServer.port === this.serverPort$.getValue();
+                    }
 
-                this.personalizationSuccessFul$.next(true);
-                return 'Personalization successful';
-            }),
-            catchError(error => {
-                console.log(error);
-                this.personalizationSuccessFul$.next(false);
-                if (error.status === 401) {
-                    return throwError(`Device saved token does not match server`);
-                }
+                    if (this.failovers) {
+                        this.failovers.forEach(f => {
+                            f.active = f.address === this.serverName$.getValue() && f.port === this.serverPort$.getValue();
+                        });
+                    }
 
-                if (error.status === 0) {
-                    return throwError(`Unable to connect to ${serverName}:${serverPort}`);
-                }
+                    this.personalizationSuccessFul$.next(true);
+                    return 'Personalization successful';
+                }),
+                catchError(error => {
+                    console.log(error);
+                    this.personalizationSuccessFul$.next(false);
+                    if (error.status === 401) {
+                        return throwError(`Device saved token does not match server`);
+                    }
 
-                return throwError(`${error.statusText}`);
-            })
+                    if (error.status === 0) {
+                        return throwError(`Unable to connect to ${serverName}:${serverPort}`);
+                    }
+
+                    return throwError(`${error.statusText}`);
+                })
+            )
         );
     }
 
