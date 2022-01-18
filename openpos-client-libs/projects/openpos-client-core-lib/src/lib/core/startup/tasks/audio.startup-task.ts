@@ -8,6 +8,8 @@ import { StartupTask } from '../startup-task';
     providedIn: 'root'
 })
 export class AudioStartupTask implements StartupTask {
+    name = 'AudioStartupTask';
+
     constructor(
         private audioRepositoryService: AudioRepositoryService,
         private audioService: AudioService,

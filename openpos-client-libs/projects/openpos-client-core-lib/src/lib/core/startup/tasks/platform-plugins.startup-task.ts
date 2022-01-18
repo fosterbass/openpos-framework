@@ -1,6 +1,6 @@
 import { Inject, Injectable, Optional } from '@angular/core';
 import { EMPTY, merge, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { ImageScanner, IMAGE_SCANNERS, Scanner, SCANNERS } from '../../platform-plugins/barcode-scanners/scanner';
 import { IPlatformPlugin, PLUGINS } from '../../platform-plugins/platform-plugin.interface';
 import { StartupTask } from '../startup-task';
@@ -9,6 +9,8 @@ import { StartupTask } from '../startup-task';
     providedIn: 'root'
 })
 export class PlatformPluginsStartupTask implements StartupTask {
+    name = 'PlatformPluginsStartupTask';
+
     constructor(
         @Optional() @Inject(PLUGINS)
         private _plugins: IPlatformPlugin[],
@@ -54,11 +56,16 @@ export class PlatformPluginsStartupTask implements StartupTask {
 
         if (this._plugins.length > 0) {
             console.log(`initializing plugins [${this._plugins.map(p => p.name()).join(', ')}]`);
-            return merge(...this._plugins.map(p => p.initialize())).pipe(
-                map(() => { })
-            );
+            return merge(...this._plugins.map(p => this.initPlugin(p)));
         }
 
         return EMPTY;
+    }
+
+    private initPlugin(plugin: IPlatformPlugin): Observable<void> {
+        return plugin.initialize().pipe(
+            tap(m => console.log(`[${plugin.name()}] ${m}`)),
+            map(() => { })
+        );
     }
 }

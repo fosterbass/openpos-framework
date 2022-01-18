@@ -12,6 +12,7 @@ import { SavedSessionPersonalizationStartupTask } from './saved-session-personal
 
 export class EnterpriseConfigPersonalizationStartupTask extends AutoPersonalizationStartupTask {
     private static readonly AUTO_PERSONALIZE_URL_PROPERTY_NAME = 'jmc_autoPersonalizeUrl';
+    name = 'EnterpriseConfigPersonalizationStartupTask';
 
     constructor(personalization: PersonalizationService, private enterpriseConfigService: EnterpriseConfigService,
                 private appPlatform: AppPlatformService, private savedSessionTask: SavedSessionPersonalizationStartupTask) {

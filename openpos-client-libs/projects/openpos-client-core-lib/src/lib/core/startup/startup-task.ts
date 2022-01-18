@@ -3,6 +3,7 @@ import { InjectionToken, Injector, Type } from '@angular/core';
 import { SplashScreen } from '../services/splash-screen.service';
 
 export interface StartupTask {
+  name?: string;
   execute(): void | Promise<void> | Observable<any>;
 }
 

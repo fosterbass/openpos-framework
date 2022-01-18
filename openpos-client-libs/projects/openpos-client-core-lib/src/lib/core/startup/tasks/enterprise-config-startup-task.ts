@@ -8,6 +8,7 @@ import { Injectable } from '@angular/core';
     providedIn: 'root'
 })
 export class EnterpriseConfigStartupTask implements StartupTask {
+    name = 'EnterpriseConfigStartupTask';
 
     constructor(protected enterpriseConfigService: EnterpriseConfigService) {
     }

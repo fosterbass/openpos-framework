@@ -12,6 +12,7 @@ import { CONFIGURATION } from '../../../configuration/configuration';
 export class ZeroConfPersonalizationStartupTask extends AutoPersonalizationStartupTask {
     private static readonly TYPE = '_jmc-personalize._tcp.';
     private static readonly DOMAIN = '';
+    name = 'ZeroConfPersonalizationStartupTask';
 
     constructor(personalization: PersonalizationService, private appPlatform: AppPlatformService) {
         super(personalization);

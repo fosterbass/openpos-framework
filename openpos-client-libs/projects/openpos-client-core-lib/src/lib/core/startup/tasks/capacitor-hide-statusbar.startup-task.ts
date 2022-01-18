@@ -7,6 +7,8 @@ import { StartupTask } from '../startup-task';
     providedIn: 'root'
 })
 export class CapacitorHideStatusbarStartupTask implements StartupTask {
+    name = 'CapacitorHideStatusbarStartupTask';
+
     constructor(private _capacitor: CapacitorService) { }
 
     async execute(): Promise<void> {
