@@ -1,7 +1,7 @@
 <ng-container [ngSwitch]="startupController.status.completed">
+    <app-dev-menu></app-dev-menu>
     <ng-container *ngSwitchCase="true">
         <app-loader></app-loader>
-        <app-dev-menu></app-dev-menu>
         <app-dynamic-screen></app-dynamic-screen>
     </ng-container>
     <ng-container *ngSwitchCase="'error'">
