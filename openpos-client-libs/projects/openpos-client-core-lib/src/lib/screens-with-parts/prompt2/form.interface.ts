@@ -52,7 +52,8 @@ export interface DynamicTextInput extends BaseInputControl<string> {
 
 export enum TextInputKind {
   Text = 'Text',
-  Number = 'Number'
+  Number = 'Number',
+  Password = 'Password'
 }
 
 export enum DateFormatKind {
