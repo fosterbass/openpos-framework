@@ -1,7 +1,7 @@
 import { Injectable, Inject, Optional } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { PersonalizationConfigResponse } from './personalization-config-response.interface';
-import { BehaviorSubject, Observable, throwError, zip, merge, concat, iif } from 'rxjs';
+import { BehaviorSubject, Observable, throwError, zip, merge, concat, iif, of } from 'rxjs';
 import { catchError, filter, first, map, retry, switchMap, take, tap, timeout } from 'rxjs/operators';
 import { PersonalizationRequest } from './personalization-request';
 import { PersonalizationResponse } from './personalization-response.interface';
