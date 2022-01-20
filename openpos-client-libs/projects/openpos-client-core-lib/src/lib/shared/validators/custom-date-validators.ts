@@ -1,12 +1,14 @@
 import { FormControl, ValidatorFn } from '@angular/forms';
 
 export class CustomDateValidator {
-    static minDate(minTime: number): ValidatorFn {
+    private constructor() { }
+
+    static minDate(minTime: Date | number): ValidatorFn {
         return (field: FormControl) => {
             if (field.value) {
                 const inputDate = new Date(field.value);
                 if (!isNaN(inputDate.getTime())) {
-                    const minDate = new Date(minTime);
+                    const minDate = this._resolveTime(minTime);
                     if (inputDate < minDate) {
                         return { minDate: { valid: false } };
                     }
@@ -15,12 +17,13 @@ export class CustomDateValidator {
             return null;
         };
     }
-    static maxDate(maxTime: number): ValidatorFn {
+
+    static maxDate(maxTime: Date | number): ValidatorFn {
         return (field: FormControl) => {
             if (field.value) {
                 const inputDate = new Date(field.value);
                 if (!isNaN(inputDate.getTime())) {
-                    const maxDate = new Date(maxTime);
+                    const maxDate = this._resolveTime(maxTime);
                     if (inputDate > maxDate) {
                         return { maxDate: { valid: false } };
                     }
@@ -28,5 +31,13 @@ export class CustomDateValidator {
             }
             return null;
         };
+    }
+
+    private static _resolveTime(time: Date | number): Date {
+        if (typeof time === 'number') {
+            return new Date(time);
+        } else {
+            return time;
+        }
     }
 }
