@@ -45,6 +45,7 @@ import { ProgramPlanSelectDialogComponent } from './membership/program-plan-sele
 import {EnrollmentConfirmationDialogComponent} from './membership/enrollment-confirmation-dialog/enrollment-confirmation-dialog.component';
 import { PromptWithInfoScanGiftCardScreenDialogComponent} from './prompt-with-info-scan-gift-card/prompt-with-info-scan-gift-card-screen-dialog.component';
 import { PromptInfoScanGiftCardScreenComponent } from './prompt-with-info-scan-gift-card/prompt-info-scan-gift-card-screen.component';
+import { Prompt2ScreenDialogComponent } from './prompt2/prompt2-screen-dialog.component';
 
 const screens = [
     SelectionListScreenComponent,
@@ -77,6 +78,7 @@ const dialogs = [
     PromptWithOptionsScreenDialogComponent,
     PromptWithInfoScreenDialogComponent,
     PromptWithInfoScanGiftCardScreenDialogComponent,
+    Prompt2ScreenDialogComponent,
     ChooseOptionsScreenDialogComponent,
     ReturnTransDetailsDialogComponent,
     ConfirmDialogComponent,

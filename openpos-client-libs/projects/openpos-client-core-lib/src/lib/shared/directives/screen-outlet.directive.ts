@@ -163,7 +163,7 @@ export class OpenposScreenOutletDirective implements OnInit, OnDestroy {
 
         if (trap) {
             // If this screen was just created, focus the first element
-            this.focusService.createInitialFocus(this.componentRef.location.nativeElement);
+            this.focusService.createInitialFocus(document.querySelector('app-openpos-root'));
         } else {
             // If this screen was updated, focus the previously focused element
             setTimeout(() => {

@@ -6,6 +6,7 @@ public final class UIMessageType {
     public static final String RETURN = "Return";
     public static final String DIALOG = "Dialog";
     public static final String PROMPT = "Prompt";
+    public static final String PROMPT_PLUS_PLUS = "PromptPlusPlus";
     public static final String PROMPT_WITH_OPTIONS = "PromptWithOptions";
     public static final String PROMPT_WITH_INFO = "PromptWithInfo";
     public static final String HOME = "Home";

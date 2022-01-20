@@ -46,6 +46,8 @@ public class SessionDisconnectedListener implements ApplicationListener<SessionD
             } catch (Exception ex) {
                 log.warn("Error publishing DeviceDisconnectedEvent", ex);
             }
+
+            SubscribedSessionMetric.dec(deviceModel.getDeviceId());
         } else {
             log.warn("No device found for session id=" + sessionId + ", not publishing DeviceDisconnectedEvent.");
         }

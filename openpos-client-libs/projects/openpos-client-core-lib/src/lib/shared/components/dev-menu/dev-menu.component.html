@@ -69,8 +69,12 @@
                         </li>
                     </ul>
 
-                    <div fxFlexFill fxLayout="row" fxLayoutAlign="left start" fxLayoutAlign.xs="left">
-                        <button mat-raised-button color="primary" (click)="onDevRestartNode()">Restart Node</button>
+                    <div fxLayout="row" fxLayoutAlign="left start" fxLayoutAlign.xs="left">
+                        <button mat-raised-button color="primary" class="devButton" (click)="onDevRestartNode()">Restart Node</button>
+                    </div>
+                    <div fxLayout="row" fxLayoutAlign="left start" fxLayoutAlign.xs="left">
+                        <input class="devInput" [(ngModel)]="brand">
+                        <button mat-raised-button color="primary" class="devButton" (click)="onChangeBrand()">Update Brand</button>
                     </div>
                 </div>
             </mat-tab>

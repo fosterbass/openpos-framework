@@ -52,7 +52,7 @@
                 </div>
             </div>
         </div>
-        <button *ngIf="shouldShowLinkedCustomer()"
+        <button *ngIf="shouldShowLinkedCustomer() && !(isLoyaltySignupInProgressOnCustomerDisplay$ | async)"
                 class="linked-customer-summary header"
                 style="width: 100%;"
                 responsive-class

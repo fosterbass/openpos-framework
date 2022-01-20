@@ -92,6 +92,12 @@ public class EndpointInvokerTest {
         List<String> profileIds = new ArrayList<>();
         Method method = EndpointInvokerTest.class.getMethod("TestMethodNotAnnotated");
 
+        Exception exception = new Exception();
+
+        doReturn("LOCAL_ONLY").when(invocationStrategy).getStrategyName();
+        doThrow(exception).when(invocationStrategy).invoke(eq(profileIds), eq(null), eq(method), any(), eq(null));
+
+
         ServiceSpecificConfig config = getServiceSpecificConfig();
 
         String path = "/test/one";
@@ -388,12 +394,12 @@ public class EndpointInvokerTest {
     }
 
     @Test
-    public void endSampleSetsDataAndSavesToDBSession() throws NoSuchMethodException, NoSuchFieldException, IllegalAccessException {
+    public void endSampleSetsDataAndSavesToDBSession() throws NoSuchFieldException, IllegalAccessException {
         ServiceSampleModel sampleModel = getServiceSampleModel();
 
         EndpointInvoker endpointInvoker = new EndpointInvoker();
 
-        Field executor = EndpointInvoker.class.getDeclaredField("instrumentationExecutor");
+        Field executor = EndpointInvoker.class.getDeclaredField("INSTRUMENTATION_EXECUTOR");
         executor.setAccessible(true);
 
 // This trick does not work on later versions of java.  Making EndpointInvoker.instrumentationExecutor non final
@@ -406,8 +412,8 @@ public class EndpointInvokerTest {
 
         endpointInvoker.endSample(sampleModel);
 
-        verify(sampleModel, atLeastOnce()).setEndTime(anyObject());
+        verify(sampleModel, atLeastOnce()).setEndTime(any());
         verify(sampleModel, atLeastOnce()).setDurationMs(anyLong());
-        verify(executorService, atLeastOnce()).execute(anyObject());
+        verify(executorService, atLeastOnce()).execute(any());
     }
 }

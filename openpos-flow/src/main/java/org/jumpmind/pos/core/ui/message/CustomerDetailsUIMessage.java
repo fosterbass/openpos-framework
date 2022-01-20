@@ -5,7 +5,6 @@ import org.jumpmind.pos.core.ui.ActionItem;
 import org.jumpmind.pos.core.ui.AssignKeyBindings;
 import org.jumpmind.pos.core.ui.UIMessage;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -18,10 +17,7 @@ public class CustomerDetailsUIMessage extends UIMessage {
     private String rewardsHistoryDataKey;
     private String rewardsDataKey;
 
-    private ActionItem backButton;
-    private ActionItem plccLookupButton;
-    private ActionItem unlinkButton;
-    private ActionItem editButton;
+    private List<ActionItem> secondaryButtons;
     private ActionItem doneButton;
     private List<ActionItem> additionalActions;
 
@@ -36,6 +32,7 @@ public class CustomerDetailsUIMessage extends UIMessage {
     private String appliedLabel;
     private String membershipLabel;
     private String contactLabel;
+    private String plccAccountDetailsLabel;
     private String noPromotionsLabel;
     private String rewardsLabel;
     private String expiresLabel;
