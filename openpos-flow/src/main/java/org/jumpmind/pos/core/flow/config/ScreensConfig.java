@@ -18,6 +18,7 @@ public class ScreensConfig {
     Map<String, ScreenConfig> config;
 
     public ScreenConfig findScreenConfig(String id) {
+        ScreenConfig defaultConfig = config.get("default");
         ScreenConfig screenConfig = config.get(id);
         if (screenConfig == null && groupings != null) {
             for (Map.Entry<String, List<String>> entry : groupings.entrySet()) {
@@ -31,7 +32,10 @@ public class ScreensConfig {
         }
 
         if (screenConfig == null) {
-            screenConfig = config.get("default");
+            screenConfig = defaultConfig;
+        }
+        else {
+            screenConfig = screenConfig.merge(defaultConfig);
         }
 
         return screenConfig;
