@@ -92,12 +92,6 @@ public class EndpointInvokerTest {
         List<String> profileIds = new ArrayList<>();
         Method method = EndpointInvokerTest.class.getMethod("TestMethodNotAnnotated");
 
-        Exception exception = new Exception();
-
-        doReturn("LOCAL_ONLY").when(invocationStrategy).getStrategyName();
-        doThrow(exception).when(invocationStrategy).invoke(eq(profileIds), eq(null), eq(method), any(), eq(null));
-
-
         ServiceSpecificConfig config = getServiceSpecificConfig();
 
         String path = "/test/one";
@@ -115,6 +109,8 @@ public class EndpointInvokerTest {
                 .build();
 
         Exception exception = new Exception();
+
+        doReturn("LOCAL_ONLY").when(invocationStrategy).getStrategyName();
         doThrow(exception).when(invocationStrategy).invoke(endpointInvocationContext);
 
         try{
