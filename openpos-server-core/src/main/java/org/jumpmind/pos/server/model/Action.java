@@ -91,7 +91,8 @@ public class Action implements Serializable, Cloneable {
         boolean causedBy = false;
         Action actionToCheck = this;
         do {
-            causedBy |= actionToCheck.getName().equals(actionName);
+            String actionNameToCheck = actionToCheck.getName();
+            causedBy |= actionNameToCheck != null && actionNameToCheck.equals(actionName);
             actionToCheck = actionToCheck.getCausedBy();
         } while (actionToCheck != null && !causedBy);
         return causedBy;
