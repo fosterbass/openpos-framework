@@ -98,7 +98,10 @@ public class SessionConnectListener implements ApplicationListener<SessionConnec
 
         sessionAuthenticated.put(sessionId, (isBlank(serverAuthToken) || serverAuthToken.equals(authToken)) && deviceModel != null);
         if ((isNotBlank(serverAuthToken) && !serverAuthToken.equals(authToken)) || deviceModel == null) {
-            String clientAuthTokenValueIfNull = authToken == null || "".equals(authToken) || "undefined".equals(authToken) ? String.format(" (value is: '%s')", authToken) : "";
+            String clientAuthTokenValueIfNull =
+                    authToken == null || "".equals(authToken) || "undefined".equals(authToken)
+                    ? String.format(" (value is: '%s')", authToken)
+                    : "";
             this.log.warn("Client auth token{} does not match server auth token, client connection will be rejected.", clientAuthTokenValueIfNull);
         }
         sessionCompatible.put(sessionId, serverCompatibilityVersion == null || serverCompatibilityVersion.equals(compatibilityVersion));
@@ -127,11 +130,10 @@ public class SessionConnectListener implements ApplicationListener<SessionConnec
             Map<String, String> personalizationResults = new HashMap<>();
             for (PersonalizationParameter param : personalizationParameters.getParameters()) {
                 String prop = param.getProperty();
-                DeviceParamModel paramModel = deviceModel.getDeviceParamModels().stream().filter(deviceParamModel -> deviceParamModel.getParamName().equals(prop)).findFirst().orElse(null);
-
-                if (paramModel != null) {
-                    personalizationResults.put(prop, paramModel.getParamValue());
-                }
+                deviceModel.getDeviceParamModels().stream()
+                        .filter(deviceParamModel -> deviceParamModel.getParamName().equals(prop))
+                        .findFirst()
+                        .ifPresent(paramModel -> personalizationResults.put(prop, paramModel.getParamValue()));
             }
             if (! personalizationResults.containsKey(ClientContext.BUSINESS_UNIT_ID)) {
                 personalizationResults.put(ClientContext.BUSINESS_UNIT_ID, deviceModel.getBusinessUnitId());
@@ -180,10 +182,6 @@ public class SessionConnectListener implements ApplicationListener<SessionConnec
 
     public Map<String, String> getDeviceVariables(String sessionId) { 
         return deviceVariables.get(sessionId); 
-    }
-
-    public Map<String, String> getClientContext(String sessionId) {
-        return clientContext.get(sessionId);
     }
 
     public DeviceModel getDeviceModel(String sessionId) {

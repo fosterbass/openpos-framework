@@ -11,12 +11,14 @@ export interface CustomerDetailsDialogInterface extends IAbstractScreen {
     membershipEnabled: boolean;
     membershipPointsEnabled: boolean;
     membershipLabel: string;
-    loyaltyPromotions: IActionItem;
-    secondaryButtons: IActionItem[];
+    appliedLabel: string;
+    backButton: IActionItem;
+    editButton: IActionItem;
+    plccLookupButton: IActionItem;
+    unlinkButton: IActionItem;
     doneButton: IActionItem;
     additionalActions: IActionItem[];
     contactLabel: string;
-    plccAccountDetailsLabel: string;
     rewardsLabel: string;
     rewardTabEnabled: boolean;
     rewardHistoryLabel: string;

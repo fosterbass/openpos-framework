@@ -123,7 +123,7 @@ public class StateManagerContainer implements IStateManagerContainer, Applicatio
     @Override
     public void changeBrand(String deviceId, String brand) {
         IStateManager stateManager = stateManagersByDeviceId.get(deviceId);
-        stateManager.getClientContext().put("brandId", brand);
+        stateManager.getDeviceVariables().put("brandId", brand);
         Map<String, String> properties = stateManager.getApplicationState().getScopeValue("personalizationProperties");
         properties.put("brandId", brand);
         stateManager.sendConfigurationChangedMessage();
