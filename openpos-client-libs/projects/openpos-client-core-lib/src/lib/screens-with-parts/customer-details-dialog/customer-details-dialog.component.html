@@ -350,39 +350,13 @@
 </div>
 
 <mat-dialog-actions class="buttons">
-    <app-secondary-button responsive-class *ngFor="let menuItem of screen.additionalActions"
-        [disabled]="!menuItem?.enabled" (actionClick)="doAction(menuItem)"
-        (click)="doAction(menuItem)">
-        <span responsive-class>{{menuItem.title}}</span>
-        <app-icon *ngIf="menuItem.icon" [iconClass]="'md'" [iconName]="menuItem.icon"></app-icon>
-        <span *ngIf="keybindsEnabled(menuItem)" class="muted-color keybinding">
-            {{menuItem.keybindDisplayName}}
-        </span>
-    </app-secondary-button>
-    <app-secondary-button responsive-class
+    <app-secondary-button responsive-class *ngFor="let button of screen.secondaryButtons"
                           class="button"
-                          *ngIf="screen.plccLookupButton"
-                          [disabled]="!screen.plccLookupButton?.enabled"
-                          [actionItem]="screen.plccLookupButton"
-                          (actionClick)="doAction(screen.plccLookupButton)"
-                          (click)="doAction(screen.plccLookupButton)">
-        <span>{{screen.plccLookupButton.title}}</span>
-    </app-secondary-button>
-    <app-secondary-button responsive-class class="unlink" *ngIf="screen.unlinkButton"
-        [disabled]="!screen.unlinkButton?.enabled"
-        (actionClick)="doAction(screen.unlinkButton)" (click)="doAction(screen.unlinkButton)">
-        <span>{{screen.unlinkButton.title}}</span>
-        <span *ngIf="keybindsEnabled(screen.unlinkButton)" class="muted-color keybinding">
-            {{screen.unlinkButton.keybindDisplayName}}
-        </span>
-    </app-secondary-button>
-    <app-secondary-button responsive-class class="edit" *ngIf="screen.editButton"
-        [disabled]="!screen.editButton?.enabled" 
-        (actionClick)="doAction(screen.editButton)" (click)="doAction(screen.editButton)">
-        <span>{{screen.editButton.title}}</span>
-        <span *ngIf="keybindsEnabled(screen.editButton)" class="muted-color keybinding">
-            {{screen.editButton.keybindDisplayName}}
-        </span>
+                          [disabled]="!button?.enabled"
+                          [actionItem]="button"
+                          (actionClick)="doAction(button)"
+                          (click)="doAction(button)">
+        <span>{{button.title}}</span>
     </app-secondary-button>
     <app-primary-button responsive-class class="done" *ngIf="screen.doneButton" [disabled]="!screen.doneButton?.enabled"
         (actionClick)="doAction(screen.doneButton)"

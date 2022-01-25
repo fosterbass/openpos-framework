@@ -13,9 +13,7 @@ export interface CustomerDetailsDialogInterface extends IAbstractScreen {
     membershipLabel: string;
     appliedLabel: string;
     backButton: IActionItem;
-    editButton: IActionItem;
-    plccLookupButton: IActionItem;
-    unlinkButton: IActionItem;
+    secondaryButtons: IActionItem[];
     doneButton: IActionItem;
     additionalActions: IActionItem[];
     contactLabel: string;
