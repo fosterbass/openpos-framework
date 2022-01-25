@@ -16,6 +16,7 @@ export interface LoyaltyCustomerFormInterface extends IAbstractScreen {
 
     instructions: string;
     isStructuredForm: boolean;
+    enableSubmitButtonOnFormChange: boolean;
     memberships: Membership[];
     membershipEnabled: boolean;
     membershipsLabel: string;

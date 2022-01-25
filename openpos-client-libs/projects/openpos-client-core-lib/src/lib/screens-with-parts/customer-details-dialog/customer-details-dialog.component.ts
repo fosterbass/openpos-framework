@@ -101,6 +101,19 @@ export class CustomerDetailsDialogComponent extends PosScreenDirective<CustomerD
           !!customer.birthDate
       );
     }
+
+  hasAnyPlccDisplayableAccountInformation(): boolean {
+      const customer = this.screen.customer;
+      return customer != null && (
+          !!customer.accountNumberLabel ||
+          !!customer.accountNumber ||
+          !!customer.creditLimitLabel ||
+          !!customer.creditLimit ||
+          !!customer.expiryDateLabel ||
+          !!customer.expiryDate
+
+      );
+    }
 }
 
 class ItemsHistoryFilterController {

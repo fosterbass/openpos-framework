@@ -1,15 +1,14 @@
 package org.jumpmind.pos.server.service;
 
-import java.util.*;
-
+import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.SneakyThrows;
 import org.jumpmind.pos.devices.model.DeviceModel;
 import org.jumpmind.pos.devices.model.DeviceParamModel;
 import org.jumpmind.pos.devices.service.IDevicesService;
 import org.jumpmind.pos.devices.service.model.AuthenticateDeviceRequest;
-import org.jumpmind.pos.server.config.MessageUtils;
 import org.jumpmind.pos.devices.service.model.PersonalizationParameter;
 import org.jumpmind.pos.devices.service.model.PersonalizationParameters;
+import org.jumpmind.pos.server.config.MessageUtils;
 import org.jumpmind.pos.util.BoxLogging;
 import org.jumpmind.pos.util.DefaultObjectMapper;
 import org.jumpmind.pos.util.Version;
@@ -22,9 +21,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
-import static org.apache.commons.lang3.StringUtils.*;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+import java.util.*;
+
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Component("serverCoreSessionConnectListener")
 public class SessionConnectListener implements ApplicationListener<SessionConnectEvent>, MessageUtils {
@@ -68,7 +69,8 @@ public class SessionConnectListener implements ApplicationListener<SessionConnec
         String authToken = getHeader(event.getMessage(), "authToken");
         String deviceToken = getHeader(event.getMessage(), "deviceToken");
         String clientVersions = getHeader(event.getMessage(), "version");
-        log.info(BoxLogging.box("Session Connected " + sessionId) + "\n" + clientVersions + "\n");
+        String boxLog = BoxLogging.box(String.format("Session Connected %s", sessionId));
+        log.info("{}\n{}\n", boxLog, clientVersions);
         String compatibilityVersion = getHeader(event.getMessage(), COMPATIBILITY_VERSION_HEADER);
         String queryParams = getHeader(event.getMessage(), QUERY_PARAMS_HEADER);
         String powerStatus = getHeader(event.getMessage(), POWER_STATUS_HEADER);
@@ -90,15 +92,15 @@ public class SessionConnectListener implements ApplicationListener<SessionConnec
 
         deviceModelMap.put(sessionId, deviceModel);
 
-        if( deviceModel == null ){
+        if (deviceModel == null) {
             this.log.warn("Device is not personalized");
         }
 
-        sessionAuthenticated.put(sessionId, (isBlank(serverAuthToken)  || serverAuthToken.equals(authToken)) && deviceModel != null);
-        if ((isNotBlank(serverAuthToken) && ! serverAuthToken.equals(authToken)) || deviceModel == null) {
+        sessionAuthenticated.put(sessionId, (isBlank(serverAuthToken) || serverAuthToken.equals(authToken)) && deviceModel != null);
+        if ((isNotBlank(serverAuthToken) && !serverAuthToken.equals(authToken)) || deviceModel == null) {
             String clientAuthTokenValueIfNull = authToken == null || "".equals(authToken) || "undefined".equals(authToken) ? String.format(" (value is: '%s')", authToken) : "";
             this.log.warn("Client auth token{} does not match server auth token, client connection will be rejected.", clientAuthTokenValueIfNull);
-        };
+        }
         sessionCompatible.put(sessionId, serverCompatibilityVersion == null || serverCompatibilityVersion.equals(compatibilityVersion));
 
         setPersonalizationResults(sessionId, deviceModel);
@@ -108,9 +110,9 @@ public class SessionConnectListener implements ApplicationListener<SessionConnec
     private void setDeviceVariables(String sessionId, SessionConnectEvent event) {
         if(clientContextConfig != null && clientContextConfig.getParameters() != null) {
             Map<String, String> context = new HashMap<>();
-            for(String param: clientContextConfig.getParameters()) {
+            for (String param : clientContextConfig.getParameters()) {
                 String value = getHeader(event.getMessage(), param);
-                if( value != null ){
+                if (value != null) {
                     context.put(param, value);
                 } else {
                     context.put(param, "?");
@@ -127,7 +129,7 @@ public class SessionConnectListener implements ApplicationListener<SessionConnec
                 String prop = param.getProperty();
                 DeviceParamModel paramModel = deviceModel.getDeviceParamModels().stream().filter(deviceParamModel -> deviceParamModel.getParamName().equals(prop)).findFirst().orElse(null);
 
-                if(paramModel != null){
+                if (paramModel != null) {
                     personalizationResults.put(prop, paramModel.getParamValue());
                 }
             }
@@ -176,8 +178,16 @@ public class SessionConnectListener implements ApplicationListener<SessionConnec
         this.sessionCompatible.remove(sessionId);
     }
 
-    public Map<String, String> getDeviceVariables(String sessionId) { return deviceVariables.get(sessionId); }
+    public Map<String, String> getDeviceVariables(String sessionId) { 
+        return deviceVariables.get(sessionId); 
+    }
 
-    public DeviceModel getDeviceModel(String sessionId) { return deviceModelMap.get(sessionId); }
+    public Map<String, String> getClientContext(String sessionId) {
+        return clientContext.get(sessionId);
+    }
+
+    public DeviceModel getDeviceModel(String sessionId) {
+        return deviceModelMap.get(sessionId);
+    }
 
 }

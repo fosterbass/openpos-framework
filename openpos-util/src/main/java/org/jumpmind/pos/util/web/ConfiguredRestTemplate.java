@@ -21,10 +21,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 public class ConfiguredRestTemplate extends RestTemplate {
@@ -162,7 +159,8 @@ public class ConfiguredRestTemplate extends RestTemplate {
 
 class LoggingRequestInterceptor implements ClientHttpRequestInterceptor {
 
-    final static Logger log = LoggerFactory.getLogger(LoggingRequestInterceptor.class.getPackage().getName() + ".REST");
+    private static final Logger log = LoggerFactory.getLogger(LoggingRequestInterceptor.class.getPackage().getName() + ".REST");
+    private static final List<MediaType> imageContentTypes =Arrays.asList(MediaType.IMAGE_PNG, MediaType.IMAGE_GIF, MediaType.IMAGE_JPEG);
 
     @Override
     public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
@@ -184,6 +182,9 @@ class LoggingRequestInterceptor implements ClientHttpRequestInterceptor {
     }
 
     private void traceResponse(ClientHttpResponse response) throws IOException {
+        if (imageContentTypes.contains(response.getHeaders().getContentType())) {
+            return;
+        }
         StringBuilder inputStringBuilder = new StringBuilder();
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getBody(), "UTF-8"));
         String line = bufferedReader.readLine();
