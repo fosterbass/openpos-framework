@@ -8,6 +8,7 @@ import { OpenposMediaService, MediaBreakpoints } from '../../../core/media/openp
 import { FocusService } from '../../../core/focus/focus.service';
 import { MatDialog } from '@angular/material/dialog';
 import { KebabMenuComponent } from '../../components/kebab-menu/kebab-menu.component';
+import {CONFIGURATION} from '../../../configuration/configuration';
 
 @ScreenPart({
     name: 'optionsList'
@@ -39,7 +40,7 @@ export class OptionsListComponent extends ScreenPartComponent<OptionsListInterfa
 
     isMobile: Observable<boolean>;
 
-    isFirstElementFocused = false;
+    autoFocusFirstOption = CONFIGURATION.autoFocusFirstOptionsListOption;
 
     constructor(
         injector: Injector,
@@ -60,7 +61,6 @@ export class OptionsListComponent extends ScreenPartComponent<OptionsListInterfa
     }
 
     screenDataUpdated() {
-        this.isFirstElementFocused = this.screenData.firstElementFocused;
         if (this.listSize > 0 && this.screenData.options && this.listSize < this.screenData.options.length) {
             this.options = [];
             this.overflowOptions = [];
