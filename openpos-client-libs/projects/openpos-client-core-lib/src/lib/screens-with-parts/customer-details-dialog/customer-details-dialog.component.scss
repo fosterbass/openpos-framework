@@ -1,4 +1,5 @@
-@import "../../styles/mixins/typography";
+@import '../../styles/mixins/typography';
+@import '../../styles/variables/spacing';
 
 .tabs {
   margin-top: 8px;
@@ -7,7 +8,7 @@
     height: 100%;
   }
   mat-card {
-    overflow: scroll;
+    overflow: auto;
     margin: 0;
     .no-items {
       @extend %text-lg;
@@ -45,13 +46,13 @@ app-content-card {
 
 .grid-container {
   display: grid;
-  grid-template-columns: 90px 4fr 90px 6fr;
+  grid-template-columns: auto 4fr auto 6fr;
   grid-template-rows: 1fr;
-  gap: 0 1rem;
+  column-gap: $med-space;
   grid-template-areas: "icon details membership-icon memberships";
   align-items: start;
   .icon {
-    justify-content: center;
+    justify-self: center;
   }
 
   .details-label{
@@ -69,28 +70,36 @@ app-content-card {
     padding-bottom: 10px;
     .wrapper {
       height: 100%;
-    }
-
-    .membership-sign-up {
-      float: right;
-      display: inherit;
-
-      app-icon{
-        width: 1em;
-        margin-right: .25em;
+      .list {
+        display: flex;
+        flex-direction: column;
+        row-gap: $x-small-space;
       }
     }
 
-    .enrolled-membership-sign-up {
-          float: right;
-          margin-right:10px;
-          display: inherit;
-          app-icon{
-            width: 1em;
-            margin-right: .25em;
-          }
+    .membership-buttons {
+      display: flex;
+      column-gap: $x-small-space;
+      .membership-sign-up {
+        float: right;
+        display: inherit;
+  
+        app-icon{
+          width: 1em;
+          margin-right: .25em;
+        }
       }
+  
+      .enrolled-membership-sign-up {
+        float: right;
+        display: inherit;
 
+        app-icon{
+          width: 1em;
+          margin-right: .25em;
+        }
+      }
+    }
   }
 }
 
@@ -332,13 +341,31 @@ app-infinite-scroll {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  padding: 1rem;
 
-  padding: 4px 8px;
+  &.tablet-landscape {
+    padding: 0px 8px;
+  }
+
+  &.mobile,
+  &.tablet-portrait {
+    flex-direction: column;
+    padding: 0px 4px;
+  }
 
   > .date-range {
     display: flex;
     flex-direction: row;
 
+    &.mobile {
+      flex-direction: column;
+    }
+
+    .date-range-dash {
+      &.mobile {
+        display: none;
+      }
+    }
     span {
       margin: 20px 12px 0px 12px;
     }
@@ -350,6 +377,9 @@ app-infinite-scroll {
     border-style: solid;
     padding: .5rem 2rem;
     line-height: normal;
+    &.mobile {
+      padding: .2rem 1rem;
+    }
   }
 }
 

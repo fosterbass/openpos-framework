@@ -187,6 +187,7 @@ import { CapacitorKioskModePlatform } from '../core/platform-plugins/kiosk/capac
 import { ScreenGestureComponent } from './screen-parts/screen-gesture/screen-gesture.component';
 import { DisableAutoCompleteDirective } from './directives/disable-auto-complete.directive';
 import { SafeHtmlPipe } from './pipes/safe-html.pipe';
+import { ExpansionPanelComponent } from './components/expansion-panel/expansion-panel.component';
 import { PromptFormPartCardComponent } from './screen-parts/prompt-form-part-card/prompt-form-part-card.component';
 
 const screenParts = [
@@ -318,7 +319,8 @@ const components = [
     ImageScannerComponent,
     DisplayCustomerLookupComponent,
     WatermarkComponent,
-    StandbyComponent
+    StandbyComponent,
+    ExpansionPanelComponent
 ];
 
 const directives = [

@@ -4,14 +4,11 @@
           [iconClass]="(isMobile | async) ? 'mat-30': 'md'"
           (click)="handleClick()"></app-icon>
 
-    <div>
-        <img *ngIf="screenData.logo" [src]="screenData.logo | imageUrl" class="dynamic-bs-logo">
-        <div *ngIf="!screenData.logo" class="content-container">
-            <ng-content class="content-container"></ng-content>
-        </div>
+    <img *ngIf="screenData.logo" [src]="screenData.logo | imageUrl" class="dynamic-bs-logo">
+    <div *ngIf="!screenData.logo" class="content-container">
+        <ng-content class="content-container"></ng-content>
     </div>
-
-    <div *ngIf="screenData?.operatorLine1" class="operator-section">
+    <div class="operator-section">
         <p class="operator-name">{{screenData.operatorLine1}}</p>
         <p class="operator-id">{{screenData.operatorLine2}}</p>
         <app-kebab-button class="icon"

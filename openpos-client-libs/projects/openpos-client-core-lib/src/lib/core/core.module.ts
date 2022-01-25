@@ -69,6 +69,7 @@ import { CommerceServerSinkModule } from './logging/commerce-server/commerce-ser
 import { NewRelicSinkModule } from './logging/new-relic/new-relic-sink.module';
 import { ConfigProvidersModule } from './platforms/config-provider/config-providers.module';
 import { PowerModule } from './platform-plugins/power/power.module';
+import { PushNotificationService } from './services/push-notification.service';
 import { CordovaService } from './services/cordova.service';
 import { OpenposAppComponent } from './components/openpos-app/openpos-app.component';
 import { PLATFORMS } from './platforms/platform.interface';
@@ -182,6 +183,7 @@ export class CoreModule {
         toastService: ToastService,
         uiDataService: UIDataMessageService,
         clientExecutableService: ClientExecutableService,
+        pushNotificationService: PushNotificationService,
         keyProvider: KeyPressProvider,
         keybindingService: KeybindingService,
         keybindingLockScreenService: KeybindingLockScreenService) {

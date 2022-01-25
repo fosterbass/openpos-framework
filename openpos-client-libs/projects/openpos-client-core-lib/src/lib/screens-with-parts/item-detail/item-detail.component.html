@@ -31,11 +31,10 @@
                 </div>
             </div>
 
-            <div class="notify">
-                <h1>{{screen.eligibleMessage}}</h1>
-            </div>
-
-            <div class="actions">
+            <div class="actions-and-notify">
+                <div class="notify">
+                    <h1>{{screen.eligibleMessage}}</h1>
+                </div>
                 <ng-container *ngFor="let button of screen.actions; let first = first;">
                     <app-secondary-button *ngIf="!first" [ngClass]="button.additionalStyle" (buttonClick)="doAction(button)">
                         <app-icon *ngIf="button.icon" [iconName]="button.icon"></app-icon>

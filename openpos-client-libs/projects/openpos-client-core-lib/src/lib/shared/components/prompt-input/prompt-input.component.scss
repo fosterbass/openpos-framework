@@ -29,7 +29,7 @@ app-icon {
   }
 
   &.tablet {
-    padding: 0 $text-lg-mobile/4;
+    padding: 0 $text-lg-tablet/4;
   }
 }
 
@@ -41,7 +41,7 @@ app-icon {
   }
 
   @at-root app-prompt-input .tablet .mat-form-field-label {
-    font-size: $text-lg-mobile;
+    font-size: $text-lg-tablet;
   }
 }
 

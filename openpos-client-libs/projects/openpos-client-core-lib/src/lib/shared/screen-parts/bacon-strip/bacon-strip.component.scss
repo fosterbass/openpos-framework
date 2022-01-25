@@ -56,7 +56,7 @@
             grid-area: id;
         }
 
-        .icon {
+        .bacon-strip-icon {
             grid-area: icon;
         }
 
@@ -95,6 +95,20 @@
 
     .bacon-strip-search {
         padding-left: 8px;
+    }
+
+    .hidden-focus-button {
+        position: absolute;
+        left: -100px;
+        width:1px;
+        height: 1px;
+        background-color: transparent;
+        border: none;
+    }
+
+    .hidden-focus-button:focus {
+        outline: none;
+        box-shadow: none;
     }
 
 }

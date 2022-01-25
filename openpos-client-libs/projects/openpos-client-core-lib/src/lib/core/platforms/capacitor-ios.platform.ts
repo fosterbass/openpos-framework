@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Capacitor, Plugins } from '@capacitor/core';
+import { Capacitor } from '@capacitor/core';
 import { Observable, of } from 'rxjs';
 import { IPlatformInterface } from './platform.interface';
 

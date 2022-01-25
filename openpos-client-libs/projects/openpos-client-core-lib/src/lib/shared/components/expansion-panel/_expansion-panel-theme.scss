@@ -1,0 +1,18 @@
+@mixin expansion-panel-theme($theme){
+  $app-accent: mat-color(map-get($theme, accent));
+  $background: map-get($theme, background);
+
+  .expansion-header {
+    border-left: .75em solid $app-accent;
+    padding-left: 0;
+
+    &:hover {
+      background-color: map-get($background, hover);
+    }
+  }
+
+  .expansion-panel {
+    background-color: map-get($background, card);
+  }
+
+}

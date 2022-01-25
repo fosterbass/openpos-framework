@@ -1,8 +1,8 @@
-<div class="item">
+<div class="item" responsive-class>
+    <div *ngIf="item.imageUrl" class="image-container" responsive-class>
+        <app-image [imageUrl]="item.imageUrl | imageUrl" altText="Image Not Found"></app-image>
+    </div>
     <div class="left">
-        <div *ngIf="item.imageUrl" class="image-container">
-            <img [src]="item.imageUrl | imageUrl">
-        </div>
         <h3 class="title" responsive-class>{{ item.title }}</h3>
         <div class="labels-cont">
             <ul>

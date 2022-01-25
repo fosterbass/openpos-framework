@@ -10,6 +10,7 @@ buildscript {
         classpath 'co.riiid:gradle-github-plugin:0.4.2'
         classpath 'gradle.plugin.se.bjurr.gitchangelog:git-changelog-gradle-plugin:1.63'
         classpath 'ru.vyarus:gradle-quality-plugin:4.4.0'
+	classpath 'com.google.gms:google-services:3.2.0'
     }
 }
 

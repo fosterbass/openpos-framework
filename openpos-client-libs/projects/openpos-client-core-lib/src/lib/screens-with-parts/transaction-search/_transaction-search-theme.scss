@@ -13,7 +13,10 @@
         }
 
         .transaction-summary {
-            border-color: $app-border;
+            border-bottom: solid 1px map_get($foreground, divider);
+            &:last-child {
+                border-bottom: none;
+            }
         }
 
         .transaction-search-mode {

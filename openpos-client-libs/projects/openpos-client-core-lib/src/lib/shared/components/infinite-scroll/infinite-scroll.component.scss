@@ -1,7 +1,16 @@
+@import "../../../styles/variables/spacing";
+
 :host{
   display: grid;
   ul {
     list-style-type: none;
     padding-inline-start: 0;
   }
+}
+
+.horizontal {
+  display: flex;
+  flex-direction: row;
+  column-gap: $med-space;
+  overflow-x: auto;
 }

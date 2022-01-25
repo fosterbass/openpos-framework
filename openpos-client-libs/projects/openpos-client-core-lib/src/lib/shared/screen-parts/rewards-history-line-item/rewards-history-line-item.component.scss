@@ -10,6 +10,7 @@
   .loyalty-icon {
     grid-area: loyalty-icon;
     text-align: center;
+    align-self: end;
     app-icon {
       display: inline-block;
     }
@@ -69,6 +70,7 @@
   .loyalty-icon {
     grid-area: loyalty-icon;
     text-align: center;
+    align-self: end;
     app-icon {
       display: inline-block;
     }

@@ -13,6 +13,6 @@ public class VersionsTest {
         assertEquals(1010000, versions.formatVersion("1.10-SNAPSHOT"));
         assertEquals(202101111, versions.formatVersion("202.101.1111"));
         assertEquals(202101111, versions.formatVersion("202.101.1111.123123-SNAPSHOT"));
-
+        assertEquals(3000000, versions.formatVersion("3.0.0-sfs-SNAPSHOT"));
     }
 }

@@ -29,4 +29,12 @@ export class PromptWithOptionsScreenComponent extends PosScreenDirective<PromptW
             this.doAction(action, this.promptForm.promptFormGroup.value[this.promptForm.inputControlName]);
         }
     }
+
+    getOptionClasses(option: IOptionItem) {
+        let classString = 'pull-right line-item-caret sm';
+        if (!option.enabled) {
+            classString = classString + ' muted-color';
+        }
+        return classString;
+    }
 }

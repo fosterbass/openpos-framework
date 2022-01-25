@@ -77,7 +77,7 @@
         <span class="trans-type-text">{{transactionSummary.transactionTypeText}}</span>
     </div>
     <div class="summary-attention summary-trans" responsive-class>
-        <app-icon class="summary-trans-status-icon" responsive-class iconClass="mat-24 {{statusClass}}"
+        <app-icon class="summary-trans-status-icon" responsive-class iconClass="sm {{statusClass}}"
                   *ngIf="transactionSummary.statusIcon" [iconName]="transactionSummary.statusIcon"></app-icon>
         <div class="summary-trans-status-text" responsive-class>
             {{transactionSummary.statusText}} {{transactionSummary.sequenceNumberFormatted}}
