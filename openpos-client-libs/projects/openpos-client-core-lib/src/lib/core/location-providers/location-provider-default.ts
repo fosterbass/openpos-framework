@@ -30,7 +30,8 @@ export class LocationProviderDefault implements ILocationProvider {
     }
 
     getCurrentLocation(buffer: number, googleApiKey?: string): Observable<ILocationData> {
-        this.coordinateBuffer = buffer
+        this.coordinateBuffer = buffer;
+        console.info(`[LocationProviderDefault] navigator.geolocation: ${navigator.geolocation}, CONFIGURATION.googleApiKey: ${Configuration.googleApiKey}, googleApiKey: ${googleApiKey}`);
         if (navigator.geolocation && (Configuration.googleApiKey || googleApiKey)) {
             let zipCode = '';
             let  countryName = '';
@@ -43,10 +44,10 @@ export class LocationProviderDefault implements ILocationProvider {
                     previous.latitude = lat;
                     previous.longitude = long;
                     const latlong = lat + ',' + long;
-                    console.log('calling google maps geocode api');
+                    console.log(`[LocationProviderDefault] Calling google maps geocode api with lat,long: ${latlong}`);
                     this.reverseGeocode(Configuration.googleApiKey, latlong)
                         .then((response) => {
-                            console.log(response.results[0].address_components);
+                            console.log(`[LocationProviderDefault] Geocode response: ${response.results[0].address_components}`);
                             for (const addressComponent of response.results[0].address_components) {
                                 for (const type of addressComponent.types) {
                                     if (type === 'postal_code') {
@@ -58,13 +59,15 @@ export class LocationProviderDefault implements ILocationProvider {
                                 }
                             }
 
-                            this.$locationData.next({
+                            const data = {
                                 type: 'default',
                                 postalCode: zipCode,
                                 latitude: lat.toString(),
                                 longitude: long.toString(),
                                 country: countryName
-                            } as ILocationData);
+                            } as ILocationData;
+                            console.info(`[LocationProviderDefault] new locationData: ${JSON.stringify(data)}`);
+                            this.$locationData.next(data);
                         })
                         .catch((error) => console.log(error));
                 }
