@@ -31,7 +31,9 @@
     <div *ngFor="let m of screen.selectionButtons;  let i = index">
         <app-secondary-button *ngIf="screen.selectionButtons.length-1 !== i"
                               [disabled]="isSelectionDisabled()"
-                              [actionItem]="m" (actionClick)="doSelectionButtonAction(m)"
+                              [actionItem]="m"
+                              [actionItemPayload]="getItemActionPayload()"
+                              (actionClick)="doSelectionButtonAction(m)"
                               (click)="doSelectionButtonAction(m)">
             <span>{{m.title}}</span>
             <span *ngIf="keybindsEnabled(m)" class="muted-color">{{m.keybindDisplayName}}</span>
@@ -39,7 +41,9 @@
         <app-primary-button *ngIf="screen.selectionButtons.length-1 == i"
                             [attr.cdkFocusInitial]="screen.selectionButtons.length-1 == i ? '' : null"
                             [disabled]="isSelectionDisabled()"
-                            [actionItem]="m" (actionClick)="doSelectionButtonAction(m)"
+                            [actionItem]="m"
+                            [actionItemPayload]="getItemActionPayload()"
+                            (actionClick)="doSelectionButtonAction(m)"
                             (click)="doSelectionButtonAction(m)">
             <span>{{m.title}}</span>
             <span *ngIf="keybindsEnabled(m)" class="muted-color">{{m.keybindDisplayName}}</span>

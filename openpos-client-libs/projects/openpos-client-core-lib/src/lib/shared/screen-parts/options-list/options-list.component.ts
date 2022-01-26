@@ -1,14 +1,16 @@
-import { Component, Output, EventEmitter, Injector, Input } from '@angular/core';
+import { Component, EventEmitter, Injector, Input, OnDestroy, Output } from '@angular/core';
 import { OptionsListInterface } from './options-list.interface';
-import { ScreenPart } from '../../../shared/decorators/screen-part.decorator';
-import { ScreenPartComponent } from '../../../shared/screen-parts/screen-part';
+import { ScreenPart } from '../../decorators/screen-part.decorator';
+import { ScreenPartComponent } from '../screen-part';
 import { IActionItem } from '../../../core/actions/action-item.interface';
-import { Observable } from 'rxjs';
-import { OpenposMediaService, MediaBreakpoints } from '../../../core/media/openpos-media.service';
+import { merge, Observable } from 'rxjs';
+import { MediaBreakpoints, OpenposMediaService } from '../../../core/media/openpos-media.service';
 import { FocusService } from '../../../core/focus/focus.service';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { KebabMenuComponent } from '../../components/kebab-menu/kebab-menu.component';
-import {CONFIGURATION} from '../../../configuration/configuration';
+import { takeUntil } from 'rxjs/operators';
+import { CONFIGURATION } from '../../../configuration/configuration';
+import { KeybindingZoneService } from '../../../core/keybindings/keybinding-zone.service';
 
 @ScreenPart({
     name: 'optionsList'
@@ -18,7 +20,7 @@ import {CONFIGURATION} from '../../../configuration/configuration';
     templateUrl: './options-list.component.html',
     styleUrls: ['./options-list.component.scss']
 })
-export class OptionsListComponent extends ScreenPartComponent<OptionsListInterface> {
+export class OptionsListComponent extends ScreenPartComponent<OptionsListInterface> implements OnDestroy {
 
     @Output()
     optionClick = new EventEmitter<IActionItem>();
@@ -37,7 +39,7 @@ export class OptionsListComponent extends ScreenPartComponent<OptionsListInterfa
 
     options: IActionItem[] = [];
     overflowOptions: IActionItem[] = [];
-
+    dialogRef: MatDialogRef<any>;
     isMobile: Observable<boolean>;
 
     autoFocusFirstOption = CONFIGURATION.autoFocusFirstOptionsListOption;
@@ -46,7 +48,8 @@ export class OptionsListComponent extends ScreenPartComponent<OptionsListInterfa
         injector: Injector,
         mediaService: OpenposMediaService,
         protected dialog: MatDialog,
-        protected focusService: FocusService
+        protected focusService: FocusService,
+        protected keybindingZoneService: KeybindingZoneService
     ) {
 
         super(injector);
@@ -75,6 +78,14 @@ export class OptionsListComponent extends ScreenPartComponent<OptionsListInterfa
             this.overflowOptions = [];
             this.options = this.screenData.options;
         }
+
+        if (this.screenData.overflowButton) {
+            this.keybindingZoneService.removeKeybinding(this.screenData.overflowButton);
+
+            this.keybindingZoneService.getKeyDownEvent(this.screenData.overflowButton.keybind).pipe(
+                takeUntil(merge(this.beforeScreenDataUpdated$, this.destroyed$))
+            ).subscribe(() => this.openKebabMenu());
+        }
     }
 
     onOptionClick(actionItem: IActionItem): void {
@@ -87,7 +98,7 @@ export class OptionsListComponent extends ScreenPartComponent<OptionsListInterfa
 
     public openKebabMenu() {
         if (this.dialog.openDialogs.length < 1 && !this.actionService.actionBlocked()) {
-            const dialogRef = this.dialog.open(KebabMenuComponent, {
+            this.dialogRef = this.dialog.open(KebabMenuComponent, {
                 data: {
                     menuItems: this.overflowOptions,
                     payload: null,
@@ -100,12 +111,19 @@ export class OptionsListComponent extends ScreenPartComponent<OptionsListInterfa
                 autoFocus: false
             });
 
-            this.subscriptions.add(dialogRef.afterClosed().subscribe(result => {
+            this.subscriptions.add(this.dialogRef.afterClosed().subscribe(result => {
                 if (result) {
                     this.optionClick.emit(result);
                 }
                 this.focusService.restoreInitialFocus();
             }));
         }
+    }
+
+    ngOnDestroy() {
+        if (this.dialogRef) {
+            this.dialogRef.close();
+        }
+        super.ngOnDestroy();
     }
 }

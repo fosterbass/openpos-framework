@@ -1,13 +1,15 @@
 import { Injectable, OnDestroy, Optional } from '@angular/core';
 import { KeybindingService } from './keybinding.service';
 import { KeybindingEvent } from './keybinding-event.interface';
-import { Observable, Subject } from 'rxjs';
+import { EMPTY, Observable, Subject } from 'rxjs';
 import { KeybindingZone } from './keybinding-zone.interface';
 import { KeybindingAction } from './keybinding-action.interface';
-import { filter, share, takeUntil, tap } from 'rxjs/operators';
+import { filter, takeUntil, tap } from 'rxjs/operators';
 import { KeybindingParserService } from './keybinding-parser.service';
 import { ActionService } from '../actions/action.service';
 import { IActionItem } from '../actions/action-item.interface';
+import { KeybindingLikeKey } from './keybinding-like-key.interface';
+import { KeybindingPendingAction } from './keybinding-pending-action.interface';
 
 /**
  * Used by UI components/directives to interact with the current KeybindingZone.
@@ -31,17 +33,14 @@ export class KeybindingZoneService implements OnDestroy {
     }
 
     register(zoneOrId: KeybindingZone | string): Observable<KeybindingEvent> {
-        let zone: KeybindingZone;
+        const zone = typeof zoneOrId === 'string' ? {id: zoneOrId} : zoneOrId;
 
-        if (typeof zoneOrId === 'string') {
-            zone = {
-                id: zoneOrId
-            };
-        } else {
-            zone = zoneOrId;
+        if (!zone) {
+            console.debug('[KeybindingZoneService]: Not registering zone because it is null/undefined', zone);
+            return EMPTY;
         }
 
-        console.debug(`[KeybindingZoneService]: Setting zone to "${zone.id}" and then registering`);
+        console.debug(`[KeybindingZoneService]: Setting my zone to "${zone.id}" and then registering`);
         this.zoneId = zone.id;
         return this.keybindingService.register({
             ...zone,
@@ -51,9 +50,8 @@ export class KeybindingZoneService implements OnDestroy {
 
     updateZone(updates: any): Observable<KeybindingEvent> {
         return this.keybindingService.updateZone({
-            actionsObj: updates,
-            actionService: this.actionService,
-            id: this.zoneId
+            ...this.getZone(),
+            actionsObj: updates
         });
     }
 
@@ -62,7 +60,6 @@ export class KeybindingZoneService implements OnDestroy {
             this.keybindingService.unregister(this.zoneId);
         }
         this.unregistered$.next();
-
     }
 
     getZoneId(): string {
@@ -97,12 +94,16 @@ export class KeybindingZoneService implements OnDestroy {
         return this.keybindingService.isActive(this.zoneId);
     }
 
-    getNeedActionPayload(): Observable<KeybindingAction> {
-        return this.keybindingService.getNeedActionPayload(this.zoneId);
+    getNeedActionPayload(keybindingKey?: string): Observable<KeybindingAction> {
+        return this.keybindingService.getNeedActionPayload(this.zoneId, keybindingKey);
     }
 
-    getKeyDownActionEvent(): Observable<KeybindingEvent> {
-        return this.keybindingService.getKeyDownZoneActionEvent(this.zoneId);
+    getShouldDoAction(): Observable<KeybindingPendingAction> {
+        return this.keybindingService.getShouldDoAction(this.zoneId);
+    }
+
+    getKeyDownActionEvent(key?: string): Observable<KeybindingEvent> {
+        return this.keybindingService.getKeyDownZoneActionEvent(this.zoneId, key);
     }
 
     getKeyDownEvent(key?: string): Observable<KeybindingEvent> {
@@ -114,17 +115,32 @@ export class KeybindingZoneService implements OnDestroy {
                 filter(event => !!event.zone),
                 filter(event => this.zoneId === event.zone.id),
                 tap(event => this.logEvent(event)),
-                share(),
                 takeUntil(this.unregistered$)
             );
     }
 
-    removeKeybinding(key: string): IActionItem {
-        return this.keybindingService.removeKeybinding(this.zoneId, key);
+    removeAllKeybindings(keysOrKeybindingsOrObj: (string | IActionItem)[] | any): IActionItem[] {
+        return this.keybindingService.removeAllKeybindings(this.zoneId, keysOrKeybindingsOrObj);
+    }
+
+    removeKeybinding(keyOrKeybinding: string | IActionItem): IActionItem {
+        return this.keybindingService.removeKeybinding(this.zoneId, keyOrKeybinding);
+    }
+
+    addAllKeybindings(keybindingObjOrArray: IActionItem[] | any): void {
+        this.keybindingService.addAllKeybindings(this.zoneId, keybindingObjOrArray);
+    }
+
+    addKeybinding(keybinding: IActionItem): void {
+        this.keybindingService.addKeybinding(this.zoneId, keybinding);
     }
 
     findActionByKey(key: string): IActionItem {
         return this.keybindingService.findActionByKey(this.zoneId, key);
+    }
+
+    hasKey(obj: KeybindingLikeKey, key: string): boolean {
+        return this.keybindingParser.hasKey(obj, key);
     }
 
     logEvent(event: KeybindingEvent): void {

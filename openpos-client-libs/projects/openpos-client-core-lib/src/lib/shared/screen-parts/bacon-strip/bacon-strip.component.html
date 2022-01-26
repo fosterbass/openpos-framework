@@ -33,8 +33,8 @@
     </div>
 </div>
 <mat-sidenav-container>
-    <mat-sidenav appKeypressSource>
-        <app-bacon-drawer (buttonClicked)="baconDrawer.close()"></app-bacon-drawer>
+    <mat-sidenav>
+        <app-bacon-drawer (buttonClicked)="onBaconDrawerButtonClicked($event)"></app-bacon-drawer>
     </mat-sidenav>
     <mat-sidenav-content (swiperight)="baconDrawer.open()">
         <ng-content></ng-content>

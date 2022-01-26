@@ -75,6 +75,7 @@ describe('KeybindingZoneService', () => {
             expect(subscriptionCallback).toHaveBeenCalledOnceWith({
                 domEvent: jasmine.any(Object),
                 action: userZone.actionsObj.killUser,
+                actionPayload: jasmine.falsy(),
                 zone: keybindingZoneService.getZone(),
                 didDoAction: true
             });
@@ -101,6 +102,7 @@ describe('KeybindingZoneService', () => {
             expect(subscriptionCallback).toHaveBeenCalledOnceWith({
                 domEvent: jasmine.any(Object),
                 action: jasmine.falsy(),
+                actionPayload: jasmine.falsy(),
                 zone: keybindingZoneService.getZone(),
                 didDoAction: false
             });
@@ -134,6 +136,7 @@ describe('KeybindingZoneService', () => {
             expect(subscriptionCallback).toHaveBeenCalledWith({
                 domEvent: jasmine.any(Object),
                 action: jasmine.falsy(),
+                actionPayload: jasmine.falsy(),
                 zone: keybindingZoneService.getZone(),
                 didDoAction: false
             });

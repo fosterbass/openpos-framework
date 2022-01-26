@@ -47,7 +47,7 @@
 </ng-template>
 
 <ng-template #dialogForm>
-    <form appKeypressSource [formGroup]="promptFormGroup" (ngSubmit)="onFormSubmit()" novalidate [markDirtyOnSubmit]="promptFormGroup" class="form">
+    <form [formGroup]="promptFormGroup" (ngSubmit)="onFormSubmit()" novalidate [markDirtyOnSubmit]="promptFormGroup" class="form">
         <div responsive-class class="form-part-body">
             <app-content-card *ngIf="screenData.info && screenData.promptPosition === 'Bottom'">
                 <div class="content">

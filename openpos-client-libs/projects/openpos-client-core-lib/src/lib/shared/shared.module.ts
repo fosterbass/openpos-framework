@@ -12,7 +12,6 @@ import { TaskListDirective } from './components/task-list/task-list.component';
 import { ResponsiveGridDirective } from './directives/responsive-grid.directive';
 import { SafePipe } from './pipes/safe.pipe';
 import { DynamicListControlComponent } from './components/dynamic-list-control/dynamic-list-control.component';
-import { KeyPressSourceDirective } from './directives/keypress-source.directive';
 import { SystemStatusDialogComponent } from './components/system-status/system-status-dialog.component';
 import { SaleFooterComponent } from '../screens-with-parts/sale/sale-footer/sale-footer.component';
 import { SaleItemListComponent } from '../screens-with-parts/sale/sale-item-list/sale-item-list.component';
@@ -155,7 +154,6 @@ import { StampComponent } from './components/stamp/stamp.component';
 import { FitTextDirective } from './directives/fit-text.directive';
 import { PromptButtonRowComponent } from './screen-parts/prompt-button-row/prompt-button-row.component';
 import { WarnButtonComponent } from './components/warn-button/warn-button.component';
-import { StayFocusedDirective } from './directives/stay-focused.directive';
 import { AudioLicenseComponent } from './components/audio-license/audio-license.component';
 import { ToastComponent } from './components/toast/toast.component';
 import { WatermarkComponent } from './components/watermark/watermark.component';
@@ -344,13 +342,11 @@ const directives = [
     FixediOsScrollDirective,
     ActionItemKeyMappingDirective,
     AutoCompleteAddressDirective,
-    KeyPressSourceDirective,
     ArrowTabDirective,
     ArrowTabItemDirective,
     ResponsiveClassDirective,
     ResponsiveGridDirective,
     FitTextDirective,
-    StayFocusedDirective,
     DisableAutoCompleteDirective
 ];
 

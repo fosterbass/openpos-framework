@@ -15,7 +15,6 @@ import { ErrorHandlerService } from './services/errorhandler.service';
 import { StompRService } from '@stomp/ng2-stompjs';
 import { DialogContentComponent } from './components/dialog-content/dialog-content.component';
 import { TrainingOverlayService } from './services/training-overlay.service';
-import { KeyPressProvider } from '../shared/providers/keypress.provider';
 import { fromEvent, Observable } from 'rxjs';
 import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
 import { PersonalizationComponent } from './personalization/personalization.component';
@@ -75,7 +74,6 @@ import { OpenposAppComponent } from './components/openpos-app/openpos-app.compon
 import { PLATFORMS } from './platforms/platform.interface';
 import { PLUGINS } from './platform-plugins/platform-plugin.interface';
 import { KeybindingService } from './keybindings/keybinding.service';
-import { DisabledKeyPressProvider } from '../shared/providers/disabled-keypress.provider';
 import { KeybindingLockScreenService } from './keybindings/keybinding-lock-screen.service';
 import { ENTERPRISE_CONFIGS } from './platform-plugins/enterprise-config/enterprise-config.service';
 
@@ -161,8 +159,6 @@ registerLocaleData(locale_frCA, 'fr-CA');
         { provide: ENTERPRISE_CONFIGS, useExisting: AirwatchCordovaPlugin, multi: true, deps: [CordovaService]},
         TrainingOverlayService,
         ConfigurationService,
-        KeyPressProvider,
-        { provide: KeyPressProvider, useClass: DisabledKeyPressProvider },
         HelpTextService,
         { provide: CLIENTCONTEXT, useClass: TimeZoneContext, multi: true },
         { provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher },
@@ -184,12 +180,9 @@ export class CoreModule {
         uiDataService: UIDataMessageService,
         clientExecutableService: ClientExecutableService,
         pushNotificationService: PushNotificationService,
-        keyProvider: KeyPressProvider,
         keybindingService: KeybindingService,
         keybindingLockScreenService: KeybindingLockScreenService) {
         throwIfAlreadyLoaded(parentModule, 'CoreModule');
         AppInjector.instance = this.injector;
-        keyProvider.registerKeyPressSource(fromEvent(document, 'keydown') as Observable<KeyboardEvent>);
-        keyProvider.registerKeyPressSource(fromEvent(document, 'keyup') as Observable<KeyboardEvent>);
     }
 }

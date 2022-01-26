@@ -1,4 +1,4 @@
-import { ComponentFixture, fakeAsync, flush, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, flush, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { CONFIGURATION } from '../../../configuration/configuration';
 import { ActionService } from '../../../core/actions/action.service';
@@ -11,8 +11,6 @@ import {
 import { KeybindingZoneService } from '../../../core/keybindings/keybinding-zone.service';
 import { KeybindingService } from '../../../core/keybindings/keybinding.service';
 import { SessionService } from '../../../core/services/session.service';
-import { DisabledKeyPressProvider } from '../../providers/disabled-keypress.provider';
-import { KeyPressProvider } from '../../providers/keypress.provider';
 import { BaconStripComponent } from './bacon-strip.component';
 import { MessageProvider } from '../../providers/message.provider';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
@@ -62,8 +60,7 @@ describe('BaconStripComponent', () => {
                 KeybindingParserService,
                 MessageProvider,
                 {provide: SessionService, useClass: MockSessionService},
-                {provide: ActionService, useClass: MockActionService},
-                {provide: KeyPressProvider, useClass: DisabledKeyPressProvider}
+                {provide: ActionService, useClass: MockActionService}
             ]
         }).compileComponents();
 
@@ -92,6 +89,22 @@ describe('BaconStripComponent', () => {
         fixture.detectChanges();
         await fixture.whenStable();
     });
+
+    it('should do an action when clicking the item', fakeAsync(() => {
+        clickDrawerToggle(fixture);
+
+        fixture.detectChanges();
+        fixture.nativeElement.querySelector('.button:nth-child(2)')
+            .dispatchEvent(new Event('click'));
+
+        flush();
+        fixture.detectChanges();
+        // For some reason there's too much toilet paper here and we need flush an extra time
+        flush();
+
+        expect(mockActionService.doAction).toHaveBeenCalledOnceWith(saleZone.actionsObj.punchLoyaltyCustomer, jasmine.falsy());
+        expect(baconStrip.sidenavOpened).toBeFalse();
+    }));
 
     it('should automatically execute a single action', fakeAsync(() => {
         const onlyAction = {
@@ -135,30 +148,19 @@ describe('BaconStripComponent', () => {
             expect(baconStrip.sidenavOpened).toBeTrue();
         }));
 
-        // I'm not sure why the only way I can get this test to work correctly is
-        // to use waitForAsync.
-        //
-        // If I use fakeAsync, like the rest of the tests, this test will not actually
-        // flush the last keypress until after the text exits.
-        it('should do Escape keybind action before closing', waitForAsync(() => {
-            const teleportBackAction = {
-                keybind: 'Escape',
-                action: 'TeleportBack'
-            };
-            baconStrip.baconDrawerComponent.keybindingZoneService.updateZone({
-                teleportBackAction
-            });
-
+        it('should do an action on keydown', fakeAsync(() => {
             // Open the drawer
-            getToggleButton(fixture).dispatchEvent(new Event('click'));
-            fixture.detectChanges();
-            expect(baconStrip.sidenavOpened).toBeTrue();
-
-            // Press Escape to toggle closed and run drawer action
-            KeybindingTestUtils.pressKey('Escape');
+            clickDrawerToggle(fixture);
+            flush();
             fixture.detectChanges();
 
-            expect(mockActionService.doAction).toHaveBeenCalledOnceWith(teleportBackAction, jasmine.falsy());
+            KeybindingTestUtils.pressKey(saleZone.actionsObj.throwItem.event);
+            flush();
+            fixture.detectChanges();
+            // For some reason there's too much toilet paper here and we need flush an extra time
+            flush();
+
+            expect(mockActionService.doAction).toHaveBeenCalledOnceWith(saleZone.actionsObj.throwItem, jasmine.falsy());
             expect(baconStrip.sidenavOpened).toBeFalse();
         }));
     });

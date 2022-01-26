@@ -11,7 +11,6 @@ import { ElectronService } from 'ngx-electron';
 import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provider.interface';
 import { TimeZoneContext } from '../../../core/client-context/time-zone-context';
 import { Subscription } from 'rxjs';
-import { KeyPressProvider } from '../../providers/keypress.provider';
 import { MockComponent } from 'ng-mocks';
 import { IconComponent } from '../../components/icon/icon.component';
 
@@ -19,11 +18,6 @@ class MockMatDialog { }
 class MockActionService { }
 class ClientContext { }
 class MockElectronService { }
-class MockKeyPressProvider {
-    subscribe(): Subscription {
-        return new Subscription();
-    }
-}
 
 describe('CustomerInformationComponent', () => {
     let component: CustomerInformationComponent;
@@ -41,7 +35,6 @@ describe('CustomerInformationComponent', () => {
                 { provide: MatDialog, useClass: MockMatDialog },
                 { provide: ActionService, useClass: MockActionService },
                 { provide: ElectronService, useClass: MockElectronService },
-                { provide: KeyPressProvider, useClass: MockKeyPressProvider },
                 { provide: ClientContext, useValue: {} },
                 { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
             ]

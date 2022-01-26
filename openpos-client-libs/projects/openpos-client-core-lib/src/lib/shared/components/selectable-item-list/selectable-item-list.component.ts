@@ -1,21 +1,19 @@
 import {
-    OnDestroy,
-    Component,
-    Input,
-    Output,
-    EventEmitter,
-    ContentChild,
-    TemplateRef,
-    ElementRef,
-    OnInit,
-    ViewChildren,
     AfterViewInit,
-    QueryList
+    Component,
+    ContentChild,
+    ElementRef,
+    EventEmitter,
+    Input,
+    OnDestroy,
+    OnInit,
+    Output,
+    QueryList,
+    TemplateRef,
+    ViewChildren
 } from '@angular/core';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { ISelectableListData } from './selectable-list-data.interface';
-import { KeyPressProvider } from '../../providers/keypress.provider';
-import { CONFIGURATION } from '../../../configuration/configuration';
 import { SelectionMode } from '../../../core/interfaces/selection-mode.enum';
 import { SessionService } from '../../../core/services/session.service';
 import { ActionService } from '../../../core/actions/action.service';
@@ -53,23 +51,11 @@ export class SelectableItemListComponent<ItemType> implements OnDestroy, OnInit,
     }
 
     @Input()
-    set selectedItem(item: ItemType) {
-        this._selectedItem = item;
-        this.updateKeySubscriptions();
-    }
-    get selectedItem(): ItemType {
-        return this._selectedItem;
-    }
+    selectedItem: ItemType;
     @Output() selectedItemChange = new EventEmitter<number>();
 
     @Input()
-    set selectedItemList(itemList: ItemType[]) {
-        this._selectedItemList = itemList;
-        this.updateKeySubscriptions();
-    }
-    get selectedItemList(): ItemType[] {
-        return this._selectedItemList;
-    }
+    selectedItemList = new Array<ItemType>();
     @Output() selectedItemListChange = new EventEmitter<number[]>();
 
     numberOfPages: number;
@@ -82,77 +68,15 @@ export class SelectableItemListComponent<ItemType> implements OnDestroy, OnInit,
     disabledItemPageMap: Map<number, Map<number, ItemType>> = new Map<number, Map<number, ItemType>>();
     scrollToIndex: number;
 
-    private _selectedItem: ItemType;
-    private _selectedItemList = new Array<ItemType>();
     private _config: SelectableItemListComponentConfiguration;
 
     private selectedItemSubscription: Subscription;
     private subscriptions = new Subscription();
     private destroyed$ = new Subject();
 
-    constructor(private keyPresses: KeyPressProvider,
-                private actionService: ActionService,
+    constructor(private actionService: ActionService,
                 private session: SessionService,
                 private keybindingZoneService: KeybindingZoneService) {
-
-        // we only want to be subscribed for keypresses when we have selected items
-        // so watch the selected item changes and add remove the key bindings.
-        this.subscriptions.add(this.selectedItemChange.subscribe(item => {
-            this.updateKeySubscriptions();
-        }));
-
-        this.subscriptions.add(this.selectedItemListChange.subscribe(list => {
-            this.updateKeySubscriptions();
-        }));
-
-        this.subscriptions.add(this.keyPresses.subscribe('ArrowDown', 1, event => {
-            // ignore repeats and check configuration
-            if (event.repeat || !CONFIGURATION.enableKeybinds || !this.keyboardControl) {
-                return;
-            }
-            if (event.type === 'keydown') {
-                this.handleArrowKey(event);
-            }
-        }));
-
-        this.subscriptions.add(
-            this.keyPresses.subscribe('ArrowUp', 1, event => {
-                // ignore repeats and check configuration
-                if (event.repeat || !CONFIGURATION.enableKeybinds || !this.keyboardControl) {
-                    return;
-                }
-                if (event.type === 'keydown') {
-                    this.handleArrowKey(event);
-                }
-            })
-        );
-
-        this.subscriptions.add(
-            this.keyPresses.subscribe('ArrowRight', 2, event => {
-                if (event.repeat || !CONFIGURATION.enableKeybinds || !this.keyboardControl) {
-                    return;
-                }
-                if (event.type === 'keydown') {
-                    if (this.currentPage < this.numberOfPages) {
-                        this.onNextPage();
-                    }
-                }
-            })
-        );
-
-        this.subscriptions.add(
-            this.keyPresses.subscribe('ArrowLeft', 2, event => {
-                if (event.repeat || !CONFIGURATION.enableKeybinds || !this.keyboardControl) {
-                    return;
-                }
-                if (event.type === 'keydown') {
-                    if (this.currentPage > 1) {
-                        this.onPrevPage();
-                    }
-                }
-            })
-        );
-
         this.keybindingZoneService.getKeyDownEvent('ArrowUp,ArrowDown')
             .pipe(
                 filter(event => !event.domEvent.repeat),
@@ -170,28 +94,13 @@ export class SelectableItemListComponent<ItemType> implements OnDestroy, OnInit,
                     this.onNextPage();
                 }
             });
-    }
 
-    private updateKeySubscriptions() {
-        if (((this.selectedItemList && this.selectedItemList.length) || this.selectedItem) && !this.selectedItemSubscription) {
-            this.buildKeySubscriptions();
-        } else if (!((this.selectedItemList && this.selectedItemList.length) || this.selectedItem) && this.selectedItemSubscription) {
-            this.selectedItemSubscription.unsubscribe();
-            this.selectedItemSubscription = null;
-        }
-    }
-
-    private buildKeySubscriptions() {
-        this.selectedItemSubscription =
-            this.keyPresses.subscribe('Escape', 1, event => {
-                // ignore repeats and check configuration
-                if (event.repeat || !CONFIGURATION.enableKeybinds || !this.keyboardControl) {
-                    return;
-                }
-                if (event.type === 'keydown') {
-                    this.handleEscape(event);
-                }
-            });
+        this.keybindingZoneService.getKeyDownEvent('Escape')
+            .pipe(
+                filter(() => this.keyboardControl),
+                filter(event => !event.domEvent.repeat),
+                takeUntil(this.destroyed$)
+            ).subscribe(event => this.handleEscape(event.domEvent));
     }
 
     ngOnInit(): void {
@@ -403,12 +312,13 @@ export class SelectableItemListComponent<ItemType> implements OnDestroy, OnInit,
         } else {
             return;
         }
-        // debugger;
+
         const itemIndexToSelect = -1;
 
         switch (this.configuration.selectionMode) {
             case SelectionMode.Single:
                 let currentListIndex = this.itemsToShow.findIndex(item => item === this.selectedItem);
+
                 if (currentListIndex === -1 && direction === -1) {
                     return; // only allow key down to start selecting on the list.
                 }

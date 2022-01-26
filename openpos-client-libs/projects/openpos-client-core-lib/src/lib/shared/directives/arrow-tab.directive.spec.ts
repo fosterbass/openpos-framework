@@ -13,8 +13,6 @@ import { KeybindingService } from '../../core/keybindings/keybinding.service';
 import { KeybindingZoneService } from '../../core/keybindings/keybinding-zone.service';
 import { KeybindingParserService } from '../../core/keybindings/keybinding-parser.service';
 import { MatDialogModule } from '@angular/material/dialog';
-import { KeyPressProvider } from '../providers/keypress.provider';
-import { DisabledKeyPressProvider } from '../providers/disabled-keypress.provider';
 import { CONFIGURATION } from '../../configuration/configuration';
 
 @Component({
@@ -72,8 +70,7 @@ describe('ArrowTabDirective', () => {
                 KeybindingZoneService,
                 KeybindingParserService,
                 {provide: SessionService, useClass: MockSessionService},
-                {provide: ActionService, useClass: MockActionService},
-                {provide: KeyPressProvider, useClass: DisabledKeyPressProvider}
+                {provide: ActionService, useClass: MockActionService}
             ]
         }).compileComponents();
 
@@ -129,18 +126,19 @@ describe('ArrowTabDirective', () => {
 
     describe('with no items', () => {
         beforeEach(() => {
+            document.activeElement.dispatchEvent(new Event('blur'));
             fixture.nativeElement.querySelectorAll('li').forEach(element => element.remove());
             fixture.detectChanges();
         });
 
         it('should not error trying to select next', () => {
             KeybindingTestUtils.pressKey('ArrowDown');
-            expect(document.activeElement).toBe(document.body);
+            expect(document.activeElement === document.body || document.querySelector('mat-dialog-container')).toBeTrue();
         });
 
         it('should not error trying to select previous', () => {
             KeybindingTestUtils.pressKey('ArrowUp');
-            expect(document.activeElement).toBe(document.body);
+            expect(document.activeElement === document.body || document.querySelector('mat-dialog-container')).toBeTrue();
         });
     });
 });

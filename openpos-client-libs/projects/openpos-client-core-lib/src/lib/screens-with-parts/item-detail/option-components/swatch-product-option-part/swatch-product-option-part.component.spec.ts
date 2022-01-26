@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActionService } from '../../../../core/actions/action.service';
-import { KeyPressProvider } from '../../../../shared/providers/keypress.provider';
 import { SwatchProductOptionPartComponent } from './swatch-product-option-part.component';
 import { ImageService } from '../../../../core/services/image.service';
 import { SessionService } from '../../../../core/services/session.service';
@@ -52,7 +51,6 @@ describe('SwatchProductOptionPartComponent', () => {
                 { provide: SessionService, useValue: mockService },
                 { provide: OpenposMediaService, useValue: mockService },
                 { provide: ActionService, useValue: mockService },
-                { provide: KeyPressProvider, useValue: mockService },
                 { provide: MessageProvider, useValue: mockService }
             ]
 

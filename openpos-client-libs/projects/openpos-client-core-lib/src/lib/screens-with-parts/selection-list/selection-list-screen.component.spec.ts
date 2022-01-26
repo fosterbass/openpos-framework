@@ -15,6 +15,7 @@ import { ISelectionListItem } from './selection-list-item.interface';
 import { SelectionMode } from '../../core/interfaces/selection-mode.enum';
 import { ImageUrlPipe } from '../../shared/pipes/image-url.pipe';
 import { ICustomerDetails } from '../customer-search-result-dialog/customer-search-result-dialog.interface';
+import { KeybindingZoneService } from '../../core/keybindings/keybinding-zone.service';
 
 class MockActionService {
     doAction(action: IActionItem) { }
@@ -46,6 +47,7 @@ describe('SelectionListScreenComponent', () => {
                     ImageUrlPipe
                 ],
                 providers: [
+                    KeybindingZoneService,
                     { provide: ActionService, useClass: MockActionService },
                     { provide: MatDialog, useClass: MockMatDialog },
                     { provide: ElectronService, useClass: MockElectronService },

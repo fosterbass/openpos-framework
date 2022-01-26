@@ -1,7 +1,5 @@
 import { MatDialogModule } from '@angular/material/dialog';
-import { KeyPressProvider } from '../../providers/keypress.provider';
-import { DisabledKeyPressProvider } from '../../providers/disabled-keypress.provider';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, flush, TestBed, waitForAsync } from '@angular/core/testing';
 import {
     KeybindingTestUtils,
     MockActionService,
@@ -18,6 +16,16 @@ import { ItemCardComponent } from './item-card.component';
 import { CurrencyTextComponent } from '../currency-text/currency-text.component';
 import { IconComponent } from '../icon/icon.component';
 import { KebabLabelButtonComponent } from '../kebab-label-button/kebab-label-button.component';
+import { ImageComponent } from '../image/image.component';
+import { KebabMenuComponent } from '../kebab-menu/kebab-menu.component';
+import { By } from '@angular/platform-browser';
+
+// tslint:disable: only-arrow-functions
+if (!window.matchMedia) {
+    window.matchMedia = function() {
+        return {} as any;
+    };
+}
 
 function createSaleItem(): any {
     return {
@@ -54,13 +62,14 @@ describe('ItemCardComponent', () => {
                 ItemCardComponent,
                 CurrencyTextComponent,
                 IconComponent,
-                KebabLabelButtonComponent
+                KebabLabelButtonComponent,
+                KebabMenuComponent,
+                ImageComponent
             ],
             providers: [
                 KeybindingZoneService,
                 {provide: SessionService, useClass: MockSessionService},
-                {provide: ActionService, useClass: MockActionService},
-                {provide: KeyPressProvider, useClass: DisabledKeyPressProvider}
+                {provide: ActionService, useClass: MockActionService}
             ]
         }).compileComponents();
 
@@ -77,12 +86,18 @@ describe('ItemCardComponent', () => {
         fixture = TestBed.createComponent(ItemCardComponent);
         itemCard = fixture.componentInstance;
         itemCard.item = saleItem;
+
         fixture.detectChanges();
         await fixture.whenStable();
     });
 
-    // Ensure the kebab menu is closed after each test
-    afterEach(() => fixture.destroy());
+    // Ensure the kebab menu is closed after each test because it can randomly hang around when it's no longer welcome
+    afterEach(() => {
+        const kebabMenuElement = document.querySelector('app-kebab-menu');
+        if (kebabMenuElement) {
+            kebabMenuElement.remove();
+        }
+    });
 
     it('should be expanded', () => {
         expect(fixture.nativeElement.querySelector('.left-side').classList).not.toContain('collapsed');
@@ -94,7 +109,7 @@ describe('ItemCardComponent', () => {
         expect(fixture.nativeElement.querySelector('.left-side.collapsed')).toBeTruthy();
     });
 
-    it('should disable menu buttons for actions that start with "<"', () => {
+    it('should disable menu buttons for actions that start with "<"', waitForAsync(() => {
         const disabledAction = {
             keybind: 'F6',
             action: '<IWillNotRun!!!!'
@@ -112,17 +127,26 @@ describe('ItemCardComponent', () => {
         KeybindingTestUtils.pressKey(' ');
         fixture.detectChanges();
 
-        expect(fixture.nativeElement.querySelector('.item-card-button').disabled).toBeTrue();
-    });
+        fixture.whenStable().then(() => {
+            fixture.detectChanges();
+            expect(fixture.nativeElement.querySelector('.item-card-button').disabled).toBeTrue();
+        });
+    }));
 
     describe('keybindings', () => {
-        it('should open kebab menu when sale item has multiple actions', () => {
-            KeybindingTestUtils.pressKey(' ');
-            fixture.detectChanges();
-            expect(document.querySelector('app-kebab-menu')).not.toBeFalsy();
-        });
+        it('should open kebab menu when sale item has multiple actions', fakeAsync(() => {
+            // This @ViewChild property is intermittently undefined even when it's in the DOM, so fix that
+            if (!itemCard.kebab) {
+                itemCard.kebab = fixture.debugElement.query(By.directive(KebabLabelButtonComponent)).componentInstance;
+            }
 
-        it('should execute the menu action when the sale item has one action', () => {
+            KeybindingTestUtils.pressKey(' ');
+            flush();
+            fixture.detectChanges();
+            expect(document.querySelector('app-kebab-menu')).toBeTruthy();
+        }));
+
+        it('should execute the menu action when the sale item has one action', waitForAsync(() => {
             saleItem.menuItems.pop();
             // Make sure the reference changes to force change detection to see changes
             itemCard.item = {
@@ -131,8 +155,11 @@ describe('ItemCardComponent', () => {
             KeybindingTestUtils.pressKey(' ');
             fixture.detectChanges();
 
-            expect(document.querySelector('app-kebab-menu')).toBeFalsy();
-            expect(mockActionService.doAction).toHaveBeenCalledOnceWith(saleItem.menuItems[0], [jasmine.falsy()]);
-        });
+            fixture.whenStable().then(() => {
+                fixture.detectChanges();
+                expect(document.querySelector('app-kebab-menu')).toBeFalsy();
+                expect(mockActionService.doAction).toHaveBeenCalledOnceWith(saleItem.menuItems[0], [jasmine.falsy()]);
+            });
+        }));
     });
 });

@@ -55,7 +55,131 @@ describe('KeybindingService', () => {
         keybindingService.getKeyDownZoneActionEvent(userZone.id).subscribe(subscriptionCallback);
         KeybindingTestUtils.pressKey(userZone.actionsObj.killUser.event);
 
-        expect(subscriptionCallback.calls.argsFor(0)[0].didDoAction).toBeFalse();
+        expect(mockActionService.doAction).not.toHaveBeenCalled();
+    });
+
+    it('should support removing a list of keybindings', () => {
+        const keybindingsToRemove = [
+            // Test strings and keybinding objects
+            userZone.actionsObj.logout.keybind,
+            userZone.actionsObj.killUser,
+            {
+                keybind: 'Ctrl+Shift+F5',
+                action: 'TestRemovingActionThatDoesNotExist'
+            }
+        ];
+
+        keybindingService.removeAllKeybindings(userZone.id, keybindingsToRemove);
+        keybindingService.getKeyDownZoneActionEvent(userZone.id).subscribe(subscriptionCallback);
+
+        KeybindingTestUtils.pressKey(userZone.actionsObj.logout.event);
+        KeybindingTestUtils.pressKey(userZone.actionsObj.killUser.event);
+        // Just to be sure, test the removed keybinding that never existed in the first place
+        KeybindingTestUtils.pressKey({
+            key: 'F5',
+            ctrlKey: true,
+            shiftKey: true
+        });
+
+        expect(mockActionService.doAction).not.toHaveBeenCalled();
+    });
+
+    it('should support removing a list of keybindings from an object', () => {
+        const keybindingsToRemoveObj = {
+            killUser: userZone.actionsObj.killUser,
+            testRemovingActionThatDoesNotExist: {
+                keybind: 'Ctrl+Shift+F5',
+                action: 'TestRemovingActionThatDoesNotExist'
+            }
+        };
+
+        keybindingService.removeAllKeybindings(userZone.id, keybindingsToRemoveObj);
+        keybindingService.getKeyDownZoneActionEvent(userZone.id).subscribe(subscriptionCallback);
+
+        KeybindingTestUtils.pressKey(userZone.actionsObj.killUser.event);
+        // Just to be sure, test the removed keybinding that never existed in the first place
+        KeybindingTestUtils.pressKey({
+            key: 'F5',
+            ctrlKey: true,
+            shiftKey: true
+        });
+
+        expect(mockActionService.doAction).not.toHaveBeenCalled();
+    });
+
+    it('should support adding a list of keybindings', () => {
+        const keybindingsToAdd = [
+            // Test that a duplicate replaces existing
+            {
+                keybind: 'Ctrl+Cmd+Q',
+                action: 'KillUser'
+            },
+            {
+                keybind: 'Enter',
+                action: 'DigTunnelToGregsHouse'
+            }
+        ];
+        keybindingService.addAllKeybindings(userZone.id, keybindingsToAdd);
+        keybindingService.getKeyDownZoneActionEvent(userZone.id).subscribe(subscriptionCallback);
+
+        KeybindingTestUtils.pressKey({
+            key: 'Q',
+            ctrlKey: true,
+            metaKey: true
+        });
+        KeybindingTestUtils.pressKey('Enter');
+
+        expect(subscriptionCallback.calls.count()).toEqual(2);
+        expect(mockActionService.doAction.calls.count()).toEqual(2);
+
+        expect(subscriptionCallback.calls.argsFor(0)[0].didDoAction).toBeTrue();
+        expect(subscriptionCallback.calls.argsFor(1)[0].didDoAction).toBeTrue();
+
+        expect(mockActionService.doAction).toHaveBeenCalledWith(keybindingsToAdd[0], jasmine.falsy());
+        expect(mockActionService.doAction).toHaveBeenCalledWith(keybindingsToAdd[1], jasmine.falsy());
+    });
+
+    it('should support adding keybindings from an object', () => {
+        const keybindingsToAddObj = {
+            // Test that a duplicate replaces existing
+            killUser: {
+                keybind: 'F5',
+                action: 'KillUser'
+            },
+            digTunnelToGregsHouse: {
+                keybind: 'Enter',
+                action: 'DigTunnelToGregsHouse'
+            }
+        };
+        keybindingService.addAllKeybindings(userZone.id, keybindingsToAddObj);
+        keybindingService.getKeyDownZoneActionEvent(userZone.id).subscribe(subscriptionCallback);
+
+        KeybindingTestUtils.pressKey('F5');
+        KeybindingTestUtils.pressKey('Enter');
+
+        expect(subscriptionCallback.calls.count()).toEqual(2);
+        expect(mockActionService.doAction.calls.count()).toEqual(2);
+
+        expect(subscriptionCallback.calls.argsFor(0)[0].didDoAction).toBeTrue();
+        expect(subscriptionCallback.calls.argsFor(1)[0].didDoAction).toBeTrue();
+
+        expect(mockActionService.doAction).toHaveBeenCalledWith(keybindingsToAddObj.killUser, jasmine.falsy());
+        expect(mockActionService.doAction).toHaveBeenCalledWith(keybindingsToAddObj.digTunnelToGregsHouse, jasmine.falsy());
+    });
+
+    it('should support adding keybindings', () => {
+        keybindingService.addKeybinding(userZone.id, userZone.actionsObj.killUser);
+        keybindingService.getKeyDownZoneActionEvent(userZone.id).subscribe(subscriptionCallback);
+        KeybindingTestUtils.pressKey(userZone.actionsObj.killUser.event);
+
+        expect(subscriptionCallback.calls.argsFor(0)[0].didDoAction).toBeTrue();
+        expect(mockActionService.doAction).toHaveBeenCalledOnceWith(userZone.actionsObj.killUser, null);
+    });
+
+    it('should prevent duplicates when adding keybindings and keep the most recent', () => {
+        keybindingService.addKeybinding(userZone.id, userZone.actionsObj.killUser);
+        userZone = keybindingService.getZone(userZone.id);
+        expect(userZone.actions.filter(action => action.keybind === userZone.actionsObj.killUser.keybind).length).toEqual(1);
     });
 
     it('should restore previously activated zone', () => {
@@ -87,6 +211,7 @@ describe('KeybindingService', () => {
             expect(subscriptionCallback).toHaveBeenCalledOnceWith({
                 domEvent: jasmine.any(Object),
                 action: jasmine.falsy(),
+                actionPayload: jasmine.falsy(),
                 zone: jasmine.falsy(),
                 didDoAction: false
             });
@@ -100,6 +225,7 @@ describe('KeybindingService', () => {
             expect(subscriptionCallback).toHaveBeenCalledOnceWith({
                 domEvent: jasmine.any(Object),
                 action: jasmine.falsy(),
+                actionPayload: jasmine.falsy(),
                 zone: keybindingService.getZone(keybindingService.getActiveZoneId()),
                 didDoAction: false
             });
@@ -113,6 +239,7 @@ describe('KeybindingService', () => {
             expect(subscriptionCallback).toHaveBeenCalledWith({
                 domEvent: jasmine.any(Object),
                 action: jasmine.falsy(),
+                actionPayload: jasmine.falsy(),
                 zone: keybindingService.getZone(keybindingService.getActiveZoneId()),
                 didDoAction: false
             });
@@ -132,8 +259,6 @@ describe('KeybindingService', () => {
         it('should be ignored in an inactive zone', () => {
             keybindingService.getKeyDownZoneActionEvent(userZone.id).subscribe(subscriptionCallback);
             KeybindingTestUtils.pressKey(baconStripZone.actionsObj.punchCashier.event);
-
-            expect(subscriptionCallback.calls.argsFor(0)[0].didDoAction).toBeFalse();
             expect(mockActionService.doAction).not.toHaveBeenCalled();
         });
 
@@ -151,9 +276,16 @@ describe('KeybindingService', () => {
         it('should not execute when an action does not match a pressed key', () => {
             keybindingService.getKeyDownZoneActionEvent(userZone.id).subscribe(subscriptionCallback);
             KeybindingTestUtils.pressKey('Enter');
-
-            expect(subscriptionCallback.calls.argsFor(0)[0].didDoAction).toBeFalse();
             expect(mockActionService.doAction).not.toHaveBeenCalled();
+        });
+
+        it('should only execute callback for filtered keys', () => {
+            keybindingService.getKeyDownZoneActionEvent(userZone.id, userZone.actionsObj.killUser.keybind).subscribe(subscriptionCallback);
+            keybindingService.getKeyDownZoneActionEvent(userZone.id, 'F12').subscribe(subscriptionCallback);
+            KeybindingTestUtils.pressKey(userZone.actionsObj.killUser.event);
+
+            expect(subscriptionCallback.calls.argsFor(0)[0].didDoAction).toBeTrue();
+            expect(mockActionService.doAction).toHaveBeenCalledOnceWith(userZone.actionsObj.killUser, jasmine.falsy());
         });
 
         it('should not execute when ActionService reports disabled', () => {
@@ -183,11 +315,28 @@ describe('KeybindingService', () => {
                 withWeapon: 'Punch With Own Fist'
             };
 
+            keybindingService.getKeyDownZoneActionEvent(userZone.id).subscribe(subscriptionCallback);
             keybindingService.getNeedActionPayload(userZone.id)
                 .subscribe(keybindingAction => keybindingAction.payload = payload);
 
             KeybindingTestUtils.pressKey(userZone.actionsObj.killUser.event);
+
             expect(mockActionService.doAction).toHaveBeenCalledOnceWith(userZone.actionsObj.killUser, payload);
+            expect(subscriptionCallback).toHaveBeenCalledOnceWith({
+                domEvent: jasmine.any(Object),
+                action: userZone.actionsObj.killUser,
+                zone: keybindingService.getZone(keybindingService.getActiveZoneId()),
+                actionPayload: payload,
+                didDoAction: true
+            });
+        });
+
+        it('should support cancelling a pending action', () => {
+            keybindingService.getShouldDoAction(userZone.id)
+                .subscribe(pendingAction => pendingAction.cancel = true);
+
+            KeybindingTestUtils.pressKey(userZone.actionsObj.killUser.event);
+            expect(mockActionService.doAction).not.toHaveBeenCalled();
         });
     });
 });

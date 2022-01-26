@@ -4,9 +4,6 @@ import { ScreenPart } from '../../decorators/screen-part.decorator';
 import { ScreenPartComponent } from '../screen-part';
 import { IActionItem } from '../../../core/actions/action-item.interface';
 import { MediaBreakpoints } from '../../../core/media/openpos-media.service';
-import { takeUntil } from 'rxjs/operators';
-import { merge } from 'rxjs';
-
 
 @ScreenPart({
   name: 'transactionHistory'
@@ -35,10 +32,7 @@ export class TransactionHistoryPartComponent extends ScreenPartComponent<ITransa
   }
 
   screenDataUpdated() {
-    this.keyPressProvider.globalSubscribe(this.screenData.actions)
-      .pipe(
-        takeUntil(merge(this.destroyed$, this.beforeScreenDataUpdated$))
-      ).subscribe(action => this.doAction(action, this.screenData));
+
   }
 
   onClick(actionItem: IActionItem): void {

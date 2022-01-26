@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { SessionService } from '../services/session.service';
-import { filter, takeUntil } from 'rxjs/operators';
-import { merge, Subject } from 'rxjs';
+import { debounce, filter, takeUntil } from 'rxjs/operators';
+import { merge, of, Subject } from 'rxjs';
 import { KeybindingZone } from './keybinding-zone.interface';
 import { KeybindingZoneService } from './keybinding-zone.service';
 import { KeybindingService } from './keybinding.service';
@@ -16,6 +16,8 @@ export class KeybindingZoneScreenService implements OnDestroy {
     private destroyed$ = new Subject();
     private stop$ = new Subject();
 
+    public dialogMessageDebounceTime = 10;
+
     constructor(private sessionService: SessionService,
                 private keybindingService: KeybindingService,
                 private keybindingZoneService: KeybindingZoneService) {
@@ -28,7 +30,8 @@ export class KeybindingZoneScreenService implements OnDestroy {
         // In case we subscribe too late we want to explicitly listen to these UI message observables because they publishReplay
         const screenMessages$ = merge(
             this.sessionService.screenMessage$,
-            this.sessionService.dialogMessage$
+            // Dialog messages can fire more than once for the same message, so account for that
+            this.sessionService.dialogMessage$.pipe(debounce(() => of(this.dialogMessageDebounceTime)))
         );
 
         // Deactivate when the screen type changes (for example, we're a screen and the message is a dialog).
@@ -73,11 +76,11 @@ export class KeybindingZoneScreenService implements OnDestroy {
 
     register(message: any): void {
         const registration: KeybindingZone = {
-            id: message.id,
+            id: message.id || `${this.messageType}-no-message-id`,
             actionsObj: message
         };
 
-        console.log(`[KeybindingZoneScreenService]: Registering keybindings in message "${message.id}"`, message);
+        console.log(`[KeybindingZoneScreenService]: Registering keybindings "${registration.id}" in message "${message.id}"`, message);
         this.keybindingZoneService.register(registration);
 
         this.keybindingZoneService.activate();
@@ -113,6 +116,7 @@ export class KeybindingZoneScreenService implements OnDestroy {
     }
 
     ngOnDestroy(): void {
+        console.debug(`[KeybindingZoneScreenService]: Destroying instance for message type "${this.messageType}"`);
         this.unregister();
         this.destroyed$.next();
     }

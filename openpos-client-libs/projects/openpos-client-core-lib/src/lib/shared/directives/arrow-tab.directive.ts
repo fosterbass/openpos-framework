@@ -1,9 +1,7 @@
-import { Directive, OnDestroy, ContentChildren, OnInit } from '@angular/core';
+import type { QueryList } from '@angular/core';
+import { ContentChildren, Directive, OnDestroy, OnInit } from '@angular/core';
 import { ArrowTabItemDirective } from './arrow-tab-item.directive';
 import { Subject, Subscription } from 'rxjs';
-import { KeyPressProvider } from '../providers/keypress.provider';
-
-import type { QueryList } from '@angular/core';
 import { filter, takeUntil, tap } from 'rxjs/operators';
 import { KeybindingZoneService } from '../../core/keybindings/keybinding-zone.service';
 
@@ -17,23 +15,7 @@ export class ArrowTabDirective implements OnInit, OnDestroy {
 
     private _subscription: Subscription;
 
-    constructor(keyPresses: KeyPressProvider, private keybindingZoneService: KeybindingZoneService) {
-        this._subscription = keyPresses.subscribe( 'ArrowUp', 1, (event: KeyboardEvent) => {
-
-            if ( event.repeat || event.type !== 'keydown') {
-                return;
-            }
-
-            this.previous();
-        });
-
-        this._subscription.add( keyPresses.subscribe( 'ArrowDown', 1, (event: KeyboardEvent) => {
-            if ( event.repeat || event.type !== 'keydown' ) {
-                return;
-            }
-
-            this.next();
-        }));
+    constructor(private keybindingZoneService: KeybindingZoneService) {
     }
 
     ngOnInit(): void {

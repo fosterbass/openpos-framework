@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { KeybindingKey } from './keybinding-key.interface';
+import { KeybindingLikeKey } from './keybinding-like-key.interface';
 
 /**
  * Parses keybinding strings, like Enter, Ctrl+Shift+F10 and ArrowUp,ArrowDown etc.
@@ -25,7 +26,7 @@ export class KeybindingParserService {
         }
     }
 
-    getNormalizedKey(obj: KeyboardEvent | KeybindingKey | string): string {
+    getNormalizedKey(obj: KeybindingLikeKey): string {
         const keyBinding = typeof obj === 'string' ? this.parse(obj as string)[0] : obj as KeybindingKey;
         let normalizedKey = '';
 
@@ -55,11 +56,11 @@ export class KeybindingParserService {
         return normalizedKey.toLowerCase();
     }
 
-    areEqual(objA: KeyboardEvent | KeybindingKey | string, objB: KeyboardEvent | KeybindingKey | string): boolean {
+    areEqual(objA: KeybindingLikeKey, objB: KeybindingLikeKey): boolean {
         return this.getNormalizedKey(objA) === this.getNormalizedKey(objB);
     }
 
-    hasKey(obj: KeyboardEvent | KeybindingKey, key: string): boolean {
+    hasKey(obj: KeybindingLikeKey, key: string): boolean {
         const keys = this.parse(key);
         // There could be a comma-separated list of keys so check if at least one matches the object
         return keys.some(k => this.areEqual(obj, k));
@@ -67,7 +68,7 @@ export class KeybindingParserService {
 
     parse(key: string): KeybindingKey[] {
         if (!key) {
-            return null;
+            return [];
         }
 
         const keys = this.splitKeys(key);

@@ -5,7 +5,6 @@ import { ElectronService } from 'ngx-electron';
 import { ActionService } from '../../../core/actions/action.service';
 import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provider.interface';
 import { TimeZoneContext } from '../../../core/client-context/time-zone-context';
-import { KeyPressProvider } from '../../providers/keypress.provider';
 import { PanEvent } from './pan-event';
 import { ScreenGestureComponent } from './screen-gesture.component';
 import { SwipeEvent } from './swipe-event';
@@ -28,7 +27,6 @@ describe('ScreenGestureComponent', () => {
                 { provide: MatDialog, useValue: mockService },
                 { provide: ActionService, useValue: mockService },
                 { provide: ElectronService, useValue: mockService },
-                { provide: KeyPressProvider, useValue: mockService },
                 { provide: ClientContext, useValue: {} },
                 { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
             ]

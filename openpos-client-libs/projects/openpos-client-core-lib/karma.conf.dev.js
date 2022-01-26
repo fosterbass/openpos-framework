@@ -3,6 +3,13 @@
 
 module.exports = function (config) {
   config.set({
+    coverageReporter: {
+      dir: 'build/reports/coverage',
+      reporters: [
+        { type: 'html', subdir: 'report-html' }
+      ],
+      fixWebpackSourcePaths: true
+    },
     basePath: '../../',
     frameworks: ['jasmine', '@angular-devkit/build-angular'],
     plugins: [

@@ -8,7 +8,6 @@ import { LoyaltyCustomerFormInterface } from './loyalty-customer-form.interface'
 import { CLIENTCONTEXT } from '../../core/client-context/client-context-provider.interface';
 import { TimeZoneContext } from '../../core/client-context/time-zone-context';
 import { ElectronService } from 'ngx-electron';
-import { KeyPressProvider } from '../../shared/providers/keypress.provider';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { IForm } from '../../core/interfaces/form.interface';
 import { FormBuilder } from '../../core/services/form-builder.service';
@@ -46,7 +45,6 @@ describe('LoyaltyCustomerFormDialogComponent', () => {
                 { provide: ActionService, useValue: mockService },
                 { provide: MatDialog, useValue: mockService },
                 { provide: OpenposMediaService, useValue: mockService },
-                { provide: KeyPressProvider, useValue: mockService },
                 { provide: ElectronService, useValue: mockService },
                 { provide: FormBuilder, useValue: mockService },
                 { provide: ClientContext, useValue: {} },

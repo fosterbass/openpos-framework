@@ -31,12 +31,6 @@ export class TenderPartComponent extends ScreenPartComponent<TenderPartInterface
 
         this.isRoundUpAvailable = this.screenData.roundUpAvailable;
 
-        if (this.screenData.roundUpButton) {
-            this.keyPressProvider.globalSubscribe(this.screenData.roundUpButton).pipe(
-                takeUntil(this.destroyed$)
-            ).subscribe(action => this.doAction(action));
-        }
-
         // Register form data with possible actions
         if (this.screenData.optionsList) {
             if (this.screenData.optionsList.options) {
@@ -50,10 +44,6 @@ export class TenderPartComponent extends ScreenPartComponent<TenderPartInterface
             }
 
             this.alternateSubmitActionNames = this.alternateSubmitActions.map(actionItem => actionItem.action);
-
-            this.keyPressProvider.globalSubscribe(this.alternateSubmitActions).pipe(
-                takeUntil(this.destroyed$)
-            ).subscribe(action => this.doAction(action));
         }
     }
 

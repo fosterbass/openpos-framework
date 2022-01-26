@@ -1,14 +1,11 @@
-import { Component, Input, HostListener, ViewChild, OnDestroy } from '@angular/core';
+import { Component, HostListener, Input, OnDestroy, ViewChild } from '@angular/core';
 import { ISellItem } from '../../../core/interfaces/sell-item.interface';
 import { SessionService } from '../../../core/services/session.service';
 import { IActionItem } from '../../../core/actions/action-item.interface';
 import { ActionService } from '../../../core/actions/action.service';
-import {Observable, Subject, Subscription } from 'rxjs';
-import { CONFIGURATION } from '../../../configuration/configuration';
-import { KeyPressProvider } from '../../providers/keypress.provider';
-import { KeyboardClassKey } from '../../../keyboard/enums/keyboard-class-key.enum';
+import { Observable, Subject } from 'rxjs';
 import { KebabLabelButtonComponent } from '../kebab-label-button/kebab-label-button.component';
-import {MediaBreakpoints, OpenposMediaService} from '../../../core/media/openpos-media.service';
+import { MediaBreakpoints, OpenposMediaService } from '../../../core/media/openpos-media.service';
 import { KeybindingZoneService } from '../../../core/keybindings/keybinding-zone.service';
 import { filter, takeUntil } from 'rxjs/operators';
 
@@ -31,33 +28,22 @@ export class ItemCardComponent implements OnDestroy {
 
   @Input() isReadOnly = false;
 
-  _expanded = true;
+  // tslint:disable-next-line:no-input-rename
   @Input('expanded')
-  set expanded(expanded: boolean) {
-    this._expanded = expanded;
-    if (!this._expanded && this.buttonSubscription) {
-      this.buttonSubscription.unsubscribe();
-    } else if (this._expanded) {
-      this.createSubscription();
-    }
-  }
-  get expanded() {
-    return this._expanded;
-  }
+  expanded = true;
 
   @Input() enableHover = true;
 
   public hover = false;
 
-  @ViewChild('kebab') kebab: KebabLabelButtonComponent;
-  buttonSubscription: Subscription;
+  @ViewChild('kebab', {static: true}) kebab: KebabLabelButtonComponent;
 
   isMobile$: Observable<boolean>;
 
-  constructor(public actionService: ActionService, public session: SessionService,
-              protected keyPresses: KeyPressProvider, private mediaService: OpenposMediaService,
+  constructor(public actionService: ActionService,
+              public session: SessionService,
+              private mediaService: OpenposMediaService,
               private keybindingZoneService: KeybindingZoneService) {
-    this.createSubscription();
     this.isMobile$ = mediaService.observe(new Map([
       [MediaBreakpoints.MOBILE_PORTRAIT, true],
       [MediaBreakpoints.MOBILE_LANDSCAPE, true],
@@ -66,18 +52,6 @@ export class ItemCardComponent implements OnDestroy {
       [MediaBreakpoints.DESKTOP_PORTRAIT, false],
       [MediaBreakpoints.DESKTOP_LANDSCAPE, false]
     ]));
-  }
-
-  public createSubscription() {
-    this.buttonSubscription = this.keyPresses.subscribe(KeyboardClassKey.Space, 1, (event: KeyboardEvent) => {
-      // ignore repeats and check configuration
-      if (event.repeat || event.type !== 'keydown' || !CONFIGURATION.enableKeybinds) {
-        return;
-      }
-      if (event.type === 'keydown' && this.expanded) {
-        this.handleKeyDown();
-      }
-    });
 
     this.keybindingZoneService.getKeyDownEvent(' ')
         .pipe(
@@ -96,9 +70,6 @@ export class ItemCardComponent implements OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.buttonSubscription) {
-      this.buttonSubscription.unsubscribe();
-    }
     if (this.kebab) {
       this.kebab.closeKebabMenu();
     }

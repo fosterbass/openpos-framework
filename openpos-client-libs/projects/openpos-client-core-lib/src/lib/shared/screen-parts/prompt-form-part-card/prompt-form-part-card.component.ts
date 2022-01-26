@@ -101,9 +101,6 @@ export class PromptFormPartCardComponent extends ScreenPartComponent<PromptFormP
         }
 
         this.promptFormGroup = new FormGroup(group);
-
-        this.keyPressProvider.subscribe(this.screenData.actionButton, 100, () => this.onFormSubmit(), this.stop$);
-        this.keyPressProvider.subscribe(this.screenData.otherActions, 100, (event, action) => this.doAction(action), this.stop$);
     }
 
     public keybindsEnabled() {

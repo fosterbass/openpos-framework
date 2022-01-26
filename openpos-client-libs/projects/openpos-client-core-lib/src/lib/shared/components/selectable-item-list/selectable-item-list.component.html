@@ -5,11 +5,11 @@
     <ng-template ngFor let-item [ngForOf]="[item]" [ngForTemplate]="itemTemplate"></ng-template>
 </div>
 <div fxLayoutAlign="center center" *ngIf="numberOfPages > 1">
-    <button mat-icon-button color="primary" [disabled]="currentPage <= 1" (click)="onPrevPage()">
+    <button class="previous-page" mat-icon-button color="primary" [disabled]="currentPage <= 1" (click)="onPrevPage()">
         <mat-icon>arrow_back</mat-icon>
     </button>
-    <span class="text-md">Page&nbsp;{{currentPage}}</span>
-    <button mat-icon-button color="primary" [disabled]="currentPage >= numberOfPages" (click)="onNextPage()">
+    <span class="text-md current-page">Page&nbsp;<span class="current-page-number">{{currentPage}}</span></span>
+    <button class="next-page" mat-icon-button color="primary" [disabled]="currentPage >= numberOfPages" (click)="onNextPage()">
         <mat-icon>arrow_forward</mat-icon>
     </button>
 </div>

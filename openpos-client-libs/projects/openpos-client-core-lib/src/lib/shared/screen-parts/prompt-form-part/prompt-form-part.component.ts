@@ -7,6 +7,7 @@ import { PromptFormPartInterface } from './prompt-form-part.interface';
 import { CONFIGURATION } from '../../../configuration/configuration';
 import { merge } from 'rxjs';
 import {ActionItem} from '../../../core/actions/action-item';
+import { KeybindingZoneService } from '../../../core/keybindings/keybinding-zone.service';
 
 @Component({
     selector: 'app-prompt-form-part',
@@ -36,7 +37,10 @@ export class PromptFormPartComponent extends ScreenPartComponent<PromptFormPartI
         return this.screenData.autoFocus;
     }
 
-    constructor(private validatorsService: ValidatorsService, injector: Injector, private changeDetectorRef: ChangeDetectorRef) {
+    constructor(private validatorsService: ValidatorsService,
+                injector: Injector,
+                private changeDetectorRef: ChangeDetectorRef,
+                private keybindingZoneService: KeybindingZoneService) {
         super(injector);
     }
 
@@ -87,9 +91,8 @@ export class PromptFormPartComponent extends ScreenPartComponent<PromptFormPartI
             group[this.hiddenInputControlName] = new FormControl();
         }
         this.promptFormGroup = new FormGroup(group);
-
-        this.keyPressProvider.subscribe(this.screenData.actionButton, 100, () => this.onFormSubmit(), this.stop$);
-        this.keyPressProvider.subscribe(this.screenData.otherActions, 100, (event, action) => this.doAction(action), this.stop$);
+        // Let the default browser form submit handle this
+        this.keybindingZoneService.removeKeybinding('Enter');
     }
 
     public keybindsEnabled() {

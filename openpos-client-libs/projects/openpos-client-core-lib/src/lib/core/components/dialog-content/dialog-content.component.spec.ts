@@ -2,8 +2,6 @@ import { MockActionService, MockSessionService } from '../../keybindings/keybind
 import { MatDialogModule } from '@angular/material/dialog';
 import { SessionService } from '../../services/session.service';
 import { ActionService } from '../../actions/action.service';
-import { KeyPressProvider } from '../../../shared/providers/keypress.provider';
-import { DisabledKeyPressProvider } from '../../../shared/providers/disabled-keypress.provider';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { DialogContentComponent } from './dialog-content.component';
 import { KeybindingZoneScreenService } from '../../keybindings/keybinding-zone-screen.service';
@@ -26,8 +24,7 @@ describe('DialogContentComponent', () => {
                 KeybindingZoneService,
                 KeybindingZoneScreenService,
                 {provide: SessionService, useClass: MockSessionService},
-                {provide: ActionService, useClass: MockActionService},
-                {provide: KeyPressProvider, useClass: DisabledKeyPressProvider}
+                {provide: ActionService, useClass: MockActionService}
             ]
         }).compileComponents();
 

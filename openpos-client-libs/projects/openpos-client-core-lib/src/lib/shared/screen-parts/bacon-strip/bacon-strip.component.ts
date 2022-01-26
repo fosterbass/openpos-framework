@@ -6,11 +6,10 @@ import { ScreenPart } from '../../decorators/screen-part.decorator';
 import { HelpTextService } from '../../../core/help-text/help-text.service';
 import { MediaBreakpoints, OpenposMediaService } from '../../../core/media/openpos-media.service';
 import { Observable } from 'rxjs';
-import { KeyPressProvider } from '../../providers/keypress.provider';
-import { CONFIGURATION } from '../../../configuration/configuration';
 import { KeybindingZoneService } from '../../../core/keybindings/keybinding-zone.service';
 import { BaconDrawerComponent } from './bacon-drawer/bacon-drawer.component';
 import { filter, takeUntil } from 'rxjs/operators';
+import { IActionItem } from '../../../core/actions/action-item.interface';
 
 @ScreenPart({
     name: 'baconStrip'
@@ -45,7 +44,7 @@ export class BaconStripComponent extends ScreenPartComponent<BaconStripInterface
     readonly sidenavOpenedChange = new EventEmitter<boolean>();
 
     isMobile: Observable<boolean>;
-
+    isDoingAction = false;
     searchExpanded = false;
 
     @Input()
@@ -55,7 +54,6 @@ export class BaconStripComponent extends ScreenPartComponent<BaconStripInterface
         injector: Injector,
         public helpTextService: HelpTextService,
         private media: OpenposMediaService,
-        protected keyPresses: KeyPressProvider,
         private changeDetector: ChangeDetectorRef,
         private keybindingZoneService: KeybindingZoneService
     ) {
@@ -69,18 +67,6 @@ export class BaconStripComponent extends ScreenPartComponent<BaconStripInterface
             [MediaBreakpoints.DESKTOP_LANDSCAPE, false]
         ]));
 
-        this.subscriptions.add(
-            this.keyPresses.subscribe('Escape', 100, (event: KeyboardEvent) => {
-                // ignore repeats and check configuration
-                if (event.repeat || event.type !== 'keydown' || !CONFIGURATION.enableKeybinds) {
-                    return;
-                }
-                if (event.type === 'keydown' && this.screenData.actions) {
-                    this.buttonClick();
-                }
-            })
-        );
-
         this.keybindingZoneService.getKeyDownEvent('Escape')
             .pipe(
                 filter(event => !event.domEvent.repeat),
@@ -92,16 +78,19 @@ export class BaconStripComponent extends ScreenPartComponent<BaconStripInterface
         super.ngOnInit();
 
         if (this.baconDrawer) {
-            this.baconDrawer.openedChange.subscribe(v => {
-                if (v) {
-                    this.baconDrawerComponent.keybindingZoneService.activate();
-                } else {
-                    this.baconDrawerComponent.keybindingZoneService.restorePreviousActivation();
-                }
+            this.baconDrawer.openedChange
+                .pipe(
+                    filter(() => !this.isDoingAction)
+                ).subscribe(v => {
+                    if (v) {
+                        this.baconDrawerComponent.keybindingZoneService.activate();
+                    } else {
+                        this.baconDrawerComponent.keybindingZoneService.restorePreviousActivation();
+                    }
 
-                this.sidenavOpenedChange.next(v);
-                this.changeDetector.detectChanges();
-                console.debug('[BaconStripComponent]: Toggled drawer', this);
+                    this.sidenavOpenedChange.next(v);
+                    this.changeDetector.detectChanges();
+                    console.debug('[BaconStripComponent]: Toggled drawer', this);
             });
         }
     }
@@ -114,6 +103,7 @@ export class BaconStripComponent extends ScreenPartComponent<BaconStripInterface
         } else {
             this.iconButtonName = this.screenData.icon;
         }
+        console.debug('[BaconStripComponent]: Removing "Escape" keybinding');
         this.keybindingZoneService.removeKeybinding('Escape');
     }
 
@@ -121,19 +111,17 @@ export class BaconStripComponent extends ScreenPartComponent<BaconStripInterface
         if (this.screenData.actions && this.screenData.actions.length === 1) {
             this.doAction(this.screenData.actions[0]);
         } else {
-            if (this.sidenavOpened) {
-                const escapeAction = this.baconDrawerComponent.keybindingZoneService.findActionByKey('Escape');
-
-                if (escapeAction) {
-                    this.doAction(escapeAction);
-                }
-            }
-
             this.baconDrawer.toggle();
             this.changeDetector.detectChanges();
         }
 
         console.debug('[BaconStripComponent]', this);
+    }
+
+    onBaconDrawerButtonClicked(action: IActionItem): void {
+        this.isDoingAction = true;
+        this.doAction(action);
+        this.baconDrawer.close().then(() => this.isDoingAction = false);
     }
 
     onSearchExpand(expanded: boolean): void {

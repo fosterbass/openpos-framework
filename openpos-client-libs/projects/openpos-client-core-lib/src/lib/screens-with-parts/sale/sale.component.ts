@@ -8,12 +8,10 @@ import { ITotal } from '../../core/interfaces/total.interface';
 import { merge, Observable, Subject, Subscription } from 'rxjs';
 import { IActionItem } from '../../core/actions/action-item.interface';
 import { MediaBreakpoints, OpenposMediaService } from '../../core/media/openpos-media.service';
-import { CONFIGURATION } from './../../configuration/configuration';
 import { MobileSaleOrdersSheetComponent } from './mobile-sale-orders-sheet/mobile-sale-orders-sheet.component';
-import { KeyPressProvider } from '../../shared/providers/keypress.provider';
 import { ISellItem } from '../../core/interfaces/sell-item.interface';
 import { UIDataMessageService } from '../../core/ui-data-message/ui-data-message.service';
-import { delay, filter, takeUntil, tap } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { SaleItemCardListComponent } from '../../shared/screen-parts/sale-item-card-list/sale-item-card-list.component';
 
 
@@ -43,7 +41,6 @@ export class SaleComponent extends PosScreenDirective<SaleInterface> {
         injector: Injector,
         media: OpenposMediaService,
         private bottomSheet: MatBottomSheet,
-        private keyPressProvider: KeyPressProvider,
         private dataMessageService: UIDataMessageService,
         private changeDetectorRef: ChangeDetectorRef
         ) {
@@ -68,16 +65,6 @@ export class SaleComponent extends PosScreenDirective<SaleInterface> {
             this.screen.customerName.substring(0, 10) + '...' : this.screen.customerName;
         this.removeOrderAction = this.screen.removeOrderAction;
         this.dialog.closeAll();
-
-        if (this.screen.logoutButton) {
-            this.keyPressProvider.globalSubscribe(this.screen.logoutButton).pipe(
-                takeUntil(this.stop$)
-            ).subscribe(action => this.doAction(action));
-        }
-    }
-
-    onEnter(value: string) {
-        this.doAction('Next', value);
     }
 
     public onMenuItemClick(menuItem: IActionItem) {

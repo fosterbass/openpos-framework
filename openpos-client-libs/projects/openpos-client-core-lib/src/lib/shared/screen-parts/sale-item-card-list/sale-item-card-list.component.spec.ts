@@ -1,7 +1,5 @@
 import { MatDialogModule } from '@angular/material/dialog';
-import { KeyPressProvider } from '../../providers/keypress.provider';
-import { DisabledKeyPressProvider } from '../../providers/disabled-keypress.provider';
-import { ComponentFixture, fakeAsync, flush, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
 import { SaleItemCardListComponent } from './sale-item-card-list.component';
 import {
     KeybindingTestUtils,
@@ -16,7 +14,6 @@ import { ImageTextPanelComponent } from '../image-text-panel/image-text-panel.co
 import { LifeCycleMessage } from '../../../core/messages/life-cycle-message';
 import { LifeCycleEvents } from '../../../core/messages/life-cycle-events.enum';
 import { MessageTypes } from '../../../core/messages/message-types';
-import { KeybindingZone } from '../../../core/keybindings/keybinding-zone.interface';
 import { MessageProvider } from '../../providers/message.provider';
 import { UIDataMessage } from '../../../core/messages/ui-data-message';
 import { UIDataMessageService } from '../../../core/ui-data-message/ui-data-message.service';
@@ -30,19 +27,37 @@ import { IconComponent } from '../../components/icon/icon.component';
 // This isn't implemented in JSDOM
 // https://github.com/jsdom/jsdom/issues/1695
 // tslint:disable: only-arrow-functions
-HTMLElement.prototype.scrollIntoView = function() {};
+if (!HTMLElement.prototype.scrollIntoView) {
+    HTMLElement.prototype.scrollIntoView = function() {
+    };
+}
 
 function createSaleItems(): any[] {
     return [
         {
             id: '1',
-            menuItems: []
+            menuItems: [{
+                keybind: 'F1',
+                action: 'F1-Action'
+            }, {
+                keybind: 'F2',
+                action: 'F2-Action'
+            }]
         }, {
             id: '2',
-            menuItems: []
+            menuItems: [{
+                keybind: 'F3',
+                action: 'F3-Action'
+            }]
         }, {
             id: '3',
-            menuItems: []
+            menuItems: [{
+                keybind: 'F4',
+                action: 'F4-Action'
+            }, {
+                keybind: 'F5',
+                action: 'F5-Action'
+            }]
         }
     ];
 }
@@ -64,7 +79,6 @@ describe('SaleItemCardListComponent', () => {
     let mockActionService: MockActionService;
     let mockSessionService: MockSessionService;
     let keybindingZoneService: KeybindingZoneService;
-    let saleZone: KeybindingZone;
     let itemsChangedCallback: any;
     let saleItemsData: any;
 
@@ -87,8 +101,7 @@ describe('SaleItemCardListComponent', () => {
                 KeybindingZoneService,
                 UIDataMessageService,
                 {provide: SessionService, useClass: MockSessionService},
-                {provide: ActionService, useClass: MockActionService},
-                {provide: KeyPressProvider, useClass: DisabledKeyPressProvider}
+                {provide: ActionService, useClass: MockActionService}
             ]
         }).compileComponents();
 
@@ -101,7 +114,6 @@ describe('SaleItemCardListComponent', () => {
         itemsChangedCallback = jasmine.createSpy('itemsChanged Callback');
         saleItemsData = createSaleItems();
 
-        saleZone = KeybindingTestUtils.createSaleZone(mockActionService);
         keybindingZoneService.register('test');
         keybindingZoneService.activate();
 
@@ -114,11 +126,10 @@ describe('SaleItemCardListComponent', () => {
         );
 
         mockSessionService.dispatchMessage(new LifeCycleMessage(LifeCycleEvents.ScreenUpdated, {
-            id: saleZone.id,
+            id: 'very-important-screen',
             type: MessageTypes.SCREEN,
             providerKey: 'sale-items',
-            enableCollapsibleItems: true,
-            actions: keybindingZoneService.getZone().actions
+            enableCollapsibleItems: true
         } as any));
 
         fixture.detectChanges();
@@ -127,6 +138,10 @@ describe('SaleItemCardListComponent', () => {
 
     it('should raise itemsChanged event after receiving new sale items', () => {
         expect(itemsChangedCallback).toHaveBeenCalledOnceWith(saleItemsData);
+    });
+
+    it('should expand the last item when sale items change', () => {
+        expect(saleItemCardList.expandedIndex).toEqual(saleItemsData.length - 1);
     });
 
     it('should expand the last item when sale items change', () => {
@@ -162,6 +177,34 @@ describe('SaleItemCardListComponent', () => {
             fixture.detectChanges();
 
             expectExpandedAt(fixture, 0);
+        });
+
+        it('should should remove previous keybindings and add new ones when sell items change', () => {
+            const takeGregsMoney = {
+                keybind: 'F12',
+                action: 'TakeEveryBitOfGregsMoney!!!!'
+            };
+
+            mockSessionService.dispatchMessage(
+                new UIDataMessage('sale-items', 2, [{
+                    id: 1,
+                    menuItems: [takeGregsMoney]
+                }])
+            );
+
+            mockSessionService.dispatchMessage(new LifeCycleMessage(LifeCycleEvents.ScreenUpdated, {
+                id: 'very-important-screen',
+                type: MessageTypes.SCREEN,
+                providerKey: 'sale-items',
+                enableCollapsibleItems: true,
+                actions: [takeGregsMoney]
+            } as any));
+
+            KeybindingTestUtils.pressKey('F1');
+            expect(mockActionService.doAction).not.toHaveBeenCalled();
+
+            KeybindingTestUtils.pressKey('F12');
+            expect(mockActionService.doAction).toHaveBeenCalledOnceWith(takeGregsMoney, jasmine.falsy());
         });
     });
 });

@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { discardPeriodicTasks, fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
 import { CONFIGURATION } from '../../configuration/configuration';
 import { KeybindingZoneService } from './keybinding-zone.service';
 import { KeybindingTestUtils, MockActionService, MockSessionService } from './keybinding-test.utils';
@@ -58,14 +58,16 @@ describe('KeybindingZoneScreenService', () => {
             keybindingZoneScreenService.start(MessageTypes.SCREEN);
         });
 
-        it('should deactivate when the screen changes message types', () => {
+        it('should deactivate when the screen changes message types', fakeAsync(() => {
             mockSessionService.dispatchMessage({
                 id: 'dumb-dialog',
                 type: MessageTypes.DIALOG
             });
+            tick(keybindingZoneScreenService.dialogMessageDebounceTime);
+
             expect(keybindingZoneService.isActive()).toBeFalse();
             expect(keybindingZoneService.isRegistered()).toBeTrue();
-        });
+        }));
 
         it('should activate a new screen if the message type is the same', () => {
             mockSessionService.dispatchMessage({

@@ -9,7 +9,8 @@ import { KeybindingParserService } from './keybinding-parser.service';
 import { KeybindingActionCache } from './keybinding-action-cache.interface';
 import { KeybindingPropertyCrawlerService } from './keybinding-property-crawler.service';
 import { KeybindingAction } from './keybinding-action.interface';
-import { KeybindingKey } from './keybinding-key.interface';
+import { KeybindingLikeKey } from './keybinding-like-key.interface';
+import { KeybindingPendingAction } from './keybinding-pending-action.interface';
 
 /**
  * The core (singleton) service responsible for the keybinding functionality.
@@ -24,6 +25,7 @@ export class KeybindingService implements OnDestroy {
     private zoneActivated$ = new Subject<KeybindingZone>();
     private zoneDeactivated$ = new Subject<KeybindingZone>();
     private needActionPayload$ = new Subject<KeybindingAction>();
+    private shouldDoAction$ = new Subject<any>();
     private destroyed$ = new Subject();
 
     private enabled = true;
@@ -71,7 +73,14 @@ export class KeybindingService implements OnDestroy {
         console.log('[KeybindingService]: Stopped listening for events');
     }
 
-    register(zone: KeybindingZone): Observable<KeybindingEvent> {
+    register(zoneOrId: KeybindingZone | string): Observable<KeybindingEvent> {
+        let zone = typeof zoneOrId === 'string' ? {id: zoneOrId} : zoneOrId;
+
+        if (!zone) {
+            console.debug('[KeybindingService]: Not registering zone because it is null/undefined', zone);
+            return EMPTY;
+        }
+
         if (zone.actionsObj) {
             zone = {
                 ...zone,
@@ -79,13 +88,17 @@ export class KeybindingService implements OnDestroy {
             };
         }
 
+        // Ensure actions has a value
+        zone.actions = zone.actions || [];
+
         console.log(`[KeybindingService]: Registered zone "${zone.id}"`, zone);
         const stopZoneKeyDown$ = new Subject<any>();
 
-        console.log(`[KeybindingService]: Creating observable for executing keybinding actions in zone "${zone.id}"`, zone);
+        console.debug(`[KeybindingService]: Creating observable for executing keybinding actions in zone "${zone.id}"`, zone);
         const keyDownActionEvent$ = this.keyDownEvent$.pipe(
             map(event => this.createKeybindingEvent(zone.id, event)),
             tap(event => console.debug(`[KeybindingService]: Received keydown event in zone observable "${event.zone.id}"`, event, this)),
+            filter(event => this.doesEventMatchAction(event.domEvent)),
             filter(event => this.isActive(event.zone.id)),
             tap(event => this.doEventAction(event)),
             tap(event => this.logEvent(event)),
@@ -115,6 +128,9 @@ export class KeybindingService implements OnDestroy {
                 actions: this.propertyCrawler.findKeybindings(zone.actionsObj)
             };
         }
+
+        // Ensure actions has a value
+        zone.actions = zone.actions || [];
 
         console.log(`[KeybindingService]: Updated zone "${zone.id}"`, zone);
         this.zones[zone.id] = zone;
@@ -159,21 +175,56 @@ export class KeybindingService implements OnDestroy {
         return this.activeZoneHistory[this.activeZoneHistory.length - 2];
     }
 
+    doesEventMatchAction(event: KeybindingLikeKey): boolean {
+        if (!this.hasActiveZone()) {
+            console.debug('[KeybindingService]: Event does not match action because there is no active zone');
+            return false;
+        }
+
+        if (!event) {
+            console.debug('[KeybindingService]: Event does not match action because a null/undefined event was passed in');
+            return false;
+        }
+
+        const key = this.keybindingParser.getNormalizedKey(event);
+        const actionsCache = this.zoneActionsCache[this.getActiveZoneId()];
+        const matchingAction = actionsCache[key];
+
+        console.debug(`[KeybindingService]: Does event match action: ${!!matchingAction}`, event, this.zoneActionsCache);
+        return !!matchingAction;
+    }
+
     doEventAction(event: KeybindingEvent): void {
         if (!this.shouldDoEventAction(event)) {
-            console.log('[KeybindingService]: Not executing event action (see previous debug log entries for reason)', event);
+            console.log('[KeybindingService]: Not executing event action (see previous debug-level log entries for reason)', event);
             return;
         }
 
+        // Provide an opportunity to add a payload before executing the action
         const keybindingAction: KeybindingAction = {
             action: event.action,
             payload: null
         };
-        // Provide an opportunity to add a payload before executing the action
         this.needActionPayload$.next(keybindingAction);
+        event.actionPayload = keybindingAction.payload;
+
+        // Provide an opportunity to cancel the action
+        const pendingAction: KeybindingPendingAction = {
+            cancel: false,
+            zone: event.zone,
+            action: event.action,
+            actionPayload: event.actionPayload,
+            domEvent: event.domEvent
+        };
+        this.shouldDoAction$.next(pendingAction);
+
+        if (pendingAction.cancel) {
+            console.log('[KeybindingService]: Not executing event action because it was cancelled', pendingAction);
+            return;
+        }
 
         console.log(`%c[KeybindingService]: Executing action ${keybindingAction.action.action}`, this.logActiveEventStyle, event);
-        event.zone.actionService?.doAction(keybindingAction.action, keybindingAction.payload);
+        event.zone.actionService.doAction(keybindingAction.action, keybindingAction.payload);
         event.didDoAction = true;
     }
 
@@ -205,7 +256,7 @@ export class KeybindingService implements OnDestroy {
         }
 
         const isZoneActive = zone.alwaysActive || (this.getActiveZoneId() === zone.id);
-        console.debug(`[KeybindingService]: Zone "${zoneId}" is ${!isZoneActive ? 'not' : ''} active`);
+        console.debug(`[KeybindingService]: Check if zone "${zoneId}" is active: ${isZoneActive}`);
         return isZoneActive;
     }
 
@@ -262,11 +313,48 @@ export class KeybindingService implements OnDestroy {
         }
     }
 
-    removeKeybinding(zoneId: string, key: string): IActionItem {
+    removeAllKeybindings(zoneId: string, keysOrKeybindingsOrObj: (string | IActionItem)[] | any): IActionItem[] {
+        if (!keysOrKeybindingsOrObj) {
+            console.debug('[KeybindingService]: Not removing keybinding because no value was specified', keysOrKeybindingsOrObj);
+            return [];
+        }
+
+        const allRemovedKeybindings: IActionItem[] = [];
+
+        for (const propOrIndex in keysOrKeybindingsOrObj) {
+            if (!keysOrKeybindingsOrObj.hasOwnProperty(propOrIndex)) {
+                continue;
+            }
+
+            const keyOrKeybindingOrObj = keysOrKeybindingsOrObj[propOrIndex];
+            let removedKeybinding;
+
+            if (typeof keyOrKeybindingOrObj === 'string') {
+                removedKeybinding = this.removeKeybinding(zoneId, keyOrKeybindingOrObj);
+                allRemovedKeybindings.push(removedKeybinding);
+            } else {
+                this.propertyCrawler.findKeybindings(keyOrKeybindingOrObj)
+                    .forEach(keybinding => {
+                        removedKeybinding = this.removeKeybinding(zoneId, keybinding);
+                        allRemovedKeybindings.push(removedKeybinding);
+                    });
+            }
+        }
+
+        return allRemovedKeybindings;
+    }
+
+    removeKeybinding(zoneId: string, keyOrKeybinding: string | IActionItem): IActionItem {
+        if (!keyOrKeybinding) {
+            console.debug('[KeybindingService]: Not removing keybinding because no value was specified', keyOrKeybinding);
+            return null;
+        }
+
         const zone = this.zones[zoneId];
+        const key = typeof keyOrKeybinding === 'string' ? keyOrKeybinding : keyOrKeybinding.keybind;
 
         if (!zone) {
-            console.log(`[KeybindingService]: Cannot find zone "${zoneId}" to remove action ${key}`, this.zones);
+            console.debug(`[KeybindingService]: Cannot find zone "${zoneId}" to remove action ${key}`, this.zones);
             return null;
         }
 
@@ -277,10 +365,50 @@ export class KeybindingService implements OnDestroy {
         }
 
         const actionItem = this.zones[zoneId].actions.splice(actionIndex, 1)[0];
-        console.log(`[KeybindingService]: Removed keybinding ${actionItem.keybind} from zone ${zone.id}`, actionItem, zone);
+        console.log(`[KeybindingService]: Removed keybinding "${actionItem.keybind}" from zone "${zone.id}"`, actionItem, zone);
         this.cacheActionsByKey(zone.id);
 
         return actionItem;
+    }
+
+    addAllKeybindings(zoneId: string, keybindingObjOrArray: IActionItem[] | any): void {
+        const keybindings = this.propertyCrawler.findKeybindings(keybindingObjOrArray);
+
+        if (!keybindings) {
+            console.debug('[KeybindingService]: Not removing keybinding because no value was specified', keybindings);
+            return;
+        }
+
+        keybindings.forEach(keybinding => this.addKeybinding(zoneId, keybinding));
+    }
+
+    addKeybinding(zoneId: string, keybinding: IActionItem): void {
+        if (!keybinding) {
+            console.debug('[KeybindingService]: Not adding keybinding because a falsy value was specified', keybinding);
+            return;
+        }
+
+        const zone = this.zones[zoneId];
+
+        if (!zone) {
+            console.debug(`[KeybindingService]: Cannot find zone "${zoneId}" to add keybinding "${keybinding.keybind}"`, this.zones);
+            return;
+        }
+
+        const existingActionIndex = zone.actions.findIndex(action => this.keybindingParser.areEqual(action.keybind, keybinding.keybind));
+
+        // Give priority to new keybinding and remove existing keybinding if it exists
+        if (existingActionIndex >= 0) {
+            const duplicateKeybinding = this.zones[zoneId].actions[existingActionIndex];
+            console.debug(`[KeybindingService]: Preventing a duplicate keybinding "${duplicateKeybinding.keybind}"`
+                + `being added to zone "${zoneId}"`, this.zones);
+
+            this.zones[zoneId].actions.splice(existingActionIndex, 1);
+        }
+
+        this.zones[zoneId].actions.push(keybinding);
+        console.log(`[KeybindingService]: Added keybinding "${keybinding.keybind}" to zone "${zone.id}"`, keybinding, zone);
+        this.cacheActionsByKey(zone.id);
     }
 
     createKeybindingEvent(zoneId: string, event: KeyboardEvent): KeybindingEvent {
@@ -288,6 +416,7 @@ export class KeybindingService implements OnDestroy {
             domEvent: event,
             zone: this.zones[zoneId],
             action: this.findActionByKey(zoneId, event),
+            actionPayload: null,
             didDoAction: false
         };
     }
@@ -322,7 +451,7 @@ export class KeybindingService implements OnDestroy {
         return true;
     }
 
-    findActionByKey(zoneId: string, obj: KeyboardEvent | KeybindingKey | string): IActionItem {
+    findActionByKey(zoneId: string, obj: KeybindingLikeKey): IActionItem {
         if (!this.zones[zoneId]) {
             return null;
         }
@@ -355,8 +484,17 @@ export class KeybindingService implements OnDestroy {
         console.log(`[KeybindingService]: Cached actions for zone "${zone.id}"`, zoneActionByKeyCache);
     }
 
-    getNeedActionPayload(zoneId: string): Observable<KeybindingAction> {
+    getNeedActionPayload(zoneId: string, keybindingKey?: string): Observable<KeybindingAction> {
         return this.needActionPayload$.asObservable()
+            .pipe(
+                filter(() => zoneId === this.getActiveZoneId()),
+                filter(event => this.doesMatchKey(event.action.keybind, keybindingKey)),
+                share()
+            );
+    }
+
+    getShouldDoAction(zoneId: string): Observable<KeybindingPendingAction> {
+        return this.shouldDoAction$.asObservable()
             .pipe(
                 filter(() => zoneId === this.getActiveZoneId()),
                 share()
@@ -371,13 +509,18 @@ export class KeybindingService implements OnDestroy {
         return this.zoneDeactivated$.asObservable();
     }
 
-    getKeyDownZoneActionEvent(zoneId: string): Observable<KeybindingEvent> {
+    getKeyDownZoneActionEvent(zoneId: string, key?: string): Observable<KeybindingEvent> {
         if (!this.keyDownZoneActionEvents[zoneId]) {
             console.warn(`[KeybindingService]: There is no key down action event for the zone "${zoneId}"`);
             return EMPTY;
         }
 
-        return this.keyDownZoneActionEvents[zoneId];
+        return this.keyDownZoneActionEvents[zoneId]
+            .pipe(
+                tap(event => console.debug(`[KeybindingService]: Key Down Zone Action Event filtered for key:${key}`, event)),
+                filter(event => this.doesMatchKey(event.domEvent, key)),
+                share()
+            );
     }
 
     getAllKeyDownEvents(key?: string): Observable<KeybindingEvent> {
@@ -385,12 +528,12 @@ export class KeybindingService implements OnDestroy {
             .pipe(
                 map(event => this.createKeybindingEvent(this.getActiveZoneId(), event)),
                 tap(event => console.debug('[KeybindingService]: All Key Down Event', event)),
-                filter(event => this.doesKeyboardEventMatchKey(event.domEvent, key)),
+                filter(event => this.doesMatchKey(event.domEvent, key)),
                 share()
             );
     }
 
-    doesKeyboardEventMatchKey(event: KeyboardEvent, key: string): boolean {
+    doesMatchKey(event: KeybindingLikeKey, key: string): boolean {
         if (!key) {
             console.debug('[KeybindingService]: Returning successful match because no key was specified to filter', event);
             return true;
@@ -409,6 +552,7 @@ export class KeybindingService implements OnDestroy {
         console.group('%c[KeybindingService]', event.didDoAction ? this.logActiveEventStyle : '');
         console.log(`Key: ${key}`);
         console.log('Action: ', action);
+        console.log('Action Payload: ', event.action);
         console.log('Did Do Action: ', event.didDoAction);
         console.log('Active Zone: ', this.activeZone);
         console.log('Active Zone History: ', this.activeZoneHistory);

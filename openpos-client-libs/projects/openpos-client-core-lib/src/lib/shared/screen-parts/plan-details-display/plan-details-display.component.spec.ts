@@ -8,18 +8,12 @@ import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provi
 import { TimeZoneContext } from '../../../core/client-context/time-zone-context';
 import { PlanDetailsDisplayComponent } from './plan-details-display.component';
 import { Plan } from '../../../screens-with-parts/membership/plan-interface';
-import { KeyPressProvider } from '../../providers/keypress.provider';
 import { Subscription } from 'rxjs';
 import { ActionItem } from '../../../core/actions/action-item';
 import { SafeHtmlPipe } from '../../pipes/safe-html.pipe';
 import { MockComponent } from 'ng-mocks';
 import { IconComponent } from '../../components/icon/icon.component';
 
-class MockKeyPressProvider {
-    subscribe(): Subscription {
-        return new Subscription();
-    }
-}
 class MockActionService { }
 class MockMatDialog { }
 class MockElectronService { }
@@ -41,7 +35,6 @@ describe('PlanDetailsDisplayComponent', () => {
                 { provide: MatDialog, useClass: MockMatDialog },
                 { provide: ActionService, useClass: MockActionService },
                 { provide: ElectronService, useClass: MockElectronService },
-                { provide: KeyPressProvider, useClass: MockKeyPressProvider },
                 { provide: ClientContext, useValue: {} },
                 { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
             ]

@@ -1,7 +1,5 @@
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { KeyPressProvider } from '../../providers/keypress.provider';
-import { DisabledKeyPressProvider } from '../../providers/disabled-keypress.provider';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import {
     KeybindingTestUtils,
     MockActionService,
@@ -66,7 +64,6 @@ describe('KebabMenuComponent', () => {
             providers: [
                 {provide: SessionService, useClass: MockSessionService},
                 {provide: ActionService, useClass: MockActionService},
-                {provide: KeyPressProvider, useClass: DisabledKeyPressProvider},
                 {provide: MAT_DIALOG_DATA, useValue: data},
                 {provide: MatDialogRef, useValue: mockDialog}
             ]
@@ -84,6 +81,20 @@ describe('KebabMenuComponent', () => {
         fixture.detectChanges();
         await fixture.whenStable();
     });
+
+    // Ensure the kebab menu is closed after each test
+    afterEach(waitForAsync(() => {
+        fixture.destroy();
+        fixture.detectChanges();
+
+        // Sometimes it randomly hangs around event after destroying the component
+        fixture.whenStable().then(() => {
+            const kebabMenuElement = document.querySelector('app-kebab-menu');
+            if (kebabMenuElement) {
+                kebabMenuElement.remove();
+            }
+        });
+    }));
 
     describe('keybindings', () => {
         it('should register the actions in the data', () => {
