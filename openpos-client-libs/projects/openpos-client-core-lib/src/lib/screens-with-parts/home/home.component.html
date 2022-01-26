@@ -14,7 +14,7 @@
                  [matBadgeHidden]="!getNotificationForButton(menuItem)"
                  [@bounce]="getNotificationForButton(menuItem)? (bounceInterval | async) : 'down'">
                 <button responsive-class class="menu-button" mat-raised-button
-                        gdAuto="column" color=primary [disabled]="!menuItem.enabled"
+                        gdAuto="column" color="white" [disabled]="!menuItem.enabled"
                         (click)="doAction(menuItem)" [actionItem]="menuItem">
                     <div class="menu-button-content">
                         <app-icon iconName="{{menuItem.icon}}" [iconClass]="(iconClass | async)"></app-icon>
