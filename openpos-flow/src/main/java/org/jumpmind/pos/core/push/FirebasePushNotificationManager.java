@@ -10,6 +10,7 @@ import com.google.firebase.messaging.Notification;
 import lombok.extern.slf4j.Slf4j;
 import org.jumpmind.pos.server.service.IMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -18,6 +19,7 @@ import java.io.InputStream;
 
 @Slf4j
 @Component
+@Profile("pushNotifications")
 public class FirebasePushNotificationManager {
 
     @Autowired
