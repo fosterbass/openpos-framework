@@ -223,7 +223,7 @@ export class KeyPressProvider implements OnDestroy {
             if (this.keyHasSubscribers(event)) {
                 const priorityMap = this.subscribers.get(key);
                 const prioritiesList = Array.from(priorityMap.keys())
-                    .filter(priority => priorityMap.get(priority).eventType === event.type).sort();
+                    .filter(priority => priorityMap.get(priority).eventType === event.type).sort((a, b) => (a - b));
 
                 if (prioritiesList.length > 0) {
                     const priority = prioritiesList[0];
