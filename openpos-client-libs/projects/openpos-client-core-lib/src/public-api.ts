@@ -329,6 +329,7 @@ export * from './lib/shared/screen-parts/image-text-panel/image-text-panel.inter
 export * from './lib/core/keybindings/keybinding.service';
 export * from './lib/core/keybindings/keybinding-action.interface';
 export * from './lib/core/keybindings/keybinding-action-cache.interface';
+export * from './lib/core/keybindings/keybinding-dialog.service';
 export * from './lib/core/keybindings/keybinding-event.interface';
 export * from './lib/core/keybindings/keybinding-key.interface';
 export * from './lib/core/keybindings/keybinding-like-key.interface';

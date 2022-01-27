@@ -10,6 +10,7 @@ export class MockSessionService {
     public dialogMessage$: Observable<any>;
 
     public isRunningInBrowser = jasmine.createSpy('isRunningInBrowser').and.returnValue(true);
+    public sendMessage = jasmine.createSpy('sendMessage').and.returnValue(true);
 
     constructor() {
         this.screenMessage$ = this.getMessages(MessageTypes.SCREEN)

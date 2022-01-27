@@ -15,7 +15,6 @@ import { ErrorHandlerService } from './services/errorhandler.service';
 import { StompRService } from '@stomp/ng2-stompjs';
 import { DialogContentComponent } from './components/dialog-content/dialog-content.component';
 import { TrainingOverlayService } from './services/training-overlay.service';
-import { fromEvent, Observable } from 'rxjs';
 import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
 import { PersonalizationComponent } from './personalization/personalization.component';
 import { ToastService } from './services/toast.service';
@@ -76,6 +75,7 @@ import { PLUGINS } from './platform-plugins/platform-plugin.interface';
 import { KeybindingService } from './keybindings/keybinding.service';
 import { KeybindingLockScreenService } from './keybindings/keybinding-lock-screen.service';
 import { ENTERPRISE_CONFIGS } from './platform-plugins/enterprise-config/enterprise-config.service';
+import { KeybindingDialogService } from './keybindings/keybinding-dialog.service';
 
 registerLocaleData(locale_enCA, 'en-CA');
 registerLocaleData(locale_frCA, 'fr-CA');
@@ -181,6 +181,7 @@ export class CoreModule {
         clientExecutableService: ClientExecutableService,
         pushNotificationService: PushNotificationService,
         keybindingService: KeybindingService,
+        keybindingDialogService: KeybindingDialogService,
         keybindingLockScreenService: KeybindingLockScreenService) {
         throwIfAlreadyLoaded(parentModule, 'CoreModule');
         AppInjector.instance = this.injector;
