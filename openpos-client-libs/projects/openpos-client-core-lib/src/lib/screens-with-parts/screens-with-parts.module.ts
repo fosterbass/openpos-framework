@@ -38,7 +38,7 @@ import { TransactionDetailsComponent } from './transaction-details/transaction-d
 import { SimulatedPeripheralViewerComponent } from './simulated-peripheral-viewer/simulated-peripheral-viewer.component';
 import { CustomerSearchResultDialogComponent } from './customer-search-result-dialog/customer-search-result-dialog.component';
 import { LoyaltyCustomerFormDialogComponent } from './loyalty-customer-form-dialog/loyalty-customer-form-dialog.component';
-import { CustomerDetailsDialogComponent } from './sale/customer-details-dialog/customer-details-dialog.component';
+import { CustomerDetailsDialogComponent } from './customer-details-dialog/customer-details-dialog.component';
 import { PromptWithInfoScanGiftCardScreenDialogComponent } from './prompt-with-info-scan-gift-card/prompt-with-info-scan-gift-card-screen-dialog.component';
 import { PromptInfoScanGiftCardScreenComponent } from './prompt-with-info-scan-gift-card/prompt-info-scan-gift-card-screen.component';
 import { Prompt2ScreenDialogComponent } from './prompt2/prompt2-screen-dialog.component';

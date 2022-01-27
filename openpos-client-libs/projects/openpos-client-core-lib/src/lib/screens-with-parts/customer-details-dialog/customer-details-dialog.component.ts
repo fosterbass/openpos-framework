@@ -1,10 +1,10 @@
 import { Component, Injector } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { CustomerDetailsDialogInterface, CustomerItemHistoryFilter } from './customer-details-dialog.interface';
-import { DialogComponent } from '../../../shared/decorators/dialog-component.decorator';
-import { PosScreenDirective } from '../../pos-screen/pos-screen.component';
+import { DialogComponent } from '../../shared/decorators/dialog-component.decorator';
+import { PosScreenDirective } from '../pos-screen/pos-screen.component';
 import { Observable } from 'rxjs';
-import { MediaBreakpoints, OpenposMediaService } from '../../../core/media/openpos-media.service';
+import { MediaBreakpoints, OpenposMediaService } from '../../core/media/openpos-media.service';
 
 @DialogComponent({
   name: 'CustomerDetailsDialog'

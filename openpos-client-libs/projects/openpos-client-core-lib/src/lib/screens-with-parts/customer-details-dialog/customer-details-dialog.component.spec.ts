@@ -2,21 +2,21 @@ import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { CustomerDetailsDialogComponent } from './customer-details-dialog.component';
 import { CustomerDetailsDialogInterface } from './customer-details-dialog.interface';
-import { ActionService } from '../../../core/actions/action.service';
-import { validateDoesNotExist, validateExist, validateText } from '../../../utilites/test-utils';
+import { ActionService } from '../../core/actions/action.service';
+import { validateDoesNotExist, validateExist, validateText } from '../../utilites/test-utils';
 import { By } from '@angular/platform-browser';
-import { IActionItem } from '../../../core/actions/action-item.interface';
-import { PhonePipe } from '../../../shared/pipes/phone.pipe';
+import { IActionItem } from '../../core/actions/action-item.interface';
+import { PhonePipe } from '../../shared/pipes/phone.pipe';
 import { MatDialog } from '@angular/material/dialog';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ElectronService } from 'ngx-electron';
-import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provider.interface';
-import { TimeZoneContext } from '../../../core/client-context/time-zone-context';
+import { CLIENTCONTEXT } from '../../core/client-context/client-context-provider.interface';
+import { TimeZoneContext } from '../../core/client-context/time-zone-context';
 import { Observable, of } from 'rxjs';
-import { MediaBreakpoints, OpenposMediaService } from '../../../core/media/openpos-media.service';
-import { Reward } from '../../../shared/screen-parts/rewards-line-item/rewards-line-item.interface';
-import { ImageUrlPipe } from '../../../shared/pipes/image-url.pipe';
-import { MarkdownFormatterPipe } from '../../../shared/pipes/markdown-formatter.pipe';
+import { MediaBreakpoints, OpenposMediaService } from '../../core/media/openpos-media.service';
+import { Reward } from '../../shared/screen-parts/rewards-line-item/rewards-line-item.interface';
+import { ImageUrlPipe } from '../../shared/pipes/image-url.pipe';
+import { MarkdownFormatterPipe } from '../../shared/pipes/markdown-formatter.pipe';
 
 class MockActionService { }
 class MockMatDialog { }
