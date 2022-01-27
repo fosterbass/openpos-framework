@@ -1,6 +1,5 @@
 <app-loader></app-loader>
-<div [class]="(getLocalTheme() | async) + ' container'" [ngClass]="{'no-status-bar': !(showStatusBarAppId && showStatusBarState)}"
-     inactivityMonitor appKeypressSource appStayFocused>
+<div [class]="getDynamicClasses() + ' container'" inactivityMonitor appKeypressSource appStayFocused>
     <app-status-bar *ngIf="showStatusBarAppId && showStatusBarState"></app-status-bar>
     <div class="content-area">
         <app-watermark *ngIf="showWatermark" class="display-contents" [message]="watermarkMessage"></app-watermark>

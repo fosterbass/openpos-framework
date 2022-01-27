@@ -8,7 +8,7 @@ import { OpenposMediaService } from '../../../../core/media/openpos-media.servic
 import { BehaviorSubject, of } from 'rxjs';
 import { MessageProvider } from '../../../../shared/providers/message.provider';
 import { SwatchProductOptionPartInterface } from './swatch-product-option-part.interface';
-import { UIMessage } from 'openpos-client-core-lib/public-api';
+import { UIMessage } from '../../../../core/messages/ui-message';
 import { MatSelectModule } from '@angular/material/select';
 
 describe('SwatchProductOptionPartComponent', () => {

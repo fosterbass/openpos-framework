@@ -6,7 +6,6 @@ import { SessionService } from '../../../core/services/session.service';
 import { WatermarkMessage } from '../../../core/messages/watermark-message';
 import { MessageTypes } from '../../../core/messages/message-types';
 import { ConfigurationService } from '../../../core/services/configuration.service';
-import { Observable } from 'rxjs';
 import { UIConfigMessage } from '../../../core/messages/ui-config-message';
 import { UIMessage } from '../../../core/messages/ui-message';
 
@@ -51,7 +50,11 @@ export class DynamicScreenComponent implements OnInit {
         this.toastrService.overlayContainer = this.toastContainer;
     }
 
-    getLocalTheme(): Observable<string> {
-        return this.configuration.theme$;
+    getDynamicClasses(): string {
+        let classes = this.configuration.theme$.getValue();
+        if (!(this.showStatusBarAppId && this.showStatusBarState)) {
+            classes += ' no-status-bar';
+        }
+        return classes;
     }
 }
