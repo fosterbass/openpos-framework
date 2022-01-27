@@ -4,7 +4,7 @@
         <mat-tab-group mat-align-tabs="start" animationDuration="0ms">
             <mat-tab *ngFor="let tab of screen.subscriptionAccounts">
                 <ng-template mat-tab-label>
-                    <app-icon *ngIf="tab.iconImageUrl" [iconName]="tab.iconImageUrl"
+                    <app-icon *ngIf="tab.iconImageUrl" [iconName]="'wine'"
                         [iconClass]="'material-icons' + ((isMobile | async) ? ' mat-64' : '')"></app-icon>
                     {{tab.iconText}}
                 </ng-template>
@@ -25,7 +25,7 @@
                         *ngIf="tab.signupActionItem && tab.enrollmentItems && tab.enrollmentItems.length > 0"
                         [disabled]="!tab.signupActionItem.enabled"
                         (actionClick)="doAction(tab.signupActionItem)" (click)="doAction(tab.signupActionItem)">
-                        <app-icon *ngIf="tab.signupActionItem.icon" [iconName]="tab.signupActionItem.icon"
+                        <app-icon *ngIf="tab.signupActionItem.icon" [iconName]="'wine'"
                             [iconClass]="'material-icons' + ((isMobile | async) ? ' mat-64' : '')"></app-icon>
                         <span>{{tab.signupActionItem.title}}</span>
                         <span *ngIf="keybindsEnabled(tab.signupActionItem)" class="muted-color keybinding">

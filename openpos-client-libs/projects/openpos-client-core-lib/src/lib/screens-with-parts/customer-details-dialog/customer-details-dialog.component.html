@@ -20,8 +20,8 @@
                     [disabled]="!screen.customer.membershipSignUpAction.enabled"
                     (actionClick)="doAction(screen.customer.membershipSignUpAction)"
                     (click)="doAction(screen.customer.membershipSignUpAction)">
-                    <app-icon *ngIf="screen.customer.membershipSignUpAction.icon"
-                        [iconName]="screen.customer.membershipSignUpAction.icon" [iconClass]="'sm'"></app-icon>
+                    <app-icon 
+                        [iconName]="'wine'" [iconClass]="'sm'"></app-icon>
                     <span>{{screen.customer.membershipSignUpAction.title}}</span>
                     <span *ngIf="keybindsEnabled(screen.customer.membershipSignUpAction)"
                         class="muted-color keybinding">
@@ -34,8 +34,8 @@
                     [disabled]="!screen.customer.enrolledMembershipAction.enabled"
                     (actionClick)="doAction(screen.customer.enrolledMembershipAction)"
                     (click)="doAction(screen.customer.enrolledMembershipAction)">
-                    <app-icon *ngIf="screen.customer.enrolledMembershipAction.icon"
-                        [iconName]="screen.customer.enrolledMembershipAction.icon" [iconClass]="'sm'"></app-icon>
+                    <app-icon 
+                        [iconName]="'wine'" [iconClass]="'sm'"></app-icon>
                     <span>{{screen.customer.enrolledMembershipAction.title}}</span>
                     <span *ngIf="keybindsEnabled(screen.customer.enrolledMembershipAction)"
                         class="muted-color keybinding">
@@ -191,9 +191,11 @@
                     <app-customer-information [customer]="screen.customer"></app-customer-information>
                 </div>
             </div>
-            <div class="icon membership-icon" *ngIf="screen.membershipEnabled">
-                <app-icon responsive-class class="icon" [iconName]="screen.membershipCardIcon" [iconClass]="'material-icons lg'"></app-icon>
-            </div>
+
+             <div class="icon membership-icon" *ngIf="screen.membershipEnabled">
+                <img #img class="suggested-item-image" [src]="'http://localhost:6140/clienteling-demo/twm-reserve-status.png'" style="zoom: 0.6; padding-right: 20px;"/>            
+                    <!-- <app-icon responsive-class class="icon" [iconName]="screen.membershipCardIcon" [iconClass]="'material-icons lg'"></app-icon>  -->
+            </div> 
             <div class="memberships" *ngIf="screen.membershipEnabled">
                 <div class="details-row" *ngIf="screen.memberTierLabel != undefined">{{screen.memberTierLabel}}
                     {{screen.customer.memberTier}}</div>
@@ -217,8 +219,8 @@
                                     [disabled]="!screen.customer.membershipSignUpAction.enabled"
                                     (actionClick)="doAction(screen.customer.membershipSignUpAction)"
                                     (click)="doAction(screen.customer.membershipSignUpAction)">
-                                    <app-icon *ngIf="screen.customer.membershipSignUpAction.icon"
-                                        [iconName]="screen.customer.membershipSignUpAction.icon"
+                                    <app-icon 
+                                        [iconName]="'wine'"
                                         [iconClass]="'material-icons' + ((isMobile | async) ? ' mat-64' : '')"></app-icon>
                                     <span>{{screen.customer.membershipSignUpAction.title}}</span>
                                     <span *ngIf="keybindsEnabled(screen.customer.membershipSignUpAction)"
@@ -233,8 +235,8 @@
                                     [disabled]="!screen.customer.enrolledMembershipAction.enabled"
                                     (actionClick)="doAction(screen.customer.enrolledMembershipAction)"
                                     (click)="doAction(screen.customer.enrolledMembershipAction)">
-                                    <app-icon *ngIf="screen.customer.enrolledMembershipAction.icon"
-                                        [iconName]="screen.customer.enrolledMembershipAction.icon"
+                                    <app-icon 
+                                        [iconName]="'wine'"
                                         [iconClass]="'material-icons' + ((isMobile | async) ? ' mat-64' : '')"></app-icon>
                                     <span>{{screen.customer.enrolledMembershipAction.title}}</span>
                                     <span *ngIf="keybindsEnabled(screen.customer.enrolledMembershipAction)"

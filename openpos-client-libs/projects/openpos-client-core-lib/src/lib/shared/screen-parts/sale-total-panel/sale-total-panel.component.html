@@ -66,6 +66,7 @@
                         <div responsive-class class="customer-name">
                             {{screenData.customer.name}}
                         </div>
+                        <img #img class="suggested-item-image" [src]="'http://localhost:6140/clienteling-demo/twm-reserve-status-invert.png'" style="padding-top:10px; zoom:0.85;"/>            
                         <div *ngIf="keybindsEnabled(screenData.linkedCustomerButton)"
                              class="muted-color loyalty-keybind">{{screenData.linkedCustomerButton.keybindDisplayName}}</div>
                     </div>
