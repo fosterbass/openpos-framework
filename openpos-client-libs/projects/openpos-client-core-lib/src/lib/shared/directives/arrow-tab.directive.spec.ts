@@ -133,12 +133,14 @@ describe('ArrowTabDirective', () => {
 
         it('should not error trying to select next', () => {
             KeybindingTestUtils.pressKey('ArrowDown');
-            expect(document.activeElement === document.body || document.querySelector('mat-dialog-container')).toBeTrue();
+            expect(document.activeElement === document.body
+                || document.activeElement === document.querySelector('mat-dialog-container')).toBeTrue();
         });
 
         it('should not error trying to select previous', () => {
             KeybindingTestUtils.pressKey('ArrowUp');
-            expect(document.activeElement === document.body || document.querySelector('mat-dialog-container')).toBeTrue();
+            expect(document.activeElement === document.body
+                || document.activeElement === document.querySelector('mat-dialog-container')).toBeTrue();
         });
     });
 });

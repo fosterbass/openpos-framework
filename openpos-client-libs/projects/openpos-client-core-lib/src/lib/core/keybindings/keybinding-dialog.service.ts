@@ -8,6 +8,7 @@ import { LifeCycleMessage } from '../messages/life-cycle-message';
 import { LifeCycleEvents } from '../messages/life-cycle-events.enum';
 import { ActionMessage } from '../messages/action-message';
 import { KeybindingEvent } from './keybinding-event.interface';
+import { CONFIGURATION } from '../../configuration/configuration';
 
 /**
  * The core (singleton) service responsible for the behavior specific to dialogs.
@@ -30,12 +31,12 @@ export class KeybindingDialogService implements OnDestroy {
     constructor(private keybindingService: KeybindingService, private sessionService: SessionService) {
         this.listenForLifeCycleEvents();
         this.listenForKeyDownEvents();
-        console.log('[KeybindingDialogService]: Is enabled and listening for events');
     }
 
     listenForLifeCycleEvents(): void {
         this.sessionService.getMessages(MessageTypes.LIFE_CYCLE_EVENT)
             .pipe(
+                filter(() => CONFIGURATION.enableKeybinds),
                 filter(() => this.enabled),
                 takeUntil(this.destroyed$)
             ).subscribe(message => this.handleLifeCycleEvent(message));
@@ -44,6 +45,7 @@ export class KeybindingDialogService implements OnDestroy {
     listenForKeyDownEvents(): void {
         this.keybindingService.getAllKeyDownEvents()
             .pipe(
+                filter(() => CONFIGURATION.enableKeybinds),
                 filter(() => this.enabled),
                 filter(event => this.shouldCloseDialog(event)),
                 takeUntil(this.destroyed$)
@@ -51,15 +53,11 @@ export class KeybindingDialogService implements OnDestroy {
     }
 
     handleLifeCycleEvent(message: LifeCycleMessage) {
-        console.debug(`[KeybindingDialogService]: Handling life cycle message of type "${message.eventType}"`, message);
-
         switch (message.eventType) {
             case LifeCycleEvents.DialogClosing:
-                console.debug('[KeybindingDialogService]: Dialog is closed');
                 this.isDialogOpen = false;
                 break;
             case LifeCycleEvents.DialogOpening:
-                console.debug('[KeybindingDialogService]: Dialog is open');
                 this.isDialogOpen = true;
         }
     }
@@ -75,8 +73,6 @@ export class KeybindingDialogService implements OnDestroy {
 
         const activeZoneId = this.keybindingService.getActiveZoneId();
         const closeAction = this.keybindingService.findActionByKey(activeZoneId, event.domEvent);
-
-        console.debug(`[KeybindingDialogService]: Active zone "${activeZoneId}" has action for "${this.dialogCloseAction}": ${!!closeAction}`);
 
         // Only close when there's not an existing action to handle this key press
         return !closeAction;

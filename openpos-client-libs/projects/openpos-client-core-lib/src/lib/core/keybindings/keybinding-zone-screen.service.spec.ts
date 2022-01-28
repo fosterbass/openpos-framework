@@ -1,4 +1,4 @@
-import { discardPeriodicTasks, fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { CONFIGURATION } from '../../configuration/configuration';
 import { KeybindingZoneService } from './keybinding-zone.service';
 import { KeybindingTestUtils, MockActionService, MockSessionService } from './keybinding-test.utils';
@@ -7,10 +7,12 @@ import { ActionService } from '../actions/action.service';
 import { SessionService } from '../services/session.service';
 import { KeybindingZoneScreenService } from './keybinding-zone-screen.service';
 import { MessageTypes } from '../messages/message-types';
+import { KeybindingService } from './keybinding.service';
 
 describe('KeybindingZoneScreenService', () => {
     let keybindingZoneScreenService: KeybindingZoneScreenService;
     let keybindingZoneService: KeybindingZoneService;
+    let keybindingService: KeybindingService;
     let mockActionService: ActionService;
     let mockSessionService: MockSessionService;
     let subscriptionCallback: any;
@@ -34,6 +36,7 @@ describe('KeybindingZoneScreenService', () => {
 
         userZone = KeybindingTestUtils.createUserZone(mockActionService);
 
+        keybindingService = TestBed.inject(KeybindingService);
         keybindingZoneService = TestBed.inject(KeybindingZoneService);
         keybindingZoneScreenService = TestBed.inject(KeybindingZoneScreenService);
     });
@@ -49,7 +52,7 @@ describe('KeybindingZoneScreenService', () => {
         expect(keybindingZoneService.isActive()).toBeTrue();
     });
 
-    describe('when activated', () => {
+    describe('zone activated', () => {
         beforeEach(() => {
             mockSessionService.dispatchMessage({
                 ...userZone,
@@ -108,5 +111,45 @@ describe('KeybindingZoneScreenService', () => {
             expect(keybindingZoneService.getZoneId()).toEqual(userZone.id);
             expect(keybindingZoneService.isActive()).toBeTrue();
         });
+    });
+
+    describe('keybindings disabled', () => {
+        beforeEach(() => {
+            CONFIGURATION.enableKeybinds = false;
+        });
+
+        it('should not register session messages', () => {
+            mockSessionService.dispatchMessage({
+                ...userZone,
+                type: MessageTypes.SCREEN
+            });
+            keybindingZoneScreenService.start(MessageTypes.SCREEN);
+
+            expect(keybindingZoneService.isRegistered()).toBeFalse();
+            expect(keybindingZoneService.isActive()).toBeFalse();
+        });
+
+        it('should not deactivate', fakeAsync(() => {
+            // Temporarily enable key bindings to set an initial message type of SCREEN
+            CONFIGURATION.enableKeybinds = true;
+            mockSessionService.dispatchMessage({
+                ...userZone,
+                type: MessageTypes.SCREEN
+            });
+            keybindingZoneScreenService.start(MessageTypes.SCREEN);
+
+            // Ensure this new message is never registered
+            CONFIGURATION.enableKeybinds = false;
+            mockSessionService.dispatchMessage({
+                id: 'dumb-dialog',
+                type: MessageTypes.DIALOG
+            });
+            tick(keybindingZoneScreenService.dialogMessageDebounceTime);
+
+            // Verify the current zone is not deactivated
+            expect(keybindingZoneService.getZoneId()).toEqual(userZone.id);
+            expect(keybindingZoneService.isRegistered()).toBeTrue();
+            expect(keybindingZoneService.isActive()).toBeTrue();
+        }));
     });
 });

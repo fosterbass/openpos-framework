@@ -33,14 +33,6 @@ describe('KeybindingService', () => {
         keybindingService.activate(userZone.id);
     });
 
-    it('should not execute when disabled in app configuration', () => {
-        CONFIGURATION.enableKeybinds = false;
-        keybindingService.getAllKeyDownEvents().subscribe(subscriptionCallback);
-        KeybindingTestUtils.pressKey(userZone.actionsObj.killUser.event);
-
-        expect(subscriptionCallback).not.toHaveBeenCalled();
-    });
-
     it('should not execute when the service is disabled', () => {
         keybindingService.disable();
         // Check the lowest-level observable used by the service because if it doesn't fire nothing else will
@@ -337,6 +329,35 @@ describe('KeybindingService', () => {
 
             KeybindingTestUtils.pressKey(userZone.actionsObj.killUser.event);
             expect(mockActionService.doAction).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('disabled', () => {
+        beforeEach(() => {
+            CONFIGURATION.enableKeybinds = false;
+        });
+
+        it('should not execute', () => {
+            keybindingService.getAllKeyDownEvents().subscribe(subscriptionCallback);
+            KeybindingTestUtils.pressKey(userZone.actionsObj.killUser.event);
+
+            expect(subscriptionCallback).not.toHaveBeenCalled();
+        });
+
+        it('should not register', () => {
+            keybindingService.register('nooooooo!!!');
+            expect(keybindingService.isRegistered('nooooooo!!!')).toBeFalse();
+        });
+
+        it('should not update', () => {
+            const expectedActions = keybindingService.getZone(userZone.id).actions;
+            userZone.actionsObj = {
+                action: 'No!',
+                keybind: 'F10'
+            };
+            keybindingService.updateZone(userZone);
+
+            expect(keybindingService.getZone(userZone.id).actions).toEqual(expectedActions);
         });
     });
 });

@@ -105,4 +105,15 @@ describe('KeybindingDialogService', () => {
             expect(mockSessionService.sendMessage).not.toHaveBeenCalled();
         });
     });
+
+    describe('keybindings disabled', () => {
+        beforeEach(() => {
+            CONFIGURATION.enableKeybinds = false;
+        });
+
+        it('should not close', () => {
+            KeybindingTestUtils.pressKey('Escape');
+            expect(mockSessionService.sendMessage).not.toHaveBeenCalled();
+        });
+    });
 });

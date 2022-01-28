@@ -24,7 +24,7 @@ class TestHostComponent {
     public payload: any;
 
     constructor(public keybindingZoneService: KeybindingZoneService) {
-        this.keybindingZoneService.register('test-component');
+        this.keybindingZoneService.register('test');
         this.keybindingZoneService.activate();
     }
 }
@@ -73,7 +73,7 @@ describe('ActionItemKeyMappingDirective', () => {
         expect(mockActionService.doAction).toHaveBeenCalledOnceWith(action, jasmine.falsy());
     });
 
-    it('should keybinding and not use the previous value', () => {
+    it('should update keybinding and not use the previous value', () => {
         const newAction = {
             keybind: 'F10',
             action: 'TakeThatGreg!'
@@ -84,6 +84,8 @@ describe('ActionItemKeyMappingDirective', () => {
         KeybindingTestUtils.pressKey('F10');
 
         expect(mockActionService.doAction).toHaveBeenCalledOnceWith(newAction, jasmine.falsy());
+        // Verify the previous value was removed
+        expect(keybindingZoneService.findActionByKey(action.keybind)).toBeFalsy();
     });
 
     it('should not add undefined action item', () => {
@@ -102,5 +104,28 @@ describe('ActionItemKeyMappingDirective', () => {
         KeybindingTestUtils.pressKey('F3');
 
         expect(mockActionService.doAction).toHaveBeenCalledOnceWith(action, payload);
+    });
+
+    it('should not add a keybinding if it exists', () => {
+        const payload = 'Andy Takes Greg\'s Money!';
+        const expectedAction = {
+            keybind: 'F10',
+            action: 'TransferGregsMoneyToAndy!'
+        };
+
+        // Set the existing action to make sure it's not replaced by this directive
+        keybindingZoneService.addKeybinding(expectedAction);
+
+        fixture.componentInstance.actionItem = {
+            keybind: 'F10',
+            action: 'DoNotAddGreg!!!!!'
+        };
+
+        // Verify the payload is still set even though the action shouldn't be added
+        fixture.componentInstance.payload = payload;
+        fixture.detectChanges();
+        KeybindingTestUtils.pressKey('F10');
+
+        expect(mockActionService.doAction).toHaveBeenCalledOnceWith(expectedAction, payload);
     });
 });

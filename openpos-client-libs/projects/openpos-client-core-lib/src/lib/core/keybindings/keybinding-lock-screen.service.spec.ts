@@ -59,4 +59,20 @@ describe('KeybindingLockScreenService', () => {
         KeybindingTestUtils.pressKey('Enter');
         expect(subscriptionCallback).toHaveBeenCalled();
     });
+
+    describe('keybindings disabled', () => {
+        beforeEach(() => {
+            CONFIGURATION.enableKeybinds = false;
+        });
+
+        it('should not listen for messages', () => {
+            mockSessionService.dispatchMessage({
+                id: 'lock-screen',
+                type: MessageTypes.LOCK_SCREEN
+            });
+
+            // It should not have disabled the keybinding service
+            expect(keybindingService.isEnabled()).toBeTrue();
+        });
+    });
 });

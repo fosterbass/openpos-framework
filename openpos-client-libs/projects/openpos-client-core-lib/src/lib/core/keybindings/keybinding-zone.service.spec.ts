@@ -143,4 +143,26 @@ describe('KeybindingZoneService', () => {
             expect(subscriptionCallback.calls.count()).toEqual(2);
         });
     });
+
+    describe('disabled', () => {
+        beforeEach(() => {
+            CONFIGURATION.enableKeybinds = false;
+        });
+
+        it('should not register', () => {
+            keybindingZoneService.register('nooooooo!!!');
+            expect(keybindingZoneService.getZoneId()).toEqual(userZone.id);
+        });
+
+        it('should not update', () => {
+            const expectedActions = keybindingZoneService.getZone().actions;
+            userZone.actionsObj = {
+                action: 'No!',
+                keybind: 'F10'
+            };
+            keybindingZoneService.updateZone(userZone);
+
+            expect(keybindingZoneService.getZone().actions).toEqual(expectedActions);
+        });
+    });
 });

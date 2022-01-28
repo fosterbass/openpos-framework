@@ -10,6 +10,7 @@ import { ActionService } from '../actions/action.service';
 import { IActionItem } from '../actions/action-item.interface';
 import { KeybindingLikeKey } from './keybinding-like-key.interface';
 import { KeybindingPendingAction } from './keybinding-pending-action.interface';
+import { CONFIGURATION } from '../../configuration/configuration';
 
 /**
  * Used by UI components/directives to interact with the current KeybindingZone.
@@ -33,14 +34,17 @@ export class KeybindingZoneService implements OnDestroy {
     }
 
     register(zoneOrId: KeybindingZone | string): Observable<KeybindingEvent> {
-        const zone = typeof zoneOrId === 'string' ? {id: zoneOrId} : zoneOrId;
-
-        if (!zone) {
-            console.debug('[KeybindingZoneService]: Not registering zone because it is null/undefined', zone);
+        if (!CONFIGURATION.enableKeybinds) {
             return EMPTY;
         }
 
-        console.debug(`[KeybindingZoneService]: Setting my zone to "${zone.id}" and then registering`);
+        const zone = typeof zoneOrId === 'string' ? {id: zoneOrId} : zoneOrId;
+
+        if (!zone) {
+            return EMPTY;
+        }
+
+        console.log(`[KeybindingZoneService]: Setting my zone to "${zone.id}" and then registering`);
         this.zoneId = zone.id;
         return this.keybindingService.register({
             ...zone,
@@ -49,6 +53,11 @@ export class KeybindingZoneService implements OnDestroy {
     }
 
     updateZone(updates: any): Observable<KeybindingEvent> {
+        if (!CONFIGURATION.enableKeybinds) {
+            return EMPTY;
+        }
+
+        console.log(`[KeybindingZoneService]: Updating my zone "${this.zoneId}"`);
         return this.keybindingService.updateZone({
             ...this.getZone(),
             actionsObj: updates
@@ -107,11 +116,8 @@ export class KeybindingZoneService implements OnDestroy {
     }
 
     getKeyDownEvent(key?: string): Observable<KeybindingEvent> {
-        console.debug(`[KeybindingZoneService]: Getting filtered "allKeyDownEvents()" observable for key(s) "${key}" in zone "${this.zoneId}"`);
-
         return this.keybindingService.getAllKeyDownEvents(key)
             .pipe(
-                tap(event => console.debug(`[KeybindingZoneService]: Received keydown event in zone "${this.zoneId}"`, event, this)),
                 filter(event => !!event.zone),
                 filter(event => this.zoneId === event.zone.id),
                 tap(event => this.logEvent(event)),
@@ -148,7 +154,8 @@ export class KeybindingZoneService implements OnDestroy {
 
         console.group('%c[KeybindingZoneService]', this.logActiveEventStyle);
         console.log(`Key: ${key}`);
-        console.log('Zone: ', event.zone);
+        console.log(`Zone Action: ${event.action?.action}`);
+        console.log(`Zone Action Payload: ${event.actionPayload}`);
         console.groupEnd();
     }
 }

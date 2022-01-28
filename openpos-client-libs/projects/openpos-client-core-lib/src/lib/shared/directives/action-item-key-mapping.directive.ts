@@ -39,8 +39,11 @@ export class ActionItemKeyMappingDirective implements OnChanges, OnDestroy {
     }
 
     updateKeybinding(): void {
-        console.debug(`[ActionItemKeyMappingDirective]: Adding keybinding ${this.actionItem.keybind}`, this.actionItem);
-        this.keybindingZoneService.addKeybinding(this.actionItem);
+        // If this keybinding exists it will be handled by the KeybindingService
+        if (!this.keybindingZoneService.findActionByKey(this.actionItem.keybind)) {
+            console.debug(`[ActionItemKeyMappingDirective]: Adding keybinding ${this.actionItem.keybind}`, this.actionItem);
+            this.keybindingZoneService.addKeybinding(this.actionItem);
+        }
 
         this.keybindingZoneService.getNeedActionPayload(this.actionItem.keybind)
             .pipe(
@@ -50,7 +53,6 @@ export class ActionItemKeyMappingDirective implements OnChanges, OnDestroy {
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.actionItem) {
-            console.debug(`[ActionItemKeyMappingDirective]: Removing keybinding ${changes.actionItem.previousValue}`);
             this.keybindingZoneService.removeKeybinding(changes.actionItem.previousValue);
             this.actionItemChanged$.next();
 
