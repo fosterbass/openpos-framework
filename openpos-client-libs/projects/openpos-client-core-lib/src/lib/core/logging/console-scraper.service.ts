@@ -112,7 +112,7 @@ export class ConsoleScraper {
     private _makeCircularRefReplacer = () => {
         return (key: string, value: any) => {
             if (!!key && typeof value === 'object' && value !== null) {
-                return "[Object object]";
+                return '[Object object]';
             }
 
             return value;
