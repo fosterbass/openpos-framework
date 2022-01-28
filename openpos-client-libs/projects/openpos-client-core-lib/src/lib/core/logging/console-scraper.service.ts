@@ -110,15 +110,9 @@ export class ConsoleScraper {
     }
 
     private _makeCircularRefReplacer = () => {
-        const seen = new WeakSet();
-
-        return (_key: string, value: any) => {
-            if (typeof value === 'object' && value !== null) {
-                if (seen.has(value)) {
-                    return;
-                }
-
-                seen.add(value);
+        return (key: string, value: any) => {
+            if (!!key && typeof value === 'object' && value !== null) {
+                return "[Object object]";
             }
 
             return value;
