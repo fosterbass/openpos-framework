@@ -491,7 +491,7 @@ public class EndpointInvoker implements InvocationHandler {
                     && config.getEndpoints() != null) {
                 endpointSpecificConfig = config.getEndpoints()
                         .stream()
-                        .filter(endpoint -> endpoint.getSamplingConfig().isEnabled() && path.equals(endpoint.getPath()))
+                        .filter(endpoint -> endpoint.getSamplingConfig() != null && endpoint.getSamplingConfig().isEnabled() && path.equals(endpoint.getPath()))
                         .findFirst();
             }
             endpointEnabledCache.put(path, endpointSpecificConfig.isPresent());
