@@ -1,0 +1,111 @@
+@import '../../../styles/mixins/typography';
+@import '../../../styles/variables/spacing';
+
+.item {
+    width: 100%;
+    padding: 12px 4px;
+  
+    display: grid;
+    grid-template-areas: "image-container right"
+                         "left right";
+    grid-template-columns: auto 1fr;
+    column-gap: $small-space;
+    row-gap: $small-space;
+
+    &.tablet-landscape,
+    &.mobile-landscape {
+      grid-template-areas: "image-container left right";
+      grid-template-columns: auto auto 1fr;
+    }
+  
+    .image-container {  
+      grid-area: image-container;    
+      height: 130px;
+      max-width: 130px;
+
+      &.tablet {
+        height: 70px;
+        max-width: 70px;
+      }
+
+      &.mobile {
+        height: 50px;
+        max-width:50px;
+      }
+  
+    }
+    .left {
+        grid-area: left;
+        display:grid;
+        > .title {
+            @extend %text-md;
+            margin: 0px 0px 8px 0px;
+        }
+
+        > .labels-cont {
+            ul {
+              margin: 0px;
+              padding: 0px;
+              list-style-type: none;
+        
+              li {
+                display: flex;
+                flex-direction: row;
+                align-items: flex-start;
+        
+                > app-icon {
+                  padding: 0px 4px 0px 4px;
+                }
+
+                .inline-markdown {
+                  @extend %text-sm;
+                }
+              }
+            }
+        }
+    }
+    .right{
+        grid-area: right;
+        display:grid;
+        align-content: end;
+        > .price-cont {
+            .sale-price{
+              @extend %text-md;
+            }
+            .orig-price {
+              @extend %text-sm;
+            }
+            width:100%;
+            align-self: center;
+            justify-self: center;
+            padding-right: 1.5em;
+        
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        
+            > :nth-child(1) {
+              font-size: 1.8em;
+              font-weight: bold;
+            }
+        
+            > :nth-child(n + 2) {
+              text-decoration: line-through;
+            }
+        }
+        > .links-cont {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-end;
+        
+            a {
+              @extend %text-sm;
+            }
+        }
+    }
+  }
+
+  .item:last-child {
+    border-bottom: none;
+  }

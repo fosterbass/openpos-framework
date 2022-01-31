@@ -183,6 +183,7 @@ import { CapacitorKioskModePlatform } from '../core/platform-plugins/kiosk/capac
 import { ScreenGestureComponent } from './screen-parts/screen-gesture/screen-gesture.component';
 import { DisableAutoCompleteDirective } from './directives/disable-auto-complete.directive';
 import { PromptFormPartCardComponent } from './screen-parts/prompt-form-part-card/prompt-form-part-card.component';
+import { PurchaseHistoryItemComponent } from './screen-parts/purchase-history-item/purchase-history-item.component';
 
 const screenParts = [
     TenderPartComponent,
@@ -204,6 +205,7 @@ const screenParts = [
     MutableListItemWithLabelComponent,
     RewardsLineItemComponent,
     RewardsHistoryLineItemComponent,
+    PurchaseHistoryItemComponent,
     ProgressBarPartComponent,
     WebcamViewerComponent,
     SystemStatusComponent,
