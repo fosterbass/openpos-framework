@@ -30,7 +30,7 @@ public class DeviceUpdater implements ApplicationListener<DeviceConnectedEvent> 
     @Autowired
     DevicesRepository devicesRepository;
 
-    @Resource(name="${openpos.personalization.deviceBusinessUnitIdStrategy:GetBusinessUnitIdFromConfigStrategy}")
+    @Resource(name = "${openpos.personalization.deviceBusinessUnitIdStrategy:GetBusinessUnitIdFromConfigStrategy}")
     protected IDeviceBusinessUnitIdStrategy deviceBusinessUnitIdStrategy;
 
     @Value("${openpos.installationId:'not set'}")
@@ -83,8 +83,13 @@ public class DeviceUpdater implements ApplicationListener<DeviceConnectedEvent> 
     @Override
     public void onApplicationEvent(DeviceConnectedEvent event) {
         try {
-            updateDevice(devicesRepository.getDevice(event.getDeviceId()));
-            log.info("A device just connected.  Updated the device model in the database. {}-{}", event.getDeviceId(), event.getAppId());
+            if (!"central".equalsIgnoreCase(event.getAppId())) {
+                updateDevice(devicesRepository.getDevice(event.getDeviceId()));
+                log.info("A device just connected.  Updated the device model in the database. {}-{}", event.getDeviceId(), event.getAppId());
+            } else {
+                log.info("A virtual device just connected. {}-{}", event.getDeviceId(), event.getAppId());
+            }
+
             if (cacheManager != null) {
                 Objects.requireNonNull(cacheManager.getCache("/context/config")).clear();
                 Objects.requireNonNull(cacheManager.getCache("/devices/device")).clear();
