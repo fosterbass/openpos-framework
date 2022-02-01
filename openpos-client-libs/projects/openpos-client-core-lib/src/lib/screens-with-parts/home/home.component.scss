@@ -28,10 +28,12 @@
   min-height: 160px;
   justify-content: center;
   align-content: center;
+  // box-shadow: 2px 2px 4px #a8a8a8;
+  // box-shadow: 0 6px 6px -3px rgb(0 0 0 / 20%), 0 10px 14px 1px rgb(0 0 0 / 14%), 0 4px 18px 3px rgb(0 0 0 / 12%);
 
   &.tablet {
     min-width: 140px;
-    min-height: 140px;
+    min-height: 110px;
     line-height: 16px;
     font-size: .9rem;
   }
@@ -81,6 +83,8 @@
 }
 
 .button-grid {
+  padding-top: 30px;
+  // padding-bottom: 40px;
   flex: 1 1 100%;
   overflow:auto;
 }
