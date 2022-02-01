@@ -140,7 +140,11 @@ public class DevicesRepository {
 
         final Set<String> allDeviceIds = findDevices(businessUnitId).stream().map(DeviceModel::getDeviceId).collect(Collectors.toSet());
         allDeviceIds.removeAll(connectedDeviceIds);
-        return devSession.findAll(DeviceAuthModel.class, 10000).stream().filter(d -> allDeviceIds.contains(d.getDeviceId())).sorted().collect(Collectors.toList());
+        return devSession.findAll(DeviceAuthModel.class, 10000)
+                .stream()
+                .filter(d -> allDeviceIds.contains(d.getDeviceId()))
+                .sorted()
+                .collect(Collectors.toList());
     }
 
     public Set<String> getConnectedDeviceIds(String businessUnitId, String installationId) {

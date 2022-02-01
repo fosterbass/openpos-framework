@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,21 +35,23 @@ public class GetPersonalizationConfigEndpoint {
     @Autowired(required = false)
     List<String> loadedAppIds;
 
-    public PersonalizationConfigResponse getPersonalizationConfig(){
+    public PersonalizationConfigResponse getPersonalizationConfig() {
         logger.info("Received a personalization request");
 
-        if(personalizationParameters == null){
+        if (personalizationParameters == null){
             throw new ResponseStatusException(HttpStatus.NO_CONTENT, "No personalization configuration, use default", null);
         }
 
-        List<DeviceAuthModel> disconnectedDevices = repository.getDisconnectedDevices(businessUnitId, installationId);
-        Map<String, String> availableDevices = null;
-        if( disconnectedDevices != null && disconnectedDevices.size() > 0){
-            availableDevices = disconnectedDevices.stream()
-                    .map( deviceStatusModel -> new DeviceAuthModel(deviceStatusModel.getDeviceId(), repository.getDeviceAuth(deviceStatusModel.getDeviceId()) ))
-                    .collect(Collectors.toMap( DeviceAuthModel::getAuthToken, m -> m.getDeviceId()));
-        }
+        final List<DeviceAuthModel> disconnectedDevices = repository.getDisconnectedDevices(businessUnitId, installationId);
+        final Map<String, String> availableDevices;
 
+        if (disconnectedDevices != null && !disconnectedDevices.isEmpty()) {
+            availableDevices = disconnectedDevices.stream()
+                    .map(deviceStatusModel -> new DeviceAuthModel(deviceStatusModel.getDeviceId(), repository.getDeviceAuth(deviceStatusModel.getDeviceId())))
+                    .collect(Collectors.toMap( DeviceAuthModel::getAuthToken, DeviceAuthModel::getDeviceId));
+        } else {
+            availableDevices = new HashMap<>();
+        }
 
         return PersonalizationConfigResponse.builder()
                 .devicePattern(personalizationParameters.getDevicePattern())
