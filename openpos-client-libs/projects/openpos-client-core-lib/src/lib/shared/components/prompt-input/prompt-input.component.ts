@@ -39,7 +39,7 @@ export class PromptInputComponent implements OnInit, OnDestroy {
 
     isNumericField(): boolean {
         if (this.responseType) {
-            return ['numerictext', 'money', 'phone', 'postalCode', 'percent', 'percentint', 'income', 'decimal']
+            return ['numerictext', 'money', 'phone', 'postalCode', 'percent', 'percentint', 'income', 'decimal', 'weight']
                 .indexOf(this.responseType.toLowerCase()) >= 0 || this.keyboardPreference === 'Numeric';
         } else {
             return false;
@@ -129,7 +129,7 @@ export class PromptInputComponent implements OnInit, OnDestroy {
 
     private setKeyboardLayout() {
         if (this.responseType)  {
-            if (['numerictext', 'money', 'phone', 'postalCode', 'percent', 'percentint', 'income', 'decimal']
+            if (['numerictext', 'money', 'phone', 'postalCode', 'percent', 'percentint', 'income', 'decimal', 'weight']
             .indexOf(this.responseType.toLowerCase()) >= 0) {
                 this.keyboardLayout = 'Numeric';
             } else if (this.responseType.toLowerCase() === 'email') {
