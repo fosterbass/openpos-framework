@@ -83,7 +83,7 @@
 }
 
 .button-grid {
-  padding-top: 30px;
+  padding-top: 20px;
   // padding-bottom: 40px;
   flex: 1 1 100%;
   overflow:auto;
@@ -113,7 +113,7 @@
     grid-template-columns: repeat(auto-fit, 240px);
 
     &.tablet {
-      align-content: unset;
+      // align-content: unset;
     }
 
     &.mobile {
