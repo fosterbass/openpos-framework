@@ -1,7 +1,9 @@
 package org.jumpmind.pos.core.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.jumpmind.pos.core.flow.IStateManager;
 import org.jumpmind.pos.core.flow.IStateManagerContainer;
+import org.jumpmind.pos.core.flow.StateManager;
 import org.jumpmind.pos.devices.model.DeviceModel;
 import org.jumpmind.pos.devices.service.IDevicesService;
 import org.jumpmind.pos.devices.service.model.DisconnectDeviceRequest;
@@ -22,7 +24,10 @@ public class SessionDisconnectedListener implements ApplicationListener<SessionD
     IStateManagerContainer stateManagerContainer;
 
     @Autowired
-    SessionConnectListener sessionAuthTracker;
+    SessionConnectListener sessionConnectListener;
+
+    @Autowired
+    SessionSubscribedListener sessionSubscribedListener;
 
     @Autowired
     EventPublisher eventPublisher;
@@ -31,29 +36,32 @@ public class SessionDisconnectedListener implements ApplicationListener<SessionD
     IDevicesService devicesService;
     
     @Override
-    public void onApplicationEvent(SessionDisconnectEvent event) {        
-        Message<?> msg = event.getMessage();
-        String sessionId = (String) msg.getHeaders().get("simpSessionId");
-        log.info("session disconnected: {}", sessionId);
-        
-        DeviceModel deviceModel = sessionAuthTracker.getDeviceModel(sessionId);
+    public void onApplicationEvent(SessionDisconnectEvent event) {
+        synchronized (sessionSubscribedListener) {
+            Message<?> msg = event.getMessage();
+            String sessionId = (String) msg.getHeaders().get("simpSessionId");
+            log.info("session disconnected: {}", sessionId);
+            DeviceModel deviceModel = sessionConnectListener.getDeviceModel(sessionId);
+            if (deviceModel != null) {
+                devicesService.disconnectDevice(new DisconnectDeviceRequest(deviceModel.getDeviceId()));
+                try {
+                    eventPublisher.publish(new DeviceDisconnectedEvent(deviceModel.getDeviceId(), deviceModel.getAppId(), deviceModel.getPairedDeviceId()));
+                } catch (Exception ex) {
+                    log.warn("Error publishing DeviceDisconnectedEvent", ex);
+                }
 
-        if (deviceModel != null) {
-            devicesService.disconnectDevice(new DisconnectDeviceRequest(deviceModel.getDeviceId()));
+                IStateManager stateManager = stateManagerContainer.retrieve(deviceModel.getDeviceId(), false);
+                if (stateManager != null) {
+                    stateManager.setConnected(false);
+                }
 
-            try {
-                eventPublisher.publish(new DeviceDisconnectedEvent(deviceModel.getDeviceId(), deviceModel.getAppId(), deviceModel.getPairedDeviceId()));
-            } catch (Exception ex) {
-                log.warn("Error publishing DeviceDisconnectedEvent", ex);
+                SubscribedSessionMetric.dec(deviceModel.getDeviceId());
+            } else {
+                log.warn("No device found for session id=" + sessionId + ", not publishing DeviceDisconnectedEvent.");
             }
-
-            SubscribedSessionMetric.dec(deviceModel.getDeviceId());
-        } else {
-            log.warn("No device found for session id=" + sessionId + ", not publishing DeviceDisconnectedEvent.");
+            sessionConnectListener.removeSession(sessionId);
+            stateManagerContainer.setCurrentStateManager(null);
         }
-
-        stateManagerContainer.removeSessionIdVariables(sessionId);
-        stateManagerContainer.setCurrentStateManager(null);
     }
 
 }

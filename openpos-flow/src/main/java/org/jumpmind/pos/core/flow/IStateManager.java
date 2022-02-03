@@ -61,12 +61,6 @@ public interface IStateManager {
 	public void setApplicationState(ApplicationState applicationState);
 	public void performInjections(Object object);
 	public void performInjectionsOnSpringBean(Object object);
-	public void setSessionAuthenticated(String sessionId, boolean authenticated);
-	public boolean areAllSessionsAuthenticated();
-    public void setSessionCompatible(String sessionId, boolean compatible);
-    public boolean isSessionCompatible(String sessionId);
-    public boolean areAllSessionsCompatible();
-    public boolean areSessionsConnected();
     public void registerQueryParams(Map<String,Object> queryParams);
     public void registerPersonalizationProperties(Map<String, String> personalizationProperties);
     public Injector getInjector();
@@ -77,4 +71,6 @@ public interface IStateManager {
     public Map<String, String> getClientContext();
     public void sendStartupCompleteMessage();
     public void sendPrintMessage(PrintMessage message);
+    public void setConnected(boolean connected);
+    public boolean isConnected();
 }
