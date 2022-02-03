@@ -19,6 +19,7 @@
  */
 package org.jumpmind.pos.core.flow;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.UnmodifiableMap;
@@ -154,8 +155,6 @@ public class StateManager implements IStateManager {
     Action sessionTimeoutAction;
 
     Map<String, String> deviceVariables = new HashMap<>();
-
-    Map<String, String> clientContext = new HashMap<>();
 
     IErrorHandler errorHandler;
 
@@ -349,10 +348,6 @@ public class StateManager implements IStateManager {
     @Override
     public void setDeviceVariables(Map<String, String> deviceVariables) {
         this.deviceVariables = deviceVariables;
-    }
-
-    public void setClientContext(Map<String, String> clientContext) {
-        this.clientContext = clientContext;
     }
 
     @Override

@@ -133,7 +133,6 @@ public class SessionSubscribedListener implements ApplicationListener<SessionSub
 
             stateManager.setDeviceVariables(deviceVariables);
             stateManager.setConnected(sessionAuthTracker.isSessionAuthenticated(sessionId));
-            stateManager.setClientContext(clientContext);
             stateManager.getApplicationState().getScope().setDeviceScope("device", sessionAuthTracker.getDeviceModel(sessionId));
             stateManager.getApplicationState().getScope().setDeviceScope("powerStatus", sessionAuthTracker.getPowerStatus(sessionId));
 
