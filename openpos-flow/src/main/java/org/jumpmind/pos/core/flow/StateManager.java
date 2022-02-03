@@ -19,20 +19,7 @@
  */
 package org.jumpmind.pos.core.flow;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.*;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
-import static java.lang.String.*;
-
-import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.UnmodifiableMap;
 import org.apache.commons.lang3.StringUtils;
@@ -46,12 +33,12 @@ import org.jumpmind.pos.core.event.DeviceResetEvent;
 import org.jumpmind.pos.core.flow.config.*;
 import org.jumpmind.pos.core.model.DataClearMessage;
 import org.jumpmind.pos.core.model.StartupMessage;
-import org.jumpmind.pos.core.service.UIDataMessageProviderService;
-import org.jumpmind.pos.core.ui.CloseToast;
-import org.jumpmind.pos.core.ui.Toast;
-import org.jumpmind.pos.core.ui.DialogProperties;
 import org.jumpmind.pos.core.service.IScreenService;
+import org.jumpmind.pos.core.service.UIDataMessageProviderService;
 import org.jumpmind.pos.core.service.spring.DeviceScope;
+import org.jumpmind.pos.core.ui.CloseToast;
+import org.jumpmind.pos.core.ui.DialogProperties;
+import org.jumpmind.pos.core.ui.Toast;
 import org.jumpmind.pos.core.ui.UIMessage;
 import org.jumpmind.pos.core.ui.data.UIDataMessageProvider;
 import org.jumpmind.pos.devices.model.DeviceModel;
@@ -74,11 +61,24 @@ import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
+
+import static java.lang.String.*;
+
+@Slf4j
 @Component()
 @org.springframework.context.annotation.Scope("prototype")
 public class StateManager implements IStateManager {
-
-    final Logger log = LoggerFactory.getLogger(getClass());
 
     final static AtomicInteger threadCounter = new AtomicInteger(1);
 
@@ -153,11 +153,9 @@ public class StateManager implements IStateManager {
 
     Action sessionTimeoutAction;
 
-    Map<String, Boolean> sessionAuthenticated = new HashMap<>();
-
-    Map<String, Boolean> sessionCompatible = new HashMap<>();
-
     Map<String, String> deviceVariables = new HashMap<>();
+
+    Map<String, String> clientContext = new HashMap<>();
 
     IErrorHandler errorHandler;
 
@@ -172,6 +170,7 @@ public class StateManager implements IStateManager {
 
     AtomicReference<Date> lastInteractionTime = new AtomicReference<Date>(new Date());
     AtomicBoolean transitionRestFlag = new AtomicBoolean(false);
+    AtomicBoolean connected = new AtomicBoolean(false);
     AtomicLong lastShowTimeInMs = new AtomicLong(0);
 
     @Override
@@ -321,6 +320,16 @@ public class StateManager implements IStateManager {
         messageService.sendMessage(deviceId, message);
     }
 
+    @Override
+    public void setConnected(boolean connected) {
+        this.connected.set(connected);
+    }
+
+    @Override
+    public boolean isConnected() {
+        return this.connected.get();
+    }
+
     protected void setTransitionSteps(List<TransitionStepConfig> transitionStepConfigs) {
         this.transitionStepConfigs = transitionStepConfigs;
     }
@@ -338,62 +347,17 @@ public class StateManager implements IStateManager {
     }
 
     @Override
-    public void setSessionAuthenticated(String sessionId, boolean authenticated) {
-        this.sessionAuthenticated.put(sessionId, authenticated);
-        if (this.sessionListeners != null && authenticated) {
-            for (ISessionListener sessionListener : sessionListeners) {
-                sessionListener.connected(sessionId, this);
-            }
-        }
-    }
-
-    public void removeSessionAuthentication(String sessionId) {
-        if (this.sessionListeners != null && sessionAuthenticated.containsKey(sessionId)) {
-            for (ISessionListener sessionListener : sessionListeners) {
-                sessionListener.disconnected(sessionId, this);
-            }
-        }
-        this.sessionAuthenticated.remove(sessionId);
-        this.log.info("Session {} removed from cache of authenticated sessions", sessionId);
-    }
-
-    @Override
     public void setDeviceVariables(Map<String, String> deviceVariables) {
         this.deviceVariables = deviceVariables;
+    }
+
+    public void setClientContext(Map<String, String> clientContext) {
+        this.clientContext = clientContext;
     }
 
     @Override
     public Map<String, String> getDeviceVariables() {
         return this.deviceVariables;
-    }
-
-    @Override
-    public boolean areAllSessionsAuthenticated() {
-        return !sessionAuthenticated.values().contains(false);
-    }
-
-    @Override
-    public void setSessionCompatible(String sessionId, boolean compatible) {
-        this.sessionCompatible.put(sessionId, compatible);
-    }
-
-    @Override
-    public boolean isSessionCompatible(String sessionId) {
-        return this.sessionCompatible.get(sessionId) != null && this.sessionCompatible.get(sessionId);
-    }
-
-    @Override
-    public boolean areAllSessionsCompatible() {
-        return !sessionCompatible.values().contains(false);
-    }
-
-    public void removeSessionCompatible(String sessionId) {
-        this.sessionCompatible.remove(sessionId);
-    }
-
-    @Override
-    public boolean areSessionsConnected() {
-        return this.sessionCompatible.size() > 0;
     }
 
     protected void transitionTo(Action action, StateConfig stateConfig) {

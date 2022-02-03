@@ -70,14 +70,6 @@ public class StateManagerContainer implements IStateManagerContainer, Applicatio
     private Map<String,String> versions;
 
     @Override
-    public synchronized void removeSessionIdVariables(String sessionId) {
-        for (StateManager stateManager : stateManagersByDeviceId.values()) {
-            stateManager.removeSessionAuthentication(sessionId);
-            stateManager.removeSessionCompatible(sessionId);
-        }
-    }
-
-    @Override
     public synchronized IStateManager retrieve(String deviceId, boolean forUseAsDevice) {
         IStateManager stateManager = stateManagersByDeviceId.get(deviceId);
         if (forUseAsDevice) {

@@ -41,7 +41,6 @@ public class StateManagerContainerTest {
             for (int j = 0; j < 50; j++) {
                 container.create("pos", "0000-"+i, null, null);
                 container.retrieve("0000-"+j, true);
-                container.removeSessionIdVariables("blah");
                 container.getAllStateManagers();
                 container.remove("0000-"+j);
             }
