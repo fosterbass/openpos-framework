@@ -12,7 +12,9 @@ import org.springframework.stereotype.Component;
 @Component
 @Order(MAX_VALUE)
 public class LastStartupTask extends AbstractStartupTask {    
-        
+
+    private static Long startupTimestamp;
+
     @Autowired
     MutableBoolean initialized;
     
@@ -32,7 +34,18 @@ public class LastStartupTask extends AbstractStartupTask {
         if (securedEnabled) {
             msg += String.format(" and on port %s (https)", securedPort);
         }
+
+        if (startupTimestamp != null) {
+            msg += String.format(".  It took %d seconds to startup", (int)((System.currentTimeMillis()-startupTimestamp)/1000));
+        }
+
         logger.info(BoxLogging.box(msg));
+    }
+
+    public static void setStartupTimestamp() {
+        if (startupTimestamp == null) {
+            startupTimestamp = System.currentTimeMillis();
+        }
     }
     
 }
