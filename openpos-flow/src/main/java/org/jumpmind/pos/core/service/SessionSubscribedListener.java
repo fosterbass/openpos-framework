@@ -69,7 +69,7 @@ public class SessionSubscribedListener implements ApplicationListener<SessionSub
 
 
     @Override
-    public void onApplicationEvent(SessionSubscribedEvent event) {
+    synchronized public void onApplicationEvent(SessionSubscribedEvent event) {
         Message<?> msg = event.getMessage();
         String sessionId = (String) msg.getHeaders().get("simpSessionId");
         Map<String, Object> queryParams = sessionAuthTracker.getQueryParams(sessionId);
@@ -131,8 +131,7 @@ public class SessionSubscribedListener implements ApplicationListener<SessionSub
 
             stateManagerContainer.setCurrentStateManager(stateManager);
 
-            stateManager.setSessionAuthenticated(sessionId, sessionAuthTracker.isSessionAuthenticated(sessionId));
-            stateManager.setSessionCompatible(sessionId, sessionAuthTracker.isSessionCompatible(sessionId));
+            stateManager.setConnected(sessionAuthTracker.isSessionAuthenticated(sessionId));
             stateManager.setClientContext(clientContext);
             stateManager.getApplicationState().getScope().setDeviceScope("device", sessionAuthTracker.getDeviceModel(sessionId));
             stateManager.getApplicationState().getScope().setDeviceScope("powerStatus", sessionAuthTracker.getPowerStatus(sessionId));
