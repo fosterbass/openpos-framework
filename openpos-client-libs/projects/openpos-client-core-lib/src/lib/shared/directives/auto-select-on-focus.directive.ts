@@ -48,7 +48,9 @@ export class AutoSelectOnFocusDirective {
         // for selecting the field.
         if (this.deviceService.isRunningInCordova()) {
             // console.info('autoSelect: cordova click event, selectingRange');
-            this.element.nativeElement.setSelectionRange(0, 9999);
+            if (! this.touchEvent) {
+                this.element.nativeElement.setSelectionRange(0, 9999);
+            }
         }
     }
 
