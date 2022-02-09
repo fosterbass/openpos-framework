@@ -20,6 +20,8 @@
     .name {
       @extend %text-sm;
       font-weight: 500;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .expiration {
       @extend %text-sm;

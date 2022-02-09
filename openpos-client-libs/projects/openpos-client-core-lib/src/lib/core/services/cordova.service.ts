@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Subject, BehaviorSubject } from 'rxjs';
+import { Observable, Subject, BehaviorSubject } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
 
 declare var cordova: any;
+declare var window: any;
 
 @Injectable({
     providedIn: 'root',
@@ -46,6 +48,21 @@ export class CordovaService {
     public isRunningInBrowser(): boolean {
         const app = document.URL.indexOf('http://') === -1 && document.URL.indexOf('https://') === -1;
         return !app;
+    }
+
+    public getDeviceName(): Observable<string> {
+        return this.onDeviceReady.pipe(
+            filter(m => m === 'deviceready'),
+            map(m => {
+                try {
+                    console.log(`window['device']['serial']=${window.device.serial}`);
+                    return window.device.serial;
+                } catch (e) {
+                    console.error(`Error getting device name:`, JSON.stringify(e));
+                    return '?';
+                }
+            })
+        );
     }
 }
 

@@ -13,11 +13,13 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @Builder
 public class PersonalizeMeResponse {
+    private String deviceToken;
     private String deviceName;
     private String serverAddress;
     private String serverPort;
     private String deviceId;
     private String appId;
+    private boolean sslEnabled = false;
     private List<ServerLocation> failoverAddresses;
     private Map<String, String> personalizationParams;
 
@@ -27,6 +29,7 @@ public class PersonalizeMeResponse {
         this.serverPort = model.getServerPort();
         this.deviceId = model.getDeviceId();
         this.appId = model.getAppId();
+        this.sslEnabled = model.isSslEnabledFlag();
         this.personalizationParams = model.getDeviceParamModels()
             .stream()
             .collect(Collectors.toMap(DeviceParamModel::getParamName, DeviceParamModel::getParamValue));

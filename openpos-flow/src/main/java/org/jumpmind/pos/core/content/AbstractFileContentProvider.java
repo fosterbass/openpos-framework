@@ -1,22 +1,21 @@
 package org.jumpmind.pos.core.content;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.jumpmind.pos.core.flow.IStateManager;
 import org.jumpmind.pos.core.flow.In;
 import org.jumpmind.pos.core.flow.ScopeType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
+import java.io.IOException;
+import java.util.*;
+
 @Scope("device")
+@Slf4j
 public abstract class AbstractFileContentProvider implements IContentProvider {
 
     public static final String SERVER_URL = "${apiServerBaseUrl}/appId/${appId}/deviceId/${deviceId}/content?contentPath=";
@@ -24,8 +23,6 @@ public abstract class AbstractFileContentProvider implements IContentProvider {
     public static final String PROVIDER_TOKEN = "&provider=";
 
     public static final String VERSION_TOKEN = "&version=";
-    
-    final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Value("${openpos.ui.content.file.providerProperties:null}")
     String[] providerProperties;
@@ -34,7 +31,7 @@ public abstract class AbstractFileContentProvider implements IContentProvider {
     String[] supportedFileTypes;
 
     @Value("${openpos.ui.content.file.contentVersion:null}")
-    String contentVersion;
+    protected String contentVersion;
 
     @In(scope = ScopeType.Device, required = false)
     Map<String, String> personalizationProperties;
@@ -51,18 +48,18 @@ public abstract class AbstractFileContentProvider implements IContentProvider {
         List<String> contentPaths = getMostSpecificContentPaths(baseContentPath, possibleContentDirs);
 
         String mostSpecific = null;
-        if (contentPaths != null) {
+        if (CollectionUtils.isNotEmpty(contentPaths)) {
             int index = getDeviceIndex(deviceId, key, contentPaths.size());
             mostSpecific = contentPaths.get(index);
-            logger.debug("Found content for key: {}, content: {}", key, mostSpecific);
+            log.debug("Found content for key: {}, content: {}", key, mostSpecific);
         } else {
-            logger.debug("No content found for key: {}", key);
+            log.debug("No content found for key: {}", key);
         }
 
         return mostSpecific;
     }
 
-    private List<String> getMostSpecificContentPaths(String baseContentPath, List<String> possibleContentDirs) {
+    protected List<String> getMostSpecificContentPaths(String baseContentPath, List<String> possibleContentDirs) {
         ClassLoader cl = this.getClass().getClassLoader();
         ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(cl);
 
@@ -77,28 +74,28 @@ public abstract class AbstractFileContentProvider implements IContentProvider {
 
             Resource[] resources;
             try {
-                logger.debug("Searching for content in path: {}", resourcePath);
+                log.debug("Searching for content in path: {}", resourcePath);
                 resources = resolver.getResources(resourcePath);
 
                 List<String> files = new ArrayList<>();
                 for (Resource resource : resources) {
                     if (isFileSupported(resource.getFilename())) {
-                        StringBuilder relativePath = new StringBuilder(possibleContentDir);
-                        relativePath.append("/");
-                        relativePath.append(resource.getFilename());
+                        StringBuilder relativePath = new StringBuilder(possibleContentDir)
+                                .append("/")
+                                .append(resource.getFilename());
                         files.add(relativePath.toString());
                     }
                 }
-                if (files.size() > 0) {
+                if (!files.isEmpty()) {
                     return files;
                 }
 
             } catch (IOException e) {
-                logger.debug("Unable to find resource content", e);
+                log.debug("Unable to find resource content", e);
             }
         }
 
-        return null;
+        return Collections.emptyList();
     }
 
     protected List<String> getPossibleContentDirs(String key) {
@@ -137,14 +134,13 @@ public abstract class AbstractFileContentProvider implements IContentProvider {
     }
 
     protected int getDeviceIndex(String deviceId, String key, int size) {
-        Integer index = null;
+        Integer index;
         ContentIndex contentIndex = deviceContent.get(deviceId);
 
         if (contentIndex == null) {
             contentIndex = new ContentIndex(key, (1 % size));
             deviceContent.put(deviceId, contentIndex);
             index = 0;
-
         } else {
             index = contentIndex.getIndex(key);
             if (index == null) {
@@ -159,48 +155,36 @@ public abstract class AbstractFileContentProvider implements IContentProvider {
         return index;
     }
 
-    public String[] getProviderProperties() {
-        return providerProperties;
+    protected String buildContentUrlToProvider(String provider, String contentPath) {
+        StringBuilder urlBuilder = new StringBuilder(AbstractFileContentProvider.SERVER_URL);
+        urlBuilder.append(contentPath);
+        urlBuilder.append(PROVIDER_TOKEN);
+        urlBuilder.append(provider);
+        if (contentVersion != null) {
+            urlBuilder.append(VERSION_TOKEN);
+            urlBuilder.append(contentVersion);
+        }
+        return urlBuilder.toString();
     }
 
-    public void setProviderProperties(String[] providerProperties) {
-        this.providerProperties = providerProperties;
-    }
-
-    public String[] getSupportedFileTypes() {
-        return supportedFileTypes;
-    }
-
-    public void setSupportedFileTypes(String[] supportedFileTypes) {
-        this.supportedFileTypes = supportedFileTypes;
-    }
-
-    public String getContentVersion() {
-        return contentVersion;
-    }
-
-    public void setContentVersion(String contentVersion) {
-        this.contentVersion = contentVersion;
-    }
-
-    public class ContentIndex {
-        private Map<String, Integer> contentIndex;
+    public static class ContentIndex {
+        private final Map<String, Integer> indexes;
 
         private ContentIndex() {
-            contentIndex = new HashMap<>();
+            indexes = new HashMap<>();
         }
 
         private ContentIndex(String resource, int index) {
-            contentIndex = new HashMap<>();
-            contentIndex.put(resource, index);
+            indexes = new HashMap<>();
+            indexes.put(resource, index);
         }
 
         private void setIndex(String key, int index) {
-            contentIndex.put(key, index);
+            indexes.put(key, index);
         }
 
         private Integer getIndex(String key) {
-            return contentIndex.get(key);
+            return indexes.get(key);
         }
     }
 

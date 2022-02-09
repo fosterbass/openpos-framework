@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jumpmind.pos.server.model.Action;
 import org.jumpmind.pos.server.model.ProxyMessage;
 import org.jumpmind.pos.server.model.ProxyResponse;
@@ -44,10 +45,14 @@ public class ProxyService implements IActionListener {
     }
 
     public CompletableFuture<ProxyResponse> sendMessage(String appId, ProxyMessage message) {
+        return this.sendMessage(appId, null, message);
+    }
+
+    public CompletableFuture<ProxyResponse> sendMessage(String appId, String deviceId, ProxyMessage message) {
         CompletableFuture<ProxyResponse> futureResponse = new CompletableFuture<>();
         this.requestToResponseMap.put(message.getMessageId(), new ProxyResponseMapEntry(futureResponse));
 
-        messageService.sendMessage(clientContext.get("deviceId"), message);
+        messageService.sendMessage(StringUtils.isBlank(deviceId) ? clientContext.get("deviceId") : deviceId, message);
 
         return futureResponse;
     }

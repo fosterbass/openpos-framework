@@ -14,6 +14,7 @@ import java.util.Set;
 
 @Component
 public class ClientContext {
+    public static final String BUSINESS_UNIT_ID = "businessUnitId";
 
     private ThreadLocal<Map<String, String>> propertiesMap = new ThreadLocal<>();
     final Logger log = LoggerFactory.getLogger(getClass());
@@ -21,7 +22,8 @@ public class ClientContext {
     @Value("${openpos.installationId:'not set'}")
     String installationId;
 
-    @Value("${openpos.businessunitId:'not set'}")
+    // Default businessUnitId if not set via personalization
+    @Value("${openpos.businessunitId:'undefined'}")
     String businessUnitId;
 
     @Value("${openpos.deviceMode:'not set'}")
@@ -45,7 +47,7 @@ public class ClientContext {
         if (props == null || !props.containsKey(name)) {
             if ("deviceId".equalsIgnoreCase(name)) {
                 return installationId;
-            } else if ("businessUnitId".equalsIgnoreCase(name)) {
+            } else if (BUSINESS_UNIT_ID.equalsIgnoreCase(name)) {
                 return businessUnitId;
             } else if ("appId".equalsIgnoreCase(name)) {
                 return "server";

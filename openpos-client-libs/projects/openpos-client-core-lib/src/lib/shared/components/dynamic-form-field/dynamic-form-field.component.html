@@ -24,7 +24,7 @@
                  readonly id="{{formField.id}}">
 
             <button *ngIf="formField.inputType==='PopTart'" type="button" mat-button matSuffix mat-icon-button (click)="openPopTart()">
-                <mat-icon>more_vert</mat-icon>
+                <app-icon [iconName]="'more_vert'"></app-icon>
             </button>
 
             <input *ngSwitchCase="'AlphanumericPassword'" matInput [formControlName]="formField.id" [placeholder]="getPlaceholderText(formField)"

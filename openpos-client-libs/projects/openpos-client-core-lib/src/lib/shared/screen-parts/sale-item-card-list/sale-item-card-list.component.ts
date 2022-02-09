@@ -1,24 +1,13 @@
-import {
-  Component,
-  Injector,
-  ElementRef,
-  ViewChildren,
-  AfterViewInit,
-  Output,
-  EventEmitter
-} from '@angular/core';
+import type { QueryList } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Injector, Output, ViewChildren } from '@angular/core';
 import { SaleItemCardListInterface } from './sale-item-card-list.interface';
 import { ScreenPart } from '../../decorators/screen-part.decorator';
 import { ScreenPartComponent } from '../screen-part';
 import { UIDataMessageService } from '../../../core/ui-data-message/ui-data-message.service';
 import { merge, Observable } from 'rxjs';
 import { ISellItem } from '../../../core/interfaces/sell-item.interface';
-import { KeyPressProvider } from '../../providers/keypress.provider';
-import { CONFIGURATION } from '../../../configuration/configuration';
 import { filter, takeUntil } from 'rxjs/operators';
-import { IActionItem } from '../../../core/actions/action-item.interface';
-
-import type { QueryList } from '@angular/core';
+import { KeybindingZoneService } from '../../../core/keybindings/keybinding-zone.service';
 
 @ScreenPart({
   name: 'SaleItemCardList'
@@ -33,36 +22,21 @@ export class SaleItemCardListComponent extends ScreenPartComponent<SaleItemCardL
   expandedIndex = -1;
   numItems = 0;
   items$: Observable<ISellItem[]>;
+  previousSellItems: ISellItem[];
   @ViewChildren('items', { read: ElementRef }) private itemsRef: QueryList<ElementRef>;
   @Output() itemsChanged = new EventEmitter<ISellItem[]>();
 
-  constructor(injector: Injector, private dataMessageService: UIDataMessageService, protected keyPresses: KeyPressProvider) {
+  constructor(injector: Injector,
+              private dataMessageService: UIDataMessageService,
+              protected keybindingZoneService: KeybindingZoneService) {
     super(injector);
     this.stop$ = merge(this.beforeScreenDataUpdated$, this.destroyed$);
 
-    this.subscriptions.add(
-      this.keyPresses.subscribe('ArrowDown', 1, (event: KeyboardEvent) => {
-        // ignore repeats and check configuration
-        if (event.repeat || event.type !== 'keydown' || !CONFIGURATION.enableKeybinds) {
-          return;
-        }
-        if (event.type === 'keydown') {
-          this.handleArrowKey(event);
-        }
-      })
-    );
-
-    this.subscriptions.add(
-      this.keyPresses.subscribe('ArrowUp', 1, (event: KeyboardEvent) => {
-        // ignore repeats and check configuration
-        if (event.repeat || event.type !== 'keydown' || !CONFIGURATION.enableKeybinds) {
-          return;
-        }
-        if (event.type === 'keydown') {
-          this.handleArrowKey(event);
-        }
-      })
-    );
+    this.keybindingZoneService.getKeyDownEvent('ArrowUp,ArrowDown,Tab')
+        .pipe(
+            filter(event => !event.domEvent.repeat),
+            takeUntil(this.destroyed$)
+        ).subscribe(event => this.handleArrowKey(event.domEvent));
   }
 
   itemsTrackByFn(index, item: ISellItem) {
@@ -77,7 +51,9 @@ export class SaleItemCardListComponent extends ScreenPartComponent<SaleItemCardL
   }
 
   onSellItemsChange(sellItems: ISellItem[]): void {
-    this.addSellItemsGlobalKeybinds(sellItems);
+    this.keybindingZoneService.removeAllKeybindings(this.previousSellItems);
+    this.keybindingZoneService.addAllKeybindings(sellItems);
+    this.previousSellItems = sellItems;
 
     this.items$.forEach(items => {
       this.numItems = items.length;
@@ -89,27 +65,6 @@ export class SaleItemCardListComponent extends ScreenPartComponent<SaleItemCardL
 
   ngAfterViewInit() {
     this.scrollToView(this.expandedIndex);
-  }
-
-  addSellItemsGlobalKeybinds(sellItems: ISellItem[]): void {
-    const uniqueKeybinds = sellItems.reduce((allActions, sellItem) => {
-      sellItem.menuItems.forEach(menuItem => allActions[menuItem.keybind] = menuItem);
-      return allActions;
-    }, {});
-
-    const uniqueActions = Object.keys(uniqueKeybinds).map(key => uniqueKeybinds[key]);
-
-    this.keyPressProvider.globalSubscribe(uniqueActions).pipe(
-      filter(() => this.expandedIndex >= 0),
-      filter(action => this.doesExpandedItemHaveAction(sellItems, action)),
-      takeUntil(this.stop$)
-    ).subscribe(action => this.doAction(action, [this.expandedIndex]));
-  }
-
-  doesExpandedItemHaveAction(sellItems: ISellItem[], action: IActionItem): boolean {
-    return !!sellItems[this.expandedIndex]
-      .menuItems
-      .find(menuItem => menuItem.action === action.action);
   }
 
   scrollToView(index: number): void {

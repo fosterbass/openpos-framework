@@ -1,6 +1,6 @@
 <div class="order-card" [ngClass]="{'mat-elevation-z4':hover, 'mat-elevation-z1':!hover}">
     <section responsive-class class="order-header order-background">
-        <app-icon [iconName]="order.iconName" [iconClass]="'contrast xs'"></app-icon>
+        <app-icon [iconName]="order.orderTypeIcon" [iconClass]="'contrast xs'"></app-icon>
         <strong class="contrast"><kbd>{{order.title}}</kbd></strong>
         <strong class="contrast order-header-value"><kbd>{{order.number}}</kbd></strong>
     </section>

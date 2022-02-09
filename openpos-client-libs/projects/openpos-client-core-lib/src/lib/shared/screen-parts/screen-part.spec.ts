@@ -8,7 +8,6 @@ import { MessageProvider } from '../providers/message.provider';
 import { ActionService } from '../../core/actions/action.service';
 import { SessionService } from '../../core/services/session.service';
 import { OpenposMediaService } from '../../core/media/openpos-media.service';
-import { KeyPressProvider } from '../providers/keypress.provider';
 
 interface TestPartInterface extends IAbstractScreen {
     testProperty: string;
@@ -49,8 +48,7 @@ describe('ScreenPart', () => {
                 },
                 { provide: SessionService, useValue: jasmine.createSpyObj('SessionService', ['sendMessage']) },
                 { provide: MessageProvider, useValue: messageProviderSpy },
-                { provide: ActionService, useValue: actionServiceSpy },
-                { provide: KeyPressProvider, useValue: {} }
+                { provide: ActionService, useValue: actionServiceSpy }
             ]
         });
         const fixture = TestBed.createComponent(TestPartComponent);

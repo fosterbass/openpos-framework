@@ -19,21 +19,10 @@
  */
 package org.jumpmind.pos.core.flow;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.*;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
-import static java.lang.String.*;
-
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.map.UnmodifiableMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.jumpmind.pos.core.clientconfiguration.ClientConfigChangedMessage;
@@ -45,12 +34,12 @@ import org.jumpmind.pos.core.event.DeviceResetEvent;
 import org.jumpmind.pos.core.flow.config.*;
 import org.jumpmind.pos.core.model.DataClearMessage;
 import org.jumpmind.pos.core.model.StartupMessage;
-import org.jumpmind.pos.core.service.UIDataMessageProviderService;
-import org.jumpmind.pos.core.ui.CloseToast;
-import org.jumpmind.pos.core.ui.Toast;
-import org.jumpmind.pos.core.ui.DialogProperties;
 import org.jumpmind.pos.core.service.IScreenService;
+import org.jumpmind.pos.core.service.UIDataMessageProviderService;
 import org.jumpmind.pos.core.service.spring.DeviceScope;
+import org.jumpmind.pos.core.ui.CloseToast;
+import org.jumpmind.pos.core.ui.DialogProperties;
+import org.jumpmind.pos.core.ui.Toast;
 import org.jumpmind.pos.core.ui.UIMessage;
 import org.jumpmind.pos.core.ui.data.UIDataMessageProvider;
 import org.jumpmind.pos.devices.model.DeviceModel;
@@ -58,9 +47,10 @@ import org.jumpmind.pos.server.model.Action;
 import org.jumpmind.pos.server.service.IMessageService;
 import org.jumpmind.pos.util.ClassUtils;
 import org.jumpmind.pos.util.Versions;
+import org.jumpmind.pos.util.clientcontext.ClientContext;
+import org.jumpmind.pos.util.event.AppEvent;
 import org.jumpmind.pos.util.event.Event;
 import org.jumpmind.pos.util.event.EventPublisher;
-import org.jumpmind.pos.util.model.Message;
 import org.jumpmind.pos.util.model.PrintMessage;
 import org.jumpmind.pos.util.startup.DeviceStartupTaskConfig;
 import org.slf4j.Logger;
@@ -72,11 +62,24 @@ import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
+
+import static java.lang.String.*;
+
+@Slf4j
 @Component()
 @org.springframework.context.annotation.Scope("prototype")
 public class StateManager implements IStateManager {
-
-    final Logger log = LoggerFactory.getLogger(getClass());
 
     final static AtomicInteger threadCounter = new AtomicInteger(1);
 
@@ -138,6 +141,9 @@ public class StateManager implements IStateManager {
     @Autowired
     EventPublisher eventPublisher;
 
+    @Autowired
+    ClientContext clientContext;
+
     ApplicationState applicationState = new ApplicationState();
 
     List<TransitionStepConfig> transitionStepConfigs;
@@ -148,11 +154,7 @@ public class StateManager implements IStateManager {
 
     Action sessionTimeoutAction;
 
-    Map<String, Boolean> sessionAuthenticated = new HashMap<>();
-
-    Map<String, Boolean> sessionCompatible = new HashMap<>();
-
-    Map<String, String> clientContext = new HashMap<>();
+    Map<String, String> deviceVariables = new HashMap<>();
 
     IErrorHandler errorHandler;
 
@@ -167,6 +169,7 @@ public class StateManager implements IStateManager {
 
     AtomicReference<Date> lastInteractionTime = new AtomicReference<Date>(new Date());
     AtomicBoolean transitionRestFlag = new AtomicBoolean(false);
+    AtomicBoolean connected = new AtomicBoolean(false);
     AtomicLong lastShowTimeInMs = new AtomicLong(0);
 
     @Override
@@ -230,6 +233,7 @@ public class StateManager implements IStateManager {
             public void run() {
                 try {
                     stateManagerContainer.setCurrentStateManager(StateManager.this);
+                    initClientContext();  // Init ClientContext threadLocal properties for this thread
                     transitionTo(new Action(startupAction), initialState);
                     runningFlag.set(true);
                     actionLoop();
@@ -315,6 +319,16 @@ public class StateManager implements IStateManager {
         messageService.sendMessage(deviceId, message);
     }
 
+    @Override
+    public void setConnected(boolean connected) {
+        this.connected.set(connected);
+    }
+
+    @Override
+    public boolean isConnected() {
+        return this.connected.get();
+    }
+
     protected void setTransitionSteps(List<TransitionStepConfig> transitionStepConfigs) {
         this.transitionStepConfigs = transitionStepConfigs;
     }
@@ -332,62 +346,13 @@ public class StateManager implements IStateManager {
     }
 
     @Override
-    public void setSessionAuthenticated(String sessionId, boolean authenticated) {
-        this.sessionAuthenticated.put(sessionId, authenticated);
-        if (this.sessionListeners != null && authenticated) {
-            for (ISessionListener sessionListener : sessionListeners) {
-                sessionListener.connected(sessionId, this);
-            }
-        }
-    }
-
-    public void removeSessionAuthentication(String sessionId) {
-        if (this.sessionListeners != null && sessionAuthenticated.containsKey(sessionId)) {
-            for (ISessionListener sessionListener : sessionListeners) {
-                sessionListener.disconnected(sessionId, this);
-            }
-        }
-        this.sessionAuthenticated.remove(sessionId);
-        this.log.info("Session {} removed from cache of authenticated sessions", sessionId);
+    public void setDeviceVariables(Map<String, String> deviceVariables) {
+        this.deviceVariables = deviceVariables;
     }
 
     @Override
-    public void setClientContext(Map<String, String> clientContext) {
-        this.clientContext = clientContext;
-    }
-
-    @Override
-    public Map<String, String> getClientContext() {
-        return this.clientContext;
-    }
-
-    @Override
-    public boolean areAllSessionsAuthenticated() {
-        return !sessionAuthenticated.values().contains(false);
-    }
-
-    @Override
-    public void setSessionCompatible(String sessionId, boolean compatible) {
-        this.sessionCompatible.put(sessionId, compatible);
-    }
-
-    @Override
-    public boolean isSessionCompatible(String sessionId) {
-        return this.sessionCompatible.get(sessionId) != null && this.sessionCompatible.get(sessionId);
-    }
-
-    @Override
-    public boolean areAllSessionsCompatible() {
-        return !sessionCompatible.values().contains(false);
-    }
-
-    public void removeSessionCompatible(String sessionId) {
-        this.sessionCompatible.remove(sessionId);
-    }
-
-    @Override
-    public boolean areSessionsConnected() {
-        return this.sessionCompatible.size() > 0;
+    public Map<String, String> getDeviceVariables() {
+        return this.deviceVariables;
     }
 
     protected void transitionTo(Action action, StateConfig stateConfig) {
@@ -723,7 +688,7 @@ public class StateManager implements IStateManager {
         }
 
         actionContext.parseSyncId();
-        
+
         boolean offered = actionQueue.offer(actionContext);
         if (!offered) {
             log.warn("StateManager failed to insert action {} into the queue", action);
@@ -735,7 +700,12 @@ public class StateManager implements IStateManager {
             log.warn("action passed to state manager was null.");
             return false;
         } else if (action.getName() == null) {
-            log.warn("An action was passed with a null name. An action must have a name. Data: " + action.getData());
+            try {
+                log.warn("An action was passed with a null name. An action must have a name. Data: {}, current state: {}", action.getData(),
+                        getCurrentState() != null ? getCurrentState().getClass().getSimpleName() : "unknown");
+            } catch (FlowException flowException) {
+                log.warn(String.format("An action was passed with a null name. An action must have a name. Data: %s, current state: undefined", action.getData()));
+            }
             return false;
         }
 
@@ -820,7 +790,10 @@ public class StateManager implements IStateManager {
     }
 
     protected void processEvent(Event event) {
-        lastInteractionTime.set(new Date());
+        if (event instanceof AppEvent &&
+                getDeviceId().equals(((AppEvent) event).getDeviceId())) {
+            lastInteractionTime.set(new Date());
+        }
         if (initialFlowConfig == null) {
             throw new FlowException("initialFlowConfig is null. This StateManager is likely misconfigured. " +
                     "Check your appId and Spring profiles. (appId=\"" + this.getAppId() +
@@ -1127,17 +1100,15 @@ public class StateManager implements IStateManager {
             throw new FlowException(
                     "There is no applicationState.getCurrentContext() on this StateManager.  HINT: States should use @In(scope=ScopeType.Node) to get the StateManager, not @Autowired.");
         }
-        if (applicationState.getCurrentContext().getState() != null
-                && applicationState.getCurrentContext().getState() instanceof IMessageInterceptor) {
+        if (applicationState.getCurrentContext().getState() instanceof IMessageInterceptor) {
             ((IMessageInterceptor<UIMessage>) applicationState.getCurrentContext().getState()).intercept(
                     applicationState.getDeviceId(), screen);
         }
 
         if (screen != null) {
-            ScreenConfig screenConfig = screensConfig.getConfig().get(screen.getId());
-            ScreenConfig defaultScreenConfig = screensConfig.getConfig().get("default");
-            sessionTimeoutMillis = screenConfig != null && screenConfig.getTimeout() != null ?  screenConfig.getTimeout()*1000 : defaultScreenConfig.getTimeout()*1000;
-            sessionTimeoutAction = new Action(screenConfig != null && screenConfig.getTimeoutAction() != null ?  screenConfig.getTimeoutAction() : defaultScreenConfig.getTimeoutAction());
+            ScreenConfig screenConfig = screensConfig.findScreenConfig(screen.getId());
+            sessionTimeoutMillis = screenConfig != null && screenConfig.getTimeout() != null ?  screenConfig.getTimeout()*1000 : 0;
+            sessionTimeoutAction = new Action(screenConfig != null && screenConfig.getTimeoutAction() != null ?  screenConfig.getTimeoutAction() : null);
         } else {
             sessionTimeoutMillis = 0;
             sessionTimeoutAction = null;
@@ -1220,8 +1191,24 @@ public class StateManager implements IStateManager {
 
     @Override
     public void registerPersonalizationProperties(Map<String, String> personalizationProperties) {
-        log.info("Registering personalization properties " + personalizationProperties.toString());
+        if (personalizationProperties != null) {
+            log.info("Registering personalization properties " + personalizationProperties.toString());
+            personalizationProperties = UnmodifiableMap.unmodifiableMap(personalizationProperties);
+        }
         applicationState.getScope().setScopeValue(ScopeType.Device, "personalizationProperties", personalizationProperties);
+    }
+
+    @Override
+    public Map<String, String> getPersonalizationProperties() {
+        return applicationState.getScopeValue(ScopeType.Device, "personalizationProperties");
+    }
+
+    protected void initClientContext() {
+        ScopeValue scopeValue = getApplicationState().getScope().getScopeValue(ScopeType.Device, "personalizationProperties");
+        if (scopeValue != null && scopeValue.getValue() != null) {
+            Map<String, String> personalizationProperties = scopeValue.getValue();
+            personalizationProperties.entrySet().forEach(entry -> clientContext.put(entry.getKey(), entry.getValue()));
+        }
     }
 
     public Injector getInjector() {
@@ -1235,11 +1222,15 @@ public class StateManager implements IStateManager {
     public void sendConfigurationChangedMessage() {
         String deviceId = applicationState.getDeviceId();
 
-        Map<String, String> properties = applicationState.getScopeValue("personalizationProperties");
+        Map<String, String> properties = getPersonalizationProperties();
         if (properties == null) {
             properties = new HashMap<>();
         }
-        properties.put("appId", applicationState.getAppId());
+        if (! applicationState.getAppId().equals(properties.get("appId"))) {
+            Map<String,String> updatedProperties = new HashMap<>(properties);
+            updatedProperties.put("appId", applicationState.getAppId());
+            registerPersonalizationProperties(updatedProperties);
+        }
         List<String> additionalTags = applicationState.getScopeValue("additionalTagsForConfiguration");
 
         try {

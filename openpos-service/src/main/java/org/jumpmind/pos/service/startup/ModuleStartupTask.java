@@ -31,10 +31,10 @@ public class ModuleStartupTask extends AbstractStartupTask {
             while (i.hasNext()) {
                 IModule module = i.next();
                 try {
-                    logger.info(logMessage("Initializing module: ", module));
+                    logger.info(logMessage("Initializing microservice: ", module));
                     module.initialize();
                 } catch (Exception ex) {
-                    logger.error(logMessage("Failed to initialize module: ", module), ex);
+                    logger.error(logMessage("Failed to initialize microservice: ", module), ex);
                     if (failStartupOnModuleLoadFailure) {
                         throw ex;
                     }

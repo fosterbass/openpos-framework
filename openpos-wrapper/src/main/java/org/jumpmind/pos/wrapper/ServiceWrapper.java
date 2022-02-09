@@ -8,9 +8,8 @@ public class ServiceWrapper {
     protected static final String SYS_CONFIG_DIR = "org.jumpmind.pos.config.dir";
     protected static final String OPENPOS_HOME = "OPENPOS_HOME";
 
-    public static void main(String[] args) throws Exception {
-
-    	String configFileName = null;
+    public static void main(String[] args) {
+    	String configFileName;
     	if (args.length >= 2) {
     		configFileName = args[1];
     	} else {

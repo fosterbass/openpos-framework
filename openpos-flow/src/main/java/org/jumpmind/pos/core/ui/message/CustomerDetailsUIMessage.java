@@ -19,10 +19,8 @@ public class CustomerDetailsUIMessage extends UIMessage {
     private String rewardsDataKey;
 
     private ActionItem backButton;
-    private ActionItem unlinkButton;
-    private ActionItem editButton;
+    private List<ActionItem> secondaryButtons;
     private ActionItem doneButton;
-    private List<ActionItem> additionalActions;
 
     private UICustomerDetailsItem customer;
 
@@ -72,10 +70,10 @@ public class CustomerDetailsUIMessage extends UIMessage {
         setScreenType(UIMessageType.CUSTOMER_DETAILS_DIALOG);
     }
 
-    public void addAdditionalAction(ActionItem action) {
-        if (additionalActions == null) {
-            additionalActions = new ArrayList<>();
+    public void addSecondaryButtons(ActionItem action) {
+        if (secondaryButtons == null) {
+            secondaryButtons = new ArrayList<>();
         }
-        additionalActions.add(action);
+        secondaryButtons.add(action);
     }
 }

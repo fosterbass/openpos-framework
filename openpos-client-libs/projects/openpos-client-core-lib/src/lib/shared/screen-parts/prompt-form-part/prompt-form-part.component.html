@@ -16,6 +16,7 @@
                                       [validationMessages]="screenData.validationMessages"
                                       [readOnly]="!screenData.editable"
                                       [scanActionName]="screenData.scan?.scanActionName"
+                                      [closeScanViewPortOnScan]="screenData.closeScanViewPortOnScan"
                                       [autoFocus]="autoFocusPrompt">
                     </app-prompt-input>
                     <app-instructions *ngIf="instructions" [instructions]="instructions" [instructionsSize]="'text-sm'"></app-instructions>
@@ -46,7 +47,7 @@
 </ng-template>
 
 <ng-template #dialogForm>
-    <form appKeypressSource [formGroup]="promptFormGroup" (ngSubmit)="onFormSubmit()" novalidate [markDirtyOnSubmit]="promptFormGroup" class="form">
+    <form [formGroup]="promptFormGroup" (ngSubmit)="onFormSubmit()" novalidate [markDirtyOnSubmit]="promptFormGroup" class="form">
         <div responsive-class class="form-part-body">
             <app-content-card *ngIf="screenData.info && screenData.promptPosition === 'Bottom'">
                 <div class="content">
@@ -57,11 +58,11 @@
                 <mat-dialog-content class="content" responsive-class>
                     <app-prompt-input #promptInput [placeholderText]="screenData.placeholderText" [responseType]="screenData.responseType ? screenData.responseType.toString() : null"
                                       [promptIcon]="screenData.promptIcon" [responseText]="screenData.responseText" [hintText]="screenData.hintText"
-                                      [minLength]="screenData.minLength" [maxLength]="screenData.maxLength" [promptFormGroup]="promptFormGroup"
+                                      [minLength]="screenData.minLength" [maxLength]="screenData.maxLength" [closeScanViewPortOnScan]="screenData.closeScanViewPortOnScan" [promptFormGroup]="promptFormGroup"
                                       [validationMessages]="screenData.validationMessages"
                                       [keyboardPreference]="screenData.keyboardPreference" [scanEnabled]="screenData.scanEnabled" [readOnly]="!screenData.editable"
                                       [scanActionName]="screenData.scan?.scanActionName"
-                                      [autoFocus]="autoFocusPrompt">
+                                      [autoFocus]="autoFocusPrompt" (valueChange)="onPromptInputChange($event)">
                     </app-prompt-input>
                     <app-instructions *ngIf="instructions" [instructions]="instructions" [instructionsSize]="'text-sm'"></app-instructions>
                     <div #optionsRef>

@@ -1,5 +1,8 @@
 <div class="container mat-elevation-z5" responsive-class>
-    <div class="leftside" [class.expanded]="searchExpanded">
+    <div class="leftside" [class.expanded]="searchExpanded" [class.container-search-is-expanded]="searchExpanded">
+        <!-- this button is a workaround to hide the initial focus shading on the upper left icon -->
+        <button cdkFocusInitial mat-icon-button type='text' class="hidden-focus-button"></button>
+
         <app-icon-button *ngIf="iconButtonName" [iconName]="iconButtonName"
                          [title]="screenData.headerText"
                          [iconClass]="'md'" (buttonClick)="buttonClick()">
@@ -9,29 +12,29 @@
         <app-search-expand-input *ngIf="searchEnabled && (isMobile | async)" (expanded)="onSearchExpand($event)"
             class="bacon-strip-search"></app-search-expand-input>
     </div>
-    <div *ngIf="!(isMobile | async) && !searchExpanded">
-        <img *ngIf="screenData?.logo" [src]="screenData.logo | imageUrl">
+    <div *ngIf="!searchExpanded" class="middle">
+        <img *ngIf="screenData?.logo" [src]="screenData.logo | imageUrl" class="screenlogo">
     </div>
     <div *ngIf="!searchExpanded && screenData?.operatorLine1" class="rightside">
         <p class="operator-name">{{screenData.operatorLine1}}</p>
         <p class="operator-id">{{screenData.operatorLine2}}</p>
-        <app-kebab-button class="icon"
+        <app-kebab-button class="bacon-strip-icon"
                           *ngIf="screenData.operatorMenu"
                           [iconName]="screenData.operatorIcon"
                           iconClass="md"
                           [menuItems]="screenData.operatorMenu"
                           (menuItemClick)="doAction($event)">
         </app-kebab-button>
-        <app-icon class="icon"
+        <app-icon class="bacon-strip-icon"
                   *ngIf="!screenData.operatorMenu"
                   [iconName]="screenData.operatorIcon"
-                         iconClass="md">
+                  [iconClass]="'md'">
         </app-icon>
     </div>
 </div>
 <mat-sidenav-container>
-    <mat-sidenav appKeypressSource>
-        <app-bacon-drawer (buttonClicked)="baconDrawer.close()"></app-bacon-drawer>
+    <mat-sidenav>
+        <app-bacon-drawer (buttonClicked)="onBaconDrawerButtonClicked($event)"></app-bacon-drawer>
     </mat-sidenav>
     <mat-sidenav-content (swiperight)="baconDrawer.open()">
         <ng-content></ng-content>

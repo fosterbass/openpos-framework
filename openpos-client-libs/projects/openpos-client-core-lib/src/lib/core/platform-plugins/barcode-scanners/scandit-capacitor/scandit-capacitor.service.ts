@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { Capacitor } from '@capacitor/core';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, map, mergeMap, switchMap, take, timeout } from 'rxjs/operators';
@@ -14,7 +14,7 @@ import { scandit } from './scandit-plugin.capacitor';
 export class ScanditCapacitorImageScanner implements ImageScanner, IPlatformPlugin {
     private _initializedWithError = false;
 
-    constructor(private _config: ConfigurationService) { }
+    constructor(private _config: ConfigurationService, private _ngZone: NgZone) { }
 
     name(): string {
         return 'scandit-cap';
@@ -62,9 +62,11 @@ export class ScanditCapacitorImageScanner implements ImageScanner, IPlatformPlug
             ).subscribe();
 
             const handle = scandit.addListener('scan', (e) => {
-                observer.next({
-                    type: e.symbology,
-                    data: e.data
+                this._ngZone.run(() => {
+                    observer.next({
+                        type: e.symbology,
+                        data: e.data
+                    });
                 });
             });
 

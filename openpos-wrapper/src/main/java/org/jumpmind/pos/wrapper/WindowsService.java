@@ -90,6 +90,8 @@ public class WindowsService extends WrapperService {
         } else if (isRunning()) {
             throw new WrapperException(Constants.RC_SERVER_ALREADY_RUNNING, 0, "Server is already running");
         } else {
+            tryAutoUpdate();
+
             Advapi32Ex advapi = Advapi32Ex.INSTANCE;
             SC_HANDLE manager = openServiceManager();
             SC_HANDLE service = advapi.OpenService(manager, config.getName(), Winsvc.SERVICE_ALL_ACCESS);

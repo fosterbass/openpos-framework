@@ -1,6 +1,5 @@
 <div class="self-checkout-outer self-checkout-sale-outer">
-	<app-self-checkout-menu></app-self-checkout-menu>
-
+	<app-dynamic-bacon-strip></app-dynamic-bacon-strip>
 	<div responsive-class class="self-checkout-body self-checkout-sale-body">
         <app-sale-item-card-list #scrollList class="self-checkout-list-background" 
         [ngClass]="(hasItems() | async) ? 'self-checkout-list-not-empty' : 'self-checkout-list-empty'"></app-sale-item-card-list>

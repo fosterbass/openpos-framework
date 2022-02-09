@@ -14,7 +14,7 @@
             <div *ngIf="item.description" responsive-class class="item-card-title">
                 {{item.description}}
             </div>
-            <section class="return-info return-color" *ngIf="item.returnItemLabels && expanded">
+            <section responsive-class class="return-info return-color" *ngIf="item.returnItemLabels && expanded">
                 <app-icon [iconName]="item.isOrderItem ? item.orderIcon: 'receipt'"></app-icon>
                 <ul responsive-class class="return-info-text">
                     <li *ngFor="let returnItemLabel of item.returnItemLabels">
@@ -22,7 +22,7 @@
                     </li>
                 </ul>
             </section>
-            <section class="order-info order-color" *ngIf="item.orderItemLabels">
+            <section responsive-class class="order-info order-color" *ngIf="item.orderItemLabels">
                 <app-icon [iconName]="item.orderIcon"></app-icon>
                 <ul responsive-class class="order-info-text">
                     <li *ngFor="let orderItemLabel of item.orderItemLabels">

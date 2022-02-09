@@ -117,6 +117,8 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
 
     isInKioskMode = false;
 
+    brand: string;
+
     @ViewChild('devMenuPanel') devMenuPanel: MatExpansionPanel;
 
     constructor(
@@ -408,6 +410,7 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
             // Sigh.  But I am leaving this in for now at least so that *a* DevMenu shows.
             this.cd.detectChanges();
         }
+        this.brand = this.personalization.getPersonalizationProperties$().getValue().get('brandId');
     }
 
     public onDevMenuRefresh() {
@@ -508,8 +511,11 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
     }
 
     public onDevClearLocalStorage() {
-        this.personalization.dePersonalize();
-        this.personalization.refreshApp();
+        this.personalization.clearStorage().subscribe({
+            next: () => this.personalization.refreshApp(),
+            error: (error) => console.error(error),
+            complete: () => this.personalization.refreshApp()
+        });
     }
 
     public onOpenSimulator() {
@@ -570,6 +576,15 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
 
         });
         return prom;
+    }
+
+    public onChangeBrand(): void {
+        this.session.publish('DevTools::Brand', DevMenuComponent.MSG_TYPE, { brand: this.brand });
+        this.personalization.setPersonalizationProperties(
+            this.personalization.getPersonalizationProperties$().getValue().set('brandId', this.brand)
+        );
+        this.session.connectToStomp();
+        this.onDevMenuClick();
     }
 
     public onLogfileSelected(logFilename: string): void {
@@ -685,11 +700,11 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
     }
 
     public toggleChromiumDevTools() {
-        this.electron.remote.getCurrentWindow().webContents.toggleDevTools();
+        this.electron.ipcRenderer.send('toggleDevTools');
     }
 
     public exitElectronApp() {
-        this.electron.remote.getCurrentWindow().close();
+        this.electron.ipcRenderer.send('exitApp');
     }
 
     public getLocalTheme(): Observable<string> {

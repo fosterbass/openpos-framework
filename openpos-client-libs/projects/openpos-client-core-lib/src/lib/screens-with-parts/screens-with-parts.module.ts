@@ -38,18 +38,21 @@ import { TransactionDetailsComponent } from './transaction-details/transaction-d
 import { SimulatedPeripheralViewerComponent } from './simulated-peripheral-viewer/simulated-peripheral-viewer.component';
 import { CustomerSearchResultDialogComponent } from './customer-search-result-dialog/customer-search-result-dialog.component';
 import { LoyaltyCustomerFormDialogComponent } from './loyalty-customer-form-dialog/loyalty-customer-form-dialog.component';
-import { CustomerDetailsDialogComponent } from './customer-details-dialog/customer-details-dialog.component';
 import { MembershipDetailsDialogComponent } from './membership/membership-details-dialog/membership-details-dialog.component';
 import { MembershipPlanDetailsDialogComponent } from './membership/membership-plan-details-dialog/membership-plan-details-dialog.component';
 import { ProgramPlanSelectDialogComponent } from './membership/program-plan-select-dialog/program-plan-select-dialog.component';
 import {EnrollmentConfirmationDialogComponent} from './membership/enrollment-confirmation-dialog/enrollment-confirmation-dialog.component';
-
+import { CustomerDetailsDialogComponent } from './customer-details-dialog/customer-details-dialog.component';
+import { PromptWithInfoScanGiftCardScreenDialogComponent } from './prompt-with-info-scan-gift-card/prompt-with-info-scan-gift-card-screen-dialog.component';
+import { PromptInfoScanGiftCardScreenComponent } from './prompt-with-info-scan-gift-card/prompt-info-scan-gift-card-screen.component';
+import { Prompt2ScreenDialogComponent } from './prompt2/prompt2-screen-dialog.component';
 
 const screens = [
     SelectionListScreenComponent,
     PromptScreenComponent,
     PromptWithOptionsScreenComponent,
     PromptWithInfoScreenComponent,
+    PromptInfoScanGiftCardScreenComponent,
     HomeComponent,
     ReturnComponent,
     MobileReturnReceiptsSheetComponent,
@@ -74,6 +77,8 @@ const dialogs = [
     PromptScreenDialogComponent,
     PromptWithOptionsScreenDialogComponent,
     PromptWithInfoScreenDialogComponent,
+    PromptWithInfoScanGiftCardScreenDialogComponent,
+    Prompt2ScreenDialogComponent,
     ChooseOptionsScreenDialogComponent,
     ReturnTransDetailsDialogComponent,
     ConfirmDialogComponent,

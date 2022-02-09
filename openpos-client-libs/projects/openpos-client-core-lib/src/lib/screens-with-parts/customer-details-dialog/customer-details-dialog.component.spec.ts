@@ -1,4 +1,4 @@
-import { TestBed, ComponentFixture } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CustomerDetailsDialogComponent } from './customer-details-dialog.component';
 import { CustomerDetailsDialogInterface } from './customer-details-dialog.interface';
 import { ActionService } from '../../core/actions/action.service';
@@ -11,11 +11,10 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ElectronService } from 'ngx-electron';
 import { CLIENTCONTEXT } from '../../core/client-context/client-context-provider.interface';
 import { TimeZoneContext } from '../../core/client-context/time-zone-context';
-import { Observable, of, Subscription } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { MediaBreakpoints, OpenposMediaService } from '../../core/media/openpos-media.service';
 import { ImageUrlPipe } from '../../shared/pipes/image-url.pipe';
 import { MarkdownFormatterPipe } from '../../shared/pipes/markdown-formatter.pipe';
-import {KeyPressProvider} from '../../shared/providers/keypress.provider';
 import { MockComponent } from 'ng-mocks';
 import { IconComponent } from '../../shared/components/icon/icon.component';
 import { InfiniteScrollComponent } from '../../shared/components/infinite-scroll/infinite-scroll.component';
@@ -28,12 +27,9 @@ import { SecondaryButtonComponent } from '../../shared/components/secondary-butt
 import { PrimaryButtonComponent } from '../../shared/components/primary-button/primary-button.component';
 import { MatTab, MatTabGroup } from '@angular/material/tabs';
 import { MembershipDisplayComponent } from '../../shared/screen-parts/membership-display/membership-display.component';
+import { ActionItemKeyMappingDirective } from '../../shared/directives/action-item-key-mapping.directive';
+import { KeybindingZoneService } from '../../core/keybindings/keybinding-zone.service';
 
-class MockKeyPressProvider {
-  subscribe(): Subscription {
-    return new Subscription();
-  }
-}
 class MockActionService { }
 class MockMatDialog { }
 class MockElectronService { }
@@ -90,10 +86,11 @@ describe('CustomerDetailsDialog', () => {
           MockComponent(PrimaryButtonComponent),
           MockComponent(MatTab),
           MockComponent(MatDialogActions),
-          MockComponent(MatTabGroup)
+          MockComponent(MatTabGroup),
+          ActionItemKeyMappingDirective
         ],
         providers: [
-          { provide: KeyPressProvider, useClass: MockKeyPressProvider },
+          KeybindingZoneService,
           { provide: ActionService, useClass: MockActionService },
           { provide: MatDialog, useClass: MockMatDialog },
           { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobileFalse },
@@ -128,7 +125,7 @@ describe('CustomerDetailsDialog', () => {
             [MediaBreakpoints.MOBILE_PORTRAIT, true],
             [MediaBreakpoints.MOBILE_LANDSCAPE, true],
             [MediaBreakpoints.TABLET_PORTRAIT, true],
-            [MediaBreakpoints.TABLET_LANDSCAPE, true],
+            [MediaBreakpoints.TABLET_LANDSCAPE, false],
             [MediaBreakpoints.DESKTOP_PORTRAIT, false],
             [MediaBreakpoints.DESKTOP_LANDSCAPE, false]
           ]));
@@ -276,12 +273,13 @@ describe('CustomerDetailsDialog', () => {
         describe('edit button', () => {
           let button;
           let configuration;
-          const selector = 'mat-dialog-actions .edit';
+          const selector = 'mat-dialog-actions .button';
           const setButtonConfiguration = (conf) => {
-            component.screen.editButton = conf;
+            component.screen.doneButton = null;
+            component.screen.secondaryButtons = conf ? [conf] : undefined;
           };
 
-          beforeEach(() => {
+          beforeEach(() =>  {
             configuration = {
               title: 'Some Title'
             } as IActionItem;
@@ -314,12 +312,56 @@ describe('CustomerDetailsDialog', () => {
             expect(component.doAction).toHaveBeenCalledWith(configuration);
           });
         });
+
+        describe('plccLookup button', () => {
+          let button;
+          let configuration;
+          const selector = 'mat-dialog-actions .button';
+          const setButtonConfiguration = (conf) => {
+             component.screen.doneButton = null;
+             component.screen.secondaryButtons = conf ? [conf] : undefined;
+           };
+
+          beforeEach(() => {
+              configuration = {
+                title: 'Some Title'
+              } as IActionItem;
+              setButtonConfiguration(configuration);
+              fixture.detectChanges();
+              button = fixture.debugElement.query(By.css(selector));
+          });
+
+          it('renders when the button configuration is set', () => {
+              expect(button.nativeElement).toBeDefined();
+          });
+
+          it('does not render when the configuration is undefined', () => {
+              setButtonConfiguration(undefined);
+              fixture.detectChanges();
+              validateDoesNotExist(fixture, selector);
+          });
+
+          it('calls doAction with the configuration when an actionClick event is triggered', () => {
+              spyOn(component, 'doAction');
+              button = fixture.debugElement.query(By.css(selector));
+              button.nativeElement.dispatchEvent(new Event('actionClick'));
+              expect(component.doAction).toHaveBeenCalledWith(configuration);
+          });
+
+          it('calls doAction with the configuration when the button is clicked', () => {
+              spyOn(component, 'doAction');
+              button = fixture.debugElement.query(By.css(selector));
+              button.nativeElement.click();
+              expect(component.doAction).toHaveBeenCalledWith(configuration);
+          });
+        });
+
         describe('unlink button', () => {
           let button;
           let configuration;
-          const selector = 'mat-dialog-actions .unlink';
+          const selector = 'mat-dialog-actions .button';
           const setButtonConfiguration = (conf) => {
-            component.screen.unlinkButton = conf;
+            component.screen.secondaryButtons = conf ? [conf] : undefined;
           };
 
           beforeEach(() => {
@@ -360,6 +402,7 @@ describe('CustomerDetailsDialog', () => {
           let configuration;
           const selector = 'mat-dialog-actions .done';
           const setButtonConfiguration = (conf) => {
+            component.screen.secondaryButtons = null;
             component.screen.doneButton = conf;
           };
 
@@ -424,7 +467,6 @@ describe('CustomerDetailsDialog', () => {
           MockComponent(MatTabGroup)
         ],
         providers: [
-          { provide: KeyPressProvider, useClass: MockKeyPressProvider },
           { provide: ActionService, useClass: MockActionService },
           { provide: MatDialog, useClass: MockMatDialog },
           { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobileTrue },
@@ -520,7 +562,6 @@ describe('CustomerDetailsDialog', () => {
           MockComponent(MatTabGroup)
         ],
         providers: [
-          { provide: KeyPressProvider, useClass: MockKeyPressProvider },
           { provide: ActionService, useClass: MockActionService },
           { provide: MatDialog, useClass: MockMatDialog },
           { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobileFalse },

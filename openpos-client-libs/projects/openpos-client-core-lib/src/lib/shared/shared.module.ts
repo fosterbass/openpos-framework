@@ -12,7 +12,6 @@ import { TaskListDirective } from './components/task-list/task-list.component';
 import { ResponsiveGridDirective } from './directives/responsive-grid.directive';
 import { SafePipe } from './pipes/safe.pipe';
 import { DynamicListControlComponent } from './components/dynamic-list-control/dynamic-list-control.component';
-import { KeyPressSourceDirective } from './directives/keypress-source.directive';
 import { SystemStatusDialogComponent } from './components/system-status/system-status-dialog.component';
 import { SaleFooterComponent } from '../screens-with-parts/sale/sale-footer/sale-footer.component';
 import { SaleItemListComponent } from '../screens-with-parts/sale/sale-item-list/sale-item-list.component';
@@ -107,7 +106,6 @@ import { ToggleButtonComponent } from './components/toggle-button/toggle-button.
 import { ChooseOptionsPartComponent } from './screen-parts/choose-options-part/choose-options-part.component';
 import { WebcamViewerComponent } from './screen-parts/webcam-viewer/webcam-viewer.component';
 import { LanguageSelectorComponent } from './components/language-selector/language-selector.component';
-import { OpenposAppComponent } from './components/openpos-app/openpos-app.component';
 import { LoaderComponent } from './components/loader/loader.component';
 import { DevMenuComponent } from './components/dev-menu/dev-menu.component';
 import { RouterModule } from '@angular/router';
@@ -156,7 +154,6 @@ import { StampComponent } from './components/stamp/stamp.component';
 import { FitTextDirective } from './directives/fit-text.directive';
 import { PromptButtonRowComponent } from './screen-parts/prompt-button-row/prompt-button-row.component';
 import { WarnButtonComponent } from './components/warn-button/warn-button.component';
-import { StayFocusedDirective } from './directives/stay-focused.directive';
 import { AudioLicenseComponent } from './components/audio-license/audio-license.component';
 import { ToastComponent } from './components/toast/toast.component';
 import { WatermarkComponent } from './components/watermark/watermark.component';
@@ -188,6 +185,8 @@ import { CapacitorKioskModePlatform } from '../core/platform-plugins/kiosk/capac
 import { ScreenGestureComponent } from './screen-parts/screen-gesture/screen-gesture.component';
 import { DisableAutoCompleteDirective } from './directives/disable-auto-complete.directive';
 import { SafeHtmlPipe } from './pipes/safe-html.pipe';
+import { ExpansionPanelComponent } from './components/expansion-panel/expansion-panel.component';
+import { PromptFormPartCardComponent } from './screen-parts/prompt-form-part-card/prompt-form-part-card.component';
 
 const screenParts = [
     TenderPartComponent,
@@ -202,6 +201,7 @@ const screenParts = [
     SaleFooterComponent,
     SaleItemListComponent,
     PromptFormPartComponent,
+    PromptFormPartCardComponent,
     DynamicFormPartComponent,
     AutoCompleteAddressPartComponent,
     MembershipDisplayComponent,
@@ -238,7 +238,6 @@ const screenParts = [
 
 const components = [
     DynamicScreenComponent,
-    OpenposAppComponent,
     LoaderComponent,
     DevMenuComponent,
     PromptInputComponent,
@@ -318,7 +317,8 @@ const components = [
     ImageScannerComponent,
     DisplayCustomerLookupComponent,
     WatermarkComponent,
-    StandbyComponent
+    StandbyComponent,
+    ExpansionPanelComponent
 ];
 
 const directives = [
@@ -342,13 +342,11 @@ const directives = [
     FixediOsScrollDirective,
     ActionItemKeyMappingDirective,
     AutoCompleteAddressDirective,
-    KeyPressSourceDirective,
     ArrowTabDirective,
     ArrowTabItemDirective,
     ResponsiveClassDirective,
     ResponsiveGridDirective,
     FitTextDirective,
-    StayFocusedDirective,
     DisableAutoCompleteDirective
 ];
 

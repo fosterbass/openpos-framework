@@ -1,0 +1,109 @@
+<ng-template [ngIf]="this.screenData.type.toLowerCase() !== 'dialog'" [ngIfElse]="dialogForm">
+    <form [formGroup]="promptFormGroup" (ngSubmit)="onFormSubmit()" novalidate [markDirtyOnSubmit]="promptFormGroup">
+        <div responsive-class class="form-part-body">
+            <app-content-card *ngIf="screenData.info && screenData.promptPosition === 'Bottom'">
+                <div class="content">
+                    <app-display-property *ngFor="let infoDetail of screenData.info" [property]="infoDetail" [alignmentType]="'column_end'"></app-display-property>
+                </div>
+            </app-content-card>
+            <app-content-card>
+                <div class="content">
+                    <app-prompt-input #promptInput [placeholderText]="screenData.placeholderText"
+                                      [responseType]="screenData.responseType" [promptIcon]="screenData.promptIcon"
+                                      [responseText]="screenData.responseText" [hintText]="screenData.hintText" [minLength]="screenData.minLength"
+                                      [maxLength]="screenData.maxLength" [promptFormGroup]="promptFormGroup"
+                                      [keyboardPreference]="screenData.keyboardPreference" [scanEnabled]="screenData.scanEnabled"
+                                      [validationMessages]="screenData.validationMessages"
+                                      [readOnly]="!screenData.editable"
+                                      [scanActionName]="screenData.scan?.scanActionName"
+                                      [autoFocus]="autoFocusPrompt">
+                    </app-prompt-input>
+                    <input *ngIf="screenData.isExpiryDateEnabled" type="date">
+                    <app-instructions *ngIf="instructions" [instructions]="instructions" [instructionsSize]="'text-sm'"></app-instructions>
+                    <div #optionsRef>
+                        <ng-content select="[optionsScreen]"></ng-content>
+                    </div>
+                </div>
+            </app-content-card>
+            <app-content-card *ngIf="screenData.info && screenData.promptPosition === 'Top'">
+                <div class="content">
+                    <app-display-property *ngFor="let infoDetail of screenData.info" [property]="infoDetail" [alignmentType]="'column_end'"></app-display-property>
+                </div>
+            </app-content-card>
+
+            <div *ngIf="screenData.otherActions || screenData.actionButton" class="prompt-buttons" responsive-class>
+                <app-secondary-button inputType="button" *ngFor="let menuItem of screenData.otherActions" (click)="onAction(menuItem)">
+                    <span responsive-class>{{menuItem.title}}</span>
+                    <app-icon *ngIf="menuItem.icon" [iconClass]="'md'" [iconName]="menuItem.icon"></app-icon>
+                </app-secondary-button>
+                <app-primary-button (click)="onFormSubmit()">
+                    <span responsive-class>{{screenData.actionButton.title}}</span>
+                    <app-icon *ngIf="screenData.actionButton.icon" [iconClass]="'md'"
+                              [iconName]="screenData.actionButton.icon"></app-icon>
+                </app-primary-button>
+            </div>
+        </div>
+    </form>
+</ng-template>
+
+<ng-template #dialogForm>
+    <form [formGroup]="promptFormGroup" (ngSubmit)="onFormSubmit()" novalidate [markDirtyOnSubmit]="promptFormGroup" class="form">
+        <div responsive-class class="form-part-body">
+            <app-content-card *ngIf="screenData.info && screenData.promptPosition === 'Bottom'">
+                <div class="content">
+                    <app-display-property *ngFor="let infoDetail of screenData.info" [property]="infoDetail" [alignmentType]="'column_end'"></app-display-property>
+                </div>
+            </app-content-card>
+            <app-content-card>
+                <mat-dialog-content class="content" responsive-class>
+                    <app-prompt-input #promptInput [placeholderText]="screenData.placeholderText" [responseType]="screenData.responseType ? screenData.responseType.toString() : null"
+                                      [promptIcon]="screenData.promptIcon" [responseText]="screenData.responseText" [hintText]="screenData.hintText"
+                                      [minLength]="screenData.minLength" [maxLength]="screenData.maxLength" [promptFormGroup]="promptFormGroup"
+                                      [validationMessages]="screenData.validationMessages"
+                                      [keyboardPreference]="screenData.keyboardPreference" [scanEnabled]="screenData.scanEnabled" [readOnly]="!screenData.editable"
+                                      [scanActionName]="screenData.scan?.scanActionName"
+                                      [autoFocus]="autoFocusPrompt" (valueChange)="onPromptInputChange($event)">
+                    </app-prompt-input>
+                        <ng-container>
+                            <app-dynamic-date-form-field *ngIf="screenData.isExpiryDateEnabled" [controlName]="'promptDateInputControl'"
+                                                         [hiddenControl]="'promptDateInputHiddenDateControl'" [form]="promptFormGroup" [type]="screenData.responseDateType ? screenData.responseDateType.toString() : null"
+                                                         [minDate]="today" [(value)]="screenData.responseDateText" [placeholder]="screenData.placeholderDateText" [isPrompt]=true [hintText]="screenData.hintDateText">
+                            </app-dynamic-date-form-field>
+                            <mat-error class="text-sm">
+                                <app-show-errors [control]="promptFormGroup.controls['promptDateInputControl']"></app-show-errors>
+                            </mat-error>
+                        </ng-container>
+                    <app-instructions *ngIf="instructions" [instructions]="instructions" [instructionsSize]="'text-sm'"></app-instructions>
+                    <div #optionsRef>
+                        <ng-content select="[optionsDialog]"></ng-content>
+                    </div>
+                </mat-dialog-content>
+            </app-content-card>
+            <app-content-card *ngIf="screenData.info && screenData.promptPosition === 'Top'">
+                <div class="content">
+                    <app-display-property *ngFor="let infoDetail of screenData.info" [property]="infoDetail" [alignmentType]="'column_end'"></app-display-property>
+                </div>
+            </app-content-card>
+
+            <mat-dialog-actions *ngIf="screenData.otherActions && screenData.otherActions.length > 0" class="prompt-buttons" responsive-class>
+                <app-secondary-button [disabled]="!promptFormGroup.valid" inputType="button" *ngFor="let menuItem of screenData.otherActions" (click)="onAction(menuItem)">
+                    <span>{{menuItem.title}}</span>
+                    <app-icon *ngIf="menuItem.icon" [iconClass]="'md'" [iconName]="menuItem.icon"></app-icon>
+                    <div class="muted-color keybind-display-name-secondary" *ngIf="menuItem.keybind && keybindsEnabled()">{{menuItem.keybindDisplayName}}</div>
+                </app-secondary-button>
+                <app-primary-button [disabled]="!promptFormGroup.valid">
+                    <span>{{screenData.actionButton.title}}</span>
+                    <app-icon *ngIf="screenData.actionButton.icon" [iconClass]="'md'" [iconName]="screenData.actionButton.icon"></app-icon>
+                    <div class="muted-color keybind-display-name-primary" *ngIf="screenData.actionButton.keybind && keybindsEnabled()">{{screenData.actionButton.keybindDisplayName}}</div>
+                </app-primary-button>
+            </mat-dialog-actions>
+            <mat-dialog-actions *ngIf="(!screenData.otherActions || screenData.otherActions && screenData.otherActions.length == 0) && screenData.actionButton" align="end">
+                <app-primary-button [disabled]="!promptFormGroup.valid">
+                    <span>{{screenData.actionButton.title}}</span>
+                    <app-icon *ngIf="screenData.actionButton.icon" [iconClass]="'md'" [iconName]="screenData.actionButton.icon"></app-icon>
+                    <div class="muted-color keybind-display-name-primary" *ngIf="screenData.actionButton.keybind && keybindsEnabled()">{{screenData.actionButton.keybindDisplayName}}</div>
+                </app-primary-button>
+            </mat-dialog-actions>
+        </div>
+    </form>
+</ng-template>

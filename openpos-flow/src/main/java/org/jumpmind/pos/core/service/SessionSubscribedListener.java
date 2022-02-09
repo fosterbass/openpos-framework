@@ -1,5 +1,7 @@
 package org.jumpmind.pos.core.service;
 
+import io.prometheus.client.Gauge;
+import org.apache.commons.lang3.StringUtils;
 import org.jumpmind.pos.core.flow.ScopeType;
 import org.jumpmind.pos.devices.model.DeviceModel;
 import org.jumpmind.pos.util.Version;
@@ -11,12 +13,15 @@ import org.jumpmind.pos.core.ui.IconType;
 import org.jumpmind.pos.core.ui.message.DialogUIMessage;
 import org.jumpmind.pos.core.ui.messagepart.DialogHeaderPart;
 import org.jumpmind.pos.core.ui.messagepart.MessagePartConstants;
-import org.jumpmind.pos.server.config.MessageUtils;
+import org.jumpmind.pos.devices.model.DeviceModel;
 import org.jumpmind.pos.devices.service.model.PersonalizationParameters;
+import org.jumpmind.pos.server.config.MessageUtils;
 import org.jumpmind.pos.server.config.SessionSubscribedEvent;
 import org.jumpmind.pos.server.service.IMessageService;
 import org.jumpmind.pos.server.service.SessionConnectListener;
+import org.jumpmind.pos.util.Version;
 import org.jumpmind.pos.util.Versions;
+import org.jumpmind.pos.util.event.DeviceConnectedEvent;
 import org.jumpmind.pos.util.event.EventPublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +33,7 @@ import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +41,6 @@ import static org.jumpmind.pos.util.AppUtils.setupLogging;
 
 @Component
 public class SessionSubscribedListener implements ApplicationListener<SessionSubscribedEvent>, MessageUtils {
-
     final Logger log = LoggerFactory.getLogger(getClass());
 
     @Autowired
@@ -64,14 +69,14 @@ public class SessionSubscribedListener implements ApplicationListener<SessionSub
 
 
     @Override
-    public void onApplicationEvent(SessionSubscribedEvent event) {
+    synchronized public void onApplicationEvent(SessionSubscribedEvent event) {
         Message<?> msg = event.getMessage();
         String sessionId = (String) msg.getHeaders().get("simpSessionId");
         Map<String, Object> queryParams = sessionAuthTracker.getQueryParams(sessionId);
-        Map<String, String> clientContext = sessionAuthTracker.getClientContext(sessionId);
+        Map<String, String> deviceVariables = sessionAuthTracker.getDeviceVariables(sessionId);
         String topicName = (String) msg.getHeaders().get("simpDestination");
         String compatibilityVersion = this.getHeader(msg, MessageUtils.COMPATIBILITY_VERSION_HEADER);
-        String deviceId = topicName.substring(topicName.indexOf("/device/") + "/device/".length());
+        String deviceId = StringUtils.isNotBlank(topicName) ? topicName.substring(topicName.indexOf("/device/") + "/device/".length()) : "";
         setupLogging(deviceId);
         Map<String, String> personalizationProperties = sessionAuthTracker.getPersonalizationResults(sessionId);
 
@@ -84,7 +89,7 @@ public class SessionSubscribedListener implements ApplicationListener<SessionSub
                 header.setHeaderIcon(IconType.Error);
                 header.setHeaderText("Failed Authentication");
                 errorDialog.addMessagePart(MessagePartConstants.DialogHeader, header);
-                errorDialog.setMessage(Arrays.asList("The client and server authentication tokens did not match"));
+                errorDialog.setMessage(Collections.singletonList("The client and server authentication tokens did not match"));
                 messageService.sendMessage(deviceId, errorDialog);
                 return;
             } else if (!sessionAuthTracker.isSessionCompatible(sessionId)) {
@@ -126,19 +131,19 @@ public class SessionSubscribedListener implements ApplicationListener<SessionSub
 
             stateManagerContainer.setCurrentStateManager(stateManager);
 
-            stateManager.setSessionAuthenticated(sessionId, sessionAuthTracker.isSessionAuthenticated(sessionId));
-            stateManager.setSessionCompatible(sessionId, sessionAuthTracker.isSessionCompatible(sessionId));
-            stateManager.setClientContext(clientContext);
+            stateManager.setDeviceVariables(deviceVariables);
+            stateManager.setConnected(sessionAuthTracker.isSessionAuthenticated(sessionId));
             stateManager.getApplicationState().getScope().setDeviceScope("device", sessionAuthTracker.getDeviceModel(sessionId));
             stateManager.getApplicationState().getScope().setDeviceScope("powerStatus", sessionAuthTracker.getPowerStatus(sessionId));
 
             eventPublisher.publish(new DeviceConnectedEvent(deviceId, appId, stateManager.getPairedDeviceId(),
-                    (List<Version>)queryParams.get("deviceVersions")));
+                    (List<Version>) queryParams.get("deviceVersions")));
 
             if (!created) {
                 stateManager.refreshScreen();
             }
 
+            SubscribedSessionMetric.inc(deviceId);
         } catch (Exception ex) {
             log.error("Failed to subscribe to " + topicName, ex);
             DialogUIMessage errorDialog = new DialogUIMessage();
@@ -147,7 +152,7 @@ public class SessionSubscribedListener implements ApplicationListener<SessionSub
             header.setHeaderIcon(IconType.Error);
             header.setHeaderText("Failed To Subscribe");
             errorDialog.addMessagePart(MessagePartConstants.DialogHeader, header);
-            errorDialog.setMessage(Arrays.asList(ex.getMessage()));
+            errorDialog.setMessage(Collections.singletonList(ex.getMessage()));
             messageService.sendMessage(deviceId, errorDialog);
         } finally {
             stateManagerContainer.setCurrentStateManager(null);

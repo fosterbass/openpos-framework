@@ -1,11 +1,13 @@
 import { ScreenPartComponent } from '../screen-part';
-import { AfterViewInit, Component, OnInit, ViewChild, Injector } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild, Injector, ChangeDetectorRef } from '@angular/core';
 import { Validators, FormControl, FormGroup, ValidatorFn } from '@angular/forms';
 import { ValidatorsService } from '../../../core/services/validators.service';
 import { IActionItem } from '../../../core/actions/action-item.interface';
 import { PromptFormPartInterface } from './prompt-form-part.interface';
 import { CONFIGURATION } from '../../../configuration/configuration';
 import { merge } from 'rxjs';
+import {ActionItem} from '../../../core/actions/action-item';
+import { KeybindingZoneService } from '../../../core/keybindings/keybinding-zone.service';
 
 @Component({
     selector: 'app-prompt-form-part',
@@ -20,8 +22,11 @@ export class PromptFormPartComponent extends ScreenPartComponent<PromptFormPartI
     promptFormGroup: FormGroup;
     initialized = false;
     instructions: string;
+    previousInputLength: number;
     inputControlName = 'promptInputControl';
     hiddenInputControlName = 'promptInputHiddenDateControl';
+    primaryActionButton: ActionItem;
+    secondaryActionButton: ActionItem;
 
     get autoFocusPrompt(): boolean {
         // default to true if not properly defined... it is the way
@@ -32,7 +37,10 @@ export class PromptFormPartComponent extends ScreenPartComponent<PromptFormPartI
         return this.screenData.autoFocus;
     }
 
-    constructor(private validatorsService: ValidatorsService, injector: Injector) {
+    constructor(private validatorsService: ValidatorsService,
+                injector: Injector,
+                private changeDetectorRef: ChangeDetectorRef,
+                private keybindingZoneService: KeybindingZoneService) {
         super(injector);
     }
 
@@ -41,7 +49,10 @@ export class PromptFormPartComponent extends ScreenPartComponent<PromptFormPartI
 
         const group: any = {};
         const validators: ValidatorFn[] = [];
-        validators.push(Validators.required);
+        if (this.screenData.isRequiredInputField !== false) {
+            validators.push(Validators.required);
+        }
+
         if (this.screenData.responseType) {
             validators.push(this.validatorsService.getValidator(this.screenData.responseType.toString()));
         }
@@ -80,9 +91,8 @@ export class PromptFormPartComponent extends ScreenPartComponent<PromptFormPartI
             group[this.hiddenInputControlName] = new FormControl();
         }
         this.promptFormGroup = new FormGroup(group);
-
-        this.keyPressProvider.subscribe(this.screenData.actionButton, 100, () => this.onFormSubmit(), this.stop$);
-        this.keyPressProvider.subscribe(this.screenData.otherActions, 100, (event, action) => this.doAction(action), this.stop$);
+        // Let the default browser form submit handle this
+        this.keybindingZoneService.removeKeybinding('Enter');
     }
 
     public keybindsEnabled() {
@@ -91,6 +101,8 @@ export class PromptFormPartComponent extends ScreenPartComponent<PromptFormPartI
 
     ngAfterViewInit(): void {
         this.initialized = true;
+        this.primaryActionButton = this.screenData.actionButton;
+        this.secondaryActionButton = this.screenData.secondaryActionButton;
     }
 
     onAction(menuItm: IActionItem) {
@@ -103,6 +115,19 @@ export class PromptFormPartComponent extends ScreenPartComponent<PromptFormPartI
             if (this.screenData.actionButton) {
                 this.doAction({ action: this.screenData.actionButton.action }, payload);
             }
+        }
+    }
+
+    onPromptInputChange(event): void {
+        if (this.screenData.isGiftCardScanEnabled) {
+            if (event.target.value.length === 0) {
+                this.screenData.actionButton = this.primaryActionButton;
+
+            } else {
+                this.screenData.actionButton = this.secondaryActionButton;
+
+            }
+            this.changeDetectorRef.detectChanges();
         }
     }
 

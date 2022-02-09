@@ -7,7 +7,6 @@ import { ElectronService } from 'ngx-electron';
 import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provider.interface';
 import { TimeZoneContext } from '../../../core/client-context/time-zone-context';
 import { ActionService } from '../../../core/actions/action.service';
-import { KeyPressProvider } from '../../providers/keypress.provider';
 import { RewardsHistoryLineItemComponent } from './rewards-history-line-item.component';
 import { RewardHistory, RewardsHistoryLineItemComponentInterface } from './rewards-history-line-item.interface';
 import { validateDoesNotExist, validateExist, validateIcon, validateText } from '../../../utilites/test-utils';
@@ -17,11 +16,6 @@ import { IconComponent } from '../../components/icon/icon.component';
 
 class MockActionService { }
 class MockMatDialog { }
-class MockKeyPressProvider {
-    subscribe(): Subscription {
-        return new Subscription();
-    }
-}
 class MockElectronService { }
 class ClientContext { }
 
@@ -52,7 +46,6 @@ describe('RewardsHistoryLineItemComponent', () => {
                     { provide: ActionService, useClass: MockActionService },
                     { provide: MatDialog, useClass: MockMatDialog },
                     { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobileFalse },
-                    { provide: KeyPressProvider, useClass: MockKeyPressProvider },
                     { provide: ElectronService, useClass: MockElectronService },
                     { provide: ClientContext, useValue: {} },
                     { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
@@ -251,7 +244,6 @@ describe('RewardsHistoryLineItemComponent', () => {
                     { provide: ActionService, useClass: MockActionService },
                     { provide: MatDialog, useClass: MockMatDialog },
                     { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobileTrue },
-                    { provide: KeyPressProvider, useClass: MockKeyPressProvider },
                     { provide: ElectronService, useClass: MockElectronService },
                     { provide: ClientContext, useValue: {} },
                     { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
@@ -294,7 +286,6 @@ describe('RewardsHistoryLineItemComponent', () => {
                     { provide: ActionService, useClass: MockActionService },
                     { provide: MatDialog, useClass: MockMatDialog },
                     { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobileFalse },
-                    { provide: KeyPressProvider, useClass: MockKeyPressProvider },
                     { provide: ElectronService, useClass: MockElectronService },
                     { provide: ClientContext, useValue: {} },
                     { provide: CLIENTCONTEXT, useClass: TimeZoneContext }

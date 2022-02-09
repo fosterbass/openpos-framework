@@ -1,4 +1,4 @@
-<app-form *ngIf="screenData" (submitFormEvent)="submitForm()" [form]="form">
+<app-form *ngIf="screenData" (submitFormEvent)="submitForm()" [form]="form" [validateOnFirstLoad]="screenData.validateOnFirstLoad">
     <div class="auto-complete-address-outer" responsive-class>
         <app-content-card>
             <div class="auto-complete-address-form" responsive-class>

@@ -6,7 +6,6 @@ import { ElectronService } from 'ngx-electron';
 import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provider.interface';
 import { TimeZoneContext } from '../../../core/client-context/time-zone-context';
 import { Subscription } from 'rxjs';
-import { KeyPressProvider } from '../../../shared/providers/keypress.provider';
 import { ProgramPlanDetailsComponent } from './program-plan-details.component';
 import { Plan } from '../../../screens-with-parts/membership/plan-interface';
 import { ActionItem } from '../../../core/actions/action-item';
@@ -20,11 +19,6 @@ class MockActionService { }
 class MockMatDialog { }
 class MockElectronService { }
 class ClientContext { }
-class MockKeyPressProvider {
-    subscribe(): Subscription {
-        return new Subscription();
-    }
-}
 
 describe('ProgramPlanDetailsComponent', () => {
     let component: ProgramPlanDetailsComponent;
@@ -42,7 +36,6 @@ describe('ProgramPlanDetailsComponent', () => {
                 { provide: MatDialog, useClass: MockMatDialog },
                 { provide: ActionService, useClass: MockActionService },
                 { provide: ElectronService, useClass: MockElectronService },
-                { provide: KeyPressProvider, useClass: MockKeyPressProvider },
                 { provide: ClientContext, useValue: {} },
                 { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
             ]

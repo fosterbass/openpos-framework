@@ -24,11 +24,7 @@
             height: 275px;
             padding-right: 16px;
 
-            &.tablet {
-                height: 150px;
-                width: 100px;
-            }
-
+            &.tablet,
             &.mobile {
                 height: 60px;
                 width: 60px;

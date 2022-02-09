@@ -1,68 +1,68 @@
-import { Directive, Input, Renderer2, ElementRef, OnDestroy, EventEmitter, Output } from '@angular/core';
-import { KeyPressProvider } from '../providers/keypress.provider';
-import { Subscription } from 'rxjs';
-import { CONFIGURATION } from '../../configuration/configuration';
+import {
+    Directive,
+    ElementRef,
+    EventEmitter,
+    Input,
+    OnChanges,
+    OnDestroy,
+    Output,
+    Renderer2,
+    SimpleChanges
+} from '@angular/core';
+import { merge, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { IActionItem } from '../../core/actions/action-item.interface';
 import { ActionService } from '../../core/actions/action.service';
+import { KeybindingZoneService } from '../../core/keybindings/keybinding-zone.service';
 
 @Directive({
     // tslint:disable-next-line:directive-selector
     selector: '[actionItem]'
 })
-export class ActionItemKeyMappingDirective implements OnDestroy {
+export class ActionItemKeyMappingDirective implements OnChanges, OnDestroy {
+    private actionItemChanged$ = new Subject();
+    private destroyed$ = new Subject();
+
     @Output() actionClick = new EventEmitter();
 
     @Input()
-    set actionItem(item: IActionItem) {
-        if ( this.keyDownSubscription ) {
-            this.keyDownSubscription.unsubscribe();
-        }
-        if ( this.keyUpSubscription ) {
-            this.keyUpSubscription.unsubscribe();
-        }
+    actionItem: IActionItem;
 
-        if (CONFIGURATION.enableKeybinds && item.keybind) {
-            this.keyDownSubscription = this.keyPresses.subscribe(item.keybind, 100, event => this.handleKeypress(event, item));
-            this.keyUpSubscription = this.keyPresses.subscribe(item.keybind, 101, event => this.handleKeypress(event, item), null, 'keyup');
-        }
-    }
-
-    private keyDownSubscription: Subscription;
-    private keyUpSubscription: Subscription;
+    @Input()
+    actionItemPayload: any;
 
     constructor(
         private renderer: Renderer2,
         private el: ElementRef,
-        private keyPresses: KeyPressProvider,
-        private actionService: ActionService ) {
-
+        private actionService: ActionService,
+        private keybindingZoneService: KeybindingZoneService) {
     }
 
-    handleKeypress(event: KeyboardEvent, item: IActionItem) {
-        // ignore repeats
-        if ( event.repeat || !CONFIGURATION.enableKeybinds ) {
-            return;
+    updateKeybinding(): void {
+        // If this keybinding exists it will be handled by the KeybindingService
+        if (!this.keybindingZoneService.findActionByKey(this.actionItem.keybind)) {
+            console.debug(`[ActionItemKeyMappingDirective]: Adding keybinding ${this.actionItem.keybind}`, this.actionItem);
+            this.keybindingZoneService.addKeybinding(this.actionItem);
         }
-        if ( event.type === 'keydown') {
-            this.renderer.addClass(this.el.nativeElement, 'key-mapping-active');
-            if (this.actionClick.observers !== null && this.actionClick.observers.length > 0) {
-                this.actionClick.emit();
-            } else {
-                this.actionService.doAction(item);
+
+        this.keybindingZoneService.getNeedActionPayload(this.actionItem.keybind)
+            .pipe(
+                takeUntil(merge(this.actionItemChanged$, this.destroyed$)),
+            ).subscribe(event => event.payload = this.actionItemPayload);
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.actionItem) {
+            this.keybindingZoneService.removeKeybinding(changes.actionItem.previousValue);
+            this.actionItemChanged$.next();
+
+            if (changes.actionItem.currentValue) {
+                this.updateKeybinding();
             }
-            event.preventDefault();
-        } else if ( event.type === 'keyup') {
-            this.renderer.removeClass(this.el.nativeElement, 'key-mapping-active');
         }
-}
+    }
 
     ngOnDestroy(): void {
-        if ( this.keyDownSubscription ) {
-            this.keyDownSubscription.unsubscribe();
-        }
-        if ( this.keyUpSubscription ) {
-            this.keyUpSubscription.unsubscribe();
-        }
+        this.destroyed$.next();
     }
-
 }

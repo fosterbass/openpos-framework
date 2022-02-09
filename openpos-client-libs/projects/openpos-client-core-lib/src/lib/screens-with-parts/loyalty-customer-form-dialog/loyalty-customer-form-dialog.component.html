@@ -3,7 +3,7 @@
 <app-instructions *ngIf="screen.instructions" [instructions]="screen.instructions" [instructionsSize]="'text-sm'"></app-instructions>
 <app-scan-part></app-scan-part>
 <mat-dialog-content>
-    <app-form (submitFormEvent)="submitForm()" [form]="screen.formGroup">
+    <app-form (submitFormEvent)="submitForm()" [form]="screen.formGroup" [validateOnFirstLoad]="screen.form.validateOnFirstLoad">
         <div responsive-class class="form-part-body loyalty-customer-form form-content">
             <app-content-card>
                 <mat-card-content>
@@ -155,7 +155,7 @@
                 <app-secondary-button *ngIf="screen.secondaryButton" (buttonClick)="secondaryButtonClicked()">
                     <span>{{screen.secondaryButton.title}}</span>
                 </app-secondary-button>
-                <app-primary-button *ngIf="screen.submitButton" type="submit" [disabled]="!screen.formGroup.valid || screen.formGroup.pending">
+                <app-primary-button *ngIf="screen.submitButton" type="submit" [disabled]="!screen.formGroup.valid || screen.formGroup.pending || (screen.formGroup.pristine && screen.enableSubmitButtonOnFormChange)">
                     <span>{{screen.submitButton.title}}</span>
                 </app-primary-button>
             </mat-card-actions>

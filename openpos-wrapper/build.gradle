@@ -1,8 +1,13 @@
 apply from: '../openpos-gradle/src/main/resources/java.gradle'
+apply from: '../openpos-gradle/src/main/resources/publish.gradle'
 
 dependencies {
     implementation "net.java.dev.jna:jna:$jnaVersion"
     implementation "net.java.dev.jna:jna-platform:$jnaVersion"
+    implementation "org.apache.commons:commons-lang3:3.12.0"
+    implementation "org.update4j:update4j:1.5.7"
+    testImplementation('org.junit.jupiter:junit-jupiter-api:5.4.2')
+    testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine:5.4.2')
 }
 
 jar.archiveBaseName = 'openpos-wrapper'

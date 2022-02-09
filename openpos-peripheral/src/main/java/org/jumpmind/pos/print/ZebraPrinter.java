@@ -12,21 +12,20 @@ import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.jumpmind.pos.print.ZebraCommands.*;
 
-public class ZebraPrinter implements IOpenposPrinter {
+public class ZebraPrinter extends AbstractPOSPrinter {
 
     boolean deviceEnabled = true;
 
     PeripheralConnection peripheralConnection;
-    Map<String, Object> settings;
     IConnectionFactory connectionFactory;
     ZebraImagePrinter imagePrinter;
     PrintWriter writer;
     private String printerName;
-    private IPrinterStatusReporter printerStatusReporter;
 
     @Delegate
     UnsupportedJposMethods unsupportedJposMethods = new UnsupportedJposMethods();
@@ -67,6 +66,12 @@ public class ZebraPrinter implements IOpenposPrinter {
         this.writer = new PrintWriter(peripheralConnection.getOut());
         imagePrinter = new ZebraImagePrinter();
         writer.print(COMMAND_ENABLE_LINE_PRINT);
+        if (settings.containsKey("initialLineCommands")) {
+            LinkedHashMap<String, String> initialLineCommands = (LinkedHashMap<String, String>) settings.get("initialLineCommands");
+            if (initialLineCommands != null) {
+                initialLineCommands.forEach((k,cmd) -> writer.print(cmd));
+            }
+        }
         writer.flush();
     }
 
@@ -112,7 +117,7 @@ public class ZebraPrinter implements IOpenposPrinter {
     }
 
     @Override
-    public void printImage(InputStream image) {
+    public void printImage(String name, InputStream image) {
         try {
             if (image == null) {
                 throw new PrintException("Image input stream cannot be null.");
@@ -131,6 +136,15 @@ public class ZebraPrinter implements IOpenposPrinter {
             writer.flush();
         } catch (Exception ex) {
             throw new PrintException("Failed to read and print buffered image", ex);
+        }
+    }
+
+    @Override
+    public void lineFeedAndCutPaper() {
+        try {
+            this.cutPaper(100);
+        } catch (JposException ex) {
+            throw new PrintException("Failed to cut paper", ex);
         }
     }
 
@@ -215,7 +229,6 @@ public class ZebraPrinter implements IOpenposPrinter {
         return null;
     }
 
-    @Override
     public PeripheralConnection getPeripheralConnection() {
         return peripheralConnection;
     }
@@ -228,11 +241,6 @@ public class ZebraPrinter implements IOpenposPrinter {
     @Override
     public boolean isDrawerOpen(String cashDrawerId) {
         return false;
-    }
-
-    @Override
-    public int waitForDrawerClose(String cashDrawerId, long timeout) {
-        return 0;
     }
 
     @Override

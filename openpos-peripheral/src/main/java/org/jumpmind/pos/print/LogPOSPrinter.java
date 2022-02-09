@@ -12,23 +12,16 @@ import java.io.InputStream;
 import java.util.Map;
 
 @Slf4j
-public class LogPOSPrinter implements IOpenposPrinter {
+public class LogPOSPrinter extends AbstractPOSPrinter {
 
     private String cashDrawerStatus = EscpCashDrawerService.STATUS_OPEN;
-
-    private PrinterCommands printerCommands = new PrinterCommandPlaceholders();
 
     private StringBuilder buff = new StringBuilder(128);
 
     private static int cashDrawerOpened;
 
     @Override
-    public void printImage(InputStream image) {
-    }
-
-    @Override
-    public String getCommand(String commandName) {
-        return printerCommands.get(commandName);
+    public void printImage(String name, InputStream image) {
     }
 
     @Override
@@ -54,11 +47,6 @@ public class LogPOSPrinter implements IOpenposPrinter {
     @Override
     public String getPrinterName() {
         return "LogPOSPrinter";
-    }
-
-    @Override
-    public PeripheralConnection getPeripheralConnection() {
-        return new PeripheralConnection();
     }
 
     @Override
@@ -987,6 +975,7 @@ public class LogPOSPrinter implements IOpenposPrinter {
     public void printBarCode(int station, String data, int symbology, int height, int width, int alignment, int textPosition) throws JposException {
         switch (symbology) {
             case POSPrinterConst.PTR_BCS_Code128:
+            case POSPrinterConst.PTR_BCS_Code128_Parsed:
                 buff.append("<BARCODE_CODE128>" + data + "</BARCODE_CODE128>\n");
                 break;
             case POSPrinterConst.PTR_BCS_Code39:

@@ -1,4 +1,5 @@
 import { Component, Inject, Injector, OnInit, Optional } from '@angular/core';
+import { ImageService } from '../../../../core/services/image.service';
 import { ScreenPart } from '../../../../shared/decorators/screen-part.decorator';
 import { ScreenPartComponent } from '../../../../shared/screen-parts/screen-part';
 import { OPTION_NAME } from '../../item-detail-option';
@@ -16,7 +17,11 @@ export class SwatchProductOptionPartComponent extends ScreenPartComponent<Swatch
     selectedOptionName: string;
     useImageSwatch = true;
 
-    constructor(@Optional() injector: Injector, @Optional() @Inject(OPTION_NAME) private optionName: string) {
+    constructor(
+        @Optional() injector: Injector,
+        @Optional() @Inject(OPTION_NAME) private optionName: string,
+        private imageService: ImageService
+    ) {
         super(injector);
     }
 
@@ -27,14 +32,18 @@ export class SwatchProductOptionPartComponent extends ScreenPartComponent<Swatch
     }
 
     screenDataUpdated() {
-        if (this.screenData && this.screenData.swatches) {
-            const swatch = this.screenData.swatches.find(value => value.id === this.screenData.selectedOption);
+        if (this.screenData?.swatches) {
+            const selectedSwatch = this.screenData.swatches.find(value => value.id === this.screenData.selectedOption);
 
-            if (swatch) {
-                this.selectedOptionName = swatch.name;
+            if (selectedSwatch) {
+                this.selectedOptionName = selectedSwatch.name;
             } else {
                 this.selectedOptionName = '';
             }
+
+            this.screenData.swatches.forEach(swatch => {
+                swatch.imageUrl = this.imageService.replaceImageUrl(swatch.imageUrl);
+            });
         } else {
             this.selectedOptionName = '';
         }

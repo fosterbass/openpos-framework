@@ -2,6 +2,18 @@
 openpos:
   installationId: '09999'
   businessunitId: '09999'
+
+  device:
+    deviceIdFormat:
+      format: '%s-%s'
+      elements:
+        - name: businessUnitId
+          startIndex: 0
+          endIndex: 5
+        - name: workstationId
+          startIndex: 6
+          endIndex: 9
+
   tagconfig:
     tags:
     -

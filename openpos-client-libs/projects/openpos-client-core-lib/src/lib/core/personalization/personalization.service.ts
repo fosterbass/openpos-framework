@@ -1,16 +1,17 @@
 import { Injectable, Inject, Optional } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { PersonalizationConfigResponse } from './personalization-config-response.interface';
-import { BehaviorSubject, Observable, throwError, zip, merge } from 'rxjs';
-import { catchError, filter, map, take, tap, timeout } from 'rxjs/operators';
+import { BehaviorSubject, Observable, throwError, zip, merge, concat, of } from 'rxjs';
+import { catchError, filter, map, retry, take, tap, timeout } from 'rxjs/operators';
 import { PersonalizationRequest } from './personalization-request';
 import { PersonalizationResponse } from './personalization-response.interface';
 import { AutoPersonalizationParametersResponse } from './device-personalization.interface';
 import { CONFIGURATION } from '../../configuration/configuration';
 
 import { Storage } from '../storage/storage.service';
-import { Zeroconf, ZEROCONF_TOKEN } from '../startup/zeroconf/zeroconf';
+import { Zeroconf, ZEROCONF_TOKEN } from '../zeroconf/zeroconf';
 import { ServerLocation } from './server-location';
+import { AutoPersonalizationRequest } from './auto-personalization-request.interface';
 
 @Injectable({
     providedIn: 'root'
@@ -59,15 +60,18 @@ export class PersonalizationService {
         ).subscribe(results => {
             console.log('Storage results', results);
             if (results[0]) {
-                this.deviceToken$.next(results[0]);
+                const deviceToken = results[0] !== 'null' ? results[0] : null;
+                this.deviceToken$.next(deviceToken);
             }
 
             if (results[1]) {
-                this.serverName$.next(results[1]);
+                const serverName = results[1] !== 'null' ? results[1] : null;
+                this.serverName$.next(serverName);
             }
 
             if (results[2]) {
-                this.serverPort$.next(results[2]);
+                const serverPort = results[2] !== 'null' ? results[2] : null;
+                this.serverPort$.next(serverPort);
             }
 
             if (results[3]) {
@@ -128,15 +132,24 @@ export class PersonalizationService {
         )));
     }
 
-    public getAutoPersonalizationParameters(deviceName: string, url: string): Observable<AutoPersonalizationParametersResponse> {
-        const protocol = this.sslEnabled$.getValue() ? 'https://' : 'http://';
-        url += protocol + url;
+    public getAutoPersonalizationParameters(request: AutoPersonalizationRequest, url: string):
+        Observable<AutoPersonalizationParametersResponse> {
 
-        return this.http.get<AutoPersonalizationParametersResponse>(url, { params: { deviceName } })
+        const protocol = this.sslEnabled$.getValue() ? 'https://' : 'http://';
+        url = protocol + url;
+
+        const requestTimeout = 2000;
+        const retryCount = CONFIGURATION.autoPersonalizationRequestTimeoutMillis / requestTimeout;
+
+        return this.http.put<AutoPersonalizationParametersResponse>(url, request)
             .pipe(
-                timeout(CONFIGURATION.autoPersonalizationRequestTimeoutMillis),
+                // on some platforms the first or early requests can fail, try a few times before
+                // giving up completely.
+                timeout(requestTimeout),
+                retry(retryCount),
                 tap(response => {
                     if (response) {
+                        console.info(`Auto personalization response received: ${JSON.stringify(response)}`);
                         response.sslEnabled = this.sslEnabled$.getValue();
                         this.setFailovers(response.failovers);
                         this.setPrimaryServer(new ServerLocation(response.serverAddress, response.serverPort, null));
@@ -198,7 +211,7 @@ export class PersonalizationService {
             personalizationParameters.forEach((value, key) => request.personalizationParameters[key] = value);
         }
 
-        console.log(`Sending personalization request to ${url}`);
+        console.info(`[PersonalizationService] sending personalizationRequest: ${JSON.stringify(request)}, to url: ${url}`);
         return this.http.post<PersonalizationResponse>(url, request).pipe(
             map((response: PersonalizationResponse) => {
                 console.info(`personalizing with server: ${serverName}, port: ${serverPort}, deviceId: ${request.deviceId}`);
@@ -223,6 +236,7 @@ export class PersonalizationService {
                 } else {
                     this.setSslEnabled(false);
                 }
+
                 if (this.primaryServer) {
                     this.primaryServer.active = this.primaryServer.address === this.serverName$.getValue() &&
                         this.primaryServer.port === this.serverPort$.getValue();
@@ -254,14 +268,16 @@ export class PersonalizationService {
     }
 
     public dePersonalize() {
-        zip(
-            this.storage.remove('serverName'),
-            this.storage.remove('serverPort'),
-            this.storage.remove('deviceToken'),
-            this.storage.remove('theme'),
-            this.storage.remove('sslEnabled'),
-            this.storage.remove('skipAutoPersonalization')
-        ).subscribe();
+        this.remove(this.deviceId$, null);
+        this.remove(this.appId$, null);
+        this.remove(this.serverName$, this.storage.remove('serverName'));
+        this.remove(this.serverPort$, this.storage.remove('serverPort'));
+        this.remove(this.deviceToken$, this.storage.remove('deviceToken'));
+        this.remove(null, this.storage.remove('theme'));
+        this.remove(this.sslEnabled$, this.storage.remove('sslEnabled'));
+        this.remove(this.skipAutoPersonalization$, this.storage.remove('skipAutoPersonalization'));
+        this.remove(this.isManagedServer$, this.storage.remove(PersonalizationService.OPENPOS_MANAGED_SERVER_PROPERTY));
+        this.remove(this.personalizationProperties$, null);
     }
 
 
@@ -327,7 +343,7 @@ export class PersonalizationService {
         return this.primaryServer;
     }
 
-    private setPersonalizationProperties(personalizationProperties?: Map<string, string>) {
+    public setPersonalizationProperties(personalizationProperties?: Map<string, string>) {
         this.personalizationProperties$.next(personalizationProperties);
     }
 
@@ -402,5 +418,28 @@ export class PersonalizationService {
 
     public refreshApp() {
         window.location.reload();
+    }
+
+    public clearStorage(): Observable<void> {
+        return concat(
+            this.storage.clear(),
+            of(this.remove(this.deviceId$, null)),
+            of(this.remove(this.serverName$, null)),
+            of(this.remove(this.serverPort$, null)),
+            of(this.remove(this.deviceToken$, null)),
+            of(this.remove(this.sslEnabled$, null)),
+            of(this.remove(this.isManagedServer$, null)),
+            of(this.remove(this.skipAutoPersonalization$, null)),
+            of(this.remove(this.personalizationProperties$, null))
+        );
+    }
+
+    private remove(fieldSubject: BehaviorSubject<any>, storageField: Observable<void>) {
+        if (fieldSubject) {
+            fieldSubject.next(null);
+        }
+        if (storageField) {
+            storageField.subscribe();
+        }
     }
 }

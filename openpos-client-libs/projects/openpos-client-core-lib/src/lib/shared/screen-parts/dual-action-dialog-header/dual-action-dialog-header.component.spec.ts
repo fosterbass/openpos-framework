@@ -7,7 +7,6 @@ import {ElectronService} from 'ngx-electron';
 import {CLIENTCONTEXT} from '../../../core/client-context/client-context-provider.interface';
 import {TimeZoneContext} from '../../../core/client-context/time-zone-context';
 import {ActionService} from '../../../core/actions/action.service';
-import {KeyPressProvider} from '../../providers/keypress.provider';
 import {validateExist, validateIcon, validateText} from '../../../utilites/test-utils';
 import {DualActionDialogHeaderComponent} from './dual-action-dialog-header.component';
 import {IActionItem} from '../../../core/actions/action-item.interface';
@@ -17,11 +16,6 @@ import { IconComponent } from '../../components/icon/icon.component';
 
 class MockActionService {}
 class MockMatDialog {}
-class MockKeyPressProvider {
-    subscribe(): Subscription {
-        return new Subscription();
-    }
-}
 class MockElectronService {}
 class ClientContext {}
 
@@ -40,7 +34,6 @@ describe('DualActionDialogHeaderComponent', () => {
                 providers: [
                     { provide: ActionService, useClass: MockActionService },
                     { provide: MatDialog, useClass: MockMatDialog },
-                    { provide: KeyPressProvider, useClass: MockKeyPressProvider },
                     { provide: ElectronService, useClass: MockElectronService },
                     { provide: ClientContext, useValue: {}},
                     { provide: CLIENTCONTEXT, useClass: TimeZoneContext}

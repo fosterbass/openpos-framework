@@ -18,7 +18,7 @@ public class LocationChangedGlobalActionHandler {
         LocationData locationData = Action.convertActionData(action.getData(), LocationData.class);
         clientLocationService.setLocationData(locationData);
 
-        stateManager.getClientContext().put("locationData", locationData != null ? locationData.toString() : null);
+        stateManager.getDeviceVariables().put("locationData", locationData != null ? locationData.toString() : null);
     }
 
 }

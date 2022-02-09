@@ -3,6 +3,7 @@ package org.jumpmind.pos.util;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +13,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import static org.apache.commons.lang3.StringUtils.*;
 
 @Component
 public class Versions {
@@ -19,6 +21,9 @@ public class Versions {
     static List<Version> versions = new ArrayList<>();
 
     static final Logger log = LoggerFactory.getLogger(Versions.class);
+
+    @Value("${openpos.general.defaultVersionComponent:jmc}")
+    String defaultVersionComponent;
 
     List<InputStream> loadResources(final String name) throws IOException {
         final List<InputStream> list = new ArrayList<InputStream>();
@@ -71,5 +76,37 @@ public class Versions {
             b.append("*******************************************************\n");
         }
         return b.toString();
+    }
+
+    public int getFormattedVersion() {
+        String version = versions.stream().filter(v -> v.getComponentName().equals(defaultVersionComponent)).
+                findFirst().orElse(new Version()).getVersion();
+        return formatVersion(version);
+    }
+
+    protected int formatVersion(String version) {
+        if (version != null && !"@version@".equals(version)) {
+            final String SNAPSHOT_INDICATOR = "-";
+            StringBuilder formattedVersion = new StringBuilder();
+            if (version.contains(SNAPSHOT_INDICATOR)) {
+                int snapshotIndicatorIndex = version.indexOf(SNAPSHOT_INDICATOR);
+                version = version.substring(0, snapshotIndicatorIndex);
+            }
+            for (int i = 0; i < 3; i++) {
+                if (version.indexOf(".") >= 0) {
+                    String part = version.substring(0, version.indexOf("."));
+                    formattedVersion.append(truncate(leftPad(part, 3, '0'), 3));
+                    version = version.substring(version.indexOf(".") + 1);
+                } else if (version.length() > 0) {
+                    formattedVersion.append(leftPad(truncate(version, 3), 3, '0'));
+                    version = "";
+                } else {
+                    formattedVersion.append("000");
+                }
+            }
+            return Integer.parseInt(formattedVersion.toString());
+        } else {
+            return 0;
+        }
     }
 }

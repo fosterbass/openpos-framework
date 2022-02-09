@@ -3,7 +3,7 @@
 
 module.exports = function (config) {
   config.set({
-    basePath: '',
+    basePath: '../../',
     frameworks: ['jasmine', '@angular-devkit/build-angular'],
     plugins: [
       require('karma-jasmine'),
@@ -18,7 +18,7 @@ module.exports = function (config) {
       clearContext: false // leave Jasmine Spec Runner output visible in browser
     },
     preprocessors: {
-      'src/**/*.js': ['coverage']
+      '**/src/**/*.js': ['coverage']
     },
     coverageReporter: {
       // specify a common output directory
@@ -37,7 +37,7 @@ module.exports = function (config) {
       ]
     },
     junitReporter: {
-      outputDir: '../../build/reports', // results will be saved as $outputDir/$browserName.xml
+      outputDir: 'build/reports', // results will be saved as $outputDir/$browserName.xml
       outputFile: undefined, // if included, results will be saved as $outputDir/$browserName/$outputFile
       suite: '', // suite will become the package name attribute in xml testsuite element
       useBrowserName: false, // add browser name to report and classes names

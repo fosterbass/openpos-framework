@@ -13,6 +13,10 @@ export class CapacitorStorageService implements StorageContainer {
         return 'cap-storage';
     }
 
+    isAvailable(): Observable<boolean> {
+        return of(true);
+    }
+
     isSupported(): boolean {
         return Capacitor.isNativePlatform() && Capacitor.isPluginAvailable('Storage');
     }
@@ -33,5 +37,9 @@ export class CapacitorStorageService implements StorageContainer {
 
     remove(key: string): Observable<void> {
         return from(Storage.remove({ key }));
+    }
+
+    clear(): Observable<void> {
+        return from(Storage.clear());
     }
 }

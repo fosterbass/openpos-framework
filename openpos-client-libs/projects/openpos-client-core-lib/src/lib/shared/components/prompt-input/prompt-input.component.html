@@ -13,13 +13,13 @@
                     </app-icon>
                     <input *ngIf="autoFocus; else noAutoFocusA" matInput cdkFocusInitial [errorStateMatcher]="errorMatcher" [formControlName]="'promptInputControl'"
                         [formatterName]="responseType" [attr.minlength]="minLength" [attr.maxlength]="maxLength"
-                        [readonly]="readOnly" [attr.type]="isNumericField() ? 'tel' : 'text'" [keyboardLayout]="keyboardLayout"
-                        class="prompt-input" autoSelectOnFocus responsive-class>
+                        [readonly]="readOnly" [attr.type]="isNumericField() ? 'tel' : 'text'" [keyboardLayout]="keyboardLayout" (keyup)="valueChange.emit($event)"
+                           class="prompt-input" autoSelectOnFocus responsive-class>
 
                     <ng-template #noAutoFocusA>
                         <input matInput [errorStateMatcher]="errorMatcher" [formControlName]="'promptInputControl'"
                             [formatterName]="responseType" [attr.minlength]="minLength" [attr.maxlength]="maxLength"
-                            [readonly]="readOnly" [attr.type]="isNumericField() ? 'tel' : 'text'" [keyboardLayout]="keyboardLayout"
+                            [readonly]="readOnly" [attr.type]="isNumericField() ? 'tel' : 'text'" [keyboardLayout]="keyboardLayout"  (keyup)="valueChange.emit($event)"
                             class="prompt-input" autoSelectOnFocus responsive-class>
                     </ng-template>
 
@@ -54,11 +54,12 @@
                 [formatterName]="responseType" [attr.minlength]="minLength" [attr.maxlength]="maxLength"
                 [readonly]="readOnly" [attr.type]="isNumericField() ? 'tel' : 'text'" [keyboardLayout]="keyboardLayout"
                 [value]="responseText" autoSelectOnFocus>
+            
             <ng-template #noAutoFocusB>
                 <input matInput [errorStateMatcher]="errorMatcher" [formControlName]="'promptInputControl'"
                     [formatterName]="responseType" [attr.minlength]="minLength" [attr.maxlength]="maxLength"
                     [readonly]="readOnly" [attr.type]="isNumericField() ? 'tel' : 'text'" [keyboardLayout]="keyboardLayout"
-                    [value]="responseText" autoSelectOnFocus>
+                    [value]="responseText" autoSelectOnFocus >
             </ng-template>
             <mat-placeholder>{{placeholderText}}</mat-placeholder>
             <mat-hint class="text-sm" align="start">{{hintText}}</mat-hint>
@@ -71,10 +72,10 @@
         <mat-form-field fxFlexFill *ngSwitchCase="responseType==='TextArea'" ngClass="prompt-textarea" responsive-class>
             <textarea *ngIf="autoFocus; else noAutoFocusC" matInput cdkFocusInitial [rows]="5" [cols]="40" [formControlName]="'promptInputControl'" 
                 style="font-size:18px" [attr.minlength]="minLength" [attr.maxlength]="maxLength" [readonly]="readOnly"
-                [attr.type]="isNumericField() ? 'tel' : 'text'" autoSelectOnFocus responsive-class>
+                [attr.type]="isNumericField() ? 'tel' : 'text'" autoSelectOnFocus responsive-class >
             </textarea>
             <ng-template #noAutoFocusC>
-                <textarea matInput [rows]="5" [cols]="40" [formControlName]="'promptInputControl'"
+                <textarea matInput [rows]="5" [cols]="40" [formControlName]="'promptInputControl'" 
                     style="font-size:18px" [attr.minlength]="minLength" [attr.maxlength]="maxLength" [readonly]="readOnly"
                     [attr.type]="isNumericField() ? 'tel' : 'text'" autoSelectOnFocus responsive-class>
                 </textarea>
@@ -97,7 +98,7 @@
             <app-icon matPrefix iconClass="material-icons md primary" [iconName]="promptIcon" responsive-class>
             </app-icon>
             <input *ngIf="autoFocus; else noAutoFocusD" matInput cdkFocusInitial [formControlName]="'promptInputControl'" autoSelectOnFocus
-                class="prompt-input" type="password" [formatterName]="responseType" [attr.minlength]="minLength"
+                class="prompt-input" type="password" [formatterName]="responseType" [attr.minlength]="minLength" 
                 [attr.maxlength]="maxLength" responsive-class>
             <ng-template #noAutoFocusD>
                 <input matInput [formControlName]="'promptInputControl'" autoSelectOnFocus

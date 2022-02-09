@@ -1,7 +1,14 @@
 package org.jumpmind.pos.core.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ScanData implements Serializable {
 
     private OpenposBarcodeType type;

@@ -4,8 +4,8 @@ import { HttpClient } from '@angular/common/http';
 import { LocaleConstantKey, LOCALE_CONSTANTS } from './locale.constants';
 import { SessionService } from './session.service';
 import { PersonalizationService } from '../personalization/personalization.service';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { switchMap, distinct, tap } from 'rxjs/operators';
 
 export const DEFAULT_LOCALE = 'en-US';
 
@@ -15,6 +15,7 @@ export const DEFAULT_LOCALE = 'en-US';
 export class LocaleService {
     private supportedLocales = ['en-US'];
     private showIcons = true;
+    private textCache = new Map<string, string>();
 
     private locale$ = new BehaviorSubject<string>(DEFAULT_LOCALE);
     private displayLocale$ = new BehaviorSubject<string>(DEFAULT_LOCALE);
@@ -43,20 +44,27 @@ export class LocaleService {
     }
 
     getString(base: string, key: string, args?: any[]): Observable<string> {
-        const url = `http${this.personalization.getSslEnabled$().getValue() ? 's' : ''}` +
-            `://${this.personalization.getServerName$().getValue()}:${this.personalization.getServerPort$().getValue()}` +
-            `/rest/i18n/value`;
+        const cacheKey = base + ':' + key + (args ? args.join(':') : '');
+        const text = this.textCache.get(cacheKey);
+        if (text) {
+            console.debug(`using cached i18n value for ${cacheKey} = ${text}`);
+            return of(text);
+        } else {
+            const url = `http${this.personalization.getSslEnabled$().getValue() ? 's' : ''}` +
+                `://${this.personalization.getServerName$().getValue()}:` +
+                `${this.personalization.getServerPort$().getValue()}/rest/i18n/value`;
 
-        return this.displayLocale$.pipe(
-            switchMap(l => this.http.post(url, {
-                base,
-                key,
-                locale: this.formatLocaleForJava(l),
-                args
-            }, {
-                responseType: 'text',
-            }))
-        );
+            return this.displayLocale$.pipe(
+                distinct(), switchMap(l => this.http.post(url, {
+                    base,
+                    key,
+                    locale: this.formatLocaleForJava(l),
+                    args
+                }, {
+                    responseType: 'text',
+                })), tap(v => this.textCache.set(cacheKey, v))
+            );
+        }
     }
 
     getLocale(): string {

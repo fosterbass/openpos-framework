@@ -10,11 +10,11 @@ public class ZebraTester {
     private static OutputStream stream;
 
     public static void main(String[] args) throws Exception {
-        Socket socket = new Socket("192.168.1.66", 6101);
+        Socket socket = new Socket("192.168.1.126", 6101);
         stream = socket.getOutputStream();
 
-//        command("! U1 setvar \"device.languages\" \"line_print\"\r\n");
-
+        command("! U1 setvar \"device.languages\" \"line_print\"\r\n");
+/*
         BufferedImage image =
                 ImageIO.read(Thread.currentThread().getContextClassLoader().getResource("images/jumpmind-logo.png").openStream());
         command("! 0 200 200 210 1");
@@ -23,8 +23,10 @@ public class ZebraTester {
         System.out.println(imageCommand);
         command(imageCommand);
         command("PRINT");
-
+*/
         command("! U1 SETLP 5 2 46" +
+                //"! U1 LMARGIN 0" +
+                "! U1 PW 520" +
                 " JUMPMIND COMMERCE\r\n" +
                 "! U1 SETLP 5 0 24\r\n" +
                 " 123 Castle Drive, Kingston, RI 02881\r\n" +
@@ -78,7 +80,6 @@ public class ZebraTester {
 //        command("TEXT 4 0 0 120 Diyvk===");
 //        command("TEXT 7 0 0 170 normal again");
 //        command("PRINT");
-
     }
 
     public static void command(String cmd) throws Exception {

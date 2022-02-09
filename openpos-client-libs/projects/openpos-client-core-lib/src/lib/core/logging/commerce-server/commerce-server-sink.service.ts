@@ -28,7 +28,7 @@ export class CommerceServerSink implements OnDestroy {
                 apiUrl: settings[1] + '/clientlogs'
             })),
             switchMap(settings => iif(
-                () => settings.config && settings.config.enabled,
+                () => settings.config && (settings.config as ServerLoggerConfiguration).enabled === 'true',
 
                 // if true
                 consoleScraper.messages$.pipe(

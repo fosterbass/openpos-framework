@@ -32,6 +32,7 @@ public class PromptUIMessage extends UIMessage {
     private boolean editable = true;
     private FieldInputType responseType;
     private ActionItem actionButton = null;
+    private ActionItem secondaryActionButton = null;
     private List<ActionItem> otherActions;
     private Integer minLength;
     private Integer maxLength;
@@ -39,10 +40,30 @@ public class PromptUIMessage extends UIMessage {
     private boolean showComments = false;
     private List<String> validationPatterns;
     private boolean scanEnabled;
+
+    public boolean isCloseScanViewPortOnScan() {
+        return closeScanViewPortOnScan;
+    }
+
+    public void setCloseScanViewPortOnScan(boolean closeScanViewPortOnScan) {
+        this.closeScanViewPortOnScan = closeScanViewPortOnScan;
+    }
+
+    private boolean closeScanViewPortOnScan;
     private BigDecimal min;
     private BigDecimal max;
     private String imageUrl;
     private boolean autoFocus = true;
+    private boolean isRequired;
+
+    public boolean isRequired() {
+        return isRequired;
+    }
+
+    public void setRequired(boolean required) {
+        isRequired = required;
+    }
+
 
     public PromptUIMessage() {
         this.setScreenType(UIMessageType.PROMPT);
@@ -250,5 +271,14 @@ public class PromptUIMessage extends UIMessage {
             setValidationMessages(new HashMap<String, String>());
         }
         getValidationMessages().put(validatorName, message);
+    }
+
+
+    public ActionItem getSecondaryActionButton() {
+        return secondaryActionButton;
+    }
+
+    public void setSecondaryActionButton(ActionItem secondaryActionButton) {
+        this.secondaryActionButton = secondaryActionButton;
     }
 }

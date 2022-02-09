@@ -8,7 +8,6 @@ import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provi
 import { TimeZoneContext } from '../../../core/client-context/time-zone-context';
 import { Observable, of, Subscription } from 'rxjs';
 import { MediaBreakpoints, OpenposMediaService } from '../../../core/media/openpos-media.service';
-import { KeyPressProvider } from '../../../shared/providers/keypress.provider';
 import { ProgramPlanSelectDialogComponent } from './program-plan-select-dialog.component';
 import { ProgramPlanSelectDialogInterface } from './program-plan-select-dialog.interface';
 import { CONFIGURATION } from '../../../configuration/configuration';
@@ -18,11 +17,6 @@ import { DialogHeaderComponent } from '../../../shared/screen-parts/dialog-heade
 import { ContentCardComponent } from '../../../shared/components/content-card/content-card.component';
 import { ProgramPlanDetailsComponent } from '../../../shared/screen-parts/program-plan-details/program-plan-details.component';
 
-class MockKeyPressProvider {
-    subscribe(): Subscription {
-        return new Subscription();
-    }
-}
 class MockActionService { }
 class MockMatDialog { }
 class MockElectronService { }
@@ -48,7 +42,6 @@ describe('ProgramPlansSelectDialog', () => {
                     MockComponent(ProgramPlanDetailsComponent)
                 ],
                 providers: [
-                    { provide: KeyPressProvider, useClass: MockKeyPressProvider },
                     { provide: ActionService, useClass: MockActionService },
                     { provide: MatDialog, useClass: MockMatDialog },
                     { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobileFalse },

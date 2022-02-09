@@ -1,5 +1,5 @@
 <div class="sale-total-wrapper">
-    <div *ngIf="!(isMobile$ | async) && shouldShowHeader()" class="sale-total-header">
+    <div *ngIf="!(isMobile$ | async) && shouldShowHeader()" class="sale-total-header" responsive-class>
         <button responsive-class
                 mat-flat-button
                 *ngIf="shouldShowLinkCustomer() && !(isLoyaltySignupInProgressOnCustomerDisplay$ | async)"
@@ -16,7 +16,7 @@
                     {{screenData.loyaltyButton.keybindDisplayName}}
                 </span>
             </span>
-            <mat-icon class="material-icons loyalty-arrow">keyboard_arrow_right</mat-icon>
+            <app-icon iconClass="loyalty-arrow sm" [iconName]="'keyboard_arrow_right'"></app-icon>
         </button>
         <div responsive-class
              class="loyalty-signup-customer-display"
@@ -52,7 +52,7 @@
                 </div>
             </div>
         </div>
-        <button *ngIf="shouldShowLinkedCustomer()"
+        <button *ngIf="shouldShowLinkedCustomer() && !(isLoyaltySignupInProgressOnCustomerDisplay$ | async)"
                 class="linked-customer-summary header"
                 style="width: 100%;"
                 responsive-class
@@ -60,17 +60,18 @@
                 [actionItem]="screenData.linkedCustomerButton"
                 (actionClick)="doAction(screenData.linkedCustomerButton)"
                 (click)="doAction(screenData.linkedCustomerButton)">
-            <div class="button-wrapper">
+            <div class="button-wrapper" responsive-class>
                 <div class="grid-container" responsive-class>
                     <div class="name">
                         <div responsive-class class="customer-name">
                             {{screenData.customer.name}}
                         </div>
                         <div *ngIf="keybindsEnabled(screenData.linkedCustomerButton)"
-                              class="muted-color loyalty-keybind">{{screenData.linkedCustomerButton.keybindDisplayName}}</div>
+                             class="muted-color loyalty-keybind">{{screenData.linkedCustomerButton.keybindDisplayName}}</div>
                     </div>
                     <div class="icon">
-                        <app-icon [iconName]="screenData.profileIcon" [iconClass]="(isMobile$ | async) ? null: 'material-icons mat-36'"></app-icon>
+                        <app-icon [iconName]="screenData.profileIcon"
+                                  [iconClass]="(isMobile$ | async) ? null: 'material-icons mat-36'"></app-icon>
                     </div>
                     <div class="loyalty-icon" responsive-class>
                         <img *ngIf="screenData.loyaltyButton.icon" [src]="screenData.loyaltyButton.icon | imageUrl"
@@ -98,10 +99,11 @@
                 (click)="doAction(screenData.linkedCustomerButton)">
             <div class="button-wrapper">
                 <div class="grid-container">
-                    <div class="memberships">
+                    <div class="memberships" [ngClass]="{'rewards-hidden': !screenData.rewardsVisibleOnLinkButton}"
+                         responsive-class>
                         <div *ngIf="isMissingCustomerInfo()" class="customer-missing-info">
                             <app-warn-button responsive-class>
-                                <app-icon [iconName]="screenData.customerMissingInfoIcon"
+                                <app-icon [iconName]="screenData.customerMissingInfoIcon" responsive-class
                                           [iconClass]="'material-icons mat-24'"></app-icon>
                                 <span class="text">{{screenData.customerMissingInfoLabel}}</span>
                             </app-warn-button>
@@ -121,106 +123,107 @@
                             </div>
                         </div>
                     </div>
-                    <div *ngIf="screenData.rewardsVisibleOnLinkButton" class="membership-rewards">
-                        <ng-container *ngIf="screenData.loyaltyRewards?.length">
-                            <h4 class="membership-rewards-title" responsive-class>{{screenData.rewardsLabel}}</h4>
-                            <ul class="membership-rewards-list" responsive-class>
-                                <li *ngFor="let reward of screenData.loyaltyRewards"
-                                    class="membership-rewards-list-item"
-                                    responsive-class>
-                                    <app-rewards-line-item [reward]="mapToSimpleReward(reward)"
-                                                           class="membership-rewards-item"
-                                                           responsive-class></app-rewards-line-item>
-                                </li>
-                            </ul>
-                        </ng-container>
-                        <div *ngIf="!screenData.loyaltyRewards?.length" class="membership-no-rewards">
-                            {{screenData.noPromotionsLabel}}
-                        </div>
+                </div>
+                <div *ngIf="screenData.rewardsVisibleOnLinkButton" class="membership-rewards" responsive-class>
+                    <ng-container *ngIf="screenData.loyaltyRewards?.length">
+                        <h4 class="membership-rewards-title" responsive-class>{{screenData.rewardsLabel}}</h4>
+                        <ul class="membership-rewards-list" responsive-class>
+                            <li *ngFor="let reward of screenData.loyaltyRewards"
+                                class="membership-rewards-list-item"
+                                responsive-class>
+                                <app-rewards-line-item [reward]="mapToSimpleReward(reward)"
+                                                       class="membership-rewards-item"
+                                                       responsive-class></app-rewards-line-item>
+                            </li>
+                        </ul>
+                    </ng-container>
+                    <div *ngIf="!screenData.loyaltyRewards?.length" class="membership-no-rewards">
+                        {{screenData.noPromotionsLabel}}
                     </div>
                 </div>
             </div>
         </button>
     </div>
-    <mat-card class="sale-total-background">
-        <div class="status-stamp">
-            <app-stamp fitText *ngIf="screenData.statusMessage">
-                {{screenData.statusMessage}}
-            </app-stamp>
-        </div>
-        <div *ngIf="screenData.itemCounts" class="item-counts">
-            <div *ngFor="let itemCount of screenData.itemCounts" class="item-count">
-                <div *ngIf="itemCount.amount" responsive-class class="item-count-amount">
-                    {{itemCount.amount}}
-                </div>
-                <div *ngIf="itemCount.name" responsive-class class="item-count-name">
-                    <span *ngIf="itemCount.amount">&nbsp;</span>{{itemCount.name}}
-                </div>
-            </div>
-        </div>
-        <div class="sale-total-content" responsive-class>
-            <div *ngFor="let total of screenData.totals" class="sale-total-subtotal">
-                <div responsive-class class="primary sale-total-subtotal-title">{{total.name}}</div>
-                <div responsive-class class="sale-total-subtotal-amount">
-                    <app-currency-text [amountText]="total.amount"></app-currency-text>
-                </div>
-            </div>
-            <div *ngIf="screenData.grandTotal" class="sale-total-total">
-                <div responsive-class class="primary sale-total-total-title">{{screenData.grandTotal.name}}
-                </div>
-                <div responsive-class class="sale-total-total-amount">
-                    <app-currency-text [amountText]="screenData.grandTotal.amount"></app-currency-text>
-                </div>
-            </div>
-            <button responsive-class mat-button *ngIf="screenData.promoButton"
-                    (click)="doMenuItemAction(screenData.promoButton)" class="sale-total-promo-button">
-                <span>{{screenData.promoButton.title}}</span>
-                <app-icon [iconName]="screenData.promoButton.icon" [iconClass]="'primary mat-24'"></app-icon>
-            </button>
-        </div>
 
-        <div class="sale-total-buttons">
-            <div responsive-class *ngIf="screenData.taxExemptCertificateDetail"
-                 class="muted-color sale-total-tax-exempt-label-no-customer">
-                {{screenData.taxExemptCertificateDetail.label}}: {{screenData.taxExemptCertificateDetail.value}}
+<mat-card class="sale-total-background" responsive-class>
+    <div class="status-stamp">
+        <app-stamp fitText *ngIf="screenData.statusMessage">
+            {{screenData.statusMessage}}
+        </app-stamp>
+    </div>
+    <div *ngIf="screenData.itemCounts" class="item-counts" responsive-class>
+        <div *ngFor="let itemCount of screenData.itemCounts" class="item-count">
+            <div *ngIf="itemCount.amount" responsive-class class="item-count-amount">
+                {{itemCount.amount}}
             </div>
-            <app-secondary-button responsive-class
-                                  *ngIf="screenData.employee"
-                                  class="sale-total-employee-sale-button"
-                                  [actionItem]="screenData.linkedEmployeeButton"
-                                  (actionClick)="doMenuItemAction(screenData.linkedEmployeeButton)"
-                                  (click)="doMenuItemAction(screenData.linkedEmployeeButton)">
-                <div *ngIf="screenData.employee.name" class="muted-color sale-total-employee-sale-name">
-                    <app-icon responsive-class *ngIf="screenData.employee.icon" [iconName]="screenData.employee.icon"
-                              [iconClass]="'xs'"></app-icon>
-                    <b>{{screenData.employee.name}}</b>
-                </div>
-                <div *ngIf="screenData.employee.label && screenData.employee.id" class="muted-color">
-                    {{screenData.employee.label}}: {{screenData.employee.id}}
-                </div>
-                <div *ngIf="screenData.linkedEmployeeButton.title"
-                     class="muted-color">{{screenData.linkedEmployeeButton.title}}</div>
-            </app-secondary-button>
-            <app-secondary-button responsive-class *ngIf="screenData.helpButton"
-                                  [actionItem]="screenData.helpButton"
-                                  (actionClick)="doMenuItemAction(screenData.helpButton)"
-                                  (click)="doMenuItemAction(screenData.helpButton)" class="sale-total-button">
-                <app-icon *ngIf="screenData.helpButton.icon" [iconName]="screenData.helpButton.icon">
-                </app-icon>
-                <span *ngIf="screenData.helpButton.icon && screenData.helpButton.title">&nbsp;</span>{{screenData.helpButton.title}}
-                <span *ngIf="keybindsEnabled(screenData.helpButton)"
-                      class="muted-color">{{screenData.helpButton.keybindDisplayName}}</span>
-            </app-secondary-button>
-
-            <app-primary-button responsive-class *ngIf="!screenData.readOnly && screenData.checkoutButton"
-                                [actionItem]="screenData.checkoutButton"
-                                (actionClick)="doMenuItemAction(screenData.checkoutButton)"
-                                [disabled]="!screenData.checkoutButton.enabled || (isLoyaltySignupInProgressOnCustomerDisplay$ | async)"
-                                (click)="doMenuItemAction(screenData.checkoutButton)" class="sale-total-button">
-                {{screenData.checkoutButton.title}}
-                <span *ngIf="keybindsEnabled(screenData.checkoutButton)"
-                      class="muted-color checkout-keybind">{{screenData.checkoutButton.keybindDisplayName}}</span>
-            </app-primary-button>
+            <div *ngIf="itemCount.name" responsive-class class="item-count-name">
+                <span *ngIf="itemCount.amount">&nbsp;</span>{{itemCount.name}}
+            </div>
         </div>
-    </mat-card>
+    </div>
+    <div class="sale-total-content" responsive-class>
+        <div *ngFor="let total of screenData.totals" class="sale-total-subtotal">
+            <div responsive-class class="primary sale-total-subtotal-title">{{total.name}}</div>
+            <div responsive-class class="sale-total-subtotal-amount">
+                <app-currency-text [amountText]="total.amount"></app-currency-text>
+            </div>
+        </div>
+        <div *ngIf="screenData.grandTotal" class="sale-total-total">
+            <div responsive-class class="primary sale-total-total-title">{{screenData.grandTotal.name}}
+            </div>
+            <div responsive-class class="sale-total-total-amount">
+                <app-currency-text [amountText]="screenData.grandTotal.amount"></app-currency-text>
+            </div>
+        </div>
+        <button responsive-class mat-button *ngIf="screenData.promoButton"
+                (click)="doMenuItemAction(screenData.promoButton)" class="sale-total-promo-button">
+            <span>{{screenData.promoButton.title}}</span>
+            <app-icon [iconName]="screenData.promoButton.icon" [iconClass]="'primary mat-24'"></app-icon>
+        </button>
+    </div>
+
+    <div class="sale-total-buttons" responsive-class>
+        <div responsive-class *ngIf="screenData.taxExemptCertificateDetail"
+             class="muted-color sale-total-tax-exempt-label-no-customer">
+            {{screenData.taxExemptCertificateDetail.label}}: {{screenData.taxExemptCertificateDetail.value}}
+        </div>
+        <app-secondary-button responsive-class
+                              *ngIf="screenData.employee"
+                              class="sale-total-employee-sale-button"
+                              [actionItem]="screenData.linkedEmployeeButton"
+                              (actionClick)="doMenuItemAction(screenData.linkedEmployeeButton)"
+                              (click)="doMenuItemAction(screenData.linkedEmployeeButton)">
+            <div *ngIf="screenData.employee.name" class="muted-color sale-total-employee-sale-name">
+                <app-icon responsive-class *ngIf="screenData.employee.icon" iconClass="xs"
+                          [iconName]="screenData.employee.icon"></app-icon>
+                <b>{{screenData.employee.name}}</b>
+            </div>
+            <div *ngIf="screenData.employee.label && screenData.employee.id" class="muted-color">
+                {{screenData.employee.label}}: {{screenData.employee.id}}
+            </div>
+            <div *ngIf="screenData.linkedEmployeeButton.title"
+                 class="muted-color">{{screenData.linkedEmployeeButton.title}}</div>
+        </app-secondary-button>
+        <app-secondary-button responsive-class *ngIf="screenData.helpButton"
+                              [actionItem]="screenData.helpButton"
+                              (actionClick)="doMenuItemAction(screenData.helpButton)"
+                              (click)="doMenuItemAction(screenData.helpButton)" class="sale-total-button">
+            <app-icon *ngIf="screenData.helpButton.icon" [iconName]="screenData.helpButton.icon">
+            </app-icon>
+            <span *ngIf="screenData.helpButton.icon && screenData.helpButton.title">&nbsp;</span>{{screenData.helpButton.title}}
+            <span *ngIf="keybindsEnabled(screenData.helpButton)"
+                  class="muted-color">{{screenData.helpButton.keybindDisplayName}}</span>
+        </app-secondary-button>
+
+        <app-primary-button responsive-class *ngIf="!screenData.readOnly && screenData.checkoutButton"
+                            [actionItem]="screenData.checkoutButton"
+                            (actionClick)="doMenuItemAction(screenData.checkoutButton)"
+                            [disabled]="!screenData.checkoutButton.enabled || (isLoyaltySignupInProgressOnCustomerDisplay$ | async)"
+                            (click)="doMenuItemAction(screenData.checkoutButton)" class="sale-total-button">
+            {{screenData.checkoutButton.title}}
+            <span *ngIf="keybindsEnabled(screenData.checkoutButton)"
+                  class="muted-color checkout-keybind">{{screenData.checkoutButton.keybindDisplayName}}</span>
+        </app-primary-button>
+    </div>
+</mat-card>
 </div>

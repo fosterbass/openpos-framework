@@ -5,10 +5,10 @@ import { CONFIGURATION } from './../../configuration/configuration';
 import { IMessageHandler } from './../interfaces/message-handler.interface';
 import { PersonalizationService } from '../personalization/personalization.service';
 
-import { Observable, Subscription, BehaviorSubject, Subject, merge, timer, ConnectableObservable } from 'rxjs';
-import { map, filter, takeWhile, publishReplay, take } from 'rxjs/operators';
+import { Observable, Subscription, BehaviorSubject, Subject, merge, timer, ConnectableObservable, interval } from 'rxjs';
+import { map, filter, takeWhile, publishReplay, take, debounce } from 'rxjs/operators';
 import { Message } from '@stomp/stompjs';
-import { Injectable, NgZone, Inject, } from '@angular/core';
+import { Injectable, NgZone, Inject, ApplicationRef } from '@angular/core';
 import { StompState, StompRService } from '@stomp/ng2-stompjs';
 import { MatDialog } from '@angular/material/dialog';
 // Importing the ../components barrel causes a circular reference since dynamic-screen references back to here,
@@ -18,7 +18,6 @@ import { IDeviceResponse } from '../oldplugins/device-response.interface';
 import { HttpClient } from '@angular/common/http';
 import { PingParams } from '../interfaces/ping-params.interface';
 import { PingResult } from '../interfaces/ping-result.interface';
-import { ElectronService } from 'ngx-electron';
 import { OpenposMessage } from '../messages/message';
 import { MessageTypes } from '../messages/message-types';
 import { ActionMessage } from '../messages/action-message';
@@ -91,6 +90,7 @@ export class SessionService implements IMessageHandler<any> {
     private authToken: string;
 
     private stompDebug = false;
+    private stompUrl: string;
 
     public inBackground = false;
 
@@ -105,8 +105,6 @@ export class SessionService implements IMessageHandler<any> {
     private disconnectedMessage = LoaderState.DISCONNECTED_TITLE;
 
     private queryParams = new Map();
-
-    private deletedLaunchFlg = false;
 
     private reconnecting = false;
 
@@ -126,8 +124,8 @@ export class SessionService implements IMessageHandler<any> {
         protected personalization: PersonalizationService,
         protected discovery: DiscoveryService,
         private http: HttpClient,
-        private electron: ElectronService,
-        @Inject(CLIENTCONTEXT) private clientContexts: Array<IClientContext>
+        @Inject(CLIENTCONTEXT) private clientContexts: Array<IClientContext>,
+        private appRef: ApplicationRef
     ) {
         this.zone.onError.subscribe((e) => {
             if (typeof (e) === 'string') {
@@ -159,6 +157,26 @@ export class SessionService implements IMessageHandler<any> {
         // We need to capture incoming screen messages even with no subscribers, so make this hot 🔥
         screenMessagesBehavior.connect();
         dialogMessagesBehavior.connect();
+
+        this.stompJsonMessages$.pipe(
+
+            // If we receive many openpos messages in quick succession, wait for a
+            // large enough open gap to run change detection in.
+            debounce(() => interval(200))
+        ).subscribe(() => {
+
+            // There are some issues on some platforms (*cough* iOS *cough*) related
+            // to the change detection not triggering on some changes. This is just
+            // a little bit of help to let angular know, something has probably
+            // changed and we need to run a detection cycle.
+
+            try {
+                console.debug('running application tick after stomp messages');
+                this.appRef.tick();
+            } catch (e) {
+                console.warn('unknown error during stomp message app tick', e);
+            }
+        });
     }
 
     public sendMessage<T extends OpenposMessage>(message: T): boolean {
@@ -175,14 +193,20 @@ export class SessionService implements IMessageHandler<any> {
     public getMessages(...types: string[]): Observable<any> {
         return merge(
             this.stompJsonMessages$,
-            this.sessionMessages$).pipe(filter(s => types && types.length > 0 ? types.includes(s.type) : true));
+            this.sessionMessages$
+        ).pipe(
+            filter(s => types && types.length > 0 ? types.includes(s.type) : true)
+        );
     }
 
     public registerMessageHandler(handler: IMessageHandler<any>, ...types: string[]): Subscription {
-        return merge(
-            this.stompJsonMessages$,
-            this.sessionMessages$).pipe(filter(s => types && types.length > 0 ? types.includes(s.type) : true)).
-            subscribe(s => this.zone.run(() => handler.handle(s)));
+        return this.getMessages(...types).subscribe(message => {
+
+            // I don't think this zone needs to be included as Zone.js should already shimmed
+            // both rxjs subscriptions and websockets, but I don't think it should be hurting
+            // anything, so I'll leave it alone just in case.
+            this.zone.run(() => handler.handle(message));
+        });
     }
 
     public isRunningInBrowser(): boolean {
@@ -216,25 +240,6 @@ export class SessionService implements IMessageHandler<any> {
         }
     }
 
-    /*
-     * Need to come up with a better way to enapsulate electron and node ... should put these reference behind our new platform interface
-     */
-    private deleteLaunchingFlg() {
-        const fs = this.electron.isElectronApp ? this.electron.remote.require('fs') : window.fs;
-        const launchingFile = 'launching.flg';
-        console.info('node.js fs exists? ' + fs);
-        console.info('launching.flg file exists? ' + (fs && fs.existsSync(launchingFile)));
-        if (fs && fs.existsSync(launchingFile)) {
-            fs.unlink(launchingFile, (err) => {
-                if (err) {
-                    console.info('unable to remove ' + launchingFile);
-                } else {
-                    console.info(launchingFile + ' was removed');
-                }
-            });
-        }
-    }
-
     private getHeaders(): any {
         const headers = {
             authToken: this.authToken,
@@ -265,17 +270,9 @@ export class SessionService implements IMessageHandler<any> {
         const url: string = await this.negotiateWebsocketUrl();
         if (url) {
             console.info('creating new stomp service at: ' + url);
+            this.stompUrl = url;
 
-            this.stompService.config = {
-                url,
-                headers: this.getHeaders(),
-                heartbeat_in: 0, // Typical value 0 - disabled
-                heartbeat_out: 20000, // Typical value 20000 - every 20 seconds
-                reconnect_delay: 250,  // Typical value is 5000, 0 disables.
-                debug: this.stompDebug
-            };
-
-            this.stompService.initAndConnect();
+            this.connectToStomp();
 
             const currentTopic = this.buildTopicName();
 
@@ -316,11 +313,27 @@ export class SessionService implements IMessageHandler<any> {
 
     }
 
+    public connectToStomp(): void {
+        if (this.stompService.connected()) {
+            this.stompService.disconnect();
+        }
+        this.stompService.config = {
+            url: this.stompUrl,
+            headers: this.getHeaders(),
+            heartbeat_in: 0, // Typical value 0 - disabled
+            heartbeat_out: 20000, // Typical value 20000 - every 20 seconds
+            reconnect_delay: 250,  // Typical value is 5000, 0 disables.
+            debug: this.stompDebug
+        };
+
+        this.stompService.initAndConnect();
+    }
+
     private handleStompState(stompState: string) {
         if (stompState === 'CONNECTED') {
             this.reconnecting = false;
             this.connectedOnce = true;
-            console.info('STOMP connecting');
+            console.info('STOMP connecting', this.stompService);
             if (!this.onServerConnect.value) {
                 this.onServerConnect.next(true);
             }
@@ -370,10 +383,6 @@ export class SessionService implements IMessageHandler<any> {
     }
 
     handle(message: any) {
-        if (!this.deletedLaunchFlg && message && message.type === 'ConfigChanged') {
-            this.deleteLaunchingFlg();
-            this.deletedLaunchFlg = true;
-        }
     }
 
     private logStompJson(json: any) {

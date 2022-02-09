@@ -70,14 +70,6 @@ public class StateManagerContainer implements IStateManagerContainer, Applicatio
     private Map<String,String> versions;
 
     @Override
-    public synchronized void removeSessionIdVariables(String sessionId) {
-        for (StateManager stateManager : stateManagersByDeviceId.values()) {
-            stateManager.removeSessionAuthentication(sessionId);
-            stateManager.removeSessionCompatible(sessionId);
-        }
-    }
-
-    @Override
     public synchronized IStateManager retrieve(String deviceId, boolean forUseAsDevice) {
         IStateManager stateManager = stateManagersByDeviceId.get(deviceId);
         if (forUseAsDevice) {
@@ -118,6 +110,16 @@ public class StateManagerContainer implements IStateManagerContainer, Applicatio
             stateManager.setInitialFlowConfig(flowConfigProvider.getConfig(appId, deviceId));
             stateManager.reset();
         }
+    }
+
+    @Override
+    public void changeBrand(String deviceId, String brand) {
+        IStateManager stateManager = stateManagersByDeviceId.get(deviceId);
+        stateManager.getDeviceVariables().put("brandId", brand);
+        Map<String, String> properties = stateManager.getApplicationState().getScopeValue("personalizationProperties");
+        properties.put("brandId", brand);
+        stateManager.sendConfigurationChangedMessage();
+        stateManager.reset();
     }
 
     private List<TransitionStepConfig> createTransitionSteps(String appId, String deviceId) {
@@ -174,10 +176,10 @@ public class StateManagerContainer implements IStateManagerContainer, Applicatio
 
     public void setCurrentStateManager(IStateManager stateManager) {
         currentStateManager.set(stateManager);
-        if (stateManager != null && stateManager.getClientContext() != null) {
+        if (stateManager != null && stateManager.getDeviceVariables() != null) {
             setupLogging(stateManager.getDeviceId());
-            for (String property : stateManager.getClientContext().keySet()) {
-                clientContext.put(property, stateManager.getClientContext().get(property));
+            for (String property : stateManager.getDeviceVariables().keySet()) {
+                clientContext.put(property, stateManager.getDeviceVariables().get(property));
             }
 
             clientContext.put("deviceId", stateManager.getDeviceId());
@@ -205,9 +207,8 @@ public class StateManagerContainer implements IStateManagerContainer, Applicatio
     }
 
     private void setClientContextVersions() {
-        getVersions().entrySet().forEach(e -> {
-            clientContext.put("version." + e.getKey(), e.getValue());
-        });
+        getVersions().entrySet().forEach(e ->
+            clientContext.put("version." + e.getKey(), e.getValue()));
     }
 
     private Map<String,String> getVersions() {

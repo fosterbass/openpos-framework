@@ -61,21 +61,18 @@ public interface IStateManager {
 	public void setApplicationState(ApplicationState applicationState);
 	public void performInjections(Object object);
 	public void performInjectionsOnSpringBean(Object object);
-	public void setSessionAuthenticated(String sessionId, boolean authenticated);
-	public boolean areAllSessionsAuthenticated();
-    public void setSessionCompatible(String sessionId, boolean compatible);
-    public boolean isSessionCompatible(String sessionId);
-    public boolean areAllSessionsCompatible();
-    public boolean areSessionsConnected();
     public void registerQueryParams(Map<String,Object> queryParams);
     public void registerPersonalizationProperties(Map<String, String> personalizationProperties);
+    public Map<String,String> getPersonalizationProperties();
     public Injector getInjector();
     public boolean isAtRest();
     public void setErrorHandler(IErrorHandler errorHandler);
     public void sendConfigurationChangedMessage();
-    public void setClientContext(Map<String,String> context);
-    public Map<String, String> getClientContext();
+    public void setDeviceVariables(Map<String,String> deviceVariables);
+    public Map<String, String> getDeviceVariables();
     public void sendStartupCompleteMessage();
     public void sendPrintMessage(PrintMessage message);
     public int getActionQueueSize();
+    public void setConnected(boolean connected);
+    public boolean isConnected();
 }

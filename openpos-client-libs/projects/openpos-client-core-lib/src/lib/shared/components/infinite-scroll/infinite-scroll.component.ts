@@ -77,12 +77,23 @@ export class InfiniteScrollComponent<T> implements OnInit, OnChanges, OnDestroy 
   tabChanged: boolean;
 
 
+  /**
+   * Either vertical or horizontal
+   */
+  @Input()
+  orientation = 'vertical';
+
+
   dataSource: InfiniteScrollDatasource<T>;
 
   private subscription: Subscription;
 
   constructor(private dataMessageService: UIDataMessageService, private el: ElementRef, private renderer: Renderer2) {
 
+  }
+
+  isHorizontalOrientation(): boolean {
+    return this.orientation === 'horizontal';
   }
 
   ngOnDestroy(): void {

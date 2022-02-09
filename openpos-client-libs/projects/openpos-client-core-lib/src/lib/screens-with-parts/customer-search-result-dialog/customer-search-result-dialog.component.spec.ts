@@ -14,6 +14,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { SelectableItemListComponentConfiguration } from '../../shared/components/selectable-item-list/selectable-item-list.component';
 import { SelectionMode } from '../../core/interfaces/selection-mode.enum';
 import { ActionItem } from '../../core/actions/action-item';
+import { KeybindingZoneService } from '../../core/keybindings/keybinding-zone.service';
 
 class MockActionService {
     doAction(action: IActionItem) {
@@ -54,6 +55,7 @@ describe('CustomerSearchResultDialogComponent', () => {
                 CustomerSearchResultDialogComponent,
             ],
             providers: [
+                KeybindingZoneService,
                 { provide: ActionService, useClass: MockActionService },
                 { provide: MatDialog, useClass: MockMatDialog },
                 { provide: ElectronService, useClass: MockElectronService },

@@ -25,7 +25,6 @@
 
         .filter-bar {
             background: white;
-            padding: 1rem;
         }
 
         .filter-button {
@@ -127,22 +126,22 @@
                 padding-top: 5px;
                 padding-bottom: 5px;
 
-                &.tablet-portrait {
-                    font-size: $text-sm;
+                    &.tablet-portrait {
+                        font-size: $text-sm;
+                    }
+
+                    &.mobile {
+                        font-size: $text-xs-mobile*1.25;
+                    }
                 }
 
-                &.mobile {
-                    font-size: $text-xs-mobile*1.25;
-                }
-            }
-
-            app-customer-information {
-                .details-row {
-                    margin-bottom: 20px;
-                    padding-left: 10px;
-                    padding-right: 10px;
+                app-customer-information {
+                    .details-row {
+                        margin-bottom: 20px;
+                        padding-left: 10px;
+                        padding-right: 10px;
+                    }
                 }
             }
         }
     }
-}

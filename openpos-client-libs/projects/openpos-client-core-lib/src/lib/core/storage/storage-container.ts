@@ -13,6 +13,11 @@ export interface StorageContainer {
     name(): string;
 
     /**
+     * Triggers when the storage container is available for use.
+     */
+    isAvailable(): Observable<boolean>;
+
+    /**
      * Weather or not the container is supported.
      */
     isSupported(): boolean;
@@ -43,4 +48,9 @@ export interface StorageContainer {
      * @param key The unique key used to access the value.
      */
     remove(key: string): Observable<void>;
+
+    /**
+     * Clears everything in local storage for the app.
+     */
+    clear(): Observable<void>;
 }

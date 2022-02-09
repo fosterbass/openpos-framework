@@ -1,0 +1,52 @@
+@import "../../../styles/mixins/typography";
+@import "../../../styles/variables/spacing";
+
+.form-part-body {
+    display: grid;
+    justify-self: center;
+    align-content: center;
+    width:100%;
+    @extend %page-spaced-content; 
+
+    .content {
+        padding: 24px;
+        &.mobile {
+            padding: 8px;
+        }
+        &.tablet {
+            padding: 16px;
+        }
+    }
+
+    .prompt-buttons {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 8px;
+        &.tablet-portrait,
+        &.tablet-landscape,
+        &.mobile-landscape,
+        &.mobile-portrait,
+        &.desktop-portrait {
+            display: grid;
+            grid-auto-flow: row;
+            justify-content: center;
+            grid-row-gap: 8px;
+        }
+    }
+}
+
+.mat-dialog-actions {
+    padding: 0;
+    margin: 0;
+}
+
+.mat-dialog-content {
+    padding: 0;
+    margin: 0;
+}
+
+.keybind-display-name-secondary {
+    padding-left: 8px;
+}

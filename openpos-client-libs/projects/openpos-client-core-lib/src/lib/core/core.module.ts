@@ -2,8 +2,6 @@ import { AndroidContentProviderPlugin } from './platform-plugins/cordova-plugins
 import { PRINTERS } from './platform-plugins/printers/printer.service';
 import { ConsoleScannerPlugin } from './platform-plugins/barcode-scanners/console-scanner/console-scanner.plugin';
 import { SessionService } from './services/session.service';
-import { PersonalizationStartupTask } from './startup/personalization-startup-task';
-import { STARTUP_FAILED_COMPONENT, STARTUP_TASKS } from './services/startup.service';
 import { ToastrModule } from 'ngx-toastr';
 import { ErrorHandler, Injector, NgModule, Optional, SkipSelf } from '@angular/core';
 import { DatePipe, Location, LocationStrategy, PathLocationStrategy, registerLocaleData } from '@angular/common';
@@ -12,28 +10,17 @@ import { BreakpointObserver, MediaMatcher } from '@angular/cdk/layout';
 import { SharedModule } from '../shared/shared.module';
 import { AppInjector } from './app-injector';
 import { throwIfAlreadyLoaded } from './module-import-guard';
-import { StartupComponent } from './startup/startup.component';
-import { PersonalizationService } from './personalization/personalization.service';
 import { ConfigurationService } from './services/configuration.service';
 import { ErrorHandlerService } from './services/errorhandler.service';
 import { StompRService } from '@stomp/ng2-stompjs';
-import { SubscribeToSessionTask } from './startup/subscribe-to-session-task';
-import { Router } from '@angular/router';
-import { StartupFailedComponent } from './startup/startup-failed.component';
-import { MatDialog } from '@angular/material/dialog';
-import { FinalStartupTask } from './startup/final-startup-task';
 import { DialogContentComponent } from './components/dialog-content/dialog-content.component';
 import { TrainingOverlayService } from './services/training-overlay.service';
-import { KeyPressProvider } from '../shared/providers/keypress.provider';
-import { fromEvent, Observable } from 'rxjs';
 import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
 import { PersonalizationComponent } from './personalization/personalization.component';
 import { ToastService } from './services/toast.service';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ElectronService, NgxElectronModule } from 'ngx-electron';
-import { PLUGINS, PluginStartupTask } from './startup/plugin-startup-task';
-import { PlatformReadyStartupTask, PLATFORMS } from './startup/platform-ready-startup-task';
 import { CordovaPlatform } from './platforms/cordova.platform';
 import { NCRPaymentPlugin } from './platform-plugins/cordova-plugins/ncr-payment-plugin';
 import { SplashScreenComponent } from './components/splash-screen/splash-screen.component';
@@ -48,12 +35,10 @@ import { UIDataMessageService } from './ui-data-message/ui-data-message.service'
 import { HelpTextService } from './help-text/help-text.service';
 import { ErrorStateMatcher, ShowOnDirtyErrorStateMatcher } from '@angular/material/core';
 import { TransactionService } from './services/transaction.service';
-import { AudioStartupTask } from './audio/audio-startup-task';
 import { AudioService } from './audio/audio.service';
 import { AudioRepositoryService } from './audio/audio-repository.service';
 import { AudioInteractionService } from './audio/audio-interaction.service';
 import { AudioConsolePlugin } from './audio/audio-console.plugin';
-import { CapacitorStatusBarPlatformPlugin } from './startup/capacitor-status-bar-platform-plugin';
 import { ScanditCapacitorImageScanner } from './platform-plugins/barcode-scanners/scandit-capacitor/scandit-capacitor.service';
 import { IMAGE_SCANNERS, SCANNERS } from './platform-plugins/barcode-scanners/scanner';
 import { BarcodeScanner } from './platform-plugins/barcode-scanners/barcode-scanner.service';
@@ -66,12 +51,15 @@ import { WedgeScannerPlugin } from './platform-plugins/barcode-scanners/wedge-sc
 import { ServerScannerPlugin } from './platform-plugins/barcode-scanners/server-scanner/server-scanner.service';
 import { ScanditScannerCordovaPlugin } from './platform-plugins/barcode-scanners/scandit-scanner-cordova/scandit-scanner-cordova.plugin';
 import { CapacitorStorageService } from './storage/capacitor/capacitor-storage.service';
+import { CordovaStorageService } from './storage/cordova/cordova-storage.service';
 import { Storage } from './storage/storage.service';
 import { STORAGE_CONTAINERS } from './storage/storage-container';
+import { ZebraBluetoothPrinterCordovaPlugin } from './platform-plugins/cordova-plugins/zebra-bluetooth-printer-cordova-plugin';
 import { CapacitorPrinterPlugin } from './platform-plugins/printers/capacitor-printer.plugin';
-import { ZEROCONF_TOKEN } from './startup/zeroconf/zeroconf';
-import { MDnsZeroconf } from './startup/zeroconf/mdns-zeroconf';
-import { CapacitorZeroconf } from './startup/zeroconf/capacitor-zeroconf';
+import { AirwatchCordovaPlugin } from './platform-plugins/cordova-plugins/airwatch-cordova-plugin';
+import { ZEROCONF_TOKEN } from './zeroconf/zeroconf';
+import { MDnsZeroconf } from './zeroconf/mdns-zeroconf';
+import { CapacitorZeroconf } from './zeroconf/capacitor-zeroconf';
 import { CapacitorService } from './services/capacitor.service';
 import { LoyaltySignupService } from './services/loyalty-signup.service';
 import { DebugImageScanner } from './platform-plugins/barcode-scanners/debug-image-scanner/debug-image-scanner.service';
@@ -79,6 +67,15 @@ import { CommerceServerSinkModule } from './logging/commerce-server/commerce-ser
 import { NewRelicSinkModule } from './logging/new-relic/new-relic-sink.module';
 import { ConfigProvidersModule } from './platforms/config-provider/config-providers.module';
 import { PowerModule } from './platform-plugins/power/power.module';
+import { PushNotificationService } from './services/push-notification.service';
+import { CordovaService } from './services/cordova.service';
+import { OpenposAppComponent } from './components/openpos-app/openpos-app.component';
+import { PLATFORMS } from './platforms/platform.interface';
+import { PLUGINS } from './platform-plugins/platform-plugin.interface';
+import { KeybindingService } from './keybindings/keybinding.service';
+import { KeybindingLockScreenService } from './keybindings/keybinding-lock-screen.service';
+import { ENTERPRISE_CONFIGS } from './platform-plugins/enterprise-config/enterprise-config.service';
+import { KeybindingDialogService } from './keybindings/keybinding-dialog.service';
 
 registerLocaleData(locale_enCA, 'en-CA');
 registerLocaleData(locale_frCA, 'fr-CA');
@@ -87,18 +84,15 @@ registerLocaleData(locale_frCA, 'fr-CA');
     entryComponents: [
         ConfirmationDialogComponent,
         PersonalizationComponent,
-        StartupComponent,
-        StartupFailedComponent,
         DialogContentComponent,
         SplashScreenComponent,
         LockScreenComponent,
     ],
     declarations: [
+        OpenposAppComponent,
         DialogContentComponent,
         ConfirmationDialogComponent,
         PersonalizationComponent,
-        StartupComponent,
-        StartupFailedComponent,
         SplashScreenComponent,
         LockScreenComponent
     ],
@@ -130,19 +124,6 @@ registerLocaleData(locale_frCA, 'fr-CA');
         BarcodeScanner,
         { provide: ZEROCONF_TOKEN, useClass: MDnsZeroconf, multi: true, deps: [ElectronService] },
         { provide: ZEROCONF_TOKEN, useClass: CapacitorZeroconf, multi: true, deps: [CapacitorService] },
-        {
-            provide: STARTUP_TASKS, useClass: PersonalizationStartupTask, multi: true,
-            deps: [PersonalizationService, MatDialog, ZEROCONF_TOKEN]
-        },
-        { provide: STARTUP_TASKS, useClass: SubscribeToSessionTask, multi: true, deps: [SessionService, Router] },
-        {
-            provide: STARTUP_TASKS, useClass: AudioStartupTask, multi: true,
-            deps: [AudioRepositoryService, AudioService, AudioInteractionService]
-        },
-        { provide: STARTUP_TASKS, useClass: FinalStartupTask, multi: true, deps: [SessionService] },
-        { provide: STARTUP_TASKS, useClass: PlatformReadyStartupTask, multi: true },
-        { provide: STARTUP_TASKS, useClass: PluginStartupTask, multi: true },
-        { provide: STARTUP_FAILED_COMPONENT, useValue: StartupFailedComponent },
         AilaScannerCordovaPlugin,
         ScanditScannerCordovaPlugin,
         { provide: SCANNERS, useExisting: ConsoleScannerPlugin, multi: true },
@@ -162,19 +143,22 @@ registerLocaleData(locale_frCA, 'fr-CA');
         { provide: PLUGINS, useExisting: NCRPaymentPlugin, multi: true, deps: [SessionService] },
         { provide: PLUGINS, useExisting: AndroidContentProviderPlugin, multi: true },
         { provide: PLUGINS, useExisting: ScanditScannerCordovaPlugin, multi: true },
-        { provide: PLUGINS, useExisting: CapacitorStatusBarPlatformPlugin, multi: true },
         { provide: PLUGINS, useExisting: ScanditCapacitorImageScanner, multi: true },
+        { provide: PLUGINS, useExisting: ZebraBluetoothPrinterCordovaPlugin, multi: true, deps: [CordovaService, SessionService] },
+        { provide: PLUGINS, useExisting: AirwatchCordovaPlugin, multi: true, deps: [CordovaService]},
         { provide: PLATFORMS, useExisting: CordovaPlatform, multi: true },
         { provide: PLATFORMS, useExisting: CapacitorIosPlatform, multi: true },
         { provide: PLATFORMS, useExisting: CapacitorAndroidPlatform, multi: true },
         { provide: STORAGE_CONTAINERS, useClass: CapacitorStorageService, multi: true },
+        { provide: STORAGE_CONTAINERS, useClass: CordovaStorageService, multi: true },
         CapacitorPrinterPlugin,
         { provide: PRINTERS, useExisting: CapacitorPrinterPlugin, multi: true },
+        { provide: PRINTERS, useExisting: ZebraBluetoothPrinterCordovaPlugin, multi: true, deps: [CordovaService, SessionService] },
         LocationService,
         { provide: PROVIDERS, useExisting: LocationProviderDefault, multi: true },
+        { provide: ENTERPRISE_CONFIGS, useExisting: AirwatchCordovaPlugin, multi: true, deps: [CordovaService]},
         TrainingOverlayService,
         ConfigurationService,
-        KeyPressProvider,
         HelpTextService,
         { provide: CLIENTCONTEXT, useClass: TimeZoneContext, multi: true },
         { provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher },
@@ -195,10 +179,11 @@ export class CoreModule {
         toastService: ToastService,
         uiDataService: UIDataMessageService,
         clientExecutableService: ClientExecutableService,
-        keyProvider: KeyPressProvider) {
+        pushNotificationService: PushNotificationService,
+        keybindingService: KeybindingService,
+        keybindingDialogService: KeybindingDialogService,
+        keybindingLockScreenService: KeybindingLockScreenService) {
         throwIfAlreadyLoaded(parentModule, 'CoreModule');
         AppInjector.instance = this.injector;
-        keyProvider.registerKeyPressSource(fromEvent(document, 'keydown') as Observable<KeyboardEvent>);
-        keyProvider.registerKeyPressSource(fromEvent(document, 'keyup') as Observable<KeyboardEvent>);
     }
 }

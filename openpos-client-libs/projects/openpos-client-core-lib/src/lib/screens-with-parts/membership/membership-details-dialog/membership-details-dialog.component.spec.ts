@@ -9,7 +9,6 @@ import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provi
 import { TimeZoneContext } from '../../../core/client-context/time-zone-context';
 import { Observable, of, Subscription } from 'rxjs';
 import { MediaBreakpoints, OpenposMediaService } from '../../../core/media/openpos-media.service';
-import { KeyPressProvider } from '../../../shared/providers/keypress.provider';
 import { MembershipDetailsDialogComponent } from './membership-details-dialog.component';
 import { ActionItem } from '../../../core/actions/action-item';
 import { CONFIGURATION } from '../../../configuration/configuration';
@@ -28,11 +27,6 @@ import { SecondaryButtonComponent } from '../../../shared/components/secondary-b
 import { EnrollmentLineItemComponent } from '../../../shared/screen-parts/enrollment-line-item/enrollment-line-item.component';
 import { MatCard } from '@angular/material/card';
 import { ProgramPlanDetailsComponent } from '../../../shared/screen-parts/program-plan-details/program-plan-details.component';
-class MockKeyPressProvider {
-  subscribe(): Subscription {
-    return new Subscription();
-  }
-}
 
 class MockActionService { }
 class MockMatDialog { }
@@ -84,7 +78,6 @@ describe('LinkedCustomerMembershipState', () => {
           MockComponent(MatCard)
         ],
         providers: [
-          { provide: KeyPressProvider, useClass: MockKeyPressProvider },
           { provide: ActionService, useClass: MockActionService },
           { provide: MatDialog, useClass: MockMatDialog },
           { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobileFalse },

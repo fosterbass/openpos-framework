@@ -11,7 +11,6 @@ import { ElectronService } from 'ngx-electron';
 import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provider.interface';
 import { TimeZoneContext } from '../../../core/client-context/time-zone-context';
 import { Subscription } from 'rxjs';
-import { KeyPressProvider } from '../../providers/keypress.provider';
 import { MockComponent } from 'ng-mocks';
 import { IconComponent } from '../../components/icon/icon.component';
 
@@ -19,11 +18,6 @@ class MockMatDialog { }
 class MockActionService { }
 class ClientContext { }
 class MockElectronService { }
-class MockKeyPressProvider {
-    subscribe(): Subscription {
-        return new Subscription();
-    }
-}
 
 describe('CustomerInformationComponent', () => {
     let component: CustomerInformationComponent;
@@ -41,7 +35,6 @@ describe('CustomerInformationComponent', () => {
                 { provide: MatDialog, useClass: MockMatDialog },
                 { provide: ActionService, useClass: MockActionService },
                 { provide: ElectronService, useClass: MockElectronService },
-                { provide: KeyPressProvider, useClass: MockKeyPressProvider },
                 { provide: ClientContext, useValue: {} },
                 { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
             ]
@@ -53,6 +46,12 @@ describe('CustomerInformationComponent', () => {
             email: 'b.bobert@gmail.com',
             phoneNumber: '1118798322',
             loyaltyNumber: 's321111111',
+            accountNumberLabel: 'AccountNumber',
+            accountNumber: '4567898909876540',
+            creditLimitLabel: 'Credit Limit',
+            creditLimit: '$2500.00',
+            expiryDateLabel: 'Valid Thru',
+            expiryDate: '08/24',
             address: {
                 line1: '123 Mockingbird Lane',
                 city: 'Columbus',
@@ -118,6 +117,71 @@ describe('CustomerInformationComponent', () => {
             validateDoesNotExist(fixture, '.loyalty-number');
         });
 
+        it('displays the customer account number label', () => {
+            validateText(fixture, '.accountNumber-Label', component.customer.accountNumberLabel);
+        });
+
+        it('does not display the customer account number label when the user does not have one', () => {
+            component.customer.accountNumberLabel = undefined;
+            fixture.detectChanges();
+
+            validateDoesNotExist(fixture, '.accountNumber-Label');
+        });
+
+        it('displays the customer account number ', () => {
+            validateText(fixture, '.account-Number', component.customer.accountNumber);
+        });
+
+        it('does not display the customer account number when the user does not have one', () => {
+             component.customer.accountNumber = undefined;
+             fixture.detectChanges();
+
+             validateDoesNotExist(fixture, '.account-Number');
+         });
+
+        it('displays the customer credit Limit label', () => {
+              validateText(fixture, '.creditLimit-Label', component.customer.creditLimitLabel);
+        });
+
+        it('does not display the customer creditLimit  label when the user does not have one', () => {
+            component.customer.creditLimitLabel = undefined;
+            fixture.detectChanges();
+
+            validateDoesNotExist(fixture, '.creditLimit-Label');
+        });
+
+        it('displays the account credit limit ', () => {
+            validateText(fixture, '.credit-Limit', component.customer.creditLimit);
+        });
+
+        it('does not display the account credit limit when the user does not have one', () => {
+            component.customer.creditLimit = undefined;
+            fixture.detectChanges();
+
+            validateDoesNotExist(fixture, '.credit-Limit');
+        });
+
+        it('displays the account expiry date label', () => {
+            validateText(fixture, '.expiryDate-Label', component.customer.expiryDateLabel);
+        });
+
+        it('does not display the  account expiry date label when the user does not have one', () => {
+            component.customer.expiryDateLabel = undefined;
+            fixture.detectChanges();
+
+            validateDoesNotExist(fixture, '.expiryDate-Label');
+        });
+
+        it('displays the account expiry date ', () => {
+            validateText(fixture, '.expiry-Date', component.customer.expiryDate);
+        });
+
+        it('does not display the account expiry date when the user does not have one', () => {
+            component.customer.expiryDate = undefined;
+            fixture.detectChanges();
+
+            validateDoesNotExist(fixture, '.expiry-Date');
+        });
         describe('customer address', () => {
             it('does not display the customer loyalty number when the user does not have one', () => {
                 component.customer.address = undefined;

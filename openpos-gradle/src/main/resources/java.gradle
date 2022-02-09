@@ -6,7 +6,6 @@ apply plugin: 'eclipse'
 apply plugin: 'java-library'
 apply plugin: 'idea'
 apply plugin: 'maven-publish'
-//apply plugin: 'ru.vyarus.quality'
 apply plugin: 'jacoco'
 
 def removeSnapshot = { v ->
@@ -36,7 +35,7 @@ ext {
     javaposVersion='1.14.2'
     jacksonVersion='2.8.10'
     lombokVersion='1.18.20'
-    snakeYamlVersion='1.23'
+    snakeYamlVersion='1.27'
 }
 
 // update jar files with version information
@@ -61,8 +60,8 @@ processResources {
 
 repositories { 
     maven { url symmetricMavenUrl }
-    jcenter()
     mavenCentral()
+    google()
     maven { url 'https://jitpack.io' }
 }
 
@@ -223,30 +222,6 @@ dependencies {
     testCompileOnly("org.projectlombok:lombok:${lombokVersion}")
     annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
     testAnnotationProcessor("org.projectlombok:lombok:${lombokVersion}")
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-        }
-    }
-    repositories {
-        maven {
-            url "$deploySftpUrl"
-            credentials {
-                username deployUser
-                password deployPassword
-            }
-        }
-    }
-}
-
-task deploy {
-    description 'Shortcut for Maven users'
-    if (!gitBranch.equals('merge') && !gitBranch.startsWith('PR-')) {
-        dependsOn tasks.publish
-    }
 }
 
 tasks.uploadArchives.dependsOn build

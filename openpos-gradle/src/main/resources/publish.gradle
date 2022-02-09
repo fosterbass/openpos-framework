@@ -1,0 +1,25 @@
+apply plugin: 'maven-publish'
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url "$deploySftpUrl"
+            credentials {
+                username deployUser
+                password deployPassword
+            }
+        }
+    }
+}
+
+task deploy {
+    description 'Shortcut for Maven users'
+    if (!gitBranch.equals('merge') && !gitBranch.startsWith('PR-')) {
+        dependsOn tasks.publish
+    }
+}

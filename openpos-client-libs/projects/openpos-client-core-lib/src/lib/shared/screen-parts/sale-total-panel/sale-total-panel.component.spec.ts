@@ -9,7 +9,6 @@ import { TimeZoneContext } from '../../../core/client-context/time-zone-context'
 import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provider.interface';
 import { ActionService } from '../../../core/actions/action.service';
 import { OpenposMediaService } from '../../../core/media/openpos-media.service';
-import { KeyPressProvider } from '../../providers/keypress.provider';
 import { IActionItem } from '../../../core/actions/action-item.interface';
 import { By } from '@angular/platform-browser';
 import { CONFIGURATION } from '../../../configuration/configuration';
@@ -21,11 +20,6 @@ import { IconComponent } from '../../components/icon/icon.component';
 
 class MockMatDialog { }
 class MockActionService { }
-class MockKeyPressProvider {
-    subscribe(): Subscription {
-        return new Subscription();
-    }
-}
 class MockElectronService { }
 class ClientContext { }
 
@@ -53,7 +47,6 @@ describe('SaleTotalPanelComponent', () => {
                     { provide: ActionService, useClass: MockActionService },
                     { provide: MatDialog, useClass: MockMatDialog },
                     { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobile },
-                    { provide: KeyPressProvider, useClass: MockKeyPressProvider },
                     { provide: ElectronService, useClass: MockElectronService },
                     { provide: ClientContext, useValue: {} },
                     { provide: CLIENTCONTEXT, useClass: TimeZoneContext }

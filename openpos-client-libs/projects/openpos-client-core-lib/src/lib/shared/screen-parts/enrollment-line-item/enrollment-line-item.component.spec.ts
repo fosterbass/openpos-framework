@@ -6,7 +6,6 @@ import { ElectronService } from 'ngx-electron';
 import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provider.interface';
 import { TimeZoneContext } from '../../../core/client-context/time-zone-context';
 import { ActionService } from '../../../core/actions/action.service';
-import { KeyPressProvider } from '../../providers/keypress.provider';
 import { By } from '@angular/platform-browser';
 import { EnrollmentLineItemComponent } from './enrollment-line-item.component';
 import { ActionItem } from '../../../core/actions/action-item';
@@ -18,11 +17,6 @@ import { IconComponent } from '../../components/icon/icon.component';
 
 class MockActionService { }
 class MockMatDialog { }
-class MockKeyPressProvider {
-    subscribe(): Subscription {
-        return new Subscription();
-    }
-}
 class MockElectronService { }
 class ClientContext { }
 
@@ -47,7 +41,6 @@ describe('EnrollmentLineItemComponent', () => {
                     { provide: ActionService, useClass: MockActionService },
                     { provide: MatDialog, useClass: MockMatDialog },
                     { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobileFalse },
-                    { provide: KeyPressProvider, useClass: MockKeyPressProvider },
                     { provide: ElectronService, useClass: MockElectronService },
                     { provide: ClientContext, useValue: {} },
                     { provide: CLIENTCONTEXT, useClass: TimeZoneContext }

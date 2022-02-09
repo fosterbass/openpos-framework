@@ -3,24 +3,25 @@
 
 module.exports = function (config) {
   config.set({
-    basePath: '',
+    coverageReporter: {
+      dir: 'build/reports/coverage',
+      reporters: [
+        { type: 'html', subdir: 'report-html' }
+      ],
+      fixWebpackSourcePaths: true
+    },
+    basePath: '../../',
     frameworks: ['jasmine', '@angular-devkit/build-angular'],
     plugins: [
       require('karma-jasmine'),
       require('karma-chrome-launcher'),
       require('karma-jasmine-html-reporter'),
-      require('karma-coverage-istanbul-reporter'),
+      require('karma-coverage'),
       require('karma-junit-reporter'),
       require('@angular-devkit/build-angular/plugins/karma')
     ],
     client: {
       clearContext: false // leave Jasmine Spec Runner output visible in browser
-    },
-    coverageIstanbulReporter: {
-      dir: require('path').join(__dirname, '../../coverage/openpos-client-core-lib'),
-      reports: ['html', 'lcovonly'],
-      fixWebpackSourcePaths: true,
-      skipFilesWithNoCoverage: false
     },
     junitReporter: {
       outputDir: 'dist', // results will be saved as $outputDir/$browserName.xml
@@ -32,7 +33,7 @@ module.exports = function (config) {
       properties: {}, // key value pair of properties to add to the <properties> section of the report
       xmlVersion: null // use '1' if reporting to be per SonarQube 6.2 XML format
     },
-    reporters: ['progress', 'kjhtml', 'junit'],
+    reporters: ['progress', 'kjhtml', 'junit', 'coverage'],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,

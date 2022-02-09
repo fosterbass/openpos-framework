@@ -21,7 +21,7 @@
 </div>
 
 <ng-template #form let-option="option" let-formGroup="formGroup" let-showBackButton="showBackButton">
-    <app-form (submitFormEvent)="onSubmitForm(option, formGroup)" [form]="formGroup">
+    <app-form (submitFormEvent)="onSubmitForm(option, formGroup)" [form]="formGroup" [validateOnFirstLoad]="option.form.validateOnFirstLoad">
         <app-dynamic-form-field *ngFor="let field of option.form.formElements" [formGroup]="formGroup" [formField]="field" (changed)="onFieldChanged($event, formGroup, option)"></app-dynamic-form-field>
         <div gdAreas="back . submit" gdColumns="auto 1fr auto">
             <app-secondary-button *ngIf="showBackButton" gdArea="back" inputType="button" (buttonClick)="onBackButtonPressed()" class="back-button">

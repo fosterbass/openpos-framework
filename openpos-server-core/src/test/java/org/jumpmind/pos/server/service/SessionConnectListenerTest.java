@@ -149,8 +149,8 @@ public class SessionConnectListenerTest {
 
         sessionConnectListener.onApplicationEvent(mockEvent);
 
-        assertEquals("11111-111", sessionConnectListener.getClientContext("123456").get("deviceId"));
-        assertFalse(sessionConnectListener.getClientContext("123456").containsKey("appId"));
+        assertEquals("11111-111", sessionConnectListener.getDeviceVariables("123456").get("deviceId"));
+        assertFalse(sessionConnectListener.getDeviceVariables("123456").containsKey("appId"));
     }
 
     @Test

@@ -1,4 +1,5 @@
-@import "../../styles/mixins/typography";
+@import '../../styles/mixins/typography';
+@import '../../styles/variables/spacing';
 
 :host {
     height: 100%;
@@ -51,21 +52,18 @@
 
     .transaction-search-options {
         grid-area: searchOptions;
-        display: grid;
-        grid-auto-flow: column;
-        grid-auto-columns: 1fr .3fr;
-        grid-column-gap: 24px;
+        display: flex;
+        gap: 24px;
         align-items: center;
 
-        &.change-search-mode-disabled {
-            grid-auto-columns: 1fr .2fr .2fr;
-        }
+        app-scan-or-search { flex-grow: 1; }
 
-        &.tablet-portrait,
-        &.mobile-landscape,
-        &.mobile-portrait,
-        &.desktop-portrait {
-            grid-auto-columns: 1fr .4fr;
+        &.change-search-mode-disabled {
+            display: grid;
+            grid-auto-flow: column;
+            grid-auto-columns: 1fr .2fr .2fr;
+            grid-column-gap: 24px;
+            align-items: center;
         }
     }
 
@@ -103,25 +101,6 @@
 
         font-weight: bold;
         margin: 0 4px;
-    }
-
-    .transaction-summary {
-        display: block;
-        border-bottom-width: 1px;
-        border-bottom-style: solid;
-        margin: 0 32px;
-
-        &:last-child {
-            border-bottom: none;
-        }
-
-        &.tablet-landscape,
-        &.tablet-portrait,
-        &.mobile-landscape,
-        &.mobile-portrait,
-        &.desktop-portrait {
-            margin: 0 16px;
-        }
     }
 
     .no-results {
@@ -173,7 +152,11 @@
         app-infinite-scroll { height: 100%; }
     }
 
-    .transaction-change-search-mode-button { align-self: flex-start; }
+    .transaction-change-search-mode {
+        align-self: end;
+    }
+
+    .transaction-change-search-mode-button { align-self: end; }
     .flex-column-spaced-between {
         display:flex;
         justify-content:space-between;
@@ -182,7 +165,16 @@
     .flex-spaced-between-gap {
         display:flex;
         justify-content:space-between;
-        gap:0.5rem;
+        gap: $small-space;
+    }
+
+    .scan-and-change-mode-button {
+        @extend .flex-spaced-between-gap;
+
+        &.mobile-portrait,
+        &.desktop-portrait {
+            @extend .flex-column-spaced-between;
+        }
     }
     .flex-grow { flex-grow: 1; }
 }
@@ -242,4 +234,18 @@
     .desktop-portrait & {
         grid-column-gap: 24px;
     }
+}
+
+.transaction-summary {
+    display: block;
+    @extend %sub-element-container;
+}
+
+.scan-or-search {
+    width: 100%;
+}
+
+.cancel-all-button {
+    width: 400px;
+    margin-left: auto;
 }

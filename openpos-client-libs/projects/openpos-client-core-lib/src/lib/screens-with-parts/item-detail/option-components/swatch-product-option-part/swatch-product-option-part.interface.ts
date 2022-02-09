@@ -3,8 +3,8 @@ import { SwatchInterface } from './swatch.interface';
 
 export interface SwatchProductOptionPartInterface {
     swatches: SwatchInterface[];
-    optionName: string;
-    selectedOption: string;
+    optionName?: string;
+    selectedOption?: string;
     selectOptionAction: IActionItem;
     optionPlaceholder: string;
 }

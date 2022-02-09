@@ -5,7 +5,6 @@ import { Observable } from 'rxjs';
 import { MatTabChangeEvent } from '@angular/material/tabs';
 import { DialogComponent } from '../../shared/decorators/dialog-component.decorator';
 import { PosScreenDirective } from '../pos-screen/pos-screen.component';
-import { KeyPressProvider } from '../../shared/providers/keypress.provider';
 import { MediaBreakpoints, OpenposMediaService } from '../../core/media/openpos-media.service';
 import { IActionItem } from '../../core/actions/action-item.interface';
 import { CONFIGURATION } from '../../configuration/configuration';
@@ -30,7 +29,6 @@ export class CustomerDetailsDialogComponent extends PosScreenDirective<CustomerD
 
   constructor(
     injector: Injector,
-    protected keyPresses: KeyPressProvider,
     private media: OpenposMediaService
   ) {
     super(injector);
@@ -52,7 +50,7 @@ export class CustomerDetailsDialogComponent extends PosScreenDirective<CustomerD
       [MediaBreakpoints.MOBILE_PORTRAIT, true],
       [MediaBreakpoints.MOBILE_LANDSCAPE, true],
       [MediaBreakpoints.TABLET_PORTRAIT, true],
-      [MediaBreakpoints.TABLET_LANDSCAPE, true],
+      [MediaBreakpoints.TABLET_LANDSCAPE, false],
       [MediaBreakpoints.DESKTOP_PORTRAIT, false],
       [MediaBreakpoints.DESKTOP_LANDSCAPE, false]
     ]));
@@ -91,6 +89,16 @@ export class CustomerDetailsDialogComponent extends PosScreenDirective<CustomerD
     return CONFIGURATION.enableKeybinds && !!menuItem.keybind && menuItem.keybind !== 'Enter';
   }
 
+  hasAnyDisplayableCustomerInformation(): boolean {
+      const customer = this.screen.customer;
+      return customer != null && (
+          !!customer.email ||
+          !!customer.phoneNumber ||
+          !!customer.loyaltyNumber ||
+          !!customer.address ||
+          !!customer.birthDate
+      );
+    }
 }
 
 class ItemsHistoryFilterController {

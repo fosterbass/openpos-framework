@@ -1,17 +1,17 @@
 import { SelectionListInterface } from './selection-list.interface';
 import { PosScreenDirective } from '../pos-screen/pos-screen.component';
-import { AfterViewInit, ElementRef, Injector, ViewChildren, Directive } from '@angular/core';
+import type { QueryList } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, Injector, ViewChildren } from '@angular/core';
 import { BehaviorSubject, merge, Observable } from 'rxjs';
 import { ISelectableListData } from '../../shared/components/selectable-item-list/selectable-list-data.interface';
 import { SelectableItemListComponentConfiguration } from '../../shared/components/selectable-item-list/selectable-item-list.component';
 import { SelectionMode } from '../../core/interfaces/selection-mode.enum';
 import { SessionService } from '../../core/services/session.service';
-import { filter, map } from 'rxjs/operators';
+import { filter, map, takeUntil } from 'rxjs/operators';
 import { IActionItem } from '../../core/actions/action-item.interface';
 import { CONFIGURATION } from '../../configuration/configuration';
 import { SelectableItemInterface } from './selectable-item.interface';
-
-import type { QueryList } from '@angular/core';
+import { KeybindingZoneService } from '../../core/keybindings/keybinding-zone.service';
 
 @Directive()
 export class GenericSelectionListScreenDirective<T extends SelectableItemInterface>
@@ -28,10 +28,12 @@ export class GenericSelectionListScreenDirective<T extends SelectableItemInterfa
     selectedItem: T;
     selectedItems: T[];
 
+    private keybindingZoneService: KeybindingZoneService;
     private screenData$ = new BehaviorSubject<ISelectableListData<T>>(null);
 
     constructor(injector: Injector, private session: SessionService) {
         super(injector);
+        this.keybindingZoneService = injector.get(KeybindingZoneService);
         this.listData = merge(this.session.getMessages('UIData').pipe(
             filter(d => d.dataType === 'SelectionListData'),
             map((d) => {
@@ -62,9 +64,9 @@ export class GenericSelectionListScreenDirective<T extends SelectableItemInterfa
                 }
             }
             this.screenData$.next({
-                items: allItems,
-                disabledItems: allDisabledItems,
-            } as ISelectableListData<T>
+                    items: allItems,
+                    disabledItems: allDisabledItems,
+                } as ISelectableListData<T>
             );
 
             if (this.screen.selectionList && (this.screen.fetchDataAction === undefined || this.screen.fetchDataAction === null)) {
@@ -145,5 +147,9 @@ export class GenericSelectionListScreenDirective<T extends SelectableItemInterfa
 
     isSelectionDisabled(): boolean {
         return this.index < 0 && (this.indexes === undefined || this.indexes === null || this.indexes.length === 0);
+    }
+
+    getItemActionPayload(): number[] | number {
+        return this.screen.multiSelect ? this.indexes : this.index;
     }
 }

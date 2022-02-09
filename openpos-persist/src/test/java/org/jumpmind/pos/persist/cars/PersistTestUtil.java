@@ -17,7 +17,7 @@ import org.jumpmind.security.SecurityServiceFactory;
 public class PersistTestUtil {
 
     public static IDatabasePlatform testDbPlatform() {
-        return JdbcDatabasePlatformFactory.createNewPlatformInstance(testDataSource(), new SqlTemplateSettings(), false, false);
+        return JdbcDatabasePlatformFactory.getInstance().create(testDataSource(), new SqlTemplateSettings(), false, false);
     }
     
     static ISecurityService securityService() {

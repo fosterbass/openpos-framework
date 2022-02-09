@@ -97,6 +97,16 @@ public class ObjectFinderTest {
             field = location;
         }
 
+        void assertMatchesInChildCollection(Container container, String collectionFieldName, Object target) throws NoSuchFieldException, IllegalAccessException {
+            Field f = container.getClass().getDeclaredField(collectionFieldName);
+            f.setAccessible(true);
+            Object o = f.get(container);
+
+            assertSame(o, parent);
+            assertEquals(f, field);
+            assertEquals(target, found);
+        }
+
         void assertMatches(Container container, String fieldName) throws NoSuchFieldException, IllegalAccessException {
             Field f = container.getClass().getDeclaredField(fieldName);
             f.setAccessible(true);
@@ -186,7 +196,7 @@ public class ObjectFinderTest {
         ObjectFinder<Target> finder = new ObjectFinder<>(Target.class);
         finder.searchRecursive(root, visitor);
 
-        visitor.assertMatches(root, "targets");
+        visitor.assertMatchesInChildCollection(root, "targets", target);
     }
 
     @Test
@@ -212,8 +222,7 @@ public class ObjectFinderTest {
 
         ObjectFinder<Target> finder = new ObjectFinder<>(Target.class);
         finder.searchRecursive(root, visitor);
-
-        visitor.assertMatches(root, "targets");
+        visitor.assertMatchesInChildCollection(root, "targets", target);
     }
 
     @Test
@@ -240,7 +249,7 @@ public class ObjectFinderTest {
         ObjectFinder<Target> finder = new ObjectFinder<>(Target.class);
         finder.searchRecursive(root, visitor);
 
-        visitor.assertMatches(root, "targets");
+        visitor.assertMatchesInChildCollection(root, "targets", target);
     }
 
     @Test
@@ -267,7 +276,7 @@ public class ObjectFinderTest {
         ObjectFinder<Target> finder = new ObjectFinder<>(Target.class);
         finder.searchRecursive(root, visitor);
 
-        visitor.assertMatches(root, "targets");
+        visitor.assertMatchesInChildCollection(root, "targets", target);
     }
 
     @Test
@@ -296,7 +305,7 @@ public class ObjectFinderTest {
         ObjectFinder<Target> finder = new ObjectFinder<>(Target.class);
         finder.searchRecursive(root, visitor);
 
-        visitor.assertMatches(container, "targets");
+        visitor.assertMatchesInChildCollection(container, "targets", target);
     }
 
     @Test

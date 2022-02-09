@@ -73,9 +73,6 @@ abstract public class AbstractRDBMSModule extends AbstractServiceFactory impleme
     @Value("${openpos.installationId:undefined}")
     protected String installationId;
 
-    @Value("${openpos.businessunitId:undefined}")
-    protected String businessUnitId;
-
     @Value("${openpos.general.rebuildDatabase.enabled:true}")
     protected boolean rebuildDatabaseEnabled;
 
@@ -185,7 +182,8 @@ abstract public class AbstractRDBMSModule extends AbstractServiceFactory impleme
 
     protected IDatabasePlatform databasePlatform() {
         if (databasePlatform == null) {
-            databasePlatform = JdbcDatabasePlatformFactory.createNewPlatformInstance(getDataSource(), new SqlTemplateSettings(), false, false);
+            databasePlatform = JdbcDatabasePlatformFactory.getInstance().
+                    create(getDataSource(), new SqlTemplateSettings(), false, false);
         }
         return databasePlatform;
     }

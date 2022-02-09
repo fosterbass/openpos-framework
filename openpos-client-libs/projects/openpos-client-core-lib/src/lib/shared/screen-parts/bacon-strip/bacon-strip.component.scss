@@ -28,6 +28,14 @@
         }
     }
 
+    .middle {
+        .screenlogo {
+            @at-root .container.mobile .middle .screenlogo {
+                height: 75%;
+            }
+        }
+    }
+
     .rightside {
         justify-self: end;
         display:grid;
@@ -48,7 +56,7 @@
             grid-area: id;
         }
 
-        .icon {
+        .bacon-strip-icon {
             grid-area: icon;
         }
 
@@ -74,15 +82,33 @@
 
     &.mobile {
         min-height: 40px;
-        grid-template-columns: 1fr auto;
+        &.container-search-is-expanded {
+            grid-template-columns: 1fr auto;
+        }
     }
 
     &.tablet-portrait {
-        grid-template-columns: 1fr auto;
+        &.container-search-is-expanded {
+            grid-template-columns: 1fr auto;
+        }
     }
 
     .bacon-strip-search {
         padding-left: 8px;
+    }
+
+    .hidden-focus-button {
+        position: absolute;
+        left: -100px;
+        width:1px;
+        height: 1px;
+        background-color: transparent;
+        border: none;
+    }
+
+    .hidden-focus-button:focus {
+        outline: none;
+        box-shadow: none;
     }
 
 }

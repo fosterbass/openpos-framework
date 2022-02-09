@@ -10,12 +10,12 @@ public interface IStateManagerContainer {
 
     void remove(String deviceId);
 
-    void removeSessionIdVariables(String sessionId);
-
     void setCurrentStateManager(IStateManager stateManager);
 
     IStateManager getCurrentStateManager();
 
     void changeAppId(String deviceId, String appId);
+
+    void changeBrand(String deviceId, String brand);
 
 }

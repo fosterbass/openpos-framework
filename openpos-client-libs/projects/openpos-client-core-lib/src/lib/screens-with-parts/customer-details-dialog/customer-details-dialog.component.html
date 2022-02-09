@@ -132,8 +132,8 @@
         </div>
 
         <div *ngIf="pagedContent === 'itemHistory'" class="itemHistoryContentMobile">
-            <div class="filter-bar">
-                <div class="date-range">
+            <div class="filter-bar" responsive-class>
+                <div class="date-range" responsive-class>
                     <mat-form-field>
                         <input matInput [matDatepicker]="dateFrom"
                             [placeholder]="screen.itemHistoryFilter.fromDatePlaceholder"
@@ -142,7 +142,7 @@
                         <mat-datepicker-toggle matSuffix [for]="dateFrom"></mat-datepicker-toggle>
                         <mat-datepicker #dateFrom></mat-datepicker>
                     </mat-form-field>
-                    <span>-</span>
+                    <span responsive-class class="date-range-dash">-</span>
                     <mat-form-field>
                         <input matInput [matDatepicker]="dateTo"
                             [placeholder]="screen.itemHistoryFilter.toDatePlaceholder"
@@ -158,7 +158,7 @@
                             (keypress)="itemsHistoryFilterController.onFilterKeyPress($event)"
                             (focus)="$event.target.select()" [placeholder]="screen.itemHistoryFilter.textPlaceholder">
                     </mat-form-field>
-                    <button mat-flat-button mat-primary-inverse
+                    <button mat-flat-button mat-primary-inverse responsive-class
                         (click)="itemsHistoryFilterController.filterItemHistory()" class="filter-button">
                         {{screen.itemHistoryFilterLabel}}
                     </button>
@@ -179,9 +179,9 @@
 <div *ngIf="!(isMobile | async)">
     <app-dialog-header></app-dialog-header>
     <app-content-card class="details-wrapper">
-        <div class="grid-container">
+        <div class="grid-container" responsive-class>
             <div class="icon">
-                <app-icon [iconName]="screen.profileIcon" [iconClass]="'material-icons'"></app-icon>
+                <app-icon responsive-class [iconName]="screen.profileIcon" [iconClass]="'material-icons lg'"></app-icon>
             </div>
             <div class="details">
                 <div class="details-label">
@@ -191,10 +191,8 @@
                     <app-customer-information [customer]="screen.customer"></app-customer-information>
                 </div>
             </div>
-            <div class="membership-icon" *ngIf="screen.membershipEnabled">
-                <div class="icon">
-                    <app-icon [iconName]="screen.membershipCardIcon" [iconClass]="'material-icons'"></app-icon>
-                </div>
+            <div class="icon membership-icon" *ngIf="screen.membershipEnabled">
+                <app-icon responsive-class class="icon" [iconName]="screen.membershipCardIcon" [iconClass]="'material-icons lg'"></app-icon>
             </div>
             <div class="memberships" *ngIf="screen.membershipEnabled">
                 <div class="details-row" *ngIf="screen.memberTierLabel != undefined">{{screen.memberTierLabel}}
@@ -213,36 +211,40 @@
                             <span>{{screen.noMembershipsFoundLabel}}</span>
                         </div>
 
-                        <div *ngIf="screen.customer.membershipSignUpAction">
-                            <app-secondary-button responsive-class class="membership-sign-up"
-                                [disabled]="!screen.customer.membershipSignUpAction.enabled"
-                                (actionClick)="doAction(screen.customer.membershipSignUpAction)"
-                                (click)="doAction(screen.customer.membershipSignUpAction)">
-                                <app-icon *ngIf="screen.customer.membershipSignUpAction.icon"
-                                    [iconName]="screen.customer.membershipSignUpAction.icon"
-                                    [iconClass]="'material-icons' + ((isMobile | async) ? ' mat-64' : '')"></app-icon>
-                                <span>{{screen.customer.membershipSignUpAction.title}}</span>
-                                <span *ngIf="keybindsEnabled(screen.customer.membershipSignUpAction)"
-                                    class="muted-color keybinding">
-                                    {{screen.customer.membershipSignUpAction.keybindDisplayName}}
-                                </span>
-                            </app-secondary-button>
+                        <div class="membership-buttons">
+                            <div *ngIf="screen.customer.membershipSignUpAction">
+                                <app-secondary-button responsive-class class="membership-sign-up"
+                                    [disabled]="!screen.customer.membershipSignUpAction.enabled"
+                                    (actionClick)="doAction(screen.customer.membershipSignUpAction)"
+                                    (click)="doAction(screen.customer.membershipSignUpAction)">
+                                    <app-icon *ngIf="screen.customer.membershipSignUpAction.icon"
+                                        [iconName]="screen.customer.membershipSignUpAction.icon"
+                                        [iconClass]="'material-icons' + ((isMobile | async) ? ' mat-64' : '')"></app-icon>
+                                    <span>{{screen.customer.membershipSignUpAction.title}}</span>
+                                    <span *ngIf="keybindsEnabled(screen.customer.membershipSignUpAction)"
+                                        class="muted-color keybinding">
+                                        {{screen.customer.membershipSignUpAction.keybindDisplayName}}
+                                    </span>
+                                </app-secondary-button>
+                            </div>
+
+                            <div *ngIf="screen.customer.enrolledMembershipAction">
+                                <app-secondary-button responsive-class class="enrolled-membership-sign-up"
+                                    [disabled]="!screen.customer.enrolledMembershipAction.enabled"
+                                    (actionClick)="doAction(screen.customer.enrolledMembershipAction)"
+                                    (click)="doAction(screen.customer.enrolledMembershipAction)">
+                                    <app-icon *ngIf="screen.customer.enrolledMembershipAction.icon"
+                                        [iconName]="screen.customer.enrolledMembershipAction.icon"
+                                        [iconClass]="'material-icons' + ((isMobile | async) ? ' mat-64' : '')"></app-icon>
+                                    <span>{{screen.customer.enrolledMembershipAction.title}}</span>
+                                    <span *ngIf="keybindsEnabled(screen.customer.enrolledMembershipAction)"
+                                        class="muted-color keybinding">
+                                        {{screen.customer.enrolledMembershipAction.keybindDisplayName}}
+                                    </span>
+                                </app-secondary-button>
+                            </div>
                         </div>
-                        <div *ngIf="screen.customer.enrolledMembershipAction">
-                            <app-secondary-button responsive-class class="enrolled-membership-sign-up"
-                                [disabled]="!screen.customer.enrolledMembershipAction.enabled"
-                                (actionClick)="doAction(screen.customer.enrolledMembershipAction)"
-                                (click)="doAction(screen.customer.enrolledMembershipAction)">
-                                <app-icon *ngIf="screen.customer.enrolledMembershipAction.icon"
-                                    [iconName]="screen.customer.enrolledMembershipAction.icon"
-                                    [iconClass]="'material-icons' + ((isMobile | async) ? ' mat-64' : '')"></app-icon>
-                                <span>{{screen.customer.enrolledMembershipAction.title}}</span>
-                                <span *ngIf="keybindsEnabled(screen.customer.enrolledMembershipAction)"
-                                    class="muted-color keybinding">
-                                    {{screen.customer.enrolledMembershipAction.keybindDisplayName}}
-                                </span>
-                            </app-secondary-button>
-                        </div>
+
                     </div>
                 </div>
             </div>
@@ -299,7 +301,7 @@
             </mat-tab>
             <mat-tab *ngIf="screen.itemHistoryEnabled" [label]="screen.itemHistoryLabel">
                 <mat-card class="purchaseHistoryContent">
-                    <div class="filter-bar">
+                    <div class="filter-bar" responsive-class>
                         <div class="date-range">
                             <mat-form-field>
                                 <input matInput [matDatepicker]="dateFrom"
@@ -348,30 +350,13 @@
 </div>
 
 <mat-dialog-actions class="buttons">
-    <app-secondary-button responsive-class *ngFor="let menuItem of screen.additionalActions"
-        [disabled]="!menuItem?.enabled" (actionClick)="doAction(menuItem)"
-        (click)="doAction(menuItem)">
-        <span responsive-class>{{menuItem.title}}</span>
-        <app-icon *ngIf="menuItem.icon" [iconClass]="'md'" [iconName]="menuItem.icon"></app-icon>
-        <span *ngIf="keybindsEnabled(menuItem)" class="muted-color keybinding">
-            {{menuItem.keybindDisplayName}}
-        </span>
-    </app-secondary-button>
-    <app-secondary-button responsive-class class="unlink" *ngIf="screen.unlinkButton"
-        [disabled]="!screen.unlinkButton?.enabled"
-        (actionClick)="doAction(screen.unlinkButton)" (click)="doAction(screen.unlinkButton)">
-        <span>{{screen.unlinkButton.title}}</span>
-        <span *ngIf="keybindsEnabled(screen.unlinkButton)" class="muted-color keybinding">
-            {{screen.unlinkButton.keybindDisplayName}}
-        </span>
-    </app-secondary-button>
-    <app-secondary-button responsive-class class="edit" *ngIf="screen.editButton"
-        [disabled]="!screen.editButton?.enabled" 
-        (actionClick)="doAction(screen.editButton)" (click)="doAction(screen.editButton)">
-        <span>{{screen.editButton.title}}</span>
-        <span *ngIf="keybindsEnabled(screen.editButton)" class="muted-color keybinding">
-            {{screen.editButton.keybindDisplayName}}
-        </span>
+    <app-secondary-button responsive-class *ngFor="let button of screen.secondaryButtons"
+                          class="button"
+                          [disabled]="!button?.enabled"
+                          [actionItem]="button"
+                          (actionClick)="doAction(button)"
+                          (click)="doAction(button)">
+        <span>{{button.title}}</span>
     </app-secondary-button>
     <app-primary-button responsive-class class="done" *ngIf="screen.doneButton" [disabled]="!screen.doneButton?.enabled"
         (actionClick)="doAction(screen.doneButton)"

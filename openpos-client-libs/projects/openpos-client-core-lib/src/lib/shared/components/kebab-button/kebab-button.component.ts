@@ -1,21 +1,22 @@
-import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { Subscription } from 'rxjs';
-import { finalize } from 'rxjs/operators';
+import { merge, Subject } from 'rxjs';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { ActionService } from '../../../core/actions/action.service';
-import { KeyPressProvider } from '../../providers/keypress.provider';
-import { CONFIGURATION } from '../../../configuration/configuration';
 import { KebabMenuComponent } from '../kebab-menu/kebab-menu.component';
 import { FocusService } from '../../../core/focus/focus.service';
 import { IActionItem } from '../../../core/actions/action-item.interface';
 import { MediaBreakpoints, OpenposMediaService } from '../../../core/media/openpos-media.service';
+import { KeybindingZoneService } from '../../../core/keybindings/keybinding-zone.service';
 
 @Component({
     selector: 'app-kebab-button',
     templateUrl: './kebab-button.component.html',
     styleUrls: ['./kebab-button.component.scss']
 })
-export class KebabButtonComponent implements OnDestroy {
+export class KebabButtonComponent implements OnChanges, OnDestroy {
+    private destroyed$ = new Subject();
+    private keybindingChanged$ = new Subject();
 
     @Input()
     menuItems: IActionItem[];
@@ -32,34 +33,20 @@ export class KebabButtonComponent implements OnDestroy {
     dialogRef: MatDialogRef<KebabMenuComponent>;
 
     @Input()
-    set keyBinding(key: string) {
-        if (this.subscription) {
-            this.subscription.unsubscribe();
-        }
-        // Only subscribe to keypress if key is defined.
-        if (!!key) {
-            this.subscription = this.keyPresses.subscribe(key, 100, event => {
-                // ignore repeats
-                if (event.repeat || !CONFIGURATION.enableKeybinds) {
-                    return;
-                }
-                if (event.type === 'keydown') {
-                    this.openKebabMenu();
-                }
-            });
-        }
-    }
+        // Some examples:
+        // p
+        // shift+enter
+        // p,shift+enter,escape
+    keyBinding: string;
 
     @Output()
     menuItemClick = new EventEmitter<IActionItem>();
 
     modalWidth = '35vw';
 
-    protected subscription: Subscription;
-
     constructor(
         protected dialog: MatDialog,
-        protected keyPresses: KeyPressProvider,
+        protected keybindingZoneService: KeybindingZoneService,
         protected focusService: FocusService,
         protected actionService: ActionService,
         private mediaService: OpenposMediaService
@@ -67,16 +54,25 @@ export class KebabButtonComponent implements OnDestroy {
         this.checkScreenSize();
     }
 
-    ngOnDestroy(): void {
-        if (this.subscription) {
-            this.subscription.unsubscribe();
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.keyBinding) {
+            this.keybindingChanged$.next();
+            this.updateKeybinding();
         }
+    }
 
+    updateKeybinding(): void {
+        this.keybindingZoneService.getKeyDownEvent(this.keyBinding)
+            .pipe(
+                takeUntil(merge(this.keybindingChanged$, this.destroyed$))
+            ).subscribe(() => this.openKebabMenu());
+    }
+
+    ngOnDestroy(): void {
+        this.destroyed$.next();
         // Ensure dialog gets closed, if it is still open due
         // to a screen change/refresh while it was open
-        if (this.dialogRef) {
-            this.dialogRef.close();
-        }
+        this.closeKebabMenu();
     }
 
     public openKebabMenu() {
@@ -99,6 +95,12 @@ export class KebabButtonComponent implements OnDestroy {
                 }
                 this.focusService.restoreInitialFocus();
             });
+        }
+    }
+
+    closeKebabMenu(): void {
+        if (this.dialogRef) {
+            this.dialogRef.close();
         }
     }
 

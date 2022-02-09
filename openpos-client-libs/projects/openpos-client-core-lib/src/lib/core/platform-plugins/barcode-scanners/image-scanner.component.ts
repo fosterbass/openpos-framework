@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, OnDestroy, OnInit, ElementRef } from '@angular/core';
+import { Component, Output, EventEmitter, OnDestroy, OnInit, ElementRef, NgZone } from '@angular/core';
 import { interval, merge, Observable, Subscription, throwError } from 'rxjs';
 import { delay, distinctUntilChanged, map, takeWhile } from 'rxjs/operators';
 
@@ -34,25 +34,9 @@ export class ImageScannerComponent implements OnInit, OnDestroy, ScannerViewRef 
 
     constructor(
         private _elementRef: ElementRef<HTMLElement>,
-        private _scanners: BarcodeScanner
+        private _scanners: BarcodeScanner,
+        private _ngZone: NgZone
     ) { }
-
-    private static _makeObservableListener(
-        subscribe: (e: () => void) => void,
-        unsubscribe: (e: () => void) => void
-    ): Observable<void> {
-        return new Observable(observer => {
-            const callbackFn = () => {
-                observer.next();
-            };
-
-            subscribe(callbackFn);
-
-            return () => {
-                unsubscribe(callbackFn);
-            };
-        });
-    }
 
     private static _getScrollParent(element: HTMLElement, includeHidden: boolean): HTMLElement {
         let style = getComputedStyle(element);
@@ -74,11 +58,12 @@ export class ImageScannerComponent implements OnInit, OnDestroy, ScannerViewRef 
 
         return document.body;
     }
+
     ngOnInit() {
         this._destroyed = false;
 
         const viewChanges = [
-            ImageScannerComponent._makeObservableListener(
+            this._makeObservableListener(
                 cb => window.addEventListener('orientationchange', cb),
                 cb => window.removeEventListener('orientationchange', cb)
             ).pipe(
@@ -110,7 +95,7 @@ export class ImageScannerComponent implements OnInit, OnDestroy, ScannerViewRef 
         while (currentElement !== document.body && depth < 100) {
             depth++;
             currentElement = ImageScannerComponent._getScrollParent(currentElement, true);
-            viewChanges.push(ImageScannerComponent._makeObservableListener(
+            viewChanges.push(this._makeObservableListener(
                 (cb) => currentElement.addEventListener('scroll', cb),
                 (cb) => currentElement.removeEventListener('scroll', cb)
             ));
@@ -136,7 +121,7 @@ export class ImageScannerComponent implements OnInit, OnDestroy, ScannerViewRef 
                     this.scan.emit(data);
                 },
                 error: e => {
-                    console.log('unexpected error durring image scanning', e);
+                    console.log('unexpected error during image scanning', e);
 
                     this._scanSubscription = undefined;
                     this.scanChanged.emit(false);
@@ -162,5 +147,24 @@ export class ImageScannerComponent implements OnInit, OnDestroy, ScannerViewRef 
         }
 
         return this._viewChanges;
+    }
+
+    private _makeObservableListener(
+        subscribe: (e: () => void) => void,
+        unsubscribe: (e: () => void) => void
+    ): Observable<void> {
+        return new Observable(observer => {
+            const callbackFn = () => {
+                this._ngZone.run(() => {
+                    observer.next();
+                });
+            };
+
+            subscribe(callbackFn);
+
+            return () => {
+                unsubscribe(callbackFn);
+            };
+        });
     }
 }

@@ -1,5 +1,6 @@
 apply plugin: 'com.github.node-gradle.node'
 apply from: '../openpos-gradle/src/main/resources/java.gradle'
+apply from: '../openpos-gradle/src/main/resources/publish.gradle'
 
 repositories {
     mavenCentral()

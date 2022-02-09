@@ -106,7 +106,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                     }
 
                     if (!isDeviceConnected) {
-                        log.warn("\n Client Connection Not Authorized While Session Exists: \n", new DeviceNotAuthorizedException());
+                        log.warn("Client connection not authorized while another session exists");
                         return null;
                     }
 

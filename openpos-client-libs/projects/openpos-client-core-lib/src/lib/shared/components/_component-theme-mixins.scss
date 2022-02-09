@@ -29,6 +29,7 @@
 @import './transaction-summary/transaction-summary-theme';
 @import './stamp/stamp-theme';
 @import './item-card/item-card-component-theme';
+@import './expansion-panel/expansion-panel-theme';
 
 @mixin openpos-component-theme-mixins($theme) {
     @include pager-theme($theme);
@@ -62,4 +63,5 @@
     @include transaction-summary-theme($theme);
     @include stamp-theme($theme);
     @include item-card-component-theme($theme);
+    @include expansion-panel-theme($theme);
 }

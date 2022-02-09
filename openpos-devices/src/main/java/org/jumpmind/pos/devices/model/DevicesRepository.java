@@ -139,7 +139,11 @@ public class DevicesRepository {
 
         final Set<String> allDeviceIds = findDevices(businessUnitId).stream().map(DeviceModel::getDeviceId).collect(Collectors.toSet());
         allDeviceIds.removeAll(connectedDeviceIds);
-        return devSession.findAll(DeviceAuthModel.class, 10000).stream().filter(d -> allDeviceIds.contains(d.getDeviceId())).sorted().collect(Collectors.toList());
+        return devSession.findAll(DeviceAuthModel.class, 10000)
+                .stream()
+                .filter(d -> allDeviceIds.contains(d.getDeviceId()))
+                .sorted()
+                .collect(Collectors.toList());
     }
 
     public Set<String> getConnectedDeviceIds(String businessUnitId, String installationId) {
@@ -180,6 +184,11 @@ public class DevicesRepository {
     public void saveDevice(DeviceModel device) {
 
         devSession.save(device);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("deviceId", device.getDeviceId());
+        params.put("appId", device.getAppId());
+        devSession.executeDml("deleteDeviceParamModels", params);
 
         if (CollectionUtils.isNotEmpty(device.getDeviceParamModels())) {
             for (DeviceParamModel paramModel : device.getDeviceParamModels()) {

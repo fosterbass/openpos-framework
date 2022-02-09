@@ -6,7 +6,6 @@ import { Observable } from 'rxjs';
 import { MediaBreakpoints, OpenposMediaService } from '../../../core/media/openpos-media.service';
 import { IActionItem } from '../../../core/actions/action-item.interface';
 import { CONFIGURATION } from '../../../configuration/configuration';
-import { KeyPressProvider } from '../../../shared/providers/keypress.provider';
 import { ActionService } from '../../../core/actions/action.service';
 
 @DialogComponent({
@@ -22,7 +21,7 @@ export class MembershipDetailsDialogComponent extends PosScreenDirective<Members
   isMobile: Observable<boolean>;
 
   constructor(public actionService: ActionService, injector: Injector,
-              private media: OpenposMediaService, protected keyPresses: KeyPressProvider) {
+              private media: OpenposMediaService) {
     super(injector);
     this.initIsMobile();
   }

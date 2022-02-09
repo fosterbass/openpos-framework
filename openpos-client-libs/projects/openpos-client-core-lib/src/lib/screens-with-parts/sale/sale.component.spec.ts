@@ -4,7 +4,6 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { OpenposMediaService } from '../../core/media/openpos-media.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { KeyPressProvider } from '../../shared/providers/keypress.provider';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ActionService } from '../../core/actions/action.service';
 import { ElectronService } from 'ngx-electron';
@@ -19,11 +18,6 @@ import { ISellItem } from '../../core/interfaces/sell-item.interface';
 class MockMatDialog { }
 class MockActionService { }
 class MockMatBottomSheet { }
-class MockKeyPressProvider {
-    subscribe(): Subscription {
-        return new Subscription();
-    }
-}
 class MockElectronService { }
 class ClientContext { }
 
@@ -50,7 +44,6 @@ describe('SaleComponent', () => {
                     { provide: MatDialog, useClass: MockMatDialog },
                     { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobile },
                     { provide: MatBottomSheet, useClass: MockMatBottomSheet },
-                    { provide: KeyPressProvider, useClass: MockKeyPressProvider },
                     { provide: ElectronService, useClass: MockElectronService },
                     { provide: ClientContext, useValue: {} },
                     { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
@@ -93,7 +86,6 @@ describe('SaleComponent', () => {
                     { provide: MatDialog, useClass: MockMatDialog },
                     { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobile },
                     { provide: MatBottomSheet, useClass: MockMatBottomSheet },
-                    { provide: KeyPressProvider, useClass: MockKeyPressProvider },
                     { provide: ElectronService, useClass: MockElectronService },
                     { provide: ClientContext, useValue: {} },
                     { provide: CLIENTCONTEXT, useClass: TimeZoneContext }

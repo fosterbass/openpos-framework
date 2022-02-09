@@ -32,6 +32,9 @@ public class PersonalizeEndpoint {
     @Autowired
     DeviceUpdater deviceUpdater;
 
+    @Autowired
+    IDevicesService devicesService;
+
     public PersonalizationResponse personalize(@RequestBody PersonalizationRequest request) {
         String authToken = request.getDeviceToken();
         final String deviceId = request.getDeviceId();
@@ -46,8 +49,19 @@ public class PersonalizeEndpoint {
                 log.info("Validating auth request of {} as {}", deviceId, appId);
                 String auth = devicesRepository.getDeviceAuth(request.getDeviceId());
 
-                if (!auth.equals(authToken)) {
-                    throw new DeviceNotAuthorizedException();
+                if (authToken != null) {
+                    if(!auth.equals(authToken)) {
+                        throw new DeviceNotAuthorizedException();
+                    }
+                } else {
+                    deviceModel = devicesRepository.getDevice(deviceId);
+                    if (appId.equals(deviceModel.getAppId())) {
+                        // Allow re-personalization for same device, same app id when token is omitted.
+                        // Spares us from needing to manually delete personalization rows from DB when same device is being re-personalized.
+                        throw new DeviceNotFoundException("token is null, re-personalizing existing device");
+                    } else {
+                        throw new DeviceNotAuthorizedException(String.format("Device '%s' is currently personalized for appId '%s'", deviceId, deviceModel.getAppId()));
+                    }
                 }
 
             } catch (DeviceNotFoundException ex) {
