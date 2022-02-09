@@ -16,5 +16,6 @@ public class UIRewardHistory implements Serializable {
     private String redeemedDate;
     private String rewardType;
     private BigDecimal reward;
+    private BigDecimal amount;
     private Boolean redeemed;
 }
