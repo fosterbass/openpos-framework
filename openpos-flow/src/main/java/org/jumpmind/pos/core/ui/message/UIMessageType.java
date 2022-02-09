@@ -45,4 +45,5 @@ public final class UIMessageType {
     public static final String LOYALTY_CUSTOMER_DIALOG = "LoyaltyCustomerDialog";
     public static final String LOYALTY_SIGNUP = "LoyaltySignup";
     public static final String STANDBY = "Standby";
+    public static final String SSN_ENTRY = "SsnEntry";
 }
