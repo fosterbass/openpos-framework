@@ -1,7 +1,7 @@
 <app-dialog-header></app-dialog-header>
 <div class="form-body">
     <app-instructions *ngIf="screen.instructions" [instructions]="screen.instructions" [instructionsSize]="'text-sm'"></app-instructions>
-    <app-dynamic-form-part [formName]="'form'" [submitButton]="screen.submitButton" [alternateSubmitActions]="screen.alternateSubmitActions"></app-dynamic-form-part>
+    <app-dynamic-form-part [formName]="'form'" [secondaryButtons]="screen.secondaryButtons" [submitButton]="screen.submitButton" [alternateSubmitActions]="screen.alternateSubmitActions"></app-dynamic-form-part>
 </div>
 
 
