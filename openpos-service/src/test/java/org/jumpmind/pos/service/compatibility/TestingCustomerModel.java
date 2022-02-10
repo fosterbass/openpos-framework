@@ -9,4 +9,6 @@ public class TestingCustomerModel {
     private String customerId;
     private String loyaltyCustomerId; // V1
     private List<TestingCustomerAccount> customerAccounts; // V2
+
+
 }

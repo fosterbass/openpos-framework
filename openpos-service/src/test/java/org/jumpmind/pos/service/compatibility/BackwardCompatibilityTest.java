@@ -181,7 +181,7 @@ public class BackwardCompatibilityTest {
         restTemplate.getRestTemplate().setInterceptors(
                 Collections.singletonList((request, body, execution) -> {
                     request.getHeaders()
-                            .add("ClientContext-version.nu-commerce", "2.1");
+                            .add("ClientContext-version.nu-commerce", "100.1");
                     return execution.execute(request, body);
                 }));
 
@@ -192,6 +192,24 @@ public class BackwardCompatibilityTest {
         Assert.assertEquals("1234", response.getCustomerModel().getCustomerId());
     }
 
+    @Test
+    public void testNestedListObject() throws Exception {
+        restTemplate.getRestTemplate().setInterceptors(
+                Collections.singletonList((request, body, execution) -> {
+                    request.getHeaders()
+                            .add("ClientContext-version.nu-commerce", "2.1");
+                    return execution.execute(request, body);
+                }));
+
+        String jsonResponse =
+                restTemplate.postForObject("http://localhost:" + port + "/testingCustomer/getCustomer",
+                        "\"1234\"", String.class);
+
+        System.out.println(jsonResponse);
+
+        // checking that rewardAmount got converted into a Money.
+        Assert.assertTrue(jsonResponse.contains("\"rewardAmount\":{\""));
+    }
 
     private TestingCustomerModel buildCustomer() {
         TestingCustomerModel customer = new TestingCustomerModel();

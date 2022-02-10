@@ -4,5 +4,5 @@ import java.lang.reflect.Field;
 
 @FunctionalInterface
 public interface ObjectSearchVisitor {
-    void visit(Object parentObject, Object object, Field location);
+    void visit(Object parentObject, Object object, Field location, Object collectionKey);
 }

@@ -100,7 +100,7 @@ public class ObjectFinder<T> {
                     if (value != null) {
                         if (targetType.isAssignableFrom(type)) {
                             addToResults((T) value);
-                            doVisit(visitor, obj, value, field);
+                            doVisit(visitor, obj, value, field, null);
                         }
 
                         if (!searchCollections(value, field, visitor) && shouldSearch(field) && shouldSearch(type)) {
@@ -178,9 +178,9 @@ public class ObjectFinder<T> {
         for (int i = 0; i < list.size(); i++) {
             Object fieldObj = list.get(i);
             if (fieldObj != null) {
-                if (targetType.isAssignableFrom(fieldObj.getClass())) {
+                if (fieldObj.getClass().isAssignableFrom(targetType)) {
                     addToResults((T) fieldObj);
-                    doVisit(visitor, value, fieldObj, field);
+                    doVisit(visitor, value, fieldObj, field, i);
                 }
 
                 if (! searchCollections(fieldObj, field, visitor) && shouldSearch(fieldObj.getClass())) {
@@ -199,7 +199,7 @@ public class ObjectFinder<T> {
             if (fieldObj != null) {
                 if (targetType.isAssignableFrom(fieldObj.getClass())) {
                     addToResults((T) fieldObj);
-                    doVisit(visitor, value, fieldObj, field);
+                    doVisit(visitor, value, fieldObj, field, null);
                 }
                 if ( !searchCollections(fieldObj, field, visitor) && shouldSearch(fieldObj.getClass())) {
                     searchRecursive(fieldObj, visitor);
@@ -215,7 +215,7 @@ public class ObjectFinder<T> {
             Object arrayElem = Array.get(value, i);
             if (arrayElem != null && targetType.isAssignableFrom(arrayElem.getClass())) {
                 addToResults((T) arrayElem);
-                doVisit(visitor, value, arrayElem, field);
+                doVisit(visitor, value, arrayElem, field, i);
             }
         }
         return true;
@@ -229,7 +229,7 @@ public class ObjectFinder<T> {
             if (entryValue != null) {
                 if (targetType.isAssignableFrom(entryValue.getClass())) {
                     addToResults((T) entryValue);
-                    doVisit(visitor, value, entryValue, field);
+                    doVisit(visitor, value, entryValue, field, entry.getKey());
                 }
 
                 if (! searchCollections(entryValue, field, visitor) && shouldSearch(entryValue.getClass())) {
@@ -240,13 +240,13 @@ public class ObjectFinder<T> {
         return true;
     }
 
-    protected void doVisit(ObjectSearchVisitor visitor, Object parent, Object toVisit, Field field) {
+    protected void doVisit(ObjectSearchVisitor visitor, Object parent, Object toVisit, Field field, Object collectionKey) {
         if (visitor != null) {
             try {
-                visitor.visit(parent, toVisit, field);
+                visitor.visit(parent, toVisit, field, collectionKey);
             } catch (Exception ex) {
                 log.error("Error invoking object search visitor. Visitor: {}, parent: {}, visitor target: {}, field: {}",
-                        visitor.getClass(), parent, toVisit, field);
+                        visitor.getClass(), parent, toVisit, field, ex);
             }
         }
     }
