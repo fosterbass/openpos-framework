@@ -31,4 +31,5 @@ export class MessageTypes {
     static DATA_CLEAR = 'DataClear';
     static LOYALTY_SIGNUP = 'LoyaltySignup';
     static PUSH_REGISTER = 'PushNotificationRegister';
+    static EXIT_CLIENT_APP = "ExitClientApp";
 }

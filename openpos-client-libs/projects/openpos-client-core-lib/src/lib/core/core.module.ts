@@ -57,6 +57,7 @@ import { STORAGE_CONTAINERS } from './storage/storage-container';
 import { ZebraBluetoothPrinterCordovaPlugin } from './platform-plugins/cordova-plugins/zebra-bluetooth-printer-cordova-plugin';
 import { CapacitorPrinterPlugin } from './platform-plugins/printers/capacitor-printer.plugin';
 import { AirwatchCordovaPlugin } from './platform-plugins/cordova-plugins/airwatch-cordova-plugin';
+import { ExitAppPlugin } from "./platform-plugins/cordova-plugins/auto-exit";
 import { ZEROCONF_TOKEN } from './zeroconf/zeroconf';
 import { MDnsZeroconf } from './zeroconf/mdns-zeroconf';
 import { CapacitorZeroconf } from './zeroconf/capacitor-zeroconf';
@@ -146,6 +147,7 @@ registerLocaleData(locale_frCA, 'fr-CA');
         { provide: PLUGINS, useExisting: ScanditCapacitorImageScanner, multi: true },
         { provide: PLUGINS, useExisting: ZebraBluetoothPrinterCordovaPlugin, multi: true, deps: [CordovaService, SessionService] },
         { provide: PLUGINS, useExisting: AirwatchCordovaPlugin, multi: true, deps: [CordovaService]},
+        { provide: PLUGINS, useExisting: ExitAppPlugin, multi: true, deps: [CordovaService, SessionService] },
         { provide: PLATFORMS, useExisting: CordovaPlatform, multi: true },
         { provide: PLATFORMS, useExisting: CapacitorIosPlatform, multi: true },
         { provide: PLATFORMS, useExisting: CapacitorAndroidPlatform, multi: true },
