@@ -20,4 +20,8 @@ public interface ITestingCustomerService {
     @ResponseBody
     public TestingSaveCustomerResponse unlinkCustomer(@RequestBody TestingSaveCustomerRequest saveCustomerRequest);
 
+    @RequestMapping(path = "/getLoyaltyPromotions", method = RequestMethod.POST)
+    @ResponseBody
+    public TestingGetLoyaltyPromotionsResponse getLoyaltyPromotions(@RequestBody String customerId);
+
 }

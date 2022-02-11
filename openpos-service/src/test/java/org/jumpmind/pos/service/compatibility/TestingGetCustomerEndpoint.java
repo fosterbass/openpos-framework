@@ -18,11 +18,15 @@ public class TestingGetCustomerEndpoint {
         customer.setCustomerId(customerId);
 
         List<TestingCustomerAccount> accounts = new ArrayList<>();
-        TestingCustomerAccount account = new TestingCustomerAccount();
-        account.setCustomerAccountId("5678");
-        account.setAccountType("LOYALTY");
-        account.setRewardAmount(new BigDecimal("50.00"));
-        accounts.add(account);
+        {
+            TestingCustomerAccount account = new TestingCustomerAccount();
+            account.setCustomerAccountId("5678");
+            account.setAccountType("LOYALTY");
+            account.setRewardAmount(new BigDecimal("50.00"));
+            accounts.add(account);
+            accounts.add(account);
+        }
+
         customer.setCustomerAccounts(accounts);
 
         response.setCustomerModel(customer);

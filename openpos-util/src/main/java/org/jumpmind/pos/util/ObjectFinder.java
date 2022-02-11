@@ -30,9 +30,11 @@ public class ObjectFinder<T> {
     private Collection<T> results;
     private Class<T> targetType;
     private boolean distinctResults = true;
-    private Set<Object> recursionInto;
+    private int stackDepth = 0;
     private static final Pattern SHORT_FQCN = Pattern.compile("\\B\\w+(\\.\\w)");
     private static final Set<Class<?>> WRAPPER_TYPES = new HashSet<>();
+    private static final int MAX_STACK_DEPTH = 100;
+
     static {
         WRAPPER_TYPES.add(Boolean.class);
         WRAPPER_TYPES.add(Character.class);
@@ -83,8 +85,11 @@ public class ObjectFinder<T> {
             return;
         }
 
+        stackDepth++;
+
         Class<?> clazz = obj.getClass();
-        if (!recursionInto.add(obj)) {
+
+        if (stackDepth > MAX_STACK_DEPTH) {
             logDidNotAdd(obj, clazz);
             return;
         }
@@ -112,21 +117,12 @@ public class ObjectFinder<T> {
                 }
             }
         } while ((clazz = clazz.getSuperclass()) != null);
+        stackDepth--;
     }
 
     private void logDidNotAdd(Object obj, Class<?> clazz) {
         String ident = String.format("%s@%x", clazz.getName(), obj.hashCode());
-        log.warn("avoiding infinite recursion into {}", ident);
-
-        /* useful detail for untangling cyclical object graphs */
-        if (log.isDebugEnabled()) {
-            log.debug("cyclical object graph detected: {} (-> {})",
-                    recursionInto.stream().
-                            map(o -> String.format("%s@%x", o.getClass().getName(), o.hashCode())).
-                            map(ObjectFinder::shortenFqcn).
-                            collect(Collectors.joining(" -> ")),
-                    shortenFqcn(ident));
-        }
+        log.warn("Avoiding infinite recursion into {}", ident);
     }
 
     public boolean isDistinctResults() {
@@ -142,7 +138,6 @@ public class ObjectFinder<T> {
 
     protected void initResults() {
         this.results = distinctResults ? new HashSet<>() : new ArrayList<>();
-        recursionInto = new LinkedHashSet<>();
     }
 
     protected void addToResults(T value) {
