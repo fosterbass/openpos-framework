@@ -40,13 +40,14 @@ export class LocationService implements OnDestroy {
                     this.subscription.unsubscribe();
                 }
                 this.subscription = provider.getCurrentLocation(message.coordinateBuffer ? message.coordinateBuffer : 0)
-                    .subscribe((locationData: ILocationData) => {
-                        if (!this.manualOverride) {
-                            sessionService.sendMessage(new ActionMessage('LocationChanged', true, locationData));
-                            this.$data.next(locationData);
-                            this.previousLocationData = locationData;
-                        }
-                    });
+                .subscribe((locationData: ILocationData) => {
+                    if (!this.manualOverride) {
+                        console.info(`[LocationService] Sending locationData: ${JSON.stringify(locationData)}`);
+                        sessionService.sendMessage( new ActionMessage('LocationChanged', true, locationData ));
+                        this.$data.next(locationData);
+                        this.previousLocationData = locationData;
+                    }
+                });
             }
         });
     }
