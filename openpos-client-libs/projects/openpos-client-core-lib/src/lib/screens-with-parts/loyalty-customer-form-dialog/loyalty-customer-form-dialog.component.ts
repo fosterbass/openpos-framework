@@ -1,4 +1,4 @@
-import { Component, Injector, ViewChild } from '@angular/core';
+import { Component, Injector, ViewChild, OnInit } from '@angular/core';
 import { DialogComponent } from '../../shared/decorators/dialog-component.decorator';
 import { PosScreenDirective } from '../pos-screen/pos-screen.component';
 import { LoyaltyCustomerFormInterface } from './loyalty-customer-form.interface';
@@ -7,6 +7,8 @@ import { MediaBreakpoints, OpenposMediaService } from '../../core/media/openpos-
 import { IFormElement } from '../../core/interfaces/form-field.interface';
 import { FormBuilder } from '../../core/services/form-builder.service';
 import { ShowErrorsComponent } from '../../shared/components/show-errors/show-errors.component';
+import {WedgeScannerPlugin} from '../../core/platform-plugins/barcode-scanners/wedge-scanner/wedge-scanner.plugin';
+import {BarcodeScanner} from '../../core/platform-plugins/barcode-scanners/barcode-scanner.service';
 
 @DialogComponent({
     name: 'LoyaltyCustomerDialog',
@@ -16,7 +18,8 @@ import { ShowErrorsComponent } from '../../shared/components/show-errors/show-er
     templateUrl: './loyalty-customer-form-dialog.component.html',
     styleUrls: ['./loyalty-customer-form-dialog.component.scss']
 })
-export class LoyaltyCustomerFormDialogComponent extends PosScreenDirective<LoyaltyCustomerFormInterface> {
+export class LoyaltyCustomerFormDialogComponent extends PosScreenDirective<LoyaltyCustomerFormInterface>
+                                                                                    implements OnInit {
 
     isMobile: Observable<boolean>;
     @ViewChild('formErrors', { static: true }) formErrors: ShowErrorsComponent;
@@ -43,9 +46,20 @@ export class LoyaltyCustomerFormDialogComponent extends PosScreenDirective<Loyal
     countryField: IFormElement;
     addressIconLocationClass: string;
 
-    constructor(injector: Injector, private media: OpenposMediaService, private formBuilder: FormBuilder) {
+    scanStartControlCharacter: string;
+
+    constructor(injector: Injector, private media: OpenposMediaService, private formBuilder: FormBuilder,
+                private scannerService: BarcodeScanner) {
         super(injector);
         this.initIsMobile();
+    }
+
+    ngOnInit() {
+        const wedgeScannerPlugin = this.scannerService.getScanners().find(
+            scanner => scanner instanceof WedgeScannerPlugin);
+        if ( wedgeScannerPlugin  ) {
+            this.scanStartControlCharacter = (wedgeScannerPlugin as WedgeScannerPlugin).getStartSequence();
+        }
     }
 
     initIsMobile(): void {
@@ -65,6 +79,20 @@ export class LoyaltyCustomerFormDialogComponent extends PosScreenDirective<Loyal
 
     anyAddressFieldsPresent(): boolean {
         return !!(this.line1Field || this.line2Field || this.cityField || this.stateField || this.postalCodeField || this.countryField);
+    }
+
+    onScanFieldChanged(formElement: IFormElement): void {
+        const loyaltyNumber = this.screen.formGroup.value[this.loyaltyNumberField.id];
+        if ( loyaltyNumber != null && this.scanStartControlCharacter != null &&
+            loyaltyNumber.startsWith(this.scanStartControlCharacter)) {
+            console.info(`Stripping the scan control character from the start ${loyaltyNumber}`) ;
+            formElement.value = loyaltyNumber.substr(this.scanStartControlCharacter.length);
+            // Update the stripped string into the form control as well
+            const patchGroup = {};
+            patchGroup[formElement.id] = formElement.value;
+            this.screen.formGroup.patchValue(patchGroup);
+        }
+        this.onFieldChanged(formElement);
     }
 
     onFieldChanged(formElement: IFormElement): void {

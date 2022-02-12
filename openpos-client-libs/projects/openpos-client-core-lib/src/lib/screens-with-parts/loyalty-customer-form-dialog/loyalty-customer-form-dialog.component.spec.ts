@@ -11,6 +11,7 @@ import { ElectronService } from 'ngx-electron';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { IForm } from '../../core/interfaces/form.interface';
 import { FormBuilder } from '../../core/services/form-builder.service';
+import {BarcodeScanner} from '../../core/platform-plugins/barcode-scanners/barcode-scanner.service';
 
 describe('LoyaltyCustomerFormDialogComponent', () => {
     let component: LoyaltyCustomerFormDialogComponent;
@@ -21,7 +22,8 @@ describe('LoyaltyCustomerFormDialogComponent', () => {
         observe: () => false,
         doAction: () => { },
         buildFormPayload: () => mockForm,
-        group: () => ({})
+        group: () => ({}),
+        getScanners: () => []
     };
     class ClientContext { }
 
@@ -48,7 +50,8 @@ describe('LoyaltyCustomerFormDialogComponent', () => {
                 { provide: ElectronService, useValue: mockService },
                 { provide: FormBuilder, useValue: mockService },
                 { provide: ClientContext, useValue: {} },
-                { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
+                { provide: CLIENTCONTEXT, useClass: TimeZoneContext },
+                { provide: BarcodeScanner, useValue: mockService },
             ],
             schemas: [
                 NO_ERRORS_SCHEMA,
