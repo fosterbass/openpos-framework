@@ -187,6 +187,7 @@ import { DisableAutoCompleteDirective } from './directives/disable-auto-complete
 import { SafeHtmlPipe } from './pipes/safe-html.pipe';
 import { ExpansionPanelComponent } from './components/expansion-panel/expansion-panel.component';
 import { PromptFormPartCardComponent } from './screen-parts/prompt-form-part-card/prompt-form-part-card.component';
+import { PurchaseHistoryItemComponent } from './screen-parts/purchase-history-item/purchase-history-item.component';
 
 const screenParts = [
     TenderPartComponent,

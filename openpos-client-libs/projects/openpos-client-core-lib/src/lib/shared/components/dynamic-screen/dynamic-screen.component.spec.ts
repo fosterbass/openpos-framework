@@ -22,7 +22,7 @@ describe('DynamicScreenComponent', () => {
     const showWatermarkMessage = new BehaviorSubject<WatermarkMessage>(undefined);
     const uiConfig = new BehaviorSubject<UIConfigMessage>(undefined);
     const uiMessage = new BehaviorSubject<UIMessage>(undefined);
-    const localTheme = new BehaviorSubject<string>('');
+    const localTheme = new BehaviorSubject<string>('theme');
     let messageType: string;
 
     const mockService = {
@@ -62,6 +62,8 @@ describe('DynamicScreenComponent', () => {
 
         fixture = TestBed.createComponent(DynamicScreenComponent);
         component = fixture.componentInstance;
+        component.showStatusBarAppId = true;
+        component.showStatusBarState = true;
         fixture.detectChanges();
     });
 
@@ -91,7 +93,6 @@ describe('DynamicScreenComponent', () => {
             expect(component.showStatusBarAppId).toBeTruthy();
         });
         it('hides the status bar based on appId', () => {
-            component.showStatusBarAppId = true;
             uiConfig.next({ showStatusBar: 'false' } as UIConfigMessage);
             expect(component.showStatusBarAppId).toBeFalsy();
         });
@@ -101,15 +102,27 @@ describe('DynamicScreenComponent', () => {
             expect(component.showStatusBarState).toBeTruthy();
         });
         it('hides the status bar based on state', () => {
-            component.showStatusBarState = true;
             uiMessage.next({ showStatusBar: false } as UIMessage);
             expect(component.showStatusBarState).toBeFalsy();
         });
     });
 
-    describe('getLocalTheme()', () => {
+    describe('getDynamicClasses()', () => {
         it('returns the theme from ConfigurationService', () => {
-            expect(component.getLocalTheme()).toBe(localTheme);
+            expect(component.getDynamicClasses()).toBe('theme');
+        });
+        it('returns the theme and no-status-bar if showStatusBarAppId is false', () => {
+            component.showStatusBarAppId = false;
+            expect(component.getDynamicClasses()).toBe('theme no-status-bar');
+        });
+        it('returns the theme and no-status-bar if showStatusBarState is false', () => {
+            component.showStatusBarState = false;
+            expect(component.getDynamicClasses()).toBe('theme no-status-bar');
+        });
+        it('returns the theme and no-status-bar if showStatusBarAppId and showStatusBarState are false', () => {
+            component.showStatusBarAppId = false;
+            component.showStatusBarState = false;
+            expect(component.getDynamicClasses()).toBe('theme no-status-bar');
         });
     });
 });
