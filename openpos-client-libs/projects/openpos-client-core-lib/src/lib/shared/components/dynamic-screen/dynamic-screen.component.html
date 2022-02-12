@@ -1,5 +1,5 @@
 <app-loader></app-loader>
-<div [class]="(getLocalTheme() | async) + ' container'" [ngClass]="{'no-status-bar': !(showStatusBarAppId && showStatusBarState)}"
+<div [class]="(getDynamicClasses() | async) + ' container'" [ngClass]="{'no-status-bar': !(showStatusBarAppId && showStatusBarState)}"
      inactivityMonitor>
     <app-status-bar *ngIf="showStatusBarAppId && showStatusBarState"></app-status-bar>
     <div class="content-area">
