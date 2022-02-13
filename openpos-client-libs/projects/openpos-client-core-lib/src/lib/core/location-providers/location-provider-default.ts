@@ -111,7 +111,7 @@ export class LocationProviderDefault implements ILocationProvider {
                     }
                 },
                 options
-            );}
+            ); }
         );
     }
 
@@ -170,8 +170,6 @@ export class LocationProviderDefault implements ILocationProvider {
      * Alternate way to get location via google geolocation API.  Uses network info for location
      * so it is influenced by whatever networks are involved with the connection.  Not accurate at
      * all when connected over VPN.
-     * @param googleApiKey
-     * @private
      */
     private async getGoogleAPILocation(googleApiKey: string): Promise<Position> {
         console.log(`[LocationProviderDefault] Calling google location api to get location`);
