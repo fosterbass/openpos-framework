@@ -56,9 +56,9 @@ export class LocationProviderDefault implements ILocationProvider {
             console.info(`[LocationProviderDefault] Got GoogleAPI Key. Attempting to get current GPS position...`);
             const curPosition$ = new Subject<{latitude: number, longitude: number}>();
             // Getting GPS coords can take a while, thus the long timeout
-            this.getCurrentPosition(CONFIGURATION.googleApiKey, {timeout: 20000, enableHighAccuracy: true}, 0).then(async (initPosition) => {
-                console.info(`[LocationProviderDefault] Initial position: ${initPosition}`);
-
+            this.getCurrentPosition(CONFIGURATION.googleApiKey, {timeout: 20000, enableHighAccuracy: true}, 0).
+                then(async (initPosition) => {
+                    console.info(`[LocationProviderDefault] Initial position: ${initPosition}`);
                     if (initPosition != null) {
                         const initPos = {latitude: initPosition.coords.latitude, longitude: initPosition.coords.longitude};
                         await this.invokeGoogleMapsApiAndEmitLocation(CONFIGURATION.googleApiKey, initPos.latitude, initPos.longitude);
@@ -111,7 +111,7 @@ export class LocationProviderDefault implements ILocationProvider {
                     }
                 },
                 options
-            )}
+            );}
         );
     }
 
