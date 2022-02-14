@@ -8,6 +8,7 @@ import { SessionService } from '../services/session.service';
 import { LifeCycleMessage } from '../messages/life-cycle-message';
 import { LifeCycleEvents } from '../messages/life-cycle-events.enum';
 import { ActionMessage } from '../messages/action-message';
+import { MessageTypes } from 'openpos-client-core-lib';
 
 describe('KeybindingDialogService', () => {
     let keybindingDialogService: KeybindingDialogService;
@@ -63,9 +64,32 @@ describe('KeybindingDialogService', () => {
             expect(mockSessionService.sendMessage).not.toHaveBeenCalled();
         });
 
-        it('should close for a matching key', () => {
+        it('should close for a matching key when the dialog is closeable', () => {
+            mockSessionService.dispatchMessage(new LifeCycleMessage(LifeCycleEvents.DialogOpening, {
+                screenType: 'whatever',
+                type: MessageTypes.DIALOG,
+                id: 'testDialogId',
+                dialogProperties: {
+                    closeable: true
+                }} as any
+            ));
+
             KeybindingTestUtils.pressKey('Escape');
             expect(mockSessionService.sendMessage).toHaveBeenCalledOnceWith(closeActionMessage);
+        });
+
+        it('should not close for a matching key when the dialog is not closeable', () => {
+            mockSessionService.dispatchMessage(new LifeCycleMessage(LifeCycleEvents.DialogOpening, {
+                screenType: 'whatever',
+                type: MessageTypes.DIALOG,
+                id: 'testDialogId',
+                dialogProperties: {
+                    closeable: false
+                }} as any
+            ));
+
+            KeybindingTestUtils.pressKey('Escape');
+            expect(mockSessionService.sendMessage).not.toHaveBeenCalled();
         });
 
         it('should not close when key does not match', () => {

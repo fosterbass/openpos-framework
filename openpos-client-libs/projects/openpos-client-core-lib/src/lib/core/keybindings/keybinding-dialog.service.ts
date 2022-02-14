@@ -18,6 +18,7 @@ import { CONFIGURATION } from '../../configuration/configuration';
 })
 export class KeybindingDialogService implements OnDestroy {
     private destroyed$ = new Subject();
+    private isCloseable = true;
     private isDialogOpen = false;
     private enabled = true;
 
@@ -59,11 +60,14 @@ export class KeybindingDialogService implements OnDestroy {
                 break;
             case LifeCycleEvents.DialogOpening:
                 this.isDialogOpen = true;
+                const screen = message?.screen as any;
+                // Default to Closeable unless specified otherwise
+                this.isCloseable = screen?.dialogProperties?.closeable !== false;
         }
     }
 
     shouldCloseDialog(event: KeybindingEvent): boolean {
-        if (!this.isDialogOpen) {
+        if (!this.isDialogOpen || !this.isCloseable) {
             return false;
         }
 
