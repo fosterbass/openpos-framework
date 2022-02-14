@@ -348,6 +348,7 @@ export * from './lib/shared/animations/gradient-inner-glow.animation';
 export * from './lib/shared/animations/shake.animation';
 export * from './lib/shared/animations/bounce.animation';
 export * from './lib/shared/animations/swing.animation';
+export * from './lib/shared/animations/slide.animation';
 
 export * from './lib/shared/utils/date.utils';
 export * from './lib/shared/validators/openpos-validators';
