@@ -1,7 +1,7 @@
 import { Component, Injector, Input } from '@angular/core';
 import { Observable } from 'rxjs';
 import { MediaBreakpoints, OpenposMediaService } from '../../../core/media/openpos-media.service';
-import { PurchasedItem } from '../customer-information/customer-information.interface';
+import { PurchasedItem } from './purchase-history-item.interface';
 import { ScreenPartComponent } from '../screen-part';
 
 @Component({

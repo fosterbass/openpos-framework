@@ -1,5 +1,6 @@
 import { Membership } from '../membership-display/memebership-display.interface';
 import { IActionItem } from '../../../core/actions/action-item.interface';
+import { PurchasedItem } from '../purchase-history-item/purchase-history-item.interface';
 
 export interface CustomerDetails {
     name: string;
@@ -37,28 +38,4 @@ export interface CustomerInformationComponentInterface {
     loyaltyNumberIcon: string;
     locationIcon: string;
     birthDateIcon: string;
-}
-
-export interface PurchasedItem {
-    title: string;
-    salePrice: string;
-    originalPrice: string;
-    imageUrl: string;
-    labels: UILabel[];
-    transaction: TransactionIdentifier;
-    transactionDetailsAction: IActionItem;
-    itemId: string;
-    itemDetailsAction: IActionItem;
-}
-
-export interface TransactionIdentifier {
-    sequenceNumber: number;
-    deviceId: string;
-    businessDate: string;
-    voidedSequenceNumber?: number;
-}
-
-export interface UILabel {
-    icon: string;
-    text: string;
 }

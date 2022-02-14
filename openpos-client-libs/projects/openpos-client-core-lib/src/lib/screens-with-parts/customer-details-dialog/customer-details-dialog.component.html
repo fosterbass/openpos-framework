@@ -1,44 +1,44 @@
 <div *ngIf="(isMobile | async)" class="mobile-dialog-container">
     <app-dual-action-dialog-header [headerText]="screen.customer.name" [headerIcon]="screen.profileIcon"
-        [headerIconClass]="'mat-36'">
+                                   [headerIconClass]="'mat-36'">
         <app-icon [iconName]="pagedContent !== undefined ? screen.backIcon : ''" [iconClass]="'mat-30'"
-            (click)="selectContent(undefined)"></app-icon>
+                  (click)="selectContent(undefined)"></app-icon>
     </app-dual-action-dialog-header>
     <app-content-card class="details-wrapper" *ngIf="pagedContent === undefined">
         <div class="mobile-memberships" *ngIf="screen.membershipEnabled">
             <div class="mobile-memberships" *ngIf="screen.customer.memberships?.length">
                 <app-membership-display *ngFor="let membership of screen.customer.memberships" class="item"
-                    [membership]="membership" [iconMatClass]="'mat-16'"></app-membership-display>
+                                        [membership]="membership" [iconMatClass]="'mat-16'"></app-membership-display>
             </div>
             <span *ngIf="!screen.customer.memberships?.length"
-                class="no-memberships-mobile" responsive-class>
+                  class="no-memberships-mobile" responsive-class>
                 {{screen.noMembershipsFoundLabel}}
             </span>
 
             <div *ngIf="screen.customer.membershipSignUpAction">
                 <app-secondary-button responsive-class class="membership-sign-up"
-                    [disabled]="!screen.customer.membershipSignUpAction.enabled"
-                    (actionClick)="doAction(screen.customer.membershipSignUpAction)"
-                    (click)="doAction(screen.customer.membershipSignUpAction)">
+                                      [disabled]="!screen.customer.membershipSignUpAction.enabled"
+                                      (actionClick)="doAction(screen.customer.membershipSignUpAction)"
+                                      (click)="doAction(screen.customer.membershipSignUpAction)">
                     <app-icon *ngIf="screen.customer.membershipSignUpAction.icon"
-                        [iconName]="screen.customer.membershipSignUpAction.icon" [iconClass]="'sm'"></app-icon>
+                              [iconName]="screen.customer.membershipSignUpAction.icon" [iconClass]="'sm'"></app-icon>
                     <span>{{screen.customer.membershipSignUpAction.title}}</span>
                     <span *ngIf="keybindsEnabled(screen.customer.membershipSignUpAction)"
-                        class="muted-color keybinding">
+                          class="muted-color keybinding">
                         {{screen.customer.membershipSignUpAction.keybindDisplayName}}
                     </span>
                 </app-secondary-button>
             </div>
             <div *ngIf="screen.customer.enrolledMembershipAction">
                 <app-secondary-button responsive-class class="enrolled-membership-sign-up"
-                    [disabled]="!screen.customer.enrolledMembershipAction.enabled"
-                    (actionClick)="doAction(screen.customer.enrolledMembershipAction)"
-                    (click)="doAction(screen.customer.enrolledMembershipAction)">
+                                      [disabled]="!screen.customer.enrolledMembershipAction.enabled"
+                                      (actionClick)="doAction(screen.customer.enrolledMembershipAction)"
+                                      (click)="doAction(screen.customer.enrolledMembershipAction)">
                     <app-icon *ngIf="screen.customer.enrolledMembershipAction.icon"
-                        [iconName]="screen.customer.enrolledMembershipAction.icon" [iconClass]="'sm'"></app-icon>
+                              [iconName]="screen.customer.enrolledMembershipAction.icon" [iconClass]="'sm'"></app-icon>
                     <span>{{screen.customer.enrolledMembershipAction.title}}</span>
                     <span *ngIf="keybindsEnabled(screen.customer.enrolledMembershipAction)"
-                        class="muted-color keybinding">
+                          class="muted-color keybinding">
                         {{screen.customer.enrolledMembershipAction.keybindDisplayName}}
                     </span>
                 </app-secondary-button>
@@ -61,7 +61,7 @@
                 <app-icon [iconName]="screen.applyIcon"></app-icon>
             </div>
             <div class="paged-nav-list-item" (click)="selectContent('rewardHistory')"
-                *ngIf="screen.rewardHistoryTabEnabled">
+                 *ngIf="screen.rewardHistoryTabEnabled">
                 <app-icon [iconName]="screen.rewardHistoryIcon"></app-icon>
                 <span>{{screen.rewardHistoryLabel}}</span>
                 <app-icon [iconName]="screen.applyIcon"></app-icon>
@@ -94,13 +94,13 @@
     <app-content-card *ngIf="pagedContent !== undefined" class="section-content">
         <div *ngIf="pagedContent === 'contact'" class="overflow">
             <app-customer-information [customer]="screen.customer" [isMobile]="isMobile | async"
-                [showFieldHeaders]="true"></app-customer-information>
+                                      [showFieldHeaders]="true"></app-customer-information>
         </div>
 
         <div *ngIf="pagedContent === 'rewards'" class="overflow rewardsContentMobile"
-            [ngClass]="{'no-promotions': !hasRewards()}">
+             [ngClass]="{'no-promotions': !hasRewards()}">
             <app-infinite-scroll [dataKey]="screen.rewardsDataKey" [itemTemplate]="itemTemplate"
-                [noItemsTemplate]="noItemTemplate" virtualScrollMinBufferPx="700" [itemHeightPx]="150">
+                                 [noItemsTemplate]="noItemTemplate" virtualScrollMinBufferPx="700" [itemHeightPx]="150">
                 <ng-template #itemTemplate let-item>
                     <div class="reward-list line">
                         <app-rewards-line-item [reward]="item"></app-rewards-line-item>
@@ -115,9 +115,9 @@
         </div>
 
         <div *ngIf="pagedContent === 'rewardHistory'" class="rewardsHistoryContentMobile"
-            [ngClass]="{'no-promotions': !hasRewardsHistory()}">
+             [ngClass]="{'no-promotions': !hasRewardsHistory()}">
             <app-infinite-scroll [dataKey]="screen.rewardsHistoryDataKey" [itemTemplate]="itemTemplate"
-                [noItemsTemplate]="noItemTemplate" virtualScrollMinBufferPx="700" [itemHeightPx]="150">
+                                 [noItemsTemplate]="noItemTemplate" virtualScrollMinBufferPx="700" [itemHeightPx]="150">
                 <ng-template #itemTemplate let-item>
                     <div class="reward-list line">
                         <app-rewards-history-line-item [reward]="item"></app-rewards-history-line-item>
@@ -136,18 +136,18 @@
                 <div class="date-range" responsive-class>
                     <mat-form-field>
                         <input matInput [matDatepicker]="dateFrom"
-                            [placeholder]="screen.itemHistoryFilter.fromDatePlaceholder"
-                            [formControl]="itemsHistoryFilterController.fromDate"
-                            (dateChange)="itemsHistoryFilterController.fromDateFilterChanged($event.value)">
+                               [placeholder]="screen.itemHistoryFilter.fromDatePlaceholder"
+                               [formControl]="itemsHistoryFilterController.fromDate"
+                               (dateChange)="itemsHistoryFilterController.fromDateFilterChanged($event.value)">
                         <mat-datepicker-toggle matSuffix [for]="dateFrom"></mat-datepicker-toggle>
                         <mat-datepicker #dateFrom></mat-datepicker>
                     </mat-form-field>
                     <span responsive-class class="date-range-dash">-</span>
                     <mat-form-field>
                         <input matInput [matDatepicker]="dateTo"
-                            [placeholder]="screen.itemHistoryFilter.toDatePlaceholder"
-                            [formControl]="itemsHistoryFilterController.toDate"
-                            (dateChange)="itemsHistoryFilterController.toDateFilterChanged($event.value)">
+                               [placeholder]="screen.itemHistoryFilter.toDatePlaceholder"
+                               [formControl]="itemsHistoryFilterController.toDate"
+                               (dateChange)="itemsHistoryFilterController.toDateFilterChanged($event.value)">
                         <mat-datepicker-toggle matSuffix [for]="dateTo"></mat-datepicker-toggle>
                         <mat-datepicker #dateTo></mat-datepicker>
                     </mat-form-field>
@@ -155,17 +155,17 @@
                 <div class="filter">
                     <mat-form-field>
                         <input matInput [formControl]="itemsHistoryFilterController.textFilter"
-                            (keypress)="itemsHistoryFilterController.onFilterKeyPress($event)"
-                            (focus)="$event.target.select()" [placeholder]="screen.itemHistoryFilter.textPlaceholder">
+                               (keypress)="itemsHistoryFilterController.onFilterKeyPress($event)"
+                               (focus)="$event.target.select()" [placeholder]="screen.itemHistoryFilter.textPlaceholder">
                     </mat-form-field>
                     <button mat-flat-button mat-primary-inverse responsive-class
-                        (click)="itemsHistoryFilterController.filterItemHistory()" class="filter-button">
+                            (click)="itemsHistoryFilterController.filterItemHistory()" class="filter-button">
                         {{screen.itemHistoryFilterLabel}}
                     </button>
                 </div>
             </div>
             <app-infinite-scroll [dataKey]="screen.itemsHistoryDataProviderKey" [itemTemplate]="itemHistoryTemplate"
-                virtualScrollMinBufferPx="700" [itemHeightPx]="155">
+                                 virtualScrollMinBufferPx="700" [itemHeightPx]="155">
                 <ng-template #itemHistoryTemplate let-item>
                     <div class="line">
                         <app-purchase-history-item [item]="item"></app-purchase-history-item>
@@ -214,15 +214,15 @@
                         <div class="membership-buttons">
                             <div *ngIf="screen.customer.membershipSignUpAction">
                                 <app-secondary-button responsive-class class="membership-sign-up"
-                                    [disabled]="!screen.customer.membershipSignUpAction.enabled"
-                                    (actionClick)="doAction(screen.customer.membershipSignUpAction)"
-                                    (click)="doAction(screen.customer.membershipSignUpAction)">
+                                                      [disabled]="!screen.customer.membershipSignUpAction.enabled"
+                                                      (actionClick)="doAction(screen.customer.membershipSignUpAction)"
+                                                      (click)="doAction(screen.customer.membershipSignUpAction)">
                                     <app-icon *ngIf="screen.customer.membershipSignUpAction.icon"
-                                        [iconName]="screen.customer.membershipSignUpAction.icon"
-                                        [iconClass]="'material-icons' + ((isMobile | async) ? ' mat-64' : '')"></app-icon>
+                                              [iconName]="screen.customer.membershipSignUpAction.icon"
+                                              [iconClass]="'material-icons' + ((isMobile | async) ? ' mat-64' : '')"></app-icon>
                                     <span>{{screen.customer.membershipSignUpAction.title}}</span>
                                     <span *ngIf="keybindsEnabled(screen.customer.membershipSignUpAction)"
-                                        class="muted-color keybinding">
+                                          class="muted-color keybinding">
                                         {{screen.customer.membershipSignUpAction.keybindDisplayName}}
                                     </span>
                                 </app-secondary-button>
@@ -230,15 +230,15 @@
 
                             <div *ngIf="screen.customer.enrolledMembershipAction">
                                 <app-secondary-button responsive-class class="enrolled-membership-sign-up"
-                                    [disabled]="!screen.customer.enrolledMembershipAction.enabled"
-                                    (actionClick)="doAction(screen.customer.enrolledMembershipAction)"
-                                    (click)="doAction(screen.customer.enrolledMembershipAction)">
+                                                      [disabled]="!screen.customer.enrolledMembershipAction.enabled"
+                                                      (actionClick)="doAction(screen.customer.enrolledMembershipAction)"
+                                                      (click)="doAction(screen.customer.enrolledMembershipAction)">
                                     <app-icon *ngIf="screen.customer.enrolledMembershipAction.icon"
-                                        [iconName]="screen.customer.enrolledMembershipAction.icon"
-                                        [iconClass]="'material-icons' + ((isMobile | async) ? ' mat-64' : '')"></app-icon>
+                                              [iconName]="screen.customer.enrolledMembershipAction.icon"
+                                              [iconClass]="'material-icons' + ((isMobile | async) ? ' mat-64' : '')"></app-icon>
                                     <span>{{screen.customer.enrolledMembershipAction.title}}</span>
                                     <span *ngIf="keybindsEnabled(screen.customer.enrolledMembershipAction)"
-                                        class="muted-color keybinding">
+                                          class="muted-color keybinding">
                                         {{screen.customer.enrolledMembershipAction.keybindDisplayName}}
                                     </span>
                                 </app-secondary-button>
@@ -250,17 +250,17 @@
             </div>
         </div>
         <app-membership-points-display *ngIf="(isMobile | async) && screen.membershipPointsEnabled" class="points"
-            responsive-class></app-membership-points-display>
+                                       responsive-class></app-membership-points-display>
     </app-content-card>
     <div *ngIf="screen.rewardTabEnabled || screen.rewardHistoryTabEnabled || screen.itemHistoryEnabled" class="tabs"
-        responsive-class>
+         responsive-class>
         <mat-tab-group mat-align-tabs="start" animationDuration="0ms" (selectedTabChange)="onTabChanged($event)">
             <mat-tab *ngIf="screen.rewardTabEnabled" class="rewardsTab" [label]="getRewardsLabel()">
                 <mat-card class="rewardsContent"
-                    [ngClass]="{'with-points': screen.membershipPointsEnabled, 'no-promotions': !hasRewards()}">
+                          [ngClass]="{'with-points': screen.membershipPointsEnabled, 'no-promotions': !hasRewards()}">
                     <app-infinite-scroll [dataKey]="screen.rewardsDataKey" [itemTemplate]="itemTemplate"
-                        [noItemsTemplate]="noItemTemplate" virtualScrollMinBufferPx="200" virtualScrollMaxBufferPx="400"
-                        [itemHeightPx]="50" [tabChanged]="changedToRewardTab">
+                                         [noItemsTemplate]="noItemTemplate" virtualScrollMinBufferPx="200" virtualScrollMaxBufferPx="400"
+                                         [itemHeightPx]="50" [tabChanged]="changedToRewardTab">
                         <ng-template #itemTemplate let-item>
                             <div class="reward-list line">
                                 <app-rewards-line-item class="rewardItem" [reward]="item"></app-rewards-line-item>
@@ -273,16 +273,16 @@
                         </ng-template>
                     </app-infinite-scroll>
                     <app-membership-points-display *ngIf="screen.membershipPointsEnabled" class="points"
-                        responsive-class></app-membership-points-display>
+                                                   responsive-class></app-membership-points-display>
                 </mat-card>
             </mat-tab>
             <mat-tab *ngIf="screen.rewardHistoryTabEnabled" class="rewardsHistoryTab"
-                [label]="screen.rewardHistoryLabel">
+                     [label]="screen.rewardHistoryLabel">
                 <mat-card class="rewardsHistoryContent"
-                    [ngClass]="{'with-points': screen.membershipPointsEnabled, 'no-promotions': !hasRewardsHistory()}">
+                          [ngClass]="{'with-points': screen.membershipPointsEnabled, 'no-promotions': !hasRewardsHistory()}">
                     <app-infinite-scroll [dataKey]="screen.rewardsHistoryDataKey" [itemTemplate]="itemTemplate"
-                        [noItemsTemplate]="noItemTemplate" virtualScrollMinBufferPx="200" virtualScrollMaxBufferPx="400"
-                        [itemHeightPx]="50" [tabChanged]="changedToRewardHistoryTab">
+                                         [noItemsTemplate]="noItemTemplate" virtualScrollMinBufferPx="200" virtualScrollMaxBufferPx="400"
+                                         [itemHeightPx]="50" [tabChanged]="changedToRewardHistoryTab">
                         <ng-template #itemTemplate let-item>
                             <div class="reward-list line">
                                 <app-rewards-history-line-item class="rewardItem" [reward]="item">
@@ -296,7 +296,7 @@
                         </ng-template>
                     </app-infinite-scroll>
                     <app-membership-points-display *ngIf="screen.membershipPointsEnabled" class="points"
-                        responsive-class></app-membership-points-display>
+                                                   responsive-class></app-membership-points-display>
                 </mat-card>
             </mat-tab>
             <mat-tab *ngIf="screen.itemHistoryEnabled" [label]="screen.itemHistoryLabel">
@@ -305,18 +305,18 @@
                         <div class="date-range">
                             <mat-form-field>
                                 <input matInput [matDatepicker]="dateFrom"
-                                    [placeholder]="screen.itemHistoryFilter.fromDatePlaceholder"
-                                    [formControl]="itemsHistoryFilterController.fromDate"
-                                    (dateChange)="itemsHistoryFilterController.fromDateFilterChanged($event.value)">
+                                       [placeholder]="screen.itemHistoryFilter.fromDatePlaceholder"
+                                       [formControl]="itemsHistoryFilterController.fromDate"
+                                       (dateChange)="itemsHistoryFilterController.fromDateFilterChanged($event.value)">
                                 <mat-datepicker-toggle matSuffix [for]="dateFrom"></mat-datepicker-toggle>
                                 <mat-datepicker #dateFrom></mat-datepicker>
                             </mat-form-field>
                             <span>-</span>
                             <mat-form-field>
                                 <input matInput [matDatepicker]="dateTo"
-                                    [placeholder]="screen.itemHistoryFilter.toDatePlaceholder"
-                                    [formControl]="itemsHistoryFilterController.toDate"
-                                    (dateChange)="itemsHistoryFilterController.toDateFilterChanged($event.value)">
+                                       [placeholder]="screen.itemHistoryFilter.toDatePlaceholder"
+                                       [formControl]="itemsHistoryFilterController.toDate"
+                                       (dateChange)="itemsHistoryFilterController.toDateFilterChanged($event.value)">
                                 <mat-datepicker-toggle matSuffix [for]="dateTo"></mat-datepicker-toggle>
                                 <mat-datepicker #dateTo></mat-datepicker>
                             </mat-form-field>
@@ -324,19 +324,19 @@
                         <div class="filter">
                             <mat-form-field>
                                 <input matInput [formControl]="itemsHistoryFilterController.textFilter"
-                                    (keypress)="itemsHistoryFilterController.onFilterKeyPress($event)"
-                                    (focus)="$event.target.select()"
-                                    [placeholder]="screen.itemHistoryFilter.textPlaceholder">
+                                       (keypress)="itemsHistoryFilterController.onFilterKeyPress($event)"
+                                       (focus)="$event.target.select()"
+                                       [placeholder]="screen.itemHistoryFilter.textPlaceholder">
                             </mat-form-field>
                             <button mat-flat-button mat-primary-inverse
-                                (click)="itemsHistoryFilterController.filterItemHistory()" class="filter-button">
+                                    (click)="itemsHistoryFilterController.filterItemHistory()" class="filter-button">
                                 {{screen.itemHistoryFilterLabel}}
                             </button>
                         </div>
                     </div>
                     <app-infinite-scroll class="item-history" [dataKey]="screen.itemsHistoryDataProviderKey"
-                        [itemTemplate]="itemHistoryTemplate" virtualScrollMinBufferPx="400"
-                        virtualScrollMaxBufferPx="800" [itemHeightPx]="155" [tabChanged]="changedToItemHistoryTab">
+                                         [itemTemplate]="itemHistoryTemplate" virtualScrollMinBufferPx="400"
+                                         virtualScrollMaxBufferPx="800" [itemHeightPx]="155" [tabChanged]="changedToItemHistoryTab">
                         <ng-template #itemHistoryTemplate let-item>
                             <div class="line">
                                 <app-purchase-history-item [item]="item"></app-purchase-history-item>
@@ -359,8 +359,8 @@
         <span>{{button.title}}</span>
     </app-secondary-button>
     <app-primary-button responsive-class class="done" *ngIf="screen.doneButton" [disabled]="!screen.doneButton?.enabled"
-        (actionClick)="doAction(screen.doneButton)"
-        (click)="doAction(screen.doneButton)">
+                        (actionClick)="doAction(screen.doneButton)"
+                        (click)="doAction(screen.doneButton)">
         <span>{{screen.doneButton.title}}</span>
         <span *ngIf="keybindsEnabled(screen.doneButton)" class="muted-color keybinding">
             {{screen.doneButton.keybindDisplayName}}

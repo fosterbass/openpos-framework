@@ -1,6 +1,10 @@
 @import '../../styles/mixins/typography';
 @import '../../styles/variables/spacing';
 
+.details-wrapper, .tabs {
+  margin-bottom: 8px;
+}
+
 .tabs {
   margin-top: 8px;
   height: 40vmin;

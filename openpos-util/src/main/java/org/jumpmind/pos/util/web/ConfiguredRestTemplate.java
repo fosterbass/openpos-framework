@@ -20,6 +20,7 @@ import javax.net.ssl.SSLContext;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.security.cert.X509Certificate;
 import java.util.*;
 
@@ -145,7 +146,7 @@ public class ConfiguredRestTemplate extends RestTemplate {
         headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 
         if( additionalHeaders != null){
-            additionalHeaders.forEach((s, s2) -> headers.set(s, s2));
+            additionalHeaders.forEach(headers::set);
         }
 
         return headers;
@@ -182,22 +183,23 @@ class LoggingRequestInterceptor implements ClientHttpRequestInterceptor {
     }
 
     private void traceResponse(ClientHttpResponse response) throws IOException {
-        if (imageContentTypes.contains(response.getHeaders().getContentType())) {
-            return;
-        }
         StringBuilder inputStringBuilder = new StringBuilder();
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getBody(), "UTF-8"));
-        String line = bufferedReader.readLine();
-        while (line != null) {
-            inputStringBuilder.append(line);
-            inputStringBuilder.append('\n');
-            line = bufferedReader.readLine();
+        if (imageContentTypes.contains(response.getHeaders().getContentType())) {
+            inputStringBuilder.append("Response body logging skipped due to it being an image.");
+        } else {
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(response.getBody(), StandardCharsets.UTF_8));
+            String line = bufferedReader.readLine();
+            while (line != null) {
+                inputStringBuilder.append(line);
+                inputStringBuilder.append('\n');
+                line = bufferedReader.readLine();
+            }
         }
         log.info("============================response begin==========================================");
         log.info("Status code  : {}", response.getStatusCode());
         log.info("Status text  : {}", response.getStatusText());
         log.info("Headers      : {}", response.getHeaders());
-        log.info("Response body: {}", inputStringBuilder.toString());
+        log.info("Response body: {}", inputStringBuilder);
         log.info("=======================response end=================================================");
     }
 
