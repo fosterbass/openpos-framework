@@ -12,7 +12,7 @@
         <app-search-expand-input *ngIf="searchEnabled && (isMobile | async)" (expanded)="onSearchExpand($event)"
             class="bacon-strip-search"></app-search-expand-input>
     </div>
-    <div *ngIf="!(isMobile | async) && !searchExpanded">
+    <div *ngIf="!searchExpanded">
         <img *ngIf="screenData?.logo" [src]="screenData.logo | imageUrl" class="screenlogo" alt="store logo">
     </div>
     <div *ngIf="!searchExpanded && screenData?.operatorLine1" class="rightside">
