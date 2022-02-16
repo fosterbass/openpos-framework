@@ -15,5 +15,7 @@ export interface ISellTemplate extends IAbstractScreenTemplate {
     workstation: IWorkStation;
     operatorText: string;
     timestampBegin: number;
+    localMenuAtBottom: boolean;
+    localMenuDelay: number;
 }
 

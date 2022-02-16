@@ -17,17 +17,8 @@ export class PaymentStatusComponent extends PosScreen<any> {
 
   screen: any;
   pinPadStatus = '0';
-  bypassEnabled = false;
-  
   buildScreen() {
     this.pinPadStatus = this.screen.pinPadStatus;
-    setTimeout(()=>{                          
-      this.bypassEnabled = true;
-    }, this.screen.delay);
-  }
-
-  public doMenuItemAction(menuItem: IActionItem) {
-    this.doAction(menuItem);
   }
 
 }

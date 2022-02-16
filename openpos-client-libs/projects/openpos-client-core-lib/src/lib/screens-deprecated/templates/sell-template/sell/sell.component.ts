@@ -30,12 +30,15 @@ export class SellComponent extends AbstractTemplate<any> {
   screen: ISellScreen;
   statusBar: StatusBarData;
   statusSection: SellStatusSectionData;
+  localMenuEnabled: boolean;
 
   @ViewChild('drawer') drawer;
   public drawerOpen: Observable<boolean>;
   public showDrawer = true;
 
   public drawerMode: Observable<string>;
+
+  public smOrXs: Observable<boolean>;
 
   constructor(private mediaService: OpenposMediaService, protected dialog: MatDialog,
               public helpTextService: HelpTextService, injector: Injector) {
@@ -53,6 +56,9 @@ export class SellComponent extends AbstractTemplate<any> {
     this.statusSection = SellScreenUtils.getStatusSection(this.template);
     if (this.template.localMenuItems && this.template.localMenuItems.length > 0) {
         this.initializeDrawerMediaSizeHandling();
+        setTimeout(() => {
+            this.localMenuEnabled = true;
+          }, this.template.localMenuDelay);
       } else {
         this.drawerOpen = of(false);
         this.showDrawer = false;
@@ -60,6 +66,7 @@ export class SellComponent extends AbstractTemplate<any> {
   }
 
   public doMenuItemAction(menuItem: IActionItem) {
+    this.localMenuEnabled = false;
     if (this.isMenuItemEnabled(menuItem)) {
       this.actionService.doAction(menuItem);
     }
@@ -108,8 +115,17 @@ export class SellComponent extends AbstractTemplate<any> {
         ['xl', 'side']
       ]);
 
+    const smOrXsMap = new Map([
+      ['xs', true],
+      ['sm', true],
+      ['md', false],
+      ['lg', false],
+      ['xl', false]
+    ]);
+
     this.drawerOpen = this.mediaService.mediaObservableFromMap(openMap);
     this.drawerMode = this.mediaService.mediaObservableFromMap(modeMap);
+    this.smOrXs = this.mediaService.mediaObservableFromMap(smOrXsMap);
   }
 
   public enableMenuClose(): boolean {

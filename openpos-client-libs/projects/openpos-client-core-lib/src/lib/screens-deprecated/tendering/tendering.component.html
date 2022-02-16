@@ -70,17 +70,6 @@
                     Completed tenders will appear here.
                 </div>
             </mat-card-content>
-            <mat-card-actions align="end" color=primary fxLayoutGap="20px">
-
-                <div *ngFor="let tender of screen.template.localMenuItems" fxShow.sm="true"  fxShow.gt-sm="false" style="text-align:center;">
-                <div (click)="onTender(tender)">
-                    <button mat-mini-fab  color=primary-inverse>
-                    <app-icon *ngIf="tender.icon"  [iconName]="tender.icon"></app-icon>
-                </button>
-                <div style="font-size:14px;padding:5px;">{{tender.title}}</div>
-                </div>
-                </div>
-            </mat-card-actions>
         </mat-card>
     </div>
 </form>

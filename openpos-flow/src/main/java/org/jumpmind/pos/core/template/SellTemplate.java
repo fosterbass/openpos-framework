@@ -23,6 +23,8 @@ public class SellTemplate extends AbstractTemplate {
     
     private Workstation workstation;
     private String operatorText;
+    private boolean localMenuAtBottom;
+    private int localMenuDelay;
 
     public SellTemplate() {
         super("Sell");
@@ -107,5 +109,21 @@ public class SellTemplate extends AbstractTemplate {
 
     public void setWorkstation(Workstation workstation) {
         this.workstation = workstation;
+    }
+
+    public boolean isLocalMenuAtBottom() {
+        return localMenuAtBottom;
+    }
+
+    public void setLocalMenuAtBottom(boolean localMenuAtBottom) {
+        this.localMenuAtBottom = localMenuAtBottom;
+    }
+
+    public int getLocalMenuDelay() {
+        return localMenuDelay;
+    }
+
+    public void setLocalMenuDelay(int localMenuDelay) {
+        this.localMenuDelay = localMenuDelay;
     }
 }
