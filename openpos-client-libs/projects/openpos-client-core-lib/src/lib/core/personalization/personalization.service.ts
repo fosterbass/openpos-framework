@@ -113,7 +113,7 @@ export class PersonalizationService {
                 console.log('Found failover servers');
                 this.failovers = failovers;
             } else {
-                console.log('No failovers servers set');
+                console.log('No failover servers set');
             }
 
             this.personalizationInitialized$.next(true);
@@ -137,6 +137,7 @@ export class PersonalizationService {
         const requestTimeout = 2000;
         const retryCount = CONFIGURATION.autoPersonalizationRequestTimeoutMillis / requestTimeout;
 
+        console.log('Attempting auto personalization with ' + url);
         return this.http.get<AutoPersonalizationParametersResponse>(url, { params: { deviceName } })
             .pipe(
                 // on some platforms the first or early requests can fail, try a few times before
@@ -145,6 +146,7 @@ export class PersonalizationService {
                 retry(retryCount),
                 tap(response => {
                     if (response) {
+                        console.log('Received an auto personalization response from the server', response);
                         response.sslEnabled = this.sslEnabled$.getValue();
                         this.setFailovers(response.failovers);
                         this.setPrimaryServer(new ServerLocation(response.serverAddress, response.serverPort, null));
@@ -383,6 +385,7 @@ export class PersonalizationService {
     private setFailovers(failovers: ServerLocation[]) {
         if (failovers) {
             failovers.forEach((value, index) => {
+                console.log('Recording failover server ' + index + ': ' + value.address + ':' + value.port + ' ' + value.token);
                 this.storage.setValue(`failover${index}ServerName`, value.address);
                 this.storage.setValue(`failover${index}Port`, value.port);
                 this.storage.setValue(`failover${index}Token`, value.token);
