@@ -9,5 +9,5 @@ export interface AutoPersonalizationParametersResponse {
     appId: string;
     personalizationParams?: any;
     sslEnabled?: boolean;
-    failovers?: ServerLocation[];
+    failoverAddresses?: ServerLocation[];
 }
