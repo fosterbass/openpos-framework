@@ -1,5 +1,6 @@
 package org.jumpmind.pos.service.strategy;
 
+import org.jumpmind.pos.service.EndpointInvocationContext;
 import org.jumpmind.pos.service.PosServerException;
 import org.jumpmind.pos.util.clientcontext.ClientContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,6 @@ import org.springframework.stereotype.Component;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Component(LocalOnlyStrategy.LOCAL_ONLY_STRATEGY)
@@ -27,9 +27,10 @@ public class LocalOnlyStrategy extends AbstractInvocationStrategy implements IIn
     Map<Method, Method> trainingMethodMap = new HashMap<>();
 
     @Override
-    public Object invoke(List<String> profileIds, Object proxy, Method method, Map<String, Object> endpoints, Object[] args) throws Throwable {
-        String path = buildPath(proxy, method);
-        Object endpointObj = endpoints.get(path);
+    public Object invoke(EndpointInvocationContext endpointInvocationContext) throws Throwable {
+        Method method = endpointInvocationContext.getMethod();
+        String path = buildPath(endpointInvocationContext.getProxy(), method);
+        Object endpointObj =  endpointInvocationContext.getEndpointsByPathMap().get(path);
         Map<Method, Method> methodMap = getMethodMapForDeviceMode();
         if (endpointObj != null) {
             Method targetMethod = methodMap.get(method);
@@ -39,7 +40,7 @@ public class LocalOnlyStrategy extends AbstractInvocationStrategy implements IIn
             }
             if (targetMethod != null) {
                 try {
-                    return targetMethod.invoke(endpointObj, args);
+                    return targetMethod.invoke(endpointObj, endpointInvocationContext.getArguments());
                 } catch (InvocationTargetException e) {
                     throw e.getTargetException();
                 }

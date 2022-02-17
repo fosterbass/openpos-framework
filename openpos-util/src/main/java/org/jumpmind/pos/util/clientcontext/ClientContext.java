@@ -54,7 +54,10 @@ public class ClientContext {
             } else if ("timezoneOffset".equalsIgnoreCase(name)) {
                 return AppUtils.getTimezoneOffset();
             }
-            log.info("ClientContext property '" + name + "' not found in ClientContext map.");
+            
+            if (!name.contains("nu-commerce")) {
+                log.info("ClientContext property '" + name + "' not found in ClientContext map.");
+            }
             return null;
         }
 

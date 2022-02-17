@@ -1,23 +1,20 @@
 package org.jumpmind.pos.service.strategy;
 
-import net.bytebuddy.implementation.bytecode.Throw;
+import lombok.Getter;
+import lombok.Setter;
+import org.jumpmind.pos.service.EndpointInvocationContext;
 import org.jumpmind.pos.service.PosServerException;
 import org.jumpmind.pos.service.ProfileConfig;
 import org.jumpmind.pos.service.ServiceConfig;
-import org.jumpmind.pos.service.ServiceSpecificConfig;
 import org.jumpmind.pos.util.clientcontext.ClientContext;
 import org.jumpmind.pos.util.model.ServiceException;
 import org.jumpmind.pos.util.model.ServiceResult;
 import org.jumpmind.pos.util.model.ServiceVisit;
-import org.jumpmind.pos.util.status.IStatusManager;
-import org.jumpmind.pos.util.status.IStatusReporter;
 import org.jumpmind.pos.util.status.Status;
-import org.jumpmind.pos.util.status.StatusReport;
 import org.jumpmind.pos.util.web.ConfiguredRestTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
@@ -27,23 +24,19 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.PostConstruct;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Component(RemoteOnlyStrategy.REMOTE_ONLY_STRATEGY)
-public class RemoteOnlyStrategy extends AbstractInvocationStrategy implements IInvocationStrategy, IStatusReporter {
+public class RemoteOnlyStrategy extends AbstractInvocationStrategy implements IInvocationStrategy {
 
     final Logger logger = LoggerFactory.getLogger(getClass());
 
     static final String REMOTE_ONLY_STRATEGY = "REMOTE_ONLY";
-
-    @Autowired
-    protected ApplicationContext applicationContext;
 
     @Autowired
     private ClientContext clientContext;
@@ -51,14 +44,9 @@ public class RemoteOnlyStrategy extends AbstractInvocationStrategy implements II
     @Autowired
     private ServiceConfig serviceConfig;
 
-    private IStatusManager statusManager;
-
-    private StatusReport lastStatus;
-
-    public static final String STATUS_NAME = "NETWORK.REMOTE";
-    public static final String STATUS_ICON = "cloud";
-
-    private Map<String, Status> statuses = new ConcurrentHashMap<>();
+    @Autowired
+    @Getter @Setter
+    private RemoteProfileStatusMonitor statusMonitor;
 
     public String getStrategyName() {
         return REMOTE_ONLY_STRATEGY;
@@ -68,24 +56,35 @@ public class RemoteOnlyStrategy extends AbstractInvocationStrategy implements II
         this.serviceConfig = serviceConfig;
     }
 
+    @PostConstruct
+    protected void init() {
+        serviceConfig.getProfiles().forEach( (profileId, profileConfig) ->
+            statusMonitor.setStatusUrl(profileId, profileConfig.getUrl())
+        );
+    }
+
     @Override
-    public Object invoke(List<String> profileIds, Object proxy, Method method, Map<String, Object> endpoints, Object[] args) throws Throwable {
+    public Object invoke(EndpointInvocationContext endpointInvocationContext) throws Throwable {
 
         Throwable lastException = null;
         Object result = null;
         List<ServiceVisit> serviceVisits = new ArrayList<>();
 
-        for (String profileId : profileIds) {
+        for (String profileId : endpointInvocationContext.getProfileIds()) {
             ServiceVisit serviceVisit = new ServiceVisit();
             serviceVisit.setProfileId(profileId);
             long startTime = System.currentTimeMillis();
             try {
-                result = invokeProfile(profileId, serviceConfig.getProfileConfig(profileId), proxy, method, endpoints, args);
+                result = invokeProfile(profileId, endpointInvocationContext);
                 break;
-            } catch (Throwable ex) {
+            } catch (Exception ex) {
                 serviceVisit.setException(ex);
                 lastException = ex;
-                logger.warn(String.format("Remote service %s unavailable.", profileId), ex);
+                if (ex instanceof RemoteProfileOfflineException) {
+                    logger.warn("Remote service '{}' is OFFLINE.", profileId);
+                } else {
+                    logger.warn(String.format("Remote service %s unavailable.", profileId), ex);
+                }
             } finally {
                 serviceVisit.setElapsedTimeMillis(System.currentTimeMillis()-startTime);
                 serviceVisits.add(serviceVisit);
@@ -113,34 +112,44 @@ public class RemoteOnlyStrategy extends AbstractInvocationStrategy implements II
         }
     }
 
-    private Object invokeProfile(String profileId, ProfileConfig profileConfig, Object proxy, Method method,
-                                 Map<String, Object> endpoints, Object[] args) throws ResourceAccessException {
-
-        int httpTimeoutInSecond = profileConfig.getHttpTimeout();
-        int connectTimeoutInSecond = profileConfig.getConnectTimeout() > 0 ? profileConfig.getConnectTimeout() : httpTimeoutInSecond;
-        ConfiguredRestTemplate template = new ConfiguredRestTemplate(httpTimeoutInSecond, connectTimeoutInSecond);
-
-        RequestMapping mapping = method.getAnnotation(RequestMapping.class);
-        RequestMethod[] requestMethods = mapping.method();
-
+    private HttpHeaders getHeaders(ProfileConfig profileConfig, String profileId) {
         HttpHeaders headers = new HttpHeaders();
-
         if( clientContext != null ) {
             clientContext.put("correlationId", UUID.randomUUID().toString());
             for (String propertyName : clientContext.getPropertyNames()) {
                 headers.set("ClientContext-" + propertyName, clientContext.get(propertyName));
             }
         }
+        return headers;
+    }
 
-        if (requestMethods != null && requestMethods.length > 0) {
+    private Object invokeProfile(String profileId, EndpointInvocationContext endpointInvocationContext) throws ResourceAccessException {
+        if (statusMonitor.isOffline(profileId)) {
+            throw new RemoteProfileOfflineException(String.format("Remote profile '%s' is Offline, skipping service calls until service is back Online", profileId));
+        }
+
+        ProfileConfig profileConfig = serviceConfig.getProfileConfig(profileId);
+
+        int httpTimeoutInSecond = profileConfig.getHttpTimeout();
+        int connectTimeoutInSecond = profileConfig.getConnectTimeout() > 0 ? profileConfig.getConnectTimeout() : httpTimeoutInSecond;
+        ConfiguredRestTemplate template = new ConfiguredRestTemplate(httpTimeoutInSecond, connectTimeoutInSecond);
+
+        RequestMapping mapping = endpointInvocationContext.getMethod().getAnnotation(RequestMapping.class);
+        RequestMethod[] requestMethods = mapping.method();
+
+        HttpHeaders headers = getHeaders(profileConfig, profileId);
+
+        if (requestMethods.length > 0) {
             try {
+                Method method = endpointInvocationContext.getMethod();
+                Object[] args = endpointInvocationContext.getArguments();
                 HttpMethod requestMethod = translate(requestMethods[0]);
-                String serverUrl = buildUrl(profileConfig, proxy, method, args);
+                String serverUrl = buildUrl(profileConfig, endpointInvocationContext);
                 Object[] newArgs = findArgs(method, args);
-                if (isMultiPartUpload(method, args)) {
+                if (isMultiPartUpload(args)) {
                     headers.setContentType(MediaType.MULTIPART_FORM_DATA);
                     MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-                    body.add(getRequestParamName(method), new FileSystemResource(getMultiPartFile(method, args)));
+                    body.add(getRequestParamName(method), new FileSystemResource(getMultiPartFile(args)));
                     HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
                     ResponseEntity<String> response = template.postForEntity(serverUrl, requestEntity, String.class, newArgs);
                     if (response.getStatusCode() != HttpStatus.OK) {
@@ -151,54 +160,34 @@ public class RemoteOnlyStrategy extends AbstractInvocationStrategy implements II
                     if (method.getReturnType().equals(Void.TYPE)) {
                         template.execute(serverUrl, requestBody, requestMethod, headers, newArgs);
                     } else {
-                        Object result =  template.execute(serverUrl, requestBody, method.getReturnType(), requestMethod, headers, newArgs);
-                        statuses.put(profileId, Status.Online);
-                        reportStatus();
+                        Object result = template.execute(serverUrl, requestBody, method.getReturnType(), requestMethod, headers, newArgs);
+                        statusMonitor.setStatus(profileId, Status.Online);
                         return result;
                     }
                 }
-            } catch (Throwable ex) {
-                statuses.put(profileId, Status.Offline);
-                reportStatus(ex.getMessage());
+            } catch (ResourceAccessException rex) {
+                statusMonitor.setStatus(profileId, Status.Offline, rex.getMessage());
+                throw new RemoteProfileOfflineException(rex);
+            } catch (Exception ex) {
+                statusMonitor.setStatus(profileId, Status.Error, ex.getMessage());
                 throw ex;
             }
 
         } else {
             throw new IllegalStateException("A method must be specified on the @RequestMapping");
         }
+
         return null;
-
     }
 
-    private void reportStatus() {
-        reportStatus("");
-    }
-
-    private void reportStatus(String message) {
-
-        Status lowestCommonDenominatorStatus = Status.Online;
-
-        for (Status status : statuses.values()) {
-            if (status == Status.Error || status == Status.Offline) {
-                lowestCommonDenominatorStatus = status;
-                break;
-            }
-        }
-
-        this.lastStatus = new StatusReport(STATUS_NAME, STATUS_ICON, lowestCommonDenominatorStatus, message);
-        if (this.statusManager != null) {
-            this.statusManager.reportStatus(lastStatus);
-        }
-    }
-
-    protected String buildUrl(ProfileConfig profileConfig, Object proxy, Method method, Object[] args) {
+    protected String buildUrl(ProfileConfig profileConfig, EndpointInvocationContext endpointInvocationContext) {
         String url = profileConfig.getUrl();
-        String path = buildPath(proxy, method);
+        String path = buildPath(endpointInvocationContext.getProxy(), endpointInvocationContext.getMethod());
         url = String.format("%s%s", url, path);
         return url;
     }
 
-    protected boolean isMultiPartUpload(Method method, Object[] args) {
+    protected boolean isMultiPartUpload(Object[] args) {
         if (args != null && args.length > 0) {
             for (Object arg : args) {
                 if (arg instanceof MultipartFile) {
@@ -209,7 +198,7 @@ public class RemoteOnlyStrategy extends AbstractInvocationStrategy implements II
         return false;
     }
 
-    protected String getMultiPartFile(Method method, Object[] args) {
+    protected String getMultiPartFile(Object[] args) {
         if (args != null && args.length > 0) {
             for (Object arg : args) {
                 if (arg instanceof MultipartFile) {
@@ -267,12 +256,4 @@ public class RemoteOnlyStrategy extends AbstractInvocationStrategy implements II
         return HttpMethod.valueOf(method.name());
     }
 
-    @Override
-    public StatusReport getStatus(IStatusManager statusManager) {
-        this.statusManager = statusManager;
-        if (lastStatus == null) {
-            this.lastStatus = new StatusReport(STATUS_NAME, STATUS_ICON, Status.Unknown, "");
-        }
-        return lastStatus;
-    }
 }
