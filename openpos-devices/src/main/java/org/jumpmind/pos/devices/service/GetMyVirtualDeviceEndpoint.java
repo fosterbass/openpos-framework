@@ -1,7 +1,8 @@
 package org.jumpmind.pos.devices.service;
 
+import org.jumpmind.pos.devices.DeviceNotFoundException;
 import org.jumpmind.pos.devices.model.DeviceModel;
-import org.jumpmind.pos.devices.service.model.GetDeviceRequest;
+import org.jumpmind.pos.devices.model.VirtualDeviceRepository;
 import org.jumpmind.pos.devices.service.model.GetDeviceResponse;
 import org.jumpmind.pos.service.Endpoint;
 import org.jumpmind.pos.util.clientcontext.ClientContext;
@@ -16,14 +17,16 @@ public class GetMyVirtualDeviceEndpoint {
     ClientContext clientContext;
 
     @Autowired
-    GetVirtualDeviceEndpoint endpoint;
+    VirtualDeviceRepository devicesRepository;
 
     public GetDeviceResponse getMyDevice() {
-        DeviceModel device = endpoint.getDevice(
-                GetDeviceRequest.builder().deviceId(clientContext.get("deviceId")).build()
-        ).getDeviceModel();
-        return GetDeviceResponse.builder()
-                .deviceModel(device)
-                .build();
+        DeviceModel deviceModel = devicesRepository.getByDeviceId(clientContext.get("deviceId"));
+        if (deviceModel != null) {
+            return GetDeviceResponse.builder()
+                    .deviceModel(deviceModel)
+                    .build();
+        } else {
+            throw new DeviceNotFoundException();
+        }
     }
 }

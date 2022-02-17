@@ -15,9 +15,9 @@ public class GetDeviceEndpoint {
     DevicesRepository devicesRepository;
 
     public GetDeviceResponse getDevice(GetDeviceRequest request) {
-            return GetDeviceResponse.builder()
-                    .deviceModel(devicesRepository.getDevice(request.getDeviceId()))
-                    .build();
-        }
-
+        return GetDeviceResponse.builder()
+                .deviceModel(devicesRepository.getDevice(request.getDeviceId()))
+                .build();
     }
+
+}
