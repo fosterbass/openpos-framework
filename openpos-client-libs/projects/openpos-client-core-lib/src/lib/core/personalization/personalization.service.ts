@@ -148,7 +148,7 @@ export class PersonalizationService {
                     if (response) {
                         console.log('Received an auto personalization response from the server', response);
                         response.sslEnabled = this.sslEnabled$.getValue();
-                        this.setFailovers(response.failovers);
+                        this.setFailovers(response.failoverAddresses);
                         this.setPrimaryServer(new ServerLocation(response.serverAddress, response.serverPort, null));
                     }
                 }));
