@@ -14,6 +14,7 @@ public class ZebraCommands {
 
     public static final String COMMAND_PRINT = "PRINT";
     public static final String COMMAND_ENABLE_LINE_PRINT = "! U1 setvar \"device.languages\" \"line_print\"\r\n";
+    public static final String COMMAND_ENABLE_ZPL= "! U1 setvar \"device.languages\" \"zpl\"\r\n";
     public static final String COMMAND_LINE_PRINT = "! U1 SETLP 7 0 10\r\n";
     public static final String COMMAND_ENABLE_TEXT_UNDER_BARCODE = "! U1 BARCODE-TEXT 7 0 8";
     public static final String COMMAND_PRINT_BARCODE = "! U1 CENTER\r\n! U1 B 128 1 2 100 0 0 %s\r\n\n\n\n\n";
@@ -23,5 +24,4 @@ public class ZebraCommands {
     public static final String COMMAND_FONT_SIZE_MEDIUM = COMMAND_LINE_PRINT;
     public static final String COMMAND_FONT_SIZE_LARGE = "! U1 SETLP 7 1 48\r\n";
     public static final String CENTER_HINT = "<center/>";
-
 }
