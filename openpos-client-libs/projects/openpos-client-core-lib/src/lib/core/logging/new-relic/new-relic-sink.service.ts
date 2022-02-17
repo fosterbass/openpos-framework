@@ -66,7 +66,7 @@ export class NewRelicSink {
                     consoleScraper.messages$.pipe(
                         map(cm => ({
                             log_level: cm.level,
-                            message: cm.message,
+                            message: cm.message.substring(0, Math.min(cm.message.length, 4098)),
                             timestamp: Math.round(Date.now())
                         }) as NewRelicLogMessage),
                         publishReplay(100, 5000),
