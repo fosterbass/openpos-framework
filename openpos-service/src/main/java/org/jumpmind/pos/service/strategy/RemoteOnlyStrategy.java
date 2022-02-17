@@ -1,5 +1,7 @@
 package org.jumpmind.pos.service.strategy;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.jumpmind.pos.service.EndpointInvocationContext;
 import org.jumpmind.pos.service.PosServerException;
 import org.jumpmind.pos.service.ProfileConfig;
@@ -8,10 +10,7 @@ import org.jumpmind.pos.util.clientcontext.ClientContext;
 import org.jumpmind.pos.util.model.ServiceException;
 import org.jumpmind.pos.util.model.ServiceResult;
 import org.jumpmind.pos.util.model.ServiceVisit;
-import org.jumpmind.pos.util.status.IStatusManager;
-import org.jumpmind.pos.util.status.IStatusReporter;
 import org.jumpmind.pos.util.status.Status;
-import org.jumpmind.pos.util.status.StatusReport;
 import org.jumpmind.pos.util.web.ConfiguredRestTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,18 +24,17 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.PostConstruct;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static org.jumpmind.pos.util.RestApiSupport.REST_API_TOKEN_HEADER_NAME;
 
 @Component(RemoteOnlyStrategy.REMOTE_ONLY_STRATEGY)
-public class RemoteOnlyStrategy extends AbstractInvocationStrategy implements IInvocationStrategy, IStatusReporter {
+public class RemoteOnlyStrategy extends AbstractInvocationStrategy implements IInvocationStrategy {
 
     final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -48,14 +46,9 @@ public class RemoteOnlyStrategy extends AbstractInvocationStrategy implements II
     @Autowired
     private ServiceConfig serviceConfig;
 
-    private IStatusManager statusManager;
-
-    private StatusReport lastStatus;
-
-    public static final String STATUS_NAME = "NETWORK.REMOTE";
-    public static final String STATUS_ICON = "cloud";
-
-    private Map<String, Status> statuses = new ConcurrentHashMap<>();
+    @Autowired
+    @Getter @Setter
+    private RemoteProfileStatusMonitor statusMonitor;
 
     public String getStrategyName() {
         return REMOTE_ONLY_STRATEGY;
@@ -63,6 +56,13 @@ public class RemoteOnlyStrategy extends AbstractInvocationStrategy implements II
 
     public void setServiceConfig(ServiceConfig serviceConfig) {
         this.serviceConfig = serviceConfig;
+    }
+
+    @PostConstruct
+    protected void init() {
+        serviceConfig.getProfiles().forEach( (profileId, profileConfig) ->
+            statusMonitor.setStatusUrl(profileId, profileConfig.getUrl())
+        );
     }
 
     @Override
@@ -82,7 +82,11 @@ public class RemoteOnlyStrategy extends AbstractInvocationStrategy implements II
             } catch (Exception ex) {
                 serviceVisit.setException(ex);
                 lastException = ex;
-                logger.warn(String.format("Remote service %s unavailable.", profileId), ex);
+                if (ex instanceof RemoteProfileOfflineException) {
+                    logger.warn("Remote service '{}' is OFFLINE.", profileId);
+                } else {
+                    logger.warn(String.format("Remote service %s unavailable.", profileId), ex);
+                }
             } finally {
                 serviceVisit.setElapsedTimeMillis(System.currentTimeMillis()-startTime);
                 serviceVisits.add(serviceVisit);
@@ -129,6 +133,9 @@ public class RemoteOnlyStrategy extends AbstractInvocationStrategy implements II
     }
 
     private Object invokeProfile(String profileId, EndpointInvocationContext endpointInvocationContext) throws ResourceAccessException {
+        if (statusMonitor.isOffline(profileId)) {
+            throw new RemoteProfileOfflineException(String.format("Remote profile '%s' is Offline, skipping service calls until service is back Online", profileId));
+        }
 
         ProfileConfig profileConfig = serviceConfig.getProfileConfig(profileId);
 
@@ -163,43 +170,23 @@ public class RemoteOnlyStrategy extends AbstractInvocationStrategy implements II
                         template.execute(serverUrl, requestBody, requestMethod, headers, newArgs);
                     } else {
                         Object result = template.execute(serverUrl, requestBody, method.getReturnType(), requestMethod, headers, newArgs);
-                        statuses.put(profileId, Status.Online);
-                        reportStatus();
+                        statusMonitor.setStatus(profileId, Status.Online);
                         return result;
                     }
                 }
+            } catch (ResourceAccessException rex) {
+                statusMonitor.setStatus(profileId, Status.Offline, rex.getMessage());
+                throw new RemoteProfileOfflineException(rex);
             } catch (Exception ex) {
-                statuses.put(profileId, Status.Offline);
-                reportStatus(ex.getMessage());
+                statusMonitor.setStatus(profileId, Status.Error, ex.getMessage());
                 throw ex;
             }
 
         } else {
             throw new IllegalStateException("A method must be specified on the @RequestMapping");
         }
+
         return null;
-
-    }
-
-    private void reportStatus() {
-        reportStatus("");
-    }
-
-    private void reportStatus(String message) {
-
-        Status lowestCommonDenominatorStatus = Status.Online;
-
-        for (Status status : statuses.values()) {
-            if (status == Status.Error || status == Status.Offline) {
-                lowestCommonDenominatorStatus = status;
-                break;
-            }
-        }
-
-        this.lastStatus = new StatusReport(STATUS_NAME, STATUS_ICON, lowestCommonDenominatorStatus, message);
-        if (this.statusManager != null) {
-            this.statusManager.reportStatus(lastStatus);
-        }
     }
 
     protected String buildUrl(ProfileConfig profileConfig, EndpointInvocationContext endpointInvocationContext) {
@@ -278,12 +265,4 @@ public class RemoteOnlyStrategy extends AbstractInvocationStrategy implements II
         return HttpMethod.valueOf(method.name());
     }
 
-    @Override
-    public StatusReport getStatus(IStatusManager statusManager) {
-        this.statusManager = statusManager;
-        if (lastStatus == null) {
-            this.lastStatus = new StatusReport(STATUS_NAME, STATUS_ICON, Status.Unknown, "");
-        }
-        return lastStatus;
-    }
 }

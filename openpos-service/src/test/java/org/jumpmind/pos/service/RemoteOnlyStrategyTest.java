@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import org.jumpmind.pos.service.strategy.RemoteOnlyStrategy;
+import org.jumpmind.pos.service.strategy.RemoteProfileStatusMonitor;
 import org.jumpmind.pos.util.model.ErrorResult;
+import org.jumpmind.pos.util.status.Status;
 import org.jumpmind.pos.util.web.ConfiguredRestTemplate;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -15,6 +17,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.util.Arrays;
 
@@ -35,7 +38,14 @@ public class RemoteOnlyStrategyTest {
 
     RemoteOnlyStrategy handler = new RemoteOnlyStrategy();
 
+    RemoteProfileStatusMonitor statusMonitor = new RemoteProfileStatusMonitor();
+
     ServiceConfig serviceConfig = new ServiceConfig();
+
+    @PostConstruct
+    private void init() {
+        this.handler.setStatusMonitor(statusMonitor);
+    }
 
     @Test
     public void testInvokeRemotePostWithResponseNoRequest() throws Throwable {
@@ -48,6 +58,7 @@ public class RemoteOnlyStrategyTest {
         assertNotNull(response);
         assertEquals(new BigDecimal("1.11"), response.total);
         assertEquals("abcd", response.message);
+        assertEquals(Status.Online, statusMonitor.getProfileStatus("local"));
     }
 
     @Test
@@ -61,6 +72,7 @@ public class RemoteOnlyStrategyTest {
         assertNotNull(response);
         assertEquals(new BigDecimal("3.14"), response.total);
         assertEquals("xyz", response.message);
+        assertEquals(Status.Online, statusMonitor.getProfileStatus("local"));
     }
 
     @Test
@@ -69,6 +81,7 @@ public class RemoteOnlyStrategyTest {
 
         handler.invoke(config().getProfileIds(), null, ITestService.class.getMethod("testPutNuttin", String.class, TestRequest.class), null,
                 new Object[]{"test001", new TestRequest("one", 1)});
+        assertEquals(Status.Online, statusMonitor.getProfileStatus("local"));
 
     }
 
@@ -81,6 +94,7 @@ public class RemoteOnlyStrategyTest {
 
         handler.invoke(config().getProfileIds(), null, ITestService.class.getMethod("testPutNuttin", String.class, TestRequest.class), null,
                 new Object[]{"test001", new TestRequest("one", 1)});
+        assertEquals(Status.Error, statusMonitor.getProfileStatus("local"));
 
     }
 
@@ -94,6 +108,7 @@ public class RemoteOnlyStrategyTest {
         assertNotNull(response);
         assertEquals(new BigDecimal("3.14"), response.total);
         assertEquals("xyz", response.message);
+        assertEquals(Status.Online, statusMonitor.getProfileStatus("local"));
     }
 
     private ServiceSpecificConfig config() {
