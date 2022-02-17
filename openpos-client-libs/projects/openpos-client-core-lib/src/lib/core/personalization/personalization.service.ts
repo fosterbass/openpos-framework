@@ -116,7 +116,7 @@ export class PersonalizationService {
                 console.log('Found failover servers');
                 this.failovers = failovers;
             } else {
-                console.log('No failovers servers set');
+                console.log('No failover servers set');
             }
 
             this.personalizationInitialized$.next(true);
@@ -391,6 +391,7 @@ export class PersonalizationService {
     private setFailovers(failovers: ServerLocation[]) {
         if (failovers) {
             failovers.forEach((value, index) => {
+                console.log('Recording failover server ' + index + ': ' + value.address + ':' + value.port + ' ' + value.token);
                 this.storage.setValue(`failover${index}ServerName`, value.address);
                 this.storage.setValue(`failover${index}Port`, value.port);
                 this.storage.setValue(`failover${index}Token`, value.token);

@@ -1,8 +1,15 @@
 package org.jumpmind.pos.print;
 
+import com.zebra.sdk.comm.Connection;
+import com.zebra.sdk.comm.ConnectionException;
+import com.zebra.sdk.comm.TcpConnection;
+import com.zebra.sdk.printer.PrinterStatus;
+import com.zebra.sdk.printer.ZebraPrinterFactory;
+import com.zebra.sdk.printer.ZebraPrinterLanguageUnknownException;
 import jpos.JposException;
 import jpos.services.EventCallbacks;
 import lombok.experimental.Delegate;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jumpmind.pos.util.ClassUtils;
 import org.jumpmind.pos.util.status.Status;
@@ -17,6 +24,7 @@ import java.util.Map;
 
 import static org.jumpmind.pos.print.ZebraCommands.*;
 
+@Slf4j
 public class ZebraPrinter extends AbstractPOSPrinter {
 
     boolean deviceEnabled = true;
@@ -235,7 +243,43 @@ public class ZebraPrinter extends AbstractPOSPrinter {
 
     @Override
     public int readPrinterStatus() {
-        return 0;
+        if (isSocketConnection()) {
+            writer.print(COMMAND_ENABLE_ZPL);
+            writer.flush();
+            Connection connection = new TcpConnection(this.settings.get("hostName").toString(), TcpConnection.DEFAULT_ZPL_TCP_PORT);
+            try {
+                connection.open();
+                com.zebra.sdk.printer.ZebraPrinter printer = ZebraPrinterFactory.getInstance(connection);
+
+                PrinterStatus printerStatus = printer.getCurrentStatus();
+                if (printerStatus.isReadyToPrint) {
+                    return ZebraStatusCodes.ZEBRA_READY_FOR_PRINT;
+                } else if (printerStatus.isPaused) {
+                    return ZebraStatusCodes.ZEBRA_PAUSED;
+                } else if (printerStatus.isHeadOpen) {
+                    return ZebraStatusCodes.ZEBRA_COVER_OPEN;
+                } else if (printerStatus.isPaperOut) {
+                    return ZebraStatusCodes.ZEBRA_OUT_OF_PAPER;
+                } else {
+                    return ZebraStatusCodes.ZEBRA_CONNECTION_ERROR;
+                }
+            } catch (ConnectionException e) {
+                log.warn(e.getMessage());
+            } catch (ZebraPrinterLanguageUnknownException e) {
+                log.warn(e.getMessage());
+            } finally {
+                try {
+                    connection.close();
+                } catch (ConnectionException connectionException) {
+                    log.warn(connectionException.getMessage());
+                }
+                writer.print(COMMAND_ENABLE_LINE_PRINT);
+                writer.flush();
+            }
+            return ZebraStatusCodes.ZEBRA_CONNECTION_ERROR;
+        } else {
+            return 0;
+        }
     }
 
     @Override
@@ -265,7 +309,7 @@ public class ZebraPrinter extends AbstractPOSPrinter {
 
     @Override
     public boolean getCoverOpen() throws JposException {
-        return false;
+        return readPrinterStatus() == ZebraStatusCodes.ZEBRA_COVER_OPEN;
     }
 
     @Override
@@ -275,7 +319,7 @@ public class ZebraPrinter extends AbstractPOSPrinter {
 
     @Override
     public boolean getRecEmpty() throws JposException {
-        return false;
+        return readPrinterStatus() == ZebraStatusCodes.ZEBRA_OUT_OF_PAPER;
     }
 
     @Override
@@ -309,5 +353,9 @@ public class ZebraPrinter extends AbstractPOSPrinter {
 
     @Override
     public void printBitmap(int station, String fileName, int width, int alignment) throws JposException {
+    }
+    
+    private boolean isSocketConnection() {
+        return connectionFactory instanceof SocketConnectionFactory;
     }
 }

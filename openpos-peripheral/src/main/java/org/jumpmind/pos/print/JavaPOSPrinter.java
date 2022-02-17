@@ -105,7 +105,11 @@ public class JavaPOSPrinter extends AbstractPOSPrinter implements IOpenposPrinte
     @Override
     public boolean isDrawerOpen(String cashDrawerId) {
         try {
-            return cashDrawer.getDrawerOpened();
+            boolean cashDrawerOpened = cashDrawer.getDrawerOpened();
+            String message = cashDrawerOpened ? "Cash drawer is opened" : "Cash drawer is not opened";
+            log.info(message);
+
+            return cashDrawerOpened;
         } catch (JposException ex) {
             throw new PrintException("Could not detect if the cash drawer is open", ex);
         }

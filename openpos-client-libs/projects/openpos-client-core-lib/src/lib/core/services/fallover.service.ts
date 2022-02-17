@@ -57,7 +57,7 @@ export class FailoverService {
         this.destroyServerTimeout$.next(true);
 
         if (!this.personalization.getFailovers() || this.personalization.getFailovers().length < 1) {
-            console.log('No Failover set');
+            console.log('No failover severs are set');
             return;
         }
 
