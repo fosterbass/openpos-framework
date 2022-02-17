@@ -1,5 +1,5 @@
-<div class="container mat-elevation-z5" responsive-class>
-    <div class="leftside" [class.expanded]="searchExpanded" [class.container-search-is-expanded]="searchExpanded">
+<div class="container mat-elevation-z5" responsive-class [class.container-search-is-expanded]="searchExpanded">
+    <div class="leftside" [class.expanded]="searchExpanded">
         <!-- this button is a workaround to hide the initial focus shading on the upper left icon -->
         <button cdkFocusInitial mat-icon-button type='text' class="hidden-focus-button"></button>
 
@@ -12,7 +12,7 @@
         <app-search-expand-input *ngIf="searchEnabled && (isMobile | async)" (expanded)="onSearchExpand($event)"
             class="bacon-strip-search"></app-search-expand-input>
     </div>
-    <div *ngIf="!searchExpanded">
+    <div *ngIf="!searchExpanded" class="middle">
         <img *ngIf="screenData?.logo" [src]="screenData.logo | imageUrl" class="screenlogo" alt="store logo">
     </div>
     <div *ngIf="!searchExpanded && screenData?.operatorLine1" class="rightside">
