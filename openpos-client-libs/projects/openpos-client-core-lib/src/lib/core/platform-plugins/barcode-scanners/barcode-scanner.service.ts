@@ -103,4 +103,8 @@ export class BarcodeScanner {
 
         return this._activeScan;
     }
+
+    public getScanners(){
+        return this._scanners;
+    }
 }

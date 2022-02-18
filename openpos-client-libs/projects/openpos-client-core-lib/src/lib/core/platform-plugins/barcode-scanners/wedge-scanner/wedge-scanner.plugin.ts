@@ -212,4 +212,8 @@ export class WedgeScannerPlugin implements Scanner {
         }
         return scanData;
     }
+
+    public getStartSequence(): string {
+        return this.startSequence;
+    }
 }
