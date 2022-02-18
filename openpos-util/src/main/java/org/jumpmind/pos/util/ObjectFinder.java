@@ -30,9 +30,11 @@ public class ObjectFinder<T> {
     private Collection<T> results;
     private Class<T> targetType;
     private boolean distinctResults = true;
-    private Set<Object> recursionInto;
+    private int stackDepth = 0;
     private static final Pattern SHORT_FQCN = Pattern.compile("\\B\\w+(\\.\\w)");
     private static final Set<Class<?>> WRAPPER_TYPES = new HashSet<>();
+    private static final int MAX_STACK_DEPTH = 100;
+
     static {
         WRAPPER_TYPES.add(Boolean.class);
         WRAPPER_TYPES.add(Character.class);
@@ -83,8 +85,11 @@ public class ObjectFinder<T> {
             return;
         }
 
+        stackDepth++;
+
         Class<?> clazz = obj.getClass();
-        if (!recursionInto.add(obj)) {
+
+        if (stackDepth > MAX_STACK_DEPTH) {
             logDidNotAdd(obj, clazz);
             return;
         }
@@ -100,7 +105,7 @@ public class ObjectFinder<T> {
                     if (value != null) {
                         if (targetType.isAssignableFrom(type)) {
                             addToResults((T) value);
-                            doVisit(visitor, obj, value, field);
+                            doVisit(visitor, obj, value, field, null);
                         }
 
                         if (!searchCollections(value, field, visitor) && shouldSearch(field) && shouldSearch(type)) {
@@ -112,21 +117,12 @@ public class ObjectFinder<T> {
                 }
             }
         } while ((clazz = clazz.getSuperclass()) != null);
+        stackDepth--;
     }
 
     private void logDidNotAdd(Object obj, Class<?> clazz) {
         String ident = String.format("%s@%x", clazz.getName(), obj.hashCode());
-        log.warn("avoiding infinite recursion into {}", ident);
-
-        /* useful detail for untangling cyclical object graphs */
-        if (log.isDebugEnabled()) {
-            log.debug("cyclical object graph detected: {} (-> {})",
-                    recursionInto.stream().
-                            map(o -> String.format("%s@%x", o.getClass().getName(), o.hashCode())).
-                            map(ObjectFinder::shortenFqcn).
-                            collect(Collectors.joining(" -> ")),
-                    shortenFqcn(ident));
-        }
+        log.warn("Avoiding infinite recursion into {}", ident);
     }
 
     public boolean isDistinctResults() {
@@ -142,7 +138,7 @@ public class ObjectFinder<T> {
 
     protected void initResults() {
         this.results = distinctResults ? new HashSet<>() : new ArrayList<>();
-        recursionInto = new LinkedHashSet<>();
+        this.stackDepth = 0;
     }
 
     protected void addToResults(T value) {
@@ -180,7 +176,7 @@ public class ObjectFinder<T> {
             if (fieldObj != null) {
                 if (targetType.isAssignableFrom(fieldObj.getClass())) {
                     addToResults((T) fieldObj);
-                    doVisit(visitor, value, fieldObj, field);
+                    doVisit(visitor, value, fieldObj, field, i);
                 }
 
                 if (! searchCollections(fieldObj, field, visitor) && shouldSearch(fieldObj.getClass())) {
@@ -199,7 +195,7 @@ public class ObjectFinder<T> {
             if (fieldObj != null) {
                 if (targetType.isAssignableFrom(fieldObj.getClass())) {
                     addToResults((T) fieldObj);
-                    doVisit(visitor, value, fieldObj, field);
+                    doVisit(visitor, value, fieldObj, field, null);
                 }
                 if ( !searchCollections(fieldObj, field, visitor) && shouldSearch(fieldObj.getClass())) {
                     searchRecursive(fieldObj, visitor);
@@ -215,7 +211,7 @@ public class ObjectFinder<T> {
             Object arrayElem = Array.get(value, i);
             if (arrayElem != null && targetType.isAssignableFrom(arrayElem.getClass())) {
                 addToResults((T) arrayElem);
-                doVisit(visitor, value, arrayElem, field);
+                doVisit(visitor, value, arrayElem, field, i);
             }
         }
         return true;
@@ -229,7 +225,7 @@ public class ObjectFinder<T> {
             if (entryValue != null) {
                 if (targetType.isAssignableFrom(entryValue.getClass())) {
                     addToResults((T) entryValue);
-                    doVisit(visitor, value, entryValue, field);
+                    doVisit(visitor, value, entryValue, field, entry.getKey());
                 }
 
                 if (! searchCollections(entryValue, field, visitor) && shouldSearch(entryValue.getClass())) {
@@ -240,13 +236,13 @@ public class ObjectFinder<T> {
         return true;
     }
 
-    protected void doVisit(ObjectSearchVisitor visitor, Object parent, Object toVisit, Field field) {
+    protected void doVisit(ObjectSearchVisitor visitor, Object parent, Object toVisit, Field field, Object collectionKey) {
         if (visitor != null) {
             try {
-                visitor.visit(parent, toVisit, field);
+                visitor.visit(parent, toVisit, field, collectionKey);
             } catch (Exception ex) {
                 log.error("Error invoking object search visitor. Visitor: {}, parent: {}, visitor target: {}, field: {}",
-                        visitor.getClass(), parent, toVisit, field);
+                        visitor.getClass(), parent, toVisit, field, ex);
             }
         }
     }

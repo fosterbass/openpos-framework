@@ -91,7 +91,7 @@ public class ObjectFinderTest {
         Field field;
 
         @Override
-        public void visit(Object parentObject, Object object, Field location) {
+        public void visit(Object parentObject, Object object, Field location, Object collectionKey) {
             parent = parentObject;
             found = object;
             field = location;

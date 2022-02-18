@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 
 import javax.annotation.PostConstruct;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,19 +58,20 @@ public class EndpointFilterManager {
         for (Method method : ReflectionUtils.getUniqueDeclaredMethods(beanEntry.getValue().getClass())) {
             EndpointRequestFilter requestAnnotation = method.getAnnotation(EndpointRequestFilter.class);
             if (requestAnnotation != null) {
-                requestFilterTemplates.add(buildFilterTemplate(beanEntry, method));
+                requestFilterTemplates.add(buildFilterTemplate(beanEntry, method, EndpointFilterType.REQUEST));
             }
             EndpointResponseFilter responseAnnotation = method.getAnnotation(EndpointResponseFilter.class);
             if (responseAnnotation != null) {
-                responseFilterTemplates.add(buildFilterTemplate(beanEntry, method));
+                responseFilterTemplates.add(buildFilterTemplate(beanEntry, method, EndpointFilterType.RESPONSE));
             }
         }
     }
 
-    protected EndpointFilterTemplate buildFilterTemplate(Map.Entry<String, Object> beanEntry, Method method) {
+    protected EndpointFilterTemplate buildFilterTemplate(Map.Entry<String, Object> beanEntry, Method method, EndpointFilterType endpointFilterType) {
         EndpointFilterTemplate filterTemplate = new EndpointFilterTemplate();
         filterTemplate.setFilterMethod(method);
         filterTemplate.setFilterInstance(beanEntry.getValue());
+        filterTemplate.setEndpointFilterType(endpointFilterType);
 
         if (method.getParameterTypes().length == 0) {
             throw new PosServerException("Invalid endpoint filter method, must declare at least 1 argument. " + method);
@@ -188,19 +190,30 @@ public class EndpointFilterManager {
     }
 
     private void doRecursiveSearch(EndpointInvocationContext context, EndpointFilterTemplate filterTemplate, Object argument) {
-        ObjectFinder<?> finder = new ObjectFinder<>(filterTemplate.getOutputType());
-        finder.searchRecursive(argument, (parentObject, targetObject, field) -> {
+        Class<?> targetType = filterTemplate.getEndpointFilterType() == EndpointFilterType.REQUEST ? filterTemplate.getOutputType() : filterTemplate.getInputType();
+        ObjectFinder<?> finder = new ObjectFinder<>(targetType);
+        finder.searchRecursive(argument, (parentObject, targetObject, field, collectionKey) -> {
             Object result = invokeFilter(filterTemplate, context, targetObject);
             if (result != null && result != targetObject) {
                 try {
-                    field.setAccessible(true);
-                    field.set(parentObject, result);
+                    if (parentObject instanceof List) {
+                        handleList(context, parentObject, targetObject, field, result, collectionKey);
+                    } else {
+                        field.setAccessible(true);
+                        field.set(parentObject, result);
+                    }
                 } catch (Exception ex) {
                     throw new PosServerException("Failed to replace nested object. Filter method " +
                             filterTemplate.getFilterMethod() + " attempted to replace " + targetObject + " with " + result, ex);
                 }
             }
         });
+    }
+
+    protected void handleList(EndpointInvocationContext context, Object parentObject, Object targetObject, Field field, Object result,  Object collectionKey) {
+        List list = (List)parentObject;
+        Integer index = (Integer) collectionKey;
+        list.set(index, result);
     }
 
     protected boolean versionApplies(Version version, EndpointFilterTemplate filterTemplate) {

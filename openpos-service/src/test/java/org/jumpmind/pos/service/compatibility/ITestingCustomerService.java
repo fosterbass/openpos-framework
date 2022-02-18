@@ -10,7 +10,7 @@ public interface ITestingCustomerService {
 
     @RequestMapping(path = "/getCustomer", method = RequestMethod.POST)
     @ResponseBody
-    public TestingGetCustomerResponse getCustomer(String customerId);
+    public TestingGetCustomerResponse getCustomer(@RequestBody String customerId);
 
     @RequestMapping(path = "/saveCustomer", method = RequestMethod.POST)
     @ResponseBody
@@ -19,5 +19,9 @@ public interface ITestingCustomerService {
     @RequestMapping(path = "/unlinkCustomer", method = RequestMethod.POST)
     @ResponseBody
     public TestingSaveCustomerResponse unlinkCustomer(@RequestBody TestingSaveCustomerRequest saveCustomerRequest);
+
+    @RequestMapping(path = "/getLoyaltyPromotions", method = RequestMethod.POST)
+    @ResponseBody
+    public TestingGetLoyaltyPromotionsResponse getLoyaltyPromotions(@RequestBody String customerId);
 
 }

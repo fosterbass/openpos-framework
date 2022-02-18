@@ -181,7 +181,7 @@ public class BackwardCompatibilityTest {
         restTemplate.getRestTemplate().setInterceptors(
                 Collections.singletonList((request, body, execution) -> {
                     request.getHeaders()
-                            .add("ClientContext-version.nu-commerce", "2.1");
+                            .add("ClientContext-version.nu-commerce", "100.1");
                     return execution.execute(request, body);
                 }));
 
@@ -192,6 +192,44 @@ public class BackwardCompatibilityTest {
         Assert.assertEquals("1234", response.getCustomerModel().getCustomerId());
     }
 
+    @Test
+    public void testNestedListObject() throws Exception {
+        restTemplate.getRestTemplate().setInterceptors(
+                Collections.singletonList((request, body, execution) -> {
+                    request.getHeaders()
+                            .add("ClientContext-version.nu-commerce", "2.1");
+                    return execution.execute(request, body);
+                }));
+
+        String jsonResponse =
+                restTemplate.postForObject("http://localhost:" + port + "/testingCustomer/getCustomer",
+                        "\"1234\"", String.class);
+
+        System.out.println(jsonResponse);
+
+        // checking that rewardAmount got converted into a Money.
+        Assert.assertTrue(jsonResponse.contains("\"rewardAmount\":{\""));
+    }
+
+    @Test
+    public void testRewardModelBug() throws Exception {
+        restTemplate.getRestTemplate().setInterceptors(
+                Collections.singletonList((request, body, execution) -> {
+                    request.getHeaders()
+                            .add("ClientContext-version.nu-commerce", "2.1");
+                    return execution.execute(request, body);
+                }));
+
+        String jsonResponse =
+                restTemplate.postForObject("http://localhost:" + port + "/testingCustomer/getLoyaltyPromotions",
+                        "\"1234\"", String.class);
+        
+        // checking that rewardAmount got converted into a Money.
+        int index = jsonResponse.indexOf("\"rewardAmount\":{\"");
+        Assert.assertTrue(index > 0);
+        int index2 = jsonResponse.indexOf("\"rewardAmount\":{\"", index);
+        Assert.assertTrue(index2 > 0);
+    }
 
     private TestingCustomerModel buildCustomer() {
         TestingCustomerModel customer = new TestingCustomerModel();

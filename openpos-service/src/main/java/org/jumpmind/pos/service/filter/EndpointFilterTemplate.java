@@ -8,6 +8,8 @@ import java.lang.reflect.Method;
 @Data
 public class EndpointFilterTemplate {
 
+    private EndpointFilterType endpointFilterType;
+
     private Class<?> inputType;
     private Class<?> outputType;
     private Method filterMethod;
@@ -19,5 +21,6 @@ public class EndpointFilterTemplate {
     private Class<?> arg2Type;
 
     private Object filterInstance;
+
 
 }
