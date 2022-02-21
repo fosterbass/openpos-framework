@@ -12,6 +12,8 @@ import { catchError, filter, take, timeout } from 'rxjs/operators';
     providedIn: 'root'
 })
 export class LocationProviderDefault implements ILocationProvider {
+    static readonly MAX_CURRENT_POS_ATTEMPTS = 2;
+
     coordinateBuffer: number;
     private $locationData = new BehaviorSubject<ILocationData>(null);
 
@@ -31,12 +33,13 @@ export class LocationProviderDefault implements ILocationProvider {
 
     getCurrentLocation(buffer: number, googleApiKey?: string): Observable<ILocationData> {
         this.coordinateBuffer = buffer;
-        console.info(`[LocationProviderDefault] navigator.geolocation: ${navigator.geolocation}, CONFIGURATION.googleApiKey: ${Configuration.googleApiKey}, googleApiKey: ${googleApiKey}`);
+        console.info(`[LocationProviderDefault] navigator.geolocation: ${navigator.geolocation}`);
         if (navigator.geolocation && (Configuration.googleApiKey || googleApiKey)) {
-            console.info(`[LocationProviderDefault] Attempting to get current GPS position...`);
+            console.info(`[LocationProviderDefault] Got GoogleAPI Key. Attempting to get current GPS position...`);
             const curPosition$ = new Subject<{latitude: number, longitude: number}>();
-            this.getCurrentPosition(Configuration.googleApiKey, {timeout: 5000}).then(async (initPosition) => {
-                console.info(`[LocationProviderDefault] Got initial position: ${initPosition}`);
+            // Getting GPS coords can take a while, thus the long timeout
+            this.getCurrentPosition(Configuration.googleApiKey, {timeout: 20000, enableHighAccuracy: true}, 0).then(async (initPosition) => {
+                console.info(`[LocationProviderDefault] Initial position: ${initPosition}`);
 
                 if (initPosition != null) {
                     const initPos = {latitude: initPosition.coords.latitude, longitude: initPosition.coords.longitude};
@@ -71,16 +74,25 @@ export class LocationProviderDefault implements ILocationProvider {
         return this.$locationData;
     }
 
-    private getCurrentPosition(googleApiKey: string, options: PositionOptions): Promise<Position> {
-        return new Promise((resolve, reject) =>
+    private getCurrentPosition(googleApiKey: string, options: PositionOptions, attemptCount: number): Promise<Position> {
+        return new Promise((resolve, reject) => {
+            attemptCount++;
             navigator.geolocation.getCurrentPosition(
                 resolve,
                 (err) => {
-                    console.warn(`[LocationProviderDefault] getCurrentPosition failed, falling back to calling google. Error: ${JSON.stringify(err)}`);
-                    resolve(this.getGoogleAPILocation(googleApiKey));
+                    if (attemptCount < LocationProviderDefault.MAX_CURRENT_POS_ATTEMPTS) {
+                        console.warn(`[LocationProviderDefault] Attempt ${attemptCount} of ${LocationProviderDefault.MAX_CURRENT_POS_ATTEMPTS} ` +
+                            `to getCurrentPosition failed, trying again. Error code: ${err.code}, ${err.message}`);
+                        resolve(this.getCurrentPosition(googleApiKey, options, attemptCount));
+                    } else {
+                        console.warn(`[LocationProviderDefault] Last getCurrentPosition attempt failed. Error code: ${err.code}, ${err.message}`);
+                        resolve(null);
+                        // Google API doesn't return a very accurate location, particularly if you are connected through a VPN
+                        // resolve(this.getGoogleAPILocation(googleApiKey));
+                    }
                 },
                 options
-            )
+            )}
         );
     }
 
