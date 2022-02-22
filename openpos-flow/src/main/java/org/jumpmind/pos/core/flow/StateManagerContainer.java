@@ -181,6 +181,9 @@ public class StateManagerContainer implements IStateManagerContainer, Applicatio
             for (String property : stateManager.getClientContext().keySet()) {
                 clientContext.put(property, stateManager.getClientContext().get(property));
             }
+            if (stateManager.getApplicationState() != null && stateManager.getApplicationState().getDeviceMode() != null) {
+                clientContext.put("deviceMode", stateManager.getApplicationState().getDeviceMode());
+            }
 
             clientContext.put("deviceId", stateManager.getDeviceId());
             clientContext.put("appId", stateManager.getAppId());
@@ -190,6 +193,7 @@ public class StateManagerContainer implements IStateManagerContainer, Applicatio
                     clientContextUpdater.update(clientContext, stateManager);
                 }
             }
+
         } else {
             setupLogging("server");
         }
