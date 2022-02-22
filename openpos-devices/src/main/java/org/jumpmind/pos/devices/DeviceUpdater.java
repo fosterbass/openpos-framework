@@ -49,7 +49,7 @@ public class DeviceUpdater implements ApplicationListener<DeviceConnectedEvent> 
     ClientContext clientContext;
 
     synchronized public void updateDevice(DeviceModel deviceModel) {
-        deviceModel.setTimezoneOffset(clientContext.get("timezoneOffset"));
+        deviceModel.setTimezoneOffset(clientContext.get(ClientContext.TIMEZONE_OFFSET));
         deviceModel.setInstallationId(installationId);
         // TODO check properties also before using default
         deviceModel.setLocale(Locale.getDefault().toString());

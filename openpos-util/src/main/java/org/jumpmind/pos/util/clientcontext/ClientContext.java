@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -15,6 +14,7 @@ import java.util.Set;
 @Component
 public class ClientContext {
     public static final String BUSINESS_UNIT_ID = "businessUnitId";
+    public static final String TIMEZONE_OFFSET = "timezoneOffset";
 
     private ThreadLocal<Map<String, String>> propertiesMap = new ThreadLocal<>();
     final Logger log = LoggerFactory.getLogger(getClass());
@@ -53,7 +53,7 @@ public class ClientContext {
                 return "server";
             } else if ("deviceMode".equalsIgnoreCase(name)) {
                 return deviceMode;
-            } else if ("timezoneOffset".equalsIgnoreCase(name)) {
+            } else if (TIMEZONE_OFFSET.equalsIgnoreCase(name)) {
                 return AppUtils.getTimezoneOffset();
             }
             log.debug("ClientContext property '{}' not found in ClientContext map.", name);

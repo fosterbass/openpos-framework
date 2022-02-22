@@ -1,11 +1,10 @@
 package org.jumpmind.pos.util;
 
-import java.io.File;
 import java.net.InetAddress;
 import java.nio.charset.Charset;
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicReference;
-import java.net.URL;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -37,6 +36,17 @@ public final class AppUtils {
             return value.equalsIgnoreCase("dev");
         } else {
             return false;
+        }
+    }
+
+    public static Date getLocalDateForOffset(String timezoneOffset) {
+        long currentTime = System.currentTimeMillis();
+        if (StringUtils.isNotBlank(timezoneOffset)) {
+            int myOffset = TimeZone.getDefault().getOffset(currentTime);
+            int theirOffset = TimeZone.getTimeZone("GMT" + timezoneOffset).getOffset(currentTime);
+            return new Date(currentTime - myOffset + theirOffset);
+        } else {
+            return new Date(currentTime);
         }
     }
 

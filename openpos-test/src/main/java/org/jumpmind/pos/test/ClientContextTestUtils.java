@@ -32,7 +32,7 @@ public class ClientContextTestUtils {
     }
 
     public void setTimezoneOffset(String offset){
-        clientContext.put("timezoneOffset", offset);
+        clientContext.put(ClientContext.TIMEZONE_OFFSET, offset);
     }
 
     public void reset(){
