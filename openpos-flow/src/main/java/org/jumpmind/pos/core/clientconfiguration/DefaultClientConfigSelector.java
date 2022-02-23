@@ -29,11 +29,6 @@ public class DefaultClientConfigSelector implements IClientConfigSelector {
         List<List<String>> tagGroups = new ArrayList<>();
         List<String> tagsForSpecificity = new ArrayList<>();
 
-        if (additionalTags != null) {
-            // Pass along all the additional tags
-            tagsForSpecificity.addAll(additionalTags);
-        }
-
         // Lookup the values for our tags
         propertiesForTags.forEach(s -> {
             if (properties.containsKey(s)) {
@@ -45,6 +40,11 @@ public class DefaultClientConfigSelector implements IClientConfigSelector {
                 logger.info("Could not find personalization parameter {}", s);
             }
         });
+        if (additionalTags != null) {
+            // Pass along all the additional tags
+            tagsForSpecificity.addAll(additionalTags);
+        }
+
         sortDefaultFirst(tagsForSpecificity);
         // Start with default
         tagGroups.add(Arrays.asList(defaultTag));

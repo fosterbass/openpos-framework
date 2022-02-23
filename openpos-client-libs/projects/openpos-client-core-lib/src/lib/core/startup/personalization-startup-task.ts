@@ -140,6 +140,7 @@ export class PersonalizationStartupTask implements IStartupTask {
     }
 
     private attemptAutoPersonalize(startupData: StartupTaskData, serviceConfig: ZeroconfService, deviceName: string): Observable<string> {
+        console.log('Attempting auto personalization');
         return this.personalization.getAutoPersonalizationParameters(deviceName, serviceConfig)
             .pipe(
                 mergeMap(info => {
