@@ -249,6 +249,7 @@ public class ZebraPrinter extends AbstractPOSPrinter {
             Connection connection = new TcpConnection(this.settings.get("hostName").toString(), TcpConnection.DEFAULT_ZPL_TCP_PORT);
             try {
                 connection.open();
+                Thread.sleep(500);
                 com.zebra.sdk.printer.ZebraPrinter printer = ZebraPrinterFactory.getInstance(connection);
 
                 PrinterStatus printerStatus = printer.getCurrentStatus();
@@ -266,6 +267,8 @@ public class ZebraPrinter extends AbstractPOSPrinter {
             } catch (ConnectionException e) {
                 log.warn(e.getMessage());
             } catch (ZebraPrinterLanguageUnknownException e) {
+                log.warn(e.getMessage());
+            } catch (InterruptedException e) {
                 log.warn(e.getMessage());
             } finally {
                 try {
