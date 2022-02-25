@@ -8,6 +8,8 @@ import { merge, Observable } from 'rxjs';
 import { ISellItem } from '../../../core/interfaces/sell-item.interface';
 import { filter, takeUntil } from 'rxjs/operators';
 import { KeybindingZoneService } from '../../../core/keybindings/keybinding-zone.service';
+import { KeybindingAction } from '../../../core/keybindings/keybinding-action.interface';
+import { IActionItem } from '../../../core/actions/action-item.interface';
 
 @ScreenPart({
   name: 'SaleItemCardList'
@@ -22,7 +24,7 @@ export class SaleItemCardListComponent extends ScreenPartComponent<SaleItemCardL
   expandedIndex = -1;
   numItems = 0;
   items$: Observable<ISellItem[]>;
-  previousSellItems: ISellItem[];
+  actions: IActionItem[] = [];
   @ViewChildren('items', { read: ElementRef }) private itemsRef: QueryList<ElementRef>;
   @Output() itemsChanged = new EventEmitter<ISellItem[]>();
 
@@ -37,6 +39,12 @@ export class SaleItemCardListComponent extends ScreenPartComponent<SaleItemCardL
             filter(event => !event.domEvent.repeat),
             takeUntil(this.destroyed$)
         ).subscribe(event => this.handleArrowKey(event.domEvent));
+
+    this.keybindingZoneService.getNeedActionPayload()
+        .pipe(
+            filter(keybindingAction => this.isMyAction(keybindingAction)),
+            takeUntil(this.destroyed$)
+        ).subscribe(keybindingAction => keybindingAction.payload = [this.expandedIndex]);
   }
 
   itemsTrackByFn(index, item: ISellItem) {
@@ -51,9 +59,9 @@ export class SaleItemCardListComponent extends ScreenPartComponent<SaleItemCardL
   }
 
   onSellItemsChange(sellItems: ISellItem[]): void {
-    this.keybindingZoneService.removeAllKeybindings(this.previousSellItems);
-    this.keybindingZoneService.addAllKeybindings(sellItems);
-    this.previousSellItems = sellItems;
+    this.keybindingZoneService.removeAllKeybindings(this.actions);
+    this.actions = this.keybindingZoneService.findKeybindings(sellItems);
+    this.keybindingZoneService.addAllKeybindings(this.actions);
 
     this.items$.forEach(items => {
       this.numItems = items.length;
@@ -61,6 +69,10 @@ export class SaleItemCardListComponent extends ScreenPartComponent<SaleItemCardL
       this.expandedIndex = items.length - 1;
     });
     this.scrollToView(this.expandedIndex);
+  }
+
+  isMyAction(keybindingAction: KeybindingAction): boolean {
+      return !!this.actions.find(action => action.action === keybindingAction.action.action);
   }
 
   ngAfterViewInit() {

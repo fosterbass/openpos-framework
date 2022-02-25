@@ -10,10 +10,11 @@ import {
     SimpleChanges
 } from '@angular/core';
 import { merge, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { filter, takeUntil } from 'rxjs/operators';
 import { IActionItem } from '../../core/actions/action-item.interface';
 import { ActionService } from '../../core/actions/action.service';
 import { KeybindingZoneService } from '../../core/keybindings/keybinding-zone.service';
+import { KeybindingAction } from '../../core/keybindings/keybinding-action.interface';
 
 @Directive({
     // tslint:disable-next-line:directive-selector
@@ -47,8 +48,13 @@ export class ActionItemKeyMappingDirective implements OnChanges, OnDestroy {
 
         this.keybindingZoneService.getNeedActionPayload(this.actionItem.keybind)
             .pipe(
+                filter(keybindingAction => this.isMyAction(keybindingAction)),
                 takeUntil(merge(this.actionItemChanged$, this.destroyed$)),
-            ).subscribe(event => event.payload = this.actionItemPayload);
+            ).subscribe(keybindingAction => keybindingAction.payload = this.actionItemPayload);
+    }
+
+    isMyAction(keybindingAction: KeybindingAction): boolean {
+        return this.actionItem && this.actionItem.action === keybindingAction.action.action;
     }
 
     ngOnChanges(changes: SimpleChanges): void {
