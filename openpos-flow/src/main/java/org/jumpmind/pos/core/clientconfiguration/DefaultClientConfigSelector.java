@@ -18,7 +18,7 @@ public class DefaultClientConfigSelector implements IClientConfigSelector {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private List<String> propertiesForTags = new ArrayList<>();
-    private List<ClientConfigurationSet> clientConfigSets = new ArrayList<>();
+    private Map<String, ClientConfigurationSet> clientConfigSets = new HashMap<>();
     private Map<String, Map<String, String>> defaultConfigs = new HashMap<>();
     String defaultTag = "default";
 
@@ -26,7 +26,7 @@ public class DefaultClientConfigSelector implements IClientConfigSelector {
     public Map<String, Map<String, String>> getConfigurations(Map<String, String> properties, List<String> additionalTags) {
 
         Map<String, Map<String, String>> configurations = new HashMap<>();
-        List<List<String>> tagGroups = new ArrayList<>();
+        Set<String> tagGroups = new LinkedHashSet<>();
         List<String> tagsForSpecificity = new ArrayList<>();
 
         // Lookup the values for our tags
@@ -47,21 +47,14 @@ public class DefaultClientConfigSelector implements IClientConfigSelector {
 
         sortDefaultFirst(tagsForSpecificity);
         // Start with default
-        tagGroups.add(Arrays.asList(defaultTag));
+        tagGroups.add(defaultTag);
+        tagGroups.addAll(tagsForSpecificity);
 
-        List<List<String>> uniquePermutations = uniqueTagGroupCombinations(tagsForSpecificity);
-        // sort so that they are in order of the least specificity to most specificity ("a" comes before "a, b, c")
-        uniquePermutations.sort(Comparator.comparingInt(List::size));
-        tagGroups.addAll(uniquePermutations);
+        Map<String, Map<String, Map<String, String>>> clientConfigsByTagsAndName = new HashMap<>();
 
-        Map<List<String>, Map<String, Map<String, String>>> clientConfigsByTagsAndName = new HashMap<>();
+        clientConfigsByTagsAndName.put(defaultTag, defaultConfigs);
 
-        clientConfigsByTagsAndName.put(Arrays.asList(defaultTag), defaultConfigs);
-
-        clientConfigSets.forEach(clientConfigurationSet -> {
-            clientConfigurationSet.getTags().sort(String::compareTo);
-            clientConfigsByTagsAndName.put(clientConfigurationSet.getTags(), clientConfigurationSet.getConfigsForTags());
-        });
+        clientConfigSets.forEach((key, clientConfigurationSet) -> clientConfigsByTagsAndName.put(key, clientConfigurationSet.getConfigsForTags()));
 
         tagGroups.forEach(tags -> {
             if (clientConfigsByTagsAndName.containsKey(tags) && clientConfigsByTagsAndName.get(tags) != null) {
@@ -83,19 +76,5 @@ public class DefaultClientConfigSelector implements IClientConfigSelector {
             }
             return 0;
         });
-    }
-
-    public static List<List<String>> uniqueTagGroupCombinations(List<String> tags) {
-        List<List<String>> results = new ArrayList<>();
-        for (String tag : tags) {
-            int resultsLength = results.size();
-            for (int j = 0; j < resultsLength; j++) {
-                List<String> newList = new ArrayList<>(results.get(j));
-                newList.add(tag);
-                results.add(newList);
-            }
-            results.add(Arrays.asList(tag));
-        }
-        return results;
     }
 }
