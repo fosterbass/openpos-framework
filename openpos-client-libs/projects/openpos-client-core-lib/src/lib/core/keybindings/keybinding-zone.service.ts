@@ -11,6 +11,7 @@ import { IActionItem } from '../actions/action-item.interface';
 import { KeybindingLikeKey } from './keybinding-like-key.interface';
 import { KeybindingPendingAction } from './keybinding-pending-action.interface';
 import { CONFIGURATION } from '../../configuration/configuration';
+import { KeybindingPropertyCrawlerService } from './keybinding-property-crawler.service';
 
 /**
  * Used by UI components/directives to interact with the current KeybindingZone.
@@ -25,6 +26,7 @@ export class KeybindingZoneService implements OnDestroy {
 
     constructor(private keybindingService: KeybindingService,
                 private keybindingParser: KeybindingParserService,
+                private keybindingPropertyCrawler: KeybindingPropertyCrawlerService,
                 // The action service may not be available depending on where this service is used
                 @Optional() private actionService: ActionService) {
     }
@@ -117,12 +119,12 @@ export class KeybindingZoneService implements OnDestroy {
 
     getKeyDownEvent(key?: string): Observable<KeybindingEvent> {
         return this.keybindingService.getAllKeyDownEvents(key)
-            .pipe(
-                filter(event => !!event.zone),
-                filter(event => this.zoneId === event.zone.id),
-                tap(event => this.logEvent(event)),
-                takeUntil(this.unregistered$)
-            );
+                .pipe(
+                        filter(event => !!event.zone),
+                        filter(event => this.zoneId === event.zone.id),
+                        tap(event => this.logEvent(event)),
+                        takeUntil(this.unregistered$)
+                );
     }
 
     removeAllKeybindings(keysOrKeybindingsOrObj: (string | IActionItem)[] | any): IActionItem[] {
@@ -147,6 +149,10 @@ export class KeybindingZoneService implements OnDestroy {
 
     hasKey(obj: KeybindingLikeKey, key: string): boolean {
         return this.keybindingParser.hasKey(obj, key);
+    }
+
+    findKeybindings(obj: any): IActionItem[] {
+        return this.keybindingPropertyCrawler.findKeybindings(obj);
     }
 
     logEvent(event: KeybindingEvent): void {

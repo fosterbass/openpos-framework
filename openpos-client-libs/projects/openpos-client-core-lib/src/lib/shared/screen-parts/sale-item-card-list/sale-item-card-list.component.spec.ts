@@ -64,13 +64,13 @@ function createSaleItems(): any[] {
 
 function expectExpandedAt(fixture: ComponentFixture<SaleItemCardListComponent>, expandedIndex: number): void {
     fixture.nativeElement.querySelectorAll('app-item-card .left-side')
-        .forEach((element, index) => {
-            if (index === expandedIndex) {
-                expect(element.classList).not.toContain('collapsed');
-            } else {
-                expect(element.classList).toContain('collapsed');
-            }
-        });
+            .forEach((element, index) => {
+                if (index === expandedIndex) {
+                    expect(element.classList).not.toContain('collapsed');
+                } else {
+                    expect(element.classList).toContain('collapsed');
+                }
+            });
 }
 
 describe('SaleItemCardListComponent', () => {
@@ -122,7 +122,7 @@ describe('SaleItemCardListComponent', () => {
         saleItemCardList.itemsChanged.subscribe(itemsChangedCallback);
 
         mockSessionService.dispatchMessage(
-            new UIDataMessage('sale-items', 1, saleItemsData)
+                new UIDataMessage('sale-items', 1, saleItemsData)
         );
 
         mockSessionService.dispatchMessage(new LifeCycleMessage(LifeCycleEvents.ScreenUpdated, {
@@ -179,6 +179,18 @@ describe('SaleItemCardListComponent', () => {
             expectExpandedAt(fixture, 0);
         });
 
+        it('should not set the payload for an action that does not belong to the component', () => {
+            const takeGregsMoney = {
+                keybind: 'Enter',
+                action: 'TakeEveryBitOfGregsMoney!!!!'
+            };
+
+            // This action is not part of the component
+            keybindingZoneService.addKeybinding(takeGregsMoney);
+            KeybindingTestUtils.pressKey(takeGregsMoney.keybind);
+            expect(mockActionService.doAction).toHaveBeenCalledOnceWith(takeGregsMoney, jasmine.falsy());
+        });
+
         it('should should remove previous keybindings and add new ones when sell items change', () => {
             const takeGregsMoney = {
                 keybind: 'F12',
@@ -186,10 +198,10 @@ describe('SaleItemCardListComponent', () => {
             };
 
             mockSessionService.dispatchMessage(
-                new UIDataMessage('sale-items', 2, [{
-                    id: 1,
-                    menuItems: [takeGregsMoney]
-                }])
+                    new UIDataMessage('sale-items', 2, [{
+                        id: 1,
+                        menuItems: [takeGregsMoney]
+                    }])
             );
 
             mockSessionService.dispatchMessage(new LifeCycleMessage(LifeCycleEvents.ScreenUpdated, {
@@ -203,8 +215,9 @@ describe('SaleItemCardListComponent', () => {
             KeybindingTestUtils.pressKey('F1');
             expect(mockActionService.doAction).not.toHaveBeenCalled();
 
+            // Verify the expanded index is passed as the payload
             KeybindingTestUtils.pressKey('F12');
-            expect(mockActionService.doAction).toHaveBeenCalledOnceWith(takeGregsMoney, jasmine.falsy());
+            expect(mockActionService.doAction).toHaveBeenCalledOnceWith(takeGregsMoney, [saleItemCardList.expandedIndex]);
         });
     });
 });

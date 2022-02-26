@@ -121,11 +121,23 @@ describe('ActionItemKeyMappingDirective', () => {
             action: 'DoNotAddGreg!!!!!'
         };
 
-        // Verify the payload is still set even though the action shouldn't be added
+        // Verify the payload isn't set because we'll trigger a keybinding that doesn't belong to this directive
         fixture.componentInstance.payload = payload;
         fixture.detectChanges();
         KeybindingTestUtils.pressKey('F10');
 
-        expect(mockActionService.doAction).toHaveBeenCalledOnceWith(expectedAction, payload);
+        expect(mockActionService.doAction).toHaveBeenCalledOnceWith(expectedAction, null);
+    });
+
+    it('should not set the payload for an action that does not belong to the directive', () => {
+        const takeGregsMoney = {
+            keybind: 'Enter',
+            action: 'TakeEveryBitOfGregsMoney!!!!'
+        };
+
+        // This action is not part of the component
+        keybindingZoneService.addKeybinding(takeGregsMoney);
+        KeybindingTestUtils.pressKey(takeGregsMoney.keybind);
+        expect(mockActionService.doAction).toHaveBeenCalledOnceWith(takeGregsMoney, jasmine.falsy());
     });
 });
