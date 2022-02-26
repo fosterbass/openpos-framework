@@ -8,7 +8,7 @@ import { SessionService } from '../services/session.service';
 import { LifeCycleMessage } from '../messages/life-cycle-message';
 import { LifeCycleEvents } from '../messages/life-cycle-events.enum';
 import { ActionMessage } from '../messages/action-message';
-import { MessageTypes } from 'openpos-client-core-lib';
+import { MessageTypes } from '../messages/message-types';
 
 describe('KeybindingDialogService', () => {
     let keybindingDialogService: KeybindingDialogService;
