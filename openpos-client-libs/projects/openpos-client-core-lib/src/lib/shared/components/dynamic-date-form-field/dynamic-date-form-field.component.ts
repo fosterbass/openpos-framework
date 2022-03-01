@@ -131,7 +131,7 @@ export class DynamicDateFormFieldComponent implements OnInit {
       }
 
       // if it is a valid time emit the value
-      if (dateValue && !isNaN(dateValue.getTime())) {
+      if (dateValue && !isNaN(dateValue.getTime()) && !this.field.errorState) {
         this.onDateEntered();
       }
     }
