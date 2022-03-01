@@ -170,7 +170,9 @@ public class StateManager implements IStateManager {
 
     @Override
     public void setSessionAuthenticated(String sessionId, boolean authenticated) {
-        this.sessionAuthenticated.put(sessionId, authenticated);
+        if(authenticated) {
+        	this.sessionAuthenticated.put(sessionId, authenticated);
+        }
         if (this.sessionListeners != null && authenticated) {
             for (ISessionListener sessionListener : sessionListeners) {
                 sessionListener.connected(sessionId, this);

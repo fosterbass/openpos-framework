@@ -7,7 +7,7 @@ import java.util.List;
 import org.jumpmind.pos.core.model.Form;
 import org.jumpmind.pos.core.model.MultipleFormOption;
 
-public class MultipleDynamicFormScreen extends Screen implements IHasForm{
+public class MultipleDynamicFormScreen extends Screen{
 
 	private static final long serialVersionUID = 1L;
 
@@ -30,12 +30,11 @@ public class MultipleDynamicFormScreen extends Screen implements IHasForm{
 		this.forms.add(form);
 	}
 
-	@Override
+	
 	public void setForm(Form form) {
 		submittedForm = form;
 	}
 
-	@Override
 	public Form getForm() {
 		return submittedForm;
 	}
