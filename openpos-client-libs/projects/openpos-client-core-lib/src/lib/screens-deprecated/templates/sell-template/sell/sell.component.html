@@ -38,7 +38,7 @@
             <ng-template appScreen></ng-template>
         </div>
 
-        <mat-card fxLayout="row wrap"  fxFlexAlign="centor"  style="margin:10px 0 5px 0"  *ngIf="((localMenuEnabled && screen.template.localMenuAtBottom) || (smOrXs | async)) &&screen.template.localMenuItems.length > 1 "  >
+        <mat-card fxLayout="row wrap"  fxFlexAlign="centor"  style="margin:10px 0 5px 0"  *ngIf="(localMenuEnabled && (screen.template.localMenuAtBottom || (smOrXs | async))) && screen.template.localMenuItems.length > 1 "  >
             <div *ngFor="let tender of screen.template.localMenuItems" fxFlex="1 1 0">
                 <div  (click)="doMenuItemAction(tender)" style="margin:10px 10px 10px 10px;text-align:center;min-width: 160px;" [ngStyle.lt-md]="{'min-width':'90px'}" [ngStyle.gt-sm]="{'min-width':'160px'}">
                     <button fxShow.gt-sm="true" fxShow.lt-md="false" mat-fab >
@@ -51,7 +51,7 @@
                 </div>
             </div>
         </mat-card>
-        <div fxLayout="row" style="margin:10px 25px 5px 25px"  *ngIf="((localMenuEnabled && screen.template.localMenuAtBottom) || (smOrXs | async)) &&screen.template.localMenuItems.length === 1 " fxFlexAlign="flex-end" fxFlexAlign.lt-md="center" >
+        <div fxLayout="row" style="margin:10px 25px 5px 25px"  *ngIf="(localMenuEnabled && (screen.template.localMenuAtBottom || (smOrXs | async))) &&screen.template.localMenuItems.length === 1 " fxFlexAlign="flex-end" fxFlexAlign.lt-md="center" >
             <div *ngFor="let tender of screen.template.localMenuItems" fxFlex="1 1 auto">
                 <div  (click)="doMenuItemAction(tender)" style="width:auto;text-align:center;">
                     <button fxShow.gt-sm="true" fxShow.lt-md="false" mat-fab style="padding-top:12px">
@@ -64,7 +64,6 @@
                 </div>
             </div>
         </div>
-
         <app-sell-status-section fxFlex="0 1 auto" [data]="statusSection"></app-sell-status-section>
 
     </div>
