@@ -1,13 +1,13 @@
 import {
   Component,
   ViewChild,
-  AfterViewInit,
   OnChanges,
   OnDestroy,
   Output,
   Input,
   EventEmitter,
-  SimpleChanges
+  SimpleChanges,
+  AfterContentInit
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatInput } from '@angular/material/input';
@@ -28,7 +28,7 @@ import { Scan } from '../../../core/oldplugins/scan';
   templateUrl: './dynamic-form-field.component.html',
   styleUrls: ['./dynamic-form-field.component.scss']
 })
-export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterViewInit {
+export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterContentInit {
 
   @ViewChild(MatInput) field: MatInput;
   @ViewChild(DynamicDateFormFieldComponent) dateField: DynamicDateFormFieldComponent;
@@ -136,18 +136,18 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterVie
     }
   }
 
-  ngAfterViewInit(): void {
-    if (this.formField.inputType === 'AutoComplete') {
-      if (this.formField.value) {
-        this.formGroup.get(this.formField.id).setValue(this.formField.value);
+  ngAfterContentInit(): void {
+      if (this.formField.inputType === 'AutoComplete') {
+          if (this.formField.value) {
+              this.formGroup.get(this.formField.id).setValue(this.formField.value);
+          }
       }
-    }
-    if (this.formField.requiredOverridden) {
-      this.overrideField();
-    }
-    if (this.formField.preValidate) {
-      this.field.ngControl.control.markAsDirty();
-    }
+      if (this.formField.requiredOverridden) {
+          this.overrideField();
+      }
+      if (this.formField.preValidate) {
+          this.formGroup.get(this.formField.id).markAsDirty();
+      }
   }
 
   ngOnDestroy(): void {
@@ -274,14 +274,14 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterVie
   }
 
   private overrideField() {
-    this.field.ngControl.control.markAsPristine();
+    this.formGroup.get(this.formField.id).markAsPristine();
     this.setFieldValue(this.formField.id, null);
     this.formField.disabled = true;
-    this.field.ngControl.control.disable();
+    this.formGroup.get(this.formField.id).disable();
   }
 
   private allowField() {
-    this.field.ngControl.control.enable();
+    this.formGroup.get(this.formField.id).enable();
     this.formField.disabled = false;
   }
 
