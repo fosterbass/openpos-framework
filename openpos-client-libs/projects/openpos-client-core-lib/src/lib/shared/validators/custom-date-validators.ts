@@ -1,9 +1,11 @@
 import { FormControl, ValidatorFn } from '@angular/forms';
 
+type ValidDateFormat = Date | number | string;
 export class CustomDateValidator {
     private constructor() { }
 
-    static minDate(minTime: Date | number): ValidatorFn {
+
+    static minDate(minTime: ValidDateFormat): ValidatorFn {
         return (field: FormControl) => {
             if (field.value) {
                 const inputDate = new Date(field.value);
@@ -18,7 +20,7 @@ export class CustomDateValidator {
         };
     }
 
-    static maxDate(maxTime: Date | number): ValidatorFn {
+    static maxDate(maxTime: ValidDateFormat): ValidatorFn {
         return (field: FormControl) => {
             if (field.value) {
                 const inputDate = new Date(field.value);
@@ -33,8 +35,8 @@ export class CustomDateValidator {
         };
     }
 
-    private static _resolveTime(time: Date | number): Date {
-        if (typeof time === 'number') {
+    private static _resolveTime(time: ValidDateFormat): Date {
+        if (typeof time === 'number' || typeof time === 'string') {
             return new Date(time);
         } else {
             return time;
