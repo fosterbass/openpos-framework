@@ -25,7 +25,7 @@ public class LocaleChangedMessage extends Message {
         this();
         setLocale(locale);
         setDisplayLocale(displayLocale);
-}
+    }
 
     public String getLocale() {
         return locale;

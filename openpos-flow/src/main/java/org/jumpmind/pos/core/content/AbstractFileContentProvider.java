@@ -6,17 +6,22 @@ import org.jumpmind.pos.core.flow.IStateManager;
 import org.jumpmind.pos.core.flow.In;
 import org.jumpmind.pos.core.flow.ScopeType;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Scope("device")
 @Slf4j
 public abstract class AbstractFileContentProvider implements IContentProvider {
+
+    final static String CACHE_NAME = "/baseFileContent";
 
     public static final String SERVER_URL = "${apiServerBaseUrl}/appId/${appId}/deviceId/${deviceId}/content?contentPath=";
 
@@ -36,14 +41,12 @@ public abstract class AbstractFileContentProvider implements IContentProvider {
     @In(scope = ScopeType.Device, required = false)
     Map<String, String> personalizationProperties;
 
-    @In(scope = ScopeType.Device)
-    IStateManager stateManager;
-
     static Map<String, ContentIndex> deviceContent = new HashMap<>();
 
+    @Cacheable(value = CACHE_NAME, key = "{#deviceId, #key, #baseContentPath}")
     public String getMostSpecificContent(String deviceId, String key, String baseContentPath) {
 
-        List<String> possibleContentDirs = getPossibleContentDirs(key);
+        List<String> possibleContentDirs = getAllPossibleContentDirPermutations(key);
 
         List<String> contentPaths = getMostSpecificContentPaths(baseContentPath, possibleContentDirs);
 
@@ -98,26 +101,56 @@ public abstract class AbstractFileContentProvider implements IContentProvider {
         return Collections.emptyList();
     }
 
-    protected List<String> getPossibleContentDirs(String key) {
-        List<String> possibleContentDirs = new ArrayList<>();
-        if (providerProperties != null && personalizationProperties != null) {
-            for (int prop = providerProperties.length; prop >= 0; prop--) {
-                StringBuilder builder = new StringBuilder(key);
+    protected List<String> getAllPossibleContentDirPermutations(String key) {
+        List<String> permutations = new ArrayList<>();
 
-                for (int i = 0; i < prop; i++) {
-                    String property = providerProperties[i];
-                    if (personalizationProperties.containsKey(property)) {
-                        builder.append("/").append(personalizationProperties.get(property));
+        if (providerProperties != null && personalizationProperties != null) {
+            getPermutations(permutations, providerProperties, 0);
+
+            List<String> additions = new ArrayList<>();
+            permutations.forEach(s -> {
+                for(int x = 1; x < s.length(); x++) {
+                    // Find each index of '/' character and add everything up to that slash
+                    if(s.charAt(x) == '/') {
+                        additions.add(s.substring(0,x));
                     }
                 }
+            });
 
-                possibleContentDirs.add(builder.toString());
+            permutations.addAll(additions);
+            permutations.add("");
+            permutations = permutations.stream().distinct()
+                    .map(s -> key + s)
+                    .sorted((s1, s2) -> s2.split("/").length - s1.split("/").length)
+                    .collect(Collectors.toList());
+        }
+        return permutations;
+    }
+
+    private void getPermutations(List<String> values, String[] shiftablePermutationValues, int pos){
+        if(pos >= shiftablePermutationValues.length - 1){
+            StringBuilder sb = new StringBuilder();
+            for(int i = 0; i < shiftablePermutationValues.length - 1; i++){
+                String property = shiftablePermutationValues[i];
+                if (personalizationProperties.containsKey(property)) {
+                    sb.append("/").append(personalizationProperties.get(property));
+                }
             }
-        } else {
-            possibleContentDirs.add(key);
+            if(!values.contains(sb.toString())) values.add(sb.toString());
+            return;
         }
 
-        return possibleContentDirs;
+        for(int arrayIndex = pos; arrayIndex < shiftablePermutationValues.length; arrayIndex++){
+            String swap = shiftablePermutationValues[pos];
+            shiftablePermutationValues[pos] = shiftablePermutationValues[arrayIndex];
+            shiftablePermutationValues[arrayIndex] = swap;
+
+            getPermutations(values, shiftablePermutationValues, pos+1);
+
+            swap = shiftablePermutationValues[pos];
+            shiftablePermutationValues[pos] = shiftablePermutationValues[arrayIndex];
+            shiftablePermutationValues[arrayIndex] = swap;
+        }
     }
 
     public boolean isFileSupported(String filename) {
