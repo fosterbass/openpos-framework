@@ -17,5 +17,6 @@ export interface ISellTemplate extends IAbstractScreenTemplate {
     timestampBegin: number;
     localMenuAtBottom: boolean;
     localMenuDelay: number;
+    enableMobileLocalMenu: boolean;
 }
 

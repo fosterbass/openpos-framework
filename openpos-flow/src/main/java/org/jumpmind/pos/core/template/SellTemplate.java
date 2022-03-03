@@ -13,18 +13,27 @@ public class SellTemplate extends AbstractTemplate {
     protected static final long serialVersionUID = 1L;
 
     protected StatusBar statusBar = new StatusBar();
-    
+
     protected List<ActionItem> localMenuItems = new ArrayList<>();
-    
+
     private String transactionMenuPrompt;
     private ActionItemGroup transactionMenu = new ActionItemGroup();
-    
+
     Scan scan;
-    
+
     private Workstation workstation;
     private String operatorText;
     private boolean localMenuAtBottom;
     private int localMenuDelay;
+    private boolean enableMobileLocalMenu;
+
+    public boolean isEnableMobileLocalMenu() {
+        return enableMobileLocalMenu;
+    }
+
+    public void setEnableMobileLocalMenu(boolean enableMobileLocalMenu) {
+        this.enableMobileLocalMenu = enableMobileLocalMenu;
+    }
 
     public SellTemplate() {
         super("Sell");
@@ -54,11 +63,11 @@ public class SellTemplate extends AbstractTemplate {
         setScan(scan);
         return this;
     }
-    
+
     public ActionItem getLocalMenuItemByAction(String action) {
         return this. localMenuItems.stream().filter( mi -> action.equalsIgnoreCase(mi.getAction())).findFirst().orElse(null);
     }
-    
+
     public ActionItem getLocalMenuItemByTitle(String title) {
         return this.localMenuItems.stream().filter( mi -> title.equalsIgnoreCase(mi.getTitle())).findFirst().orElse(null);
     }
@@ -66,15 +75,15 @@ public class SellTemplate extends AbstractTemplate {
     public void addLocalMenuItem(ActionItem menuItem) {
         this.localMenuItems.add(menuItem);
     }
-    
+
     public void setLocalMenuItems(List<ActionItem> localMenuItems) {
         this.localMenuItems = localMenuItems;
     }
-    
+
     public List<ActionItem> getLocalMenuItems() {
         return localMenuItems;
     }
-    
+
     public String getTransactionMenuPrompt() {
         return transactionMenuPrompt;
     }
@@ -86,14 +95,14 @@ public class SellTemplate extends AbstractTemplate {
     public void addTransactionMenuItem(ActionItem menuItem) {
         this.transactionMenu.getActionItems().add(menuItem);
     }
-    
+
     public void setTransactionMenu(ActionItemGroup transactionMenu) {
         this.transactionMenu = transactionMenu;
     }
-    
+
     public ActionItemGroup getTransactionMenu() {
         return transactionMenu;
-    }    
+    }
 
     public String getOperatorText() {
         return operatorText;
