@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jumpmind.pos.service.PosServerException;
 import org.jumpmind.pos.util.ClassUtils;
 import org.jumpmind.pos.util.DefaultObjectMapper;
@@ -71,7 +72,11 @@ public class OpenposHttpObjectFilter implements HandlerMethodArgumentResolver {
         try {
             Object result = endpointFilterManager.filterRequest(context);
             if (result == null) {
-                result = objectMapper.readValue(json, context.getJavaType());
+                if (StringUtils.isEmpty(json)) {
+                    result = null;
+                } else {
+                    result = objectMapper.readValue(json, context.getJavaType());
+                }
             }
             return result;
         } catch (Exception ex) {
