@@ -16,6 +16,8 @@
        ngClass.xs="scan-input-xs"
        [keyboardLayout]="keyboardLayout"
        (keydown.enter)="onEnter($event)"
+       (focus)="onFocus($event)"
+       (blur)="onBlur($event)"
        [(ngModel)]="barcode"
        (ngModelChange)="onValueChange()"
        [placeholder]="screenData.scanSomethingText"
