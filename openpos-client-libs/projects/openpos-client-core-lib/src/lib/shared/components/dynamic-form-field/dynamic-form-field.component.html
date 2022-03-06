@@ -1,4 +1,4 @@
-<div [formGroup]="formGroup">
+<div [formGroup]="formGroup" class="input-container" #inputContainer>
 
     <mat-button-toggle-group *ngIf="formField.inputType==='ToggleButton'" [formControlName]="formField.id" (change)="onFormElementChanged(formField)">
         <mat-button-toggle *ngFor="let value of values" [value]="value">
@@ -10,11 +10,11 @@
         <mat-form-field responsive-class style="width:100%" [ngSwitch]="formField.inputType">
             <app-icon *ngIf="formField.iconName" matPrefix iconName="{{formField.iconName}}" iconClass="material-icons md"></app-icon>
             <mat-hint *ngIf="formField.hintText">{{formField.hintText}}</mat-hint>
-            <input *ngSwitchDefault matInput cdkFocusInitial id="{{formField.id}}" [formControlName]="formField.id" [formControl]="formGroup.controls[formField.id]" [placeholder]="getPlaceholderText(formField)"
-                [formatterName]="formField.inputType" [required]="formField.required" (change)="onFormElementChanged(formField)" (paste)="onPaste($event)"
-                [attr.minlength]="formField.minLength" [attr.maxlength]="formField.maxLength" [attr.pattern]="formField.pattern" [readonly]="formField.disabled" [attr.tabindex]="formField.tabindex"
-                [keyboardLayout]="keyboardLayout" [attr.type]="isNumericField() ? 'tel' : 'text'"
-                autoSelectOnFocus>
+                <input *ngSwitchDefault matInput cdkFocusInitial id="{{formField.id}}" [formControlName]="formField.id" [formControl]="formGroup.controls[formField.id]" [placeholder]="getPlaceholderText(formField)"
+                    [formatterName]="formField.inputType" [required]="formField.required" (change)="onFormElementChanged(formField)" (paste)="onPaste($event)"
+                    [attr.minlength]="formField.minLength" [attr.maxlength]="formField.maxLength" [attr.pattern]="formField.pattern" [readonly]="formField.disabled" [attr.tabindex]="formField.tabindex"
+                    [keyboardLayout]="keyboardLayout" [attr.type]="isNumericField() ? 'tel' : 'text'"
+                    autoSelectOnFocus>
             <button *ngIf="isScanAllowed()" type="button" mat-button matSuffix mat-icon-button (click)="onScan(formField)">
                 <mat-icon svgIcon="barcode"></mat-icon>
             </button>
@@ -118,5 +118,15 @@
     <ng-container *ngIf="formField.elementType==='Separator'">
         <mat-divider></mat-divider>
     </ng-container>
-
+    <p class="tooltip" *ngIf="formField.inputType!=='Checkbox'" [ngStyle]="isNarrowedError && {bottom: '20%'}" #fieldErrorContainer><!--*ngIf="formField.fieldError"-->
+        <span class="input-error" #errorText>
+                    <app-icon *ngIf="isNarrowedError"
+                        style="bottom: 60%"
+                        iconName="warning"
+                        responsive-class iconClass="xs"></app-icon>
+            <span *ngIf="!isNarrowedError">{{'Error error'.repeat(50)}}</span>
+        </span>
+        <span class="tooltiptext" [ngStyle]="isNarrowedError && {top: '-5px'}" *ngIf="isErrorTooltipRequired()"><!--{{formField.fieldError.repeat(50)}}-->{{'Error error'.repeat(50)}}</span>
+    </p>
+    <div class="measure-text" #measureText>{{formField.value}}</div>
 </div>

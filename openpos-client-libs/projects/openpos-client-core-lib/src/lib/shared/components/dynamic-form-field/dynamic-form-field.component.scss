@@ -1,3 +1,6 @@
+$grey: #eee; 
+$input-font-size: 18px;
+
 :host:first-of-type {
   mat-button-toggle-group {
     margin-bottom:15px;  
@@ -22,7 +25,7 @@ textarea {
 }
 
 :host::ng-deep .mat-form-field{
-  font-size: 18px;
+  font-size: $input-font-size;
 }
 
 .poptart {
@@ -48,4 +51,80 @@ textarea {
 
 .bold-font-weight {
   font-weight: bold;
+}
+
+.input-error {
+    position: absolute;
+    margin: 0;
+    color: #b8211f;
+    max-width: 100%;
+    overflow: hidden;
+    height: 100%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    right: 0;
+}
+
+.tooltip {
+    position: absolute;
+    display: inline-block;
+    max-width: 50%;
+    width: 100%;
+    padding: 0;
+    margin: 0 5% 0 0;
+    right: 0;
+    height: 50%;
+    bottom: 0;
+    transform: translateY(-50%);
+    font-size: $input-font-size;
+    & ::-webkit-scrollbar {
+        width: 5px;
+        border-top-right-radius: 6px;
+        border-bottom-right-radius: 6px;
+    }
+    & ::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 3px;
+    }
+}
+
+.tooltip .tooltiptext {
+    opacity: 0;
+    width: 100%;
+    background-color: $grey;
+    color: #b8211f;
+    text-align: center;
+    border-radius: 6px;
+    position: absolute;
+    z-index: 100;
+    top: -25px;
+    padding: 5px 15px;
+    right: 0;
+    height: 36px;
+    overflow-y: scroll;
+    transition: all ease-in .2s;
+}
+
+.tooltip:hover .tooltiptext {
+    opacity: 100;
+}
+
+.warning-icon {
+    bottom: 25%;
+}
+
+.input-container {
+    position: relative;
+    font-family: 'Lato', sans-serif;
+}
+
+.measure-text {
+    display: inline-block;
+    width: auto;
+    visibility: hidden;
+    overflow: auto;
+    font-size: $input-font-size;
+    position: absolute;
+    left: 0;
+    height: 0;
 }

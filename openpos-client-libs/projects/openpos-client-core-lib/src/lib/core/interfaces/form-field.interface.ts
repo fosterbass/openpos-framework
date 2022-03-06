@@ -35,6 +35,7 @@ export interface IFormElement {
     additionalValidators?: ValidatorFn[];
     validationMessages?: Map<string, string>;
     icon?: string;
+    fieldError: string;
     valueDisplayMode?: any;
     tabindex?: any;
     labelPosition?: any;

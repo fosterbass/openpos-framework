@@ -22,6 +22,7 @@ import { ScreenService } from '../../../core/services/screen.service';
 import { OldPluginService } from '../../../core/services/old-plugin.service';
 import { BarcodeScannerPlugin } from '../../../core/oldplugins/barcode-scanner.plugin';
 import { Scan } from '../../../core/oldplugins/scan';
+import { ElementRef } from '@angular/core';
 
 @Component({
   selector: 'app-dynamic-form-field',
@@ -32,10 +33,16 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterVie
 
   @ViewChild(MatInput) field: MatInput;
   @ViewChild(DynamicDateFormFieldComponent) dateField: DynamicDateFormFieldComponent;
+  @ViewChild('errorText') errorText: ElementRef;
+  @ViewChild('fieldErrorContainer') fieldErrorContainer: ElementRef;
+  @ViewChild('measureText') measureTextRef: ElementRef;
+  @ViewChild('inputContainer') inputContainer: ElementRef;
 
   @Input() formField: IFormElement;
 
   @Input() formGroup: FormGroup;
+  
+  @Input() isNarrowedError: boolean;
 
   public controlName: string;
 
@@ -135,6 +142,12 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterVie
 
     }
   }
+  
+  resetError(): void {
+    if (this.formField.fieldError) {
+        this.formField.fieldError = null;
+    }
+  }
 
   ngAfterViewInit(): void {
     if (this.formField.inputType === 'AutoComplete') {
@@ -142,6 +155,8 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterVie
         this.formGroup.get(this.formField.id).setValue(this.formField.value);
       }
     }
+    const isNarrowed = this.isErrorNarrowed();
+    this.isNarrowedError = isNarrowed;
   }
 
   ngOnDestroy(): void {
@@ -271,5 +286,19 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterVie
     }
     return pastedText.length <= maxLength;
   }
+
+    isErrorTooltipRequired() {
+      const tooltipContainerWidth = this.fieldErrorContainer?.nativeElement ? getComputedStyle(this.fieldErrorContainer.nativeElement).width : 0;
+      const errorFieldWidth = this.errorText?.nativeElement ? getComputedStyle(this.errorText?.nativeElement).width : 0;
+      return errorFieldWidth >= tooltipContainerWidth || this.isNarrowedError;
+    }
+    
+    isErrorNarrowed() {
+      const textWidth = this.measureTextRef?.nativeElement?.clientWidth;
+      const errorWidth = this.errorText?.nativeElement?.clientWidth;
+      const formWidth = this.inputContainer?.nativeElement?.clientWidth;
+      const formWidthWithGap = formWidth * 0.88;
+      return formWidthWithGap <= textWidth + errorWidth;
+    }
 }
 
