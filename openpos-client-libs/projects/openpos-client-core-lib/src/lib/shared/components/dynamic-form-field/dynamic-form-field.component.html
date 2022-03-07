@@ -1,4 +1,4 @@
-<div [formGroup]="formGroup" class="input-container" #inputContainer>
+<div [formGroup]="formGroup" class="input-container" #inputContainer (input)="resetError()">
 
     <mat-button-toggle-group *ngIf="formField.inputType==='ToggleButton'" [formControlName]="formField.id" (change)="onFormElementChanged(formField)">
         <mat-button-toggle *ngFor="let value of values" [value]="value">
@@ -118,15 +118,22 @@
     <ng-container *ngIf="formField.elementType==='Separator'">
         <mat-divider></mat-divider>
     </ng-container>
-    <p class="tooltip" *ngIf="formField.inputType!=='Checkbox'" [ngStyle]="isNarrowedError && {bottom: '20%'}" #fieldErrorContainer><!--*ngIf="formField.fieldError"-->
+    <p *ngIf="showInlineError()"
+       class="tooltip" 
+       [ngClass]="{'narrowed-error-tooltip-container' : isNarrowedError}" 
+       #fieldErrorContainer
+    >
         <span class="input-error" #errorText>
-                    <app-icon *ngIf="isNarrowedError"
-                        style="bottom: 60%"
-                        iconName="warning"
-                        responsive-class iconClass="xs"></app-icon>
-            <span *ngIf="!isNarrowedError">{{'Error error'.repeat(50)}}</span>
+            <app-icon *ngIf="isNarrowedError" 
+                class="narrowed-error"
+                iconName="warning"
+                responsive-class
+                iconClass="xs"></app-icon>
+            <span *ngIf="!isNarrowedError">{{formField.fieldError}}</span>
         </span>
-        <span class="tooltiptext" [ngStyle]="isNarrowedError && {top: '-5px'}" *ngIf="isErrorTooltipRequired()"><!--{{formField.fieldError.repeat(50)}}-->{{'Error error'.repeat(50)}}</span>
+        <span class="tooltiptext" 
+              *ngIf="isErrorTooltipRequired()"
+              [ngClass]="{'narrowed-error-tooltip-text' : isNarrowedError}">{{formField.fieldError}}</span>
     </p>
-    <div class="measure-text" #measureText>{{formField.value}}</div>
+    <div class="measure-text" #measureText>{{!formField.value && formField.placeholder}}</div>
 </div>

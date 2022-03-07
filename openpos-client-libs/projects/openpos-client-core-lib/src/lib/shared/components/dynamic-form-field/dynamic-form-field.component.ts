@@ -1,28 +1,28 @@
 import {
-  Component,
-  ViewChild,
-  AfterViewInit,
-  OnChanges,
-  OnDestroy,
-  Output,
-  Input,
-  EventEmitter,
-  SimpleChanges
+    AfterViewInit,
+    Component,
+    ElementRef,
+    EventEmitter,
+    Input,
+    OnChanges,
+    OnDestroy,
+    Output,
+    SimpleChanges,
+    ViewChild
 } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { MatInput } from '@angular/material/input';
-import { FormGroup } from '@angular/forms';
-import { Subscription } from 'rxjs';
-import { ITextMask, TextMask } from '../../textmask';
-import { DynamicDateFormFieldComponent } from '../dynamic-date-form-field/dynamic-date-form-field.component';
-import { PopTartComponent } from '../pop-tart/pop-tart.component';
-import { IFormElement, IPopTartField } from '../../../core/interfaces/form-field.interface';
-import { SessionService } from '../../../core/services/session.service';
-import { ScreenService } from '../../../core/services/screen.service';
-import { OldPluginService } from '../../../core/services/old-plugin.service';
-import { BarcodeScannerPlugin } from '../../../core/oldplugins/barcode-scanner.plugin';
-import { Scan } from '../../../core/oldplugins/scan';
-import { ElementRef } from '@angular/core';
+import {MatDialog} from '@angular/material/dialog';
+import {MatInput} from '@angular/material/input';
+import {FormGroup} from '@angular/forms';
+import {Subscription} from 'rxjs';
+import {ITextMask, TextMask} from '../../textmask';
+import {DynamicDateFormFieldComponent} from '../dynamic-date-form-field/dynamic-date-form-field.component';
+import {PopTartComponent} from '../pop-tart/pop-tart.component';
+import {IFormElement, IPopTartField} from '../../../core/interfaces/form-field.interface';
+import {SessionService} from '../../../core/services/session.service';
+import {ScreenService} from '../../../core/services/screen.service';
+import {OldPluginService} from '../../../core/services/old-plugin.service';
+import {BarcodeScannerPlugin} from '../../../core/oldplugins/barcode-scanner.plugin';
+import {Scan} from '../../../core/oldplugins/scan';
 
 @Component({
   selector: 'app-dynamic-form-field',
@@ -155,8 +155,7 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterVie
         this.formGroup.get(this.formField.id).setValue(this.formField.value);
       }
     }
-    const isNarrowed = this.isErrorNarrowed();
-    this.isNarrowedError = isNarrowed;
+    this.isNarrowedError = this.isErrorNarrowed();
   }
 
   ngOnDestroy(): void {
@@ -182,6 +181,7 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterVie
   }
 
   onFormElementChanged(formElement: IFormElement): void {
+    this.resetError();
     this.changed.emit(formElement);
   }
 
@@ -199,6 +199,7 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterVie
   }
 
   openPopTart() {
+    this.resetError();
     const dialogRef = this.dialog.open(PopTartComponent, {
       width: '70%',
       data: {
@@ -284,21 +285,27 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterVie
         maxLength--;
       }
     }
+    this.resetError();
     return pastedText.length <= maxLength;
   }
 
-    isErrorTooltipRequired() {
-      const tooltipContainerWidth = this.fieldErrorContainer?.nativeElement ? getComputedStyle(this.fieldErrorContainer.nativeElement).width : 0;
-      const errorFieldWidth = this.errorText?.nativeElement ? getComputedStyle(this.errorText?.nativeElement).width : 0;
-      return errorFieldWidth >= tooltipContainerWidth || this.isNarrowedError;
-    }
+  isErrorTooltipRequired() {
+    const tooltipContainerWidth = this.fieldErrorContainer?.nativeElement ? this.fieldErrorContainer.nativeElement.clientWidth : 0;
+    const errorFieldWidth = this.errorText?.nativeElement ? this.errorText.nativeElement.clientWidth : 0;
+    return errorFieldWidth >= tooltipContainerWidth || this.isNarrowedError;
+  }
+  
+  isErrorNarrowed() {
+    const textWidth = this.measureTextRef?.nativeElement?.clientWidth;
+    const errorWidth = this.errorText?.nativeElement?.clientWidth;
+    const formWidth = this.inputContainer?.nativeElement?.clientWidth;
+    // Adding gap between input text and error text to avoid overlapping.
+    const formWidthWithGap = formWidth * 0.88;
+    return formWidthWithGap <= textWidth + errorWidth;
+  }
     
-    isErrorNarrowed() {
-      const textWidth = this.measureTextRef?.nativeElement?.clientWidth;
-      const errorWidth = this.errorText?.nativeElement?.clientWidth;
-      const formWidth = this.inputContainer?.nativeElement?.clientWidth;
-      const formWidthWithGap = formWidth * 0.88;
-      return formWidthWithGap <= textWidth + errorWidth;
-    }
+  showInlineError() {
+    return this.formField.fieldError && this.formField.inputType!=='Checkbox'; 
+  }
 }
 
