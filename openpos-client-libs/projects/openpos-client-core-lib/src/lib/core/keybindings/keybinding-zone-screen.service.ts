@@ -72,7 +72,7 @@ export class KeybindingZoneScreenService implements OnDestroy {
         } else if (this.keybindingZoneService.isActive()) {
             this.updateRegistration(message);
         } else {
-            this.keybindingZoneService.activate();
+            this.activate(message);
         }
     }
 
@@ -96,7 +96,11 @@ export class KeybindingZoneScreenService implements OnDestroy {
     deactivate(): void {
         console.log(`[KeybindingZoneScreenService]: Deactivated keybindings in message "${this.messageId}"`);
         this.keybindingZoneService.deactivate();
+    }
 
+    activate(message: any): void {
+        this.keybindingZoneService.activate();
+        this.updateRegistration(message);
     }
 
     updateRegistration(message: any): void {
