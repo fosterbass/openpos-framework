@@ -30,6 +30,23 @@ export class ScanditCapacitorImageScanner implements ImageScanner, IPlatformPlug
             timeout(10000),
             switchMap((config: ScanditCapacitorMessage) => {
                 if (config.licenseKey) {
+                    let licenseKeyDebug = '<UNDEFINED>';
+
+                    // just some simple safe guards to prevent too much of the key
+                    // being easily scraped from the console log. Its not terribly
+                    // sensitive, but we should try and hide it at least a little.
+                    if (config.licenseKey.length >= 30) {
+                        licenseKeyDebug = config.licenseKey.substring(0, 5)
+                            + '...'
+                            + config.licenseKey.substring(config.licenseKey.length - 5);
+                    } else if (config.licenseKey.length >= 15) {
+                        licenseKeyDebug = config.licenseKey.substring(0, 3) + '...';
+                    } else {
+                        licenseKeyDebug = '<SECRET>';
+                    }
+
+                    console.debug('initializing capacitor Scandit plugin', { key: licenseKeyDebug });
+
                     return of(scandit.initialize({
                         apiKey: config.licenseKey
                     }));

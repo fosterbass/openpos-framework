@@ -28,7 +28,7 @@ import { Inject, Optional } from '@angular/core';
 export class PersonalizationStartupTask implements IStartupTask {
 
     private readonly TYPE = '_jmc-personalize._tcp.';
-    private readonly DOMAIN = 'airprint.ae.info';
+    private readonly DOMAIN = '';
     name = StartupTaskNames.PERSONALIZATION;
 
     order = 500;

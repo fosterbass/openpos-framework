@@ -11,6 +11,7 @@ import jpos.services.EventCallbacks;
 import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.jumpmind.pos.util.AppUtils;
 import org.jumpmind.pos.util.ClassUtils;
 import org.jumpmind.pos.util.status.Status;
 
@@ -236,14 +237,15 @@ public class ZebraPrinter extends AbstractPOSPrinter {
 
     @Override
     public int readPrinterStatus() {
-        if (isSocketConnection()) {
+        if (isSocketConnection() && getBool(this.settings.get("statusModeEnabled"), true)) {
             writer.print(COMMAND_ENABLE_ZPL);
             writer.flush();
+            AppUtils.sleep(getInt(this.settings.get("languageSwapSleep"), 500));
             Connection connection = new TcpConnection(this.settings.get("hostName").toString(), TcpConnection.DEFAULT_ZPL_TCP_PORT);
             try {
                 connection.open();
+                connection.setMaxTimeoutForRead(getInt(settings.get("connectTimeout"), 2500));
                 com.zebra.sdk.printer.ZebraPrinter printer = ZebraPrinterFactory.getInstance(connection);
-
                 PrinterStatus printerStatus = printer.getCurrentStatus();
                 if (printerStatus.isReadyToPrint) {
                     return ZebraStatusCodes.ZEBRA_READY_FOR_PRINT;
@@ -350,5 +352,23 @@ public class ZebraPrinter extends AbstractPOSPrinter {
     
     private boolean isSocketConnection() {
         return connectionFactory instanceof SocketConnectionFactory;
+    }
+
+    private int getInt(Object object, int defaultValue) {
+        int value = defaultValue;
+        if (object instanceof String) {
+            value = Integer.parseInt((String)object);
+        } else if (object instanceof Integer) {
+            value = (Integer)object;
+        }
+        return value;
+    }
+    
+    private boolean getBool(Object object, boolean defaultValue) {
+        boolean value = defaultValue;
+        if (object instanceof Boolean) {
+            value = (boolean) object;
+        }
+        return value;
     }
 }

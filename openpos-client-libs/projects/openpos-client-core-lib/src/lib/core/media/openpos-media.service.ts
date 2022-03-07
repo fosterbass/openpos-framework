@@ -25,18 +25,18 @@ const exampleConfig =
     `
 clientConfiguration:
       clientConfigSets:
-      - tags: default
-        configsForTags:
-          MediaService:
-             breakpoints:
-               'mobile-portrait': '(max-width: 599.99px) and (orientation: portrait)'
-               'mobile-landscape': '(max-width: 959.99px) and (orientation: landscape)'
-               'tablet-portrait': '(min-width: 600px) and (max-width: 839.99px) and (orientation: portrait)'
-               'tablet-landscape': '(min-width: 960px) and (max-width: 1279.99px) and (orientation: landscape)'
-               'desktop-portrait': '(min-width: 840px) and (orientation: portrait)'
-               'desktop-landscape': '(min-width: 1280px) and (orientation: landscape)'
-               'small-desktop-portrait': '(min-width: 768px) and (max-width: 768px) and (orientation: portrait)'
-               'small-desktop-landscape': '(min-width: 1366px) and (max-width: 1366px) and (orientation: landscape)'
+        default:
+            configsForTags:
+              MediaService:
+                 breakpoints:
+                   'mobile-portrait': '(max-width: 599.99px) and (orientation: portrait)'
+                   'mobile-landscape': '(max-width: 959.99px) and (orientation: landscape)'
+                   'tablet-portrait': '(min-width: 600px) and (max-width: 839.99px) and (orientation: portrait)'
+                   'tablet-landscape': '(min-width: 960px) and (max-width: 1279.99px) and (orientation: landscape)'
+                   'desktop-portrait': '(min-width: 840px) and (orientation: portrait)'
+                   'desktop-landscape': '(min-width: 1280px) and (orientation: landscape)'
+                   'small-desktop-portrait': '(min-width: 768px) and (max-width: 768px) and (orientation: portrait)'
+                   'small-desktop-landscape': '(min-width: 1366px) and (max-width: 1366px) and (orientation: landscape)'
 `;
 
 /*
