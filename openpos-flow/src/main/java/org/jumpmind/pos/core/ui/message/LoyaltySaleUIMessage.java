@@ -24,9 +24,9 @@ public class LoyaltySaleUIMessage extends UIMessage {
     private String noMembershipsFoundLabel;
     private ActionItem mobileLoyaltyButton;
 
-    private String loyaltySignupInProgressTitle;
-    private String loyaltySignupInProgressIcon;
-    private String loyaltySignupInProgressDetailsIcon;
+    private String loyaltyOperationInProgressTitle;
+    private String loyaltyOperationInProgressIcon;
+    private String loyaltyOperationInProgressDetailsIcon;
     private ActionItem loyaltyCancelButton;
 
     private boolean rewardsVisibleOnLinkButton;
