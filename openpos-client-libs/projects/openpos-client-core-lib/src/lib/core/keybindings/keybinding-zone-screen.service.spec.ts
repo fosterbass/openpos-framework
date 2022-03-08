@@ -86,13 +86,23 @@ describe('KeybindingZoneScreenService', () => {
                 keybind: 'F8',
                 action: 'DoBookLearning'
             };
+            const multiKeybindAction = {
+                keybind: 'Alt+T,Enter',
+                action: 'DoSomething'
+            };
 
             mockSessionService.dispatchMessage({
                 id: userZone.id,
                 type: MessageTypes.SCREEN,
-                idiotAction
+                idiotAction,
+                multiKeybindAction
             });
-            expect(keybindingZoneService.getZone().actions.includes(idiotAction)).toBeTrue();
+            expect(keybindingZoneService.getZone()
+                .actions.some(action => action.action === idiotAction.action && action.keybind === idiotAction.keybind)).toBeTrue();
+            expect(keybindingZoneService.getZone()
+                .actions.some(action => action.action === multiKeybindAction.action && action.keybind === 'Alt+T')).toBeTrue();
+            expect(keybindingZoneService.getZone()
+                .actions.some(action => action.action === multiKeybindAction.action && action.keybind === 'Enter')).toBeTrue();
         });
 
         it('should reactivate if already registered', () => {

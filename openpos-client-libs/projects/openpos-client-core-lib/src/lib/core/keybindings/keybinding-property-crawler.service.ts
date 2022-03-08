@@ -39,18 +39,20 @@ export class KeybindingPropertyCrawlerService {
         return obj !== null && obj !== undefined && typeof obj === 'object';
     }
 
-    pushDistinctKeyBinding(keybindings: IActionItem[], keybinding: IActionItem): boolean {
-        const index = keybindings.findIndex(k => this.keybindingParser.areEqual(k.keybind, keybinding.keybind));
+    pushDistinctKeyBinding(keybindings: IActionItem[], keybinding: IActionItem): void {
+        const keybindingsForActionItem = this.keybindingParser.splitKeys(keybinding.keybind);
+        keybindingsForActionItem.forEach(keybind => {
+            const index = keybindings.findIndex(k => this.keybindingParser.areEqual(k.keybind, keybind));
 
-        // Keep the first one if we encounter a duplicate action.
-        //
-        // Recursion goes top to bottom, and keybindings on the top level most likely belong to the current screens,
-        // as opposed to a duplicate action nested deeper down that most likely would belong to a screen part.
-        if (index >= 0) {
-            return false;
-        }
-
-        keybindings.push(keybinding);
-        return true;
+            // Keep the first one if we encounter a duplicate action.
+            //
+            // Recursion goes top to bottom, and keybindings on the top level most likely belong to the current screens,
+            // as opposed to a duplicate action nested deeper down that most likely would belong to a screen part.
+            if (index < 0) {
+                const updatedKeybinding = Object.assign({}, keybinding);
+                updatedKeybinding.keybind = keybind;
+                keybindings.push(updatedKeybinding);
+            }
+        });
     }
 }
