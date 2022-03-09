@@ -141,6 +141,23 @@
             flex-direction:column;
             gap:0.5rem;
             margin:.25rem;
+
+            .search-section-toggle {
+                display: grid;
+                grid-template-columns: auto 1fr;
+
+                .transaction-search-mode-mobile {
+                    display: flex;
+                    align-items: center;
+                }
+            }
+
+            .transaction-filter-options {
+                .transaction-filter-options-label::after {
+                    content: ':';
+                    padding-right: 1rem;
+                }
+            }
         }
     }
 

@@ -33,7 +33,7 @@ export class TransactionSearchComponent extends PosScreenDirective<TransactionSe
       [MediaBreakpoints.MOBILE_PORTRAIT, true],
       [MediaBreakpoints.MOBILE_LANDSCAPE, true],
       [MediaBreakpoints.TABLET_PORTRAIT, true],
-      [MediaBreakpoints.TABLET_LANDSCAPE, true],
+      [MediaBreakpoints.TABLET_LANDSCAPE, false],
       [MediaBreakpoints.DESKTOP_PORTRAIT, false],
       [MediaBreakpoints.DESKTOP_LANDSCAPE, false]
     ]));
