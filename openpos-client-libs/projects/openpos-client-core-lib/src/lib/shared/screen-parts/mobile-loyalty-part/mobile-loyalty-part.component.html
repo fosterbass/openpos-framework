@@ -20,6 +20,9 @@
             <div responsive-class *ngIf="screenData.customer.label && screenData.customer.id" class="mobile-loyalty-id">
                 {{screenData.customer.label}}: {{screenData.customer.id}}
             </div>
+            <div responsive-class *ngIf="screenData.savingsCalculatorMessage" class="savings-calculator">
+                {{screenData.savingsCalculatorMessage}}
+            </div>
         </div>
     </div>
 </button>

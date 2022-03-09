@@ -6,6 +6,8 @@
     $disabled-border: map-get(map-get($theme, foreground), disabled-text);
     $foreground: map-get($theme, foreground);
     $primary: map-get($theme, primary);
+    $app-warn: mat-color(map-get($theme, warn));
+
 
     app-sale-total-panel {
         .linked-customer-summary {
@@ -44,6 +46,9 @@
                         }
                     }
                 }
+            }
+            .savings-calculator {
+                color: $app-warn;
             }
         }
 

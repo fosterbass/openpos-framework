@@ -6,4 +6,5 @@ export interface MobileLoyaltyPartInterface extends IAbstractScreen {
     mobileLoyaltyButton: IActionItem;
     linkedCustomerButton: IActionItem;
     customer: { name: string, label: string, icon: string, id: string };
+    savingsCalculatorMessage: string;
 }

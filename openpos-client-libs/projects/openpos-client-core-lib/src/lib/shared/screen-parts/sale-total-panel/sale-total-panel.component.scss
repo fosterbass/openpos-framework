@@ -123,7 +123,8 @@ $sale-total-icon-size: 36px;
                 grid-template-areas:
                     "Icon              Name"
                     "Memberships       Memberships"
-                    "MembershipRewards MembershipRewards";
+                    "MembershipRewards MembershipRewards"
+                    "SavingsCalculator SavingsCalculator";
 
                 &.tablet,
                 &.mobile {
@@ -216,6 +217,11 @@ $sale-total-icon-size: 36px;
                             }
                         }
                     }
+                }
+                .savings-calculator {
+                 grid-area: SavingsCalculator;
+                 line-height: normal;
+                 white-space: normal;
                 }
             }
         }
