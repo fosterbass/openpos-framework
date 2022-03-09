@@ -82,7 +82,7 @@ public class EndpointInvokerTest {
 
         verify(endpointInvoker, atLeastOnce()).startSample(endpointInvocationContext);
         verify(invocationStrategy, atLeastOnce()).invoke(endpointInvocationContext);
-        verify(endpointInvoker, atLeastOnce()).endSampleSuccess(anyObject(), eq(endpointInvocationContext));
+        verify(endpointInvoker, atLeastOnce()).endSampleSuccess(any(), eq(endpointInvocationContext));
         assertNotNull(result, "invokeStrategy should not return null in this case.");
     }
 
@@ -118,8 +118,8 @@ public class EndpointInvokerTest {
         } catch (Throwable ex) {
             verify(endpointInvoker, atLeastOnce()).startSample(endpointInvocationContext);
             verify(invocationStrategy, atLeastOnce()).invoke(endpointInvocationContext);
-            verify(endpointInvoker, never()).endSampleSuccess(anyObject(), eq(endpointInvocationContext));
-            verify(endpointInvoker, atLeastOnce()).endSampleError(anyObject(), anyObject());
+            verify(endpointInvoker, never()).endSampleSuccess(any(), eq(endpointInvocationContext));
+            verify(endpointInvoker, atLeastOnce()).endSampleError(any(), any());
             if (!ex.equals(exception)) {
                 throw ex;
             }
@@ -218,7 +218,7 @@ public class EndpointInvokerTest {
         verify(endpointCache, atLeastOnce()).get(path);
         verify(endpointCache, atLeastOnce()).put(path, true);
         assertEquals(1, endpointCache.size());
-        assertEquals(true, result);
+        assertTrue(result);
     }
 
     @Test
@@ -236,7 +236,7 @@ public class EndpointInvokerTest {
         verify(endpointCache, atLeastOnce()).get(path);
         verify(endpointCache, atLeastOnce()).put(path, true);
         assertEquals(1, endpointCache.size());
-        assertEquals(true, result);
+        assertTrue(result);
     }
 
     @Test
@@ -258,7 +258,7 @@ public class EndpointInvokerTest {
         verify(endpointCache, atLeastOnce()).get(path);
         verify(endpointCache, atLeastOnce()).put(path, false);
         assertEquals(1, endpointCache.size());
-        assertEquals(false, result);
+        assertFalse(result);
     }
 
     @Test
@@ -276,7 +276,7 @@ public class EndpointInvokerTest {
         verify(endpointCache, atLeastOnce()).get(path);
         verify(endpointCache, atLeastOnce()).put(path, false);
         assertEquals(1, endpointCache.size());
-        assertEquals(false, result);
+        assertFalse(result);
     }
 
     @Test
@@ -292,7 +292,7 @@ public class EndpointInvokerTest {
         verify(endpointCache, atLeastOnce()).get(path);
         verify(endpointCache, atLeastOnce()).put(path, false);
         assertEquals(1, endpointCache.size());
-        assertEquals(false, result);
+        assertFalse(result);
     }
 
     private ServiceSpecificConfig serviceSpecificConfigSetup(String path) {
@@ -351,10 +351,8 @@ public class EndpointInvokerTest {
     }
 
     @Test
-    public void endSampleSuccessEndsSampleTest() throws NoSuchMethodException, NoSuchFieldException, IllegalAccessException {
+    public void endSampleSuccessEndsSampleTest() {
         ServiceSampleModel sampleModel = getServiceSampleModel();
-
-        Object testResult = new Object();
         DBSession session = mock(DBSession.class);
 
         EndpointInvoker endpointInvoker = spy(new EndpointInvoker());
@@ -370,10 +368,8 @@ public class EndpointInvokerTest {
     }
 
     @Test
-    public void endSampleErrorProperlySetsFieldsTest() throws NoSuchMethodException {
+    public void endSampleErrorProperlySetsFieldsTest() {
         ServiceSampleModel sampleModel = getServiceSampleModel();
-
-        Object testResult = new Object();
         DBSession session = mock(DBSession.class);
 
         EndpointInvoker endpointInvoker = spy(new EndpointInvoker());

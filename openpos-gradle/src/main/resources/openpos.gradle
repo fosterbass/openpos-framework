@@ -30,8 +30,6 @@ dependencies {
 
     implementation group: 'net.bytebuddy', name: 'byte-buddy', version: '1.11.9'
     testImplementation group: 'org.powermock', name: 'powermock-reflect', version: '2.0.9'
-    testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.11.2'
     testImplementation group: 'junit', name: 'junit', version: '4.12'
     testImplementation group: 'com.vmlens', name: 'concurrent-junit', version: '1.0.2'
-    testImplementation "org.springframework:spring-test:$springVersion"
 }

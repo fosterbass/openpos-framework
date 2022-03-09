@@ -9,8 +9,8 @@ dependencies {
 
     // yaml parser
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.6'
-    
-    
+
+
     // caching implementation
     implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '2.6.2'
 
@@ -30,17 +30,15 @@ dependencies {
         exclude module: "spring-boot-starter-tomcat"
         exclude module: "spring-boot-starter-logging"
     }
-    
+
     implementation("org.springframework.boot:spring-boot-starter-cache:${springBootVersion}") {
         exclude module: "spring-boot-starter-tomcat"
         exclude module: "spring-boot-starter-logging"
     }
-    
+
     testImplementation("org.springframework.boot:spring-boot-starter-test:${springBootVersion}") {
         exclude module: "spring-boot-starter-tomcat"
         exclude module: "spring-boot-starter-logging"
-        exclude group: "org.mockito"
-        exclude group: "org.junit"
     }
 
 }
