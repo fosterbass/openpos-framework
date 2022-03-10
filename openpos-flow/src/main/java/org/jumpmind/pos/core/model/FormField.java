@@ -30,10 +30,20 @@ public class FormField implements IFormElement, IField, Serializable {
     private String label;
     private String additionalStyle;
     private String fieldId;
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
+    }
+
     /* has to be set to a blank value by default because null values are not serialized in nu commerce and therefore aren't bound on the client side */
     private String value = "";
     private boolean required = true;
     private boolean sensitive = false;
+    private String error;
 
     private boolean readOnly = false;
 
