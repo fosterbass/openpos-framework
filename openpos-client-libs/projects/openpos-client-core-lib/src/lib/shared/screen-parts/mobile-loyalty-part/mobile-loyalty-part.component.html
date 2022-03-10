@@ -27,21 +27,5 @@
         <div *ngIf="screenData.memberships?.length == 0" class="no-memberships" responsive-class>
             {{screenData.noMembershipsFoundLabel}}
         </div>
-        <div responsive-class *ngIf="screenData.customer.label && screenData.customer.id" [ngClass]="'mobile-loyalty-id ' + getHideLogoShowMembershipsClass()">
-            {{screenData.customer.label}}: {{screenData.customer.id}}
-        </div>
-        <div responsive-class *ngIf="screenData.customer.label && screenData.customer.id" ngClass="{{'mobile-loyalty-id' + getHideLogoShowMembershipsClass()}}">
-            {{screenData.customer.label}}: {{screenData.customer.id}}
-        </div>
-    </div>
-    <div *ngIf="screenData.mobileLoyaltySaleShowMembershipsHideLogo" class="memberships">
-        <app-membership-display *ngFor="let membership of screenData.memberships" class="item"
-                                [membership]="membership" [iconMatClass]="'mat-16'"></app-membership-display>
-        <div *ngIf="screenData.memberships?.length == 0" class="no-memberships" responsive-class>{{screenData.noMembershipsFoundLabel}}</div>
-    </div>
-    <div *ngIf="screenData.mobileLoyaltySaleShowMembershipsHideLogo" class="memberships">
-        <app-membership-display *ngFor="let membership of screenData.memberships" class="item"
-                                [membership]="membership" [iconMatClass]="'mat-16'"></app-membership-display>
-        <div *ngIf="screenData.memberships?.length == 0" class="no-memberships" responsive-class>{{screenData.noMembershipsFoundLabel}}</div>
     </div>
 </button>
