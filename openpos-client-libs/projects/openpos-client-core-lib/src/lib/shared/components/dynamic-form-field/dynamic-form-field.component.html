@@ -54,7 +54,7 @@
         [minDate]="formField.minDate" [maxDate]="formField.maxDate"
         (valueChange)="onFormElementChanged(formField)"></app-dynamic-date-form-field>
         <mat-error>
-            <app-show-errors [control]="control" [additionalValidationMessages]="formField.validationMessages"></app-show-errors>
+            <app-show-errors [error]="formField.error" [control]="control" [additionalValidationMessages]="formField.validationMessages"></app-show-errors>
         </mat-error>
     </ng-container>
 
