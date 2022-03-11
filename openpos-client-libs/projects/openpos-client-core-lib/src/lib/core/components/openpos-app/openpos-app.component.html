@@ -1,0 +1,13 @@
+<ng-container [ngSwitch]="startupController.status.completed">
+    <app-dev-menu></app-dev-menu>
+    <ng-container *ngSwitchCase="true">
+        <app-loader></app-loader>
+        <app-dynamic-screen></app-dynamic-screen>
+    </ng-container>
+    <ng-container *ngSwitchCase="'error'">
+        <h2>Application failed to load. Please report this issue to an administrator.</h2>
+    </ng-container>
+    <ng-container *ngSwitchDefault>
+        <app-splash-screen></app-splash-screen>
+    </ng-container>
+</ng-container>

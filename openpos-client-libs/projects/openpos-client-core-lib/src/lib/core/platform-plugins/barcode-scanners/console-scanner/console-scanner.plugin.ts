@@ -16,6 +16,11 @@ export class ConsoleScannerPlugin implements Scanner {
 
     constructor() {
         console.scan = (type, value) => {
+            // support single argument scan like console.scan('123456')
+            if (type?.match(/^\d/) && !value) {
+                value = type;
+                type = 'CODE128';
+            }
             this.scanSubject.next({
                 type,
                 data: value

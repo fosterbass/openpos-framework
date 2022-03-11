@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Endpoint(path = "/admin/personalizeMe")
 public class GetDevicePersonalizationModelEndpoint {
     @Autowired
-    private DevicesRepository repository;
+    protected DevicesRepository repository;
 
     public PersonalizeMeResponse personalizeMe(@RequestParam("deviceName") String deviceName){
         DevicePersonalizationModel model = repository.findDevicePersonalizationModel(deviceName);
