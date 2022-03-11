@@ -1,6 +1,7 @@
 package org.jumpmind.pos.devices;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.jumpmind.pos.devices.model.DeviceModel;
 import org.jumpmind.pos.devices.model.DevicesRepository;
 import org.jumpmind.pos.devices.service.strategy.IDeviceBusinessUnitIdStrategy;
@@ -52,7 +53,9 @@ public class DeviceUpdater implements ApplicationListener<DeviceConnectedEvent> 
         deviceModel.setTimezoneOffset(clientContext.get(ClientContext.TIMEZONE_OFFSET));
         deviceModel.setInstallationId(installationId);
         // TODO check properties also before using default
-        deviceModel.setLocale(Locale.getDefault().toString());
+        if(StringUtils.isBlank(deviceModel.getLocale())) {
+            deviceModel.setLocale(Locale.getDefault().toString());
+        }
         deviceModel.setLastUpdateTime(new Date());
         deviceModel.setLastUpdateBy("personalization");
         deviceModel.updateTags((AbstractEnvironment) env);

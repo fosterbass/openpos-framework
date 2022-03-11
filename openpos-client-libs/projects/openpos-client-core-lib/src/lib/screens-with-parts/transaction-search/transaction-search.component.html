@@ -66,36 +66,36 @@
 </app-bacon-strip>
 
 <div *ngIf="isMobile | async" class="mobile-container">
-    <app-dynamic-bacon-strip>
-        <div>{{screen.transSearchModeText}}</div>
-    </app-dynamic-bacon-strip>
+    <app-bacon-strip [searchEnabled]="true"></app-bacon-strip>
     <div class="content">
         <div [ngSwitch]="screen.transactionSearchMode" class="search-section"
             [ngClass]="{'change-search-mode-disabled': this.changeSearchModeDisabled}" responsive-class>
-            <div *ngSwitchCase="TransactionSearchMode.ALL" class="transaction-change-search-mode">
-                <button *ngIf="screen.changeSearchModeButton" (click)="doAction(screen.changeSearchModeButton)"
-                    class="transaction-change-search-mode-button" mat-button color="primary" responsive-class>
-                    <app-icon *ngIf="screen.changeSearchModeButton.icon" [iconName]="screen.changeSearchModeButton.icon"
-                        iconClass="mat-24"></app-icon>
-                    <span
-                        class="transaction-change-search-mode-button-text">{{screen.changeSearchModeButton.title}}</span>
-                    <app-icon iconName="Forward" iconClass="mat-24"></app-icon>
-                </button>
-            </div>
-
-            <div *ngSwitchCase="TransactionSearchMode.SALE_RETURN_NO_SALE" class="scan-and-change-mode-button" responsive-class
+            <div class = "search-section-toggle">
+                <div class="transaction-search-mode-mobile">
+                    <span class="transaction-search-mode-text">{{screen.transSearchModeText}}</span>
+                </div>
+                <div *ngSwitchCase="TransactionSearchMode.ALL" class="scan-and-change-mode-button" responsive-class>
+                    <button *ngIf="screen.changeSearchModeButton" (click)="doAction(screen.changeSearchModeButton)"
+                        class="transaction-change-search-mode-button" mat-button color="primary" responsive-class>
+                        <app-icon *ngIf="screen.changeSearchModeButton.icon" [iconName]="screen.changeSearchModeButton.icon"
+                            iconClass="mat-24"></app-icon>
+                        <span
+                            class="transaction-change-search-mode-button-text">{{screen.changeSearchModeButton.title}}</span>
+                        <app-icon iconName="Forward" iconClass="mat-24"></app-icon>
+                    </button>
+                </div>
+                <div *ngSwitchCase="TransactionSearchMode.SALE_RETURN_NO_SALE" class="scan-and-change-mode-button" responsive-class
                 [ngClass]="{'change-search-mode-disabled': this.changeSearchModeDisabled}">
-                <app-scan-or-search class="scan-or-search mat-elevation-z1" [focusInitial]="false"></app-scan-or-search>
-                <button *ngIf="screen.changeSearchModeButton" (click)="doAction(screen.changeSearchModeButton)"
-                    class="transaction-change-search-mode-button" mat-button color="primary" responsive-class>
-                    <app-icon *ngIf="screen.changeSearchModeButton.icon" [iconName]="screen.changeSearchModeButton.icon"
-                        iconClass="mat-24"></app-icon>
-                    <span
-                        class="transaction-change-search-mode-button-text">{{screen.changeSearchModeButton.title}}</span>
-                    <app-icon iconName="Forward" iconClass="mat-24"></app-icon>
-                </button>
+                    <button *ngIf="screen.changeSearchModeButton" (click)="doAction(screen.changeSearchModeButton)"
+                        class="transaction-change-search-mode-button" mat-button color="primary" responsive-class>
+                        <app-icon *ngIf="screen.changeSearchModeButton.icon" [iconName]="screen.changeSearchModeButton.icon"
+                            iconClass="mat-24"></app-icon>
+                        <span
+                            class="transaction-change-search-mode-button-text">{{screen.changeSearchModeButton.title}}</span>
+                        <app-icon iconName="Forward" iconClass="mat-24"></app-icon>
+                    </button>
+                </div>
             </div>
-
             <div *ngSwitchCase="TransactionSearchMode.SALE_RETURN_NO_SALE" class="flex-column-spaced-between"
                 [ngClass]="{'change-search-mode-disabled': this.changeSearchModeDisabled}">
                 <div class="flex-spaced-between-gap">
@@ -117,6 +117,15 @@
                 <app-dynamic-form-part class="transaction-search-all-params-form"
                     (formInit)="onSearchAllFormChanges($event)" (formChanges)="onSearchAllFormChanges($event)"
                     formName="searchAllParamsForm" [submitButton]="screen.searchAllButton"></app-dynamic-form-part>
+            </div>
+            <div class="transaction-filter-options">
+                <span *ngIf="screen.filtersLabel" class="transaction-filter-options-label">{{screen.filtersLabel}}</span>
+                <mat-chip-list [multiple]="true" [selectable]="true">
+                    <mat-chip *ngFor="let filter of screen.filters" [selected]="filter.enabled" [selectable]="true"
+                        (click)="filterChanged(filter)">
+                        {{filter.title}}
+                    </mat-chip>
+                </mat-chip-list>
             </div>
         </div>
         <div class="transaction-search-outer">

@@ -99,7 +99,7 @@
         </div>
     </div>
     <div class="summary-action" responsive-class>
-        <app-icon-button *ngIf="transactionSummary.actions"
+        <app-icon-button *ngIf="transactionSummary.actions && (transactionSummary.actions[transactionSummary.actions.length - 1])?.icon"
                 [iconName]="(transactionSummary.actions[transactionSummary.actions.length - 1]).icon"
                 [iconClass]="'mat-24'" (buttonClick)="onClick(transactionSummary.actions[transactionSummary.actions.length - 1])">
         </app-icon-button>

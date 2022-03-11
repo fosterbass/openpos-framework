@@ -67,7 +67,7 @@ export class ReturnComponent extends PosScreenDirective<any> {
         this.subscriptions.add(ref.afterDismissed().subscribe( item => {
             if (item !== undefined && item !== null) {
                 if (typeof item === 'object') {
-                    this.doAction(this.removeReceiptAction, item.transactionNumber);
+                    this.doAction(this.removeReceiptAction, item.barcode);
                 } else if (typeof item === 'number') {
                     this.doAction('TransactionDetails', item);
                 }

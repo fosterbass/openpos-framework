@@ -305,7 +305,7 @@ public class Form implements Serializable {
     }
     
     public static FormField createEmailField(String fieldId, String label, String value, boolean required) {
-        FormField formField = new FormField(fieldId, label, FieldElementType.Input, FieldInputType.AlphanumericText, required);
+        FormField formField = new FormField(fieldId, label, FieldElementType.Input, FieldInputType.Email, required);
         formField.setPattern(FieldPattern.EMAIL);
         formField.setValue(value);
         return formField;
