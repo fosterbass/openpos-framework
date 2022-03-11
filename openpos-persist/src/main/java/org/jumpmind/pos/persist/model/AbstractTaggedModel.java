@@ -40,4 +40,12 @@ abstract public class AbstractTaggedModel extends AbstractModel implements ITagg
     public void clearTagValue(String tagName) {
         tags.remove(tagName);
     }
+
+    public void cloneAbstractTaggedModelField(AbstractTaggedModel model) {
+        this.getTags().keySet().forEach(key -> {
+            model.setTagValue(key, this.getTagValue(key));
+        });
+
+        cloneAbstractModelFields(model);
+    }
 }

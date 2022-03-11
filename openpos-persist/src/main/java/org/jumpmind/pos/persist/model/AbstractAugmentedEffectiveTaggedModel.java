@@ -17,4 +17,12 @@ public abstract class AbstractAugmentedEffectiveTaggedModel extends AbstractEffe
     public void setAugments(Map<String, String> augments) {
         this.augments = augments;
     }
+
+    protected void cloneAbstractAugmentedEffectiveTaggedModel(AbstractAugmentedEffectiveTaggedModel model) {
+        this.getAugments().keySet().forEach(key -> {
+            model.getAugments().put(key, this.getAugmentValue(key));
+        });
+
+        cloneAbstractEffectiveTaggedModelFields(model);
+    }
 }

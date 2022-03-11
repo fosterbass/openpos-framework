@@ -111,4 +111,23 @@ public abstract class AbstractModel implements IAuditableModel, Serializable {
         Class<T> clazz = ClassUtils.loadClass(className);
         return getExtension(clazz);
     }
+
+    protected void cloneAbstractModelFields(AbstractModel newModel) {
+        newModel.setCreateTime(this.getCreateTime());
+        newModel.setCreateBy(this.getCreateBy());
+        newModel.setLastUpdateBy(this.getLastUpdateBy());
+        newModel.setLastUpdateTime(this.getLastUpdateTime());
+
+        this.getAdditionalFields().keySet().forEach(key -> {
+            Object additionalField = this.getAdditionalFields().get(key);
+            //likely need to extend this for cloneable behavior
+            newModel.setAdditionalField(key, additionalField);
+        });
+
+        this.getExtensions().keySet().forEach(key -> {
+            Object extension = this.getExtension(key);
+            //likely need to extend this for cloneable behavior
+            newModel.addExtension(key, extension);
+        });
+    }
 }

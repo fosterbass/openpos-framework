@@ -46,4 +46,11 @@ abstract public class AbstractEffectiveTaggedModel extends AbstractTaggedModel i
     public Date getEffectiveEndTime() {
         return effectiveEndTime;
     }
+
+    public void cloneAbstractEffectiveTaggedModelFields(AbstractEffectiveTaggedModel model) {
+        model.setEffectiveEndTime(this.getEffectiveEndTime());
+        model.setEffectiveStartTime(this.getEffectiveStartTime());
+
+        cloneAbstractTaggedModelField(model);
+    }
 }
