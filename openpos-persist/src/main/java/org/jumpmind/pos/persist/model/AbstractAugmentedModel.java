@@ -20,4 +20,14 @@ public abstract class AbstractAugmentedModel extends AbstractModel implements IA
     public void setAugments(Map<String, String> augments) {
         this.augments = augments;
     }
+
+    public void cloneAbstractAugmentedModelFields(AbstractAugmentedModel abstractAugmentedModel) {
+        CaseInsensitiveMap<String, String> newAugments = new CaseInsensitiveMap<>();
+        this.getAugments().keySet().forEach(key -> {
+            newAugments.put(key, this.getAugments().get(key));
+        });
+        abstractAugmentedModel.setAugments(newAugments);
+
+        cloneAbstractModelFields(abstractAugmentedModel);
+    }
 }
