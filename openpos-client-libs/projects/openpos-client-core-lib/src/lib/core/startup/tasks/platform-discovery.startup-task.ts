@@ -8,6 +8,8 @@ import { StartupTask } from '../startup-task';
     providedIn: 'root'
 })
 export class PlatformDiscoveryStartupTask implements StartupTask {
+    static readonly taskName = 'PlatformDiscoveryStartupTask';
+
     constructor(
         @Optional() @Inject(PLATFORMS) private _platforms: IPlatformInterface[]
     ) { }

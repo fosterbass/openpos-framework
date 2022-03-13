@@ -8,6 +8,8 @@ import { StartupTask } from '../startup-task';
     providedIn: 'root'
 })
 export class QueryParamsPersonalization implements StartupTask {
+    static readonly taskName = 'QueryParamsPersonalization';
+
     constructor(
         private _activatedRoute: ActivatedRoute,
         private _personalization: PersonalizationService

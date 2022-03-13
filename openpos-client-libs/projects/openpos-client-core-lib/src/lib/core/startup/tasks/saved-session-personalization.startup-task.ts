@@ -9,6 +9,8 @@ import { StartupTask } from '../startup-task';
     providedIn: 'root'
 })
 export class SavedSessionPersonalizationStartupTask implements StartupTask {
+    static readonly taskName = 'SavedSessionPersonalizationStartupTask';
+
     constructor(
         private _personalization: PersonalizationService,
         private _splashScreen: SplashScreen

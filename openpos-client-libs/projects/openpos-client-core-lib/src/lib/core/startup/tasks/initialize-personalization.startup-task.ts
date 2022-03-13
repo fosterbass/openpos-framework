@@ -8,6 +8,8 @@ import { StartupTask } from '../startup-task';
     providedIn: 'root'
 })
 export class InitializePersonalizationStartupTask implements StartupTask {
+    static readonly taskName = 'InitializePersonalizationStartupTask';
+
     constructor(private _personalization: PersonalizationService) { }
 
     async execute(): Promise<void> {
