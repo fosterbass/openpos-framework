@@ -37,7 +37,7 @@ export class NCRPaymentPlugin implements IPlatformPlugin {
                 this.forwardMessage(message);
             });
 
-            initialized.next(`Successfully intitialized ${this.name()}`);
+            initialized.next(`Successfully initialized ${this.name()}`);
             initialized.complete();
         });
     }

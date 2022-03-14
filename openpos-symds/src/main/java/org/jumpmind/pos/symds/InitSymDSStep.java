@@ -1,10 +1,12 @@
 package org.jumpmind.pos.symds;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jumpmind.pos.core.flow.*;
 import org.jumpmind.pos.core.ui.ActionItem;
 import org.jumpmind.pos.core.ui.message.DialogUIMessage;
 import org.jumpmind.pos.core.ui.messagepart.DialogHeaderPart;
 import org.jumpmind.pos.core.ui.messagepart.MessagePartConstants;
+import org.jumpmind.pos.server.model.Action;
 import org.jumpmind.pos.util.AppUtils;
 import org.jumpmind.symmetric.ISymmetricEngine;
 import org.jumpmind.symmetric.service.INodeService;
@@ -12,6 +14,7 @@ import org.jumpmind.symmetric.service.IRegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
+@Slf4j
 public class InitSymDSStep implements ITransitionStep {
 
     @Autowired
@@ -56,6 +59,11 @@ public class InitSymDSStep implements ITransitionStep {
         } else {
             transition.proceed();
         }
+    }
+
+    @ActionHandler
+    protected void onAnyAction(Action action) {
+        log.info("Received an {} action that will be ignored", action.getName());
     }
 
     @Override

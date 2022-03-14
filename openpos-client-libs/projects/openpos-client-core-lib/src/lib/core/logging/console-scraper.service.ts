@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, Subscriber } from 'rxjs';
+import { Observable, ConnectableObservable, Subscriber } from 'rxjs';
 import { publish, refCount } from 'rxjs/operators';
 
 export type LogLevel = 'info' | 'warn' | 'error' | 'debug';
@@ -18,7 +18,7 @@ export class ConsoleScraper {
     private _isHandling = false;
 
     constructor() {
-        this.messages$ = new Observable(observer => {
+        const connectableMessages = new Observable(observer => {
             const hooks = [
                 this._hookConsoleMethod('debug', (args) => this._handleLogMessage(observer, 'debug', ...args)),
                 this._hookConsoleMethod('info', (args) => this._handleLogMessage(observer, 'info', ...args)),
@@ -31,9 +31,13 @@ export class ConsoleScraper {
                 hooks.forEach(unhook => unhook());
             };
         }).pipe(
-            publish(),
-            refCount()
-        );
+            publish()
+        ) as ConnectableObservable<ConsoleMessage>;
+
+        // make it hot.
+        connectableMessages.connect();
+
+        this.messages$ = connectableMessages;
     }
 
     logBypassHook(method: SupportedConsoleMethods, message: string, ...data: any[]) {

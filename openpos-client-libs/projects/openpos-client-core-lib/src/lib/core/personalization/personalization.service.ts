@@ -10,7 +10,7 @@ import { ZeroconfService } from '@ionic-native/zeroconf';
 import { CONFIGURATION } from '../../configuration/configuration';
 
 import { Storage } from '../storage/storage.service';
-import { Zeroconf, ZEROCONF_TOKEN } from '../startup/zeroconf/zeroconf';
+import { Zeroconf, ZEROCONF_TOKEN } from '../zeroconf/zeroconf';
 import { ServerLocation } from './server-location';
 
 @Injectable({
@@ -129,10 +129,8 @@ export class PersonalizationService {
         )));
     }
 
-    public getAutoPersonalizationParameters(deviceName: string, config: ZeroconfService):
+    public getAutoPersonalizationParameters(deviceName: string, url: string):
         Observable<AutoPersonalizationParametersResponse> {
-        let url = this.sslEnabled$.getValue() ? 'https://' : 'http://';
-        url += `${config.ipv4Addresses[0]}:${config.port}/${config.txtRecord.path}`;
 
         const requestTimeout = 2000;
         const retryCount = CONFIGURATION.autoPersonalizationRequestTimeoutMillis / requestTimeout;
