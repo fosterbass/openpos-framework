@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 
@@ -33,6 +34,7 @@ import org.jumpmind.util.AppUtils;
 import org.jumpmind.util.LinkedCaseInsensitiveMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -41,6 +43,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import static org.jumpmind.pos.util.RestApiSupport.REST_API_CONTEXT_PATH;
 import static org.jumpmind.symmetric.common.Constants.*;
 
 @Configuration("SymDSModule")
@@ -75,28 +79,29 @@ public class SymDSModule extends AbstractRDBMSModule {
     @Autowired
     CacheEvictionConfig cacheEvictionConfig;
 
+    SymClient symClient;
+
+    @PostConstruct
+    protected void setup() {
+        SymmetricEngineHolder holder = new SymmetricEngineHolder();
+        Properties properties = new Properties();
+        configurators.forEach(c -> c.beforeCreate(properties));
+        serverEngine = new ServerSymmetricEngine(getDataSource(), applicationContext, properties, false, holder);
+        addConfiguredCacheEviction();
+        holder.getEngines().put(properties.getProperty(ParameterConstants.EXTERNAL_ID), serverEngine);
+        holder.setAutoStart(false);
+        context.setAttribute(WebConstants.ATTR_ENGINE_HOLDER, holder);
+        configurators.forEach(c -> c.beforeStart(serverEngine));
+    }
+
     @Override
     public void initialize() {
-            SymmetricEngineHolder holder = new SymmetricEngineHolder();
-            Properties properties = new Properties();
-
-            configurators.forEach(c -> c.beforeCreate(properties));
-            serverEngine = new ServerSymmetricEngine(getDataSource(), applicationContext, properties, false, holder);
-            addConfiguredCacheEviction();
-            holder.getEngines().put(properties.getProperty(ParameterConstants.EXTERNAL_ID), serverEngine);
-            holder.setAutoStart(false);
-            context.setAttribute(WebConstants.ATTR_ENGINE_HOLDER, holder);
-
-            configurators.forEach(c -> c.beforeStart(serverEngine));
-
         if ("true".equals(env.getProperty("openpos.symmetric.start", "false"))) {
             serverEngine.setup();
         } else {
             serverEngine.setupDatabase(false);
         }
-
         super.initialize();
-
     }
 
     private void addConfiguredCacheEviction() {
@@ -252,7 +257,7 @@ public class SymDSModule extends AbstractRDBMSModule {
         return super.securityService();
     }
 
-   @Override
+    @Override
     @Bean(name = NAME + "SessionFactory")
     protected DBSessionFactory sessionFactory() {
         return super.sessionFactory();
@@ -265,9 +270,31 @@ public class SymDSModule extends AbstractRDBMSModule {
     }
 
     @Bean
-    @Lazy
     ISymmetricEngine symmetricEngine() {
         return this.serverEngine;
     }
 
+    @Bean
+    SymClient symClient() {
+        if (symClient == null) {
+            symClient = new SymClient();
+            symClient.symmetricEngine = serverEngine;
+            symClient.env = env;
+            return symClient;
+        }
+        return symClient;
+    }
+
+    @Bean
+    public FilterRegistrationBean<RejectUntilLoadIsCompleteFilter> rejectUntilLoadIsCompleteFilter() {
+        FilterRegistrationBean<RejectUntilLoadIsCompleteFilter> registrationBean
+                = new FilterRegistrationBean<>();
+        RejectUntilLoadIsCompleteFilter filter = new RejectUntilLoadIsCompleteFilter();
+        filter.symClient = symClient();
+        registrationBean.setFilter(filter);
+        registrationBean.addUrlPatterns(REST_API_CONTEXT_PATH + "/admin/personalizeMe");
+        registrationBean.setOrder(2);
+
+        return registrationBean;
+    }
 }

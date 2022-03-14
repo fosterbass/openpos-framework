@@ -12,13 +12,14 @@ import org.jumpmind.symmetric.ISymmetricEngine;
 import org.jumpmind.symmetric.service.INodeService;
 import org.jumpmind.symmetric.service.IRegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.env.Environment;
 
 @Slf4j
 public class InitSymDSStep implements ITransitionStep {
 
     @Autowired
-    protected Environment env;
+    protected SymClient symClient;
 
     @Autowired(required = false)
     ISymmetricEngine symmetricEngine;
@@ -31,33 +32,24 @@ public class InitSymDSStep implements ITransitionStep {
 
     Transition transition;
 
-    boolean registered = false;
+    @InOut(scope = ScopeType.Device)
+    boolean completed = false;
 
     @Override
     public boolean isApplicable(Transition transition) {
         this.transition = transition;
-        return isApplicable();
-    }
-
-    boolean isApplicable() {
-        if (symmetricEngine != null) {
-            INodeService nodeService = symmetricEngine.getNodeService();
-            if ("true".equals(env.getProperty("openpos.symmetric.start", "false")) &&
-                            "true".equals(env.getProperty("openpos.symmetric.waitForInitialLoad", "false")) &&
-                            !nodeService.isRegistrationServer()) {
-                IRegistrationService registrationService = symmetricEngine.getRegistrationService();
-                return !registrationService.isRegisteredWithServer() || !nodeService.isDataLoadCompleted();
-            }
-        }
-        return false;
+        return !completed;
     }
 
     @ActionHandler
-    void onCheckAgain() {
-        if (isApplicable()) {
-            check();
+    boolean onCheckAgain() {
+        if (!symClient.isInitialLoadFinished()) {
+            showStatus();
+            return true;
         } else {
+            completed = true;
             transition.proceed();
+            return false;
         }
     }
 
@@ -68,34 +60,26 @@ public class InitSymDSStep implements ITransitionStep {
 
     @Override
     public void arrive(Transition transition) {
-        this.transition = transition;
-        check();
-        asyncExecutor.execute(null, req-> {
-            IRegistrationService registrationService = symmetricEngine.getRegistrationService();
-            INodeService nodeService = symmetricEngine.getNodeService();
-            do {
-                AppUtils.sleep(5000);
-                if (registrationService.isRegisteredWithServer() && !nodeService.isDataLoadCompleted() && !registered) {
-                    registered = true;
+        if (onCheckAgain()) {
+            asyncExecutor.execute(null, req -> {
+                do {
+                    AppUtils.sleep(5000);
                     stateManager.doAction("CheckAgain");
-                }
-            } while (!nodeService.isDataLoadCompleted());
-            stateManager.doAction("CheckAgain");
-            return null;
-        }, res-> {}, err -> {});
+                } while (!symClient.isInitialLoadFinished());
+                return null;
+            }, res -> {
+            }, err -> {
+            });
+        }
     }
 
-    protected void check() {
+    protected void showStatus() {
         IRegistrationService registrationService = symmetricEngine.getRegistrationService();
         INodeService nodeService = symmetricEngine.getNodeService();
-
         if (!registrationService.isRegisteredWithServer()) {
             showNotRegisteredUnit();
         } else if (!nodeService.isDataLoadCompleted()) {
-            registered = true;
             showDataLoadInProgress();
-        } else {
-            transition.proceed();
         }
     }
 
