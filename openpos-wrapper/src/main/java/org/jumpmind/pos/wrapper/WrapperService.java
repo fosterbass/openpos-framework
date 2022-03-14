@@ -202,7 +202,7 @@ public abstract class WrapperService {
                     try {
                         logger.info("Watching output of java process");
                         childReader = new BufferedReader(new InputStreamReader(child.getInputStream()));
-                        String line = null;
+                        String line;
 
                         while ((line = childReader.readLine()) != null || child.isAlive()) {
                             if (line != null) {
@@ -620,14 +620,20 @@ public abstract class WrapperService {
             return;
         }
 
-        String installationId = config.getInstallationId();
+        String businessUnitId = config.getBusinessUnitId();
+        String packageName = config.getUpdatePackageName();
 
-        if (StringUtils.isEmpty(installationId)) {
-            logger.info("missing installation id");
+        if (StringUtils.isEmpty(businessUnitId)) {
+            logger.info("missing business unit id");
             return;
         }
 
-        final String endpoint = StringUtils.stripEnd(server, "/") + "/update/installation/" + installationId;
+        if (StringUtils.isEmpty(packageName)) {
+            logger.info("missing package name");
+            return;
+        }
+
+        final String endpoint = StringUtils.stripEnd(server, "/") + "/update/manifest/" +  packageName + "/" + businessUnitId;
         final URL url;
 
         try {

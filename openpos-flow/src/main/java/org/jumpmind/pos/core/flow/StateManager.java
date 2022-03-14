@@ -174,9 +174,20 @@ public class StateManager implements IStateManager {
 
     @Override
     public void reset() {
+        reset(null);
+    }
+
+    @Override
+    public void reset(Scope initialScope) {
         log.info("StateManager reset queued");
         this.actionQueue.clear();
-        boolean offered = this.actionQueue.offer(new ActionContext(new Action(STATE_MANAGER_RESET_ACTION)));
+
+        final Action resetAction = Action.builder()
+                .name(STATE_MANAGER_RESET_ACTION)
+                .data(initialScope)
+                .build();
+
+        boolean offered = this.actionQueue.offer(new ActionContext(resetAction));
         if (!offered) {
             log.warn("StateManager failed to insert reset action into the queue");
         }
@@ -198,7 +209,11 @@ public class StateManager implements IStateManager {
     }
 
     public void init(String appId, String nodeId) {
-        this.applicationState.reset(scheduledAnnotationBeanPostProcessor);
+        init(appId, nodeId, null);
+    }
+
+    public void init(String appId, String nodeId, Scope initialScope) {
+        this.applicationState.reset(scheduledAnnotationBeanPostProcessor, initialScope);
         this.applicationState.setAppId(appId);
         this.applicationState.setDeviceId(nodeId);
         this.eventBroadcaster = new EventBroadcaster(this);
@@ -262,11 +277,13 @@ public class StateManager implements IStateManager {
                     actionContext.getAction().setOriginatesFromDeviceFlag(false);
                     busyFlag.set(true);
                     if (actionContext.getAction().getName().equals(STATE_MANAGER_RESET_ACTION)) {
+                        final Scope initialScope = actionContext.getAction().getData();
+
                         log.info("StateManager reset queued");
                         actionContext.getAction().markProcessed();
                         runningFlag.set(false);
                         busyFlag.set(false);
-                        init(this.getAppId(), this.getDeviceId());
+                        init(this.getAppId(), this.getDeviceId(), initialScope);
                         log.info("StateManager reset");
                         this.eventPublisher.publish(new DeviceResetEvent(getDeviceId(), getAppId()));
                         sendDataClearMessage();

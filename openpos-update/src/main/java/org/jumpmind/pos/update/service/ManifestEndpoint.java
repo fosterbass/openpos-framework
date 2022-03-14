@@ -4,17 +4,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.jumpmind.pos.service.Endpoint;
 import org.jumpmind.pos.update.model.InstallGroupModel;
 import org.jumpmind.pos.update.model.InstallRepository;
-import org.jumpmind.pos.update.provider.ISoftwareProvider;
-import org.jumpmind.pos.update.provider.SoftwareProviderFactory;
+import org.jumpmind.pos.update.provider.SoftwareProvider;
 import org.jumpmind.pos.update.versioning.Version;
-import org.jumpmind.pos.update.versioning.Versioning;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.update4j.Configuration;
 import org.update4j.FileMetadata;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -24,14 +21,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
-@Endpoint(path = "/update/installation/{installationId}")
-public class UpdateEndpoint {
+@Endpoint(path = "/manifest/{businessUnitId}/{package}")
+public class ManifestEndpoint {
 
     @Autowired
     InstallRepository installRepository;
-
-    @Value("${openpos.update.softwareProvider:fileSystemSoftwareProvider}")
-    String softwareProvider;
 
     @Value("${openpos.update.installUrl:set me}")
     String installUrl;
@@ -45,20 +39,10 @@ public class UpdateEndpoint {
     Map<Version, String> versionToConfigXml = new ConcurrentHashMap<>();
 
     @Autowired
-    Versioning versionFactory;
+    SoftwareProvider softwareProvider;
 
-    @Autowired
-    SoftwareProviderFactory softwareProviderFactory;
-
-    ISoftwareProvider provider;
-
-    @PostConstruct
-    public void init(){
-        provider = softwareProviderFactory.getSoftwareProvider();
-    }
-
-    public void update(String installationId, HttpServletResponse response) throws IOException {
-        Version version = getExpectedVersion(installationId);
+    void manifest(String businessUnitId, String packageName, HttpServletResponse response) throws IOException {
+        Version version = getExpectedVersion(packageName, businessUnitId);
 
         if (version == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -66,10 +50,10 @@ public class UpdateEndpoint {
         }
 
         if (!versionToConfigXml.containsKey(version)) {
-            Path fromZip = provider.getSoftwareVersion(version);
+            Path fromZip = softwareProvider.getSoftwareProvider(packageName).getSoftwareVersion(version);
 
             if (fromZip != null) {
-                Configuration configuration = buildConfiguration(version, fromZip);
+                Configuration configuration = buildConfiguration(packageName, version, fromZip);
                 StringWriter writer = new StringWriter();
                 configuration.write(writer);
                 versionToConfigXml.put(version, writer.getBuffer().toString());
@@ -84,40 +68,46 @@ public class UpdateEndpoint {
         response.flushBuffer();
     }
 
-    private Version getExpectedVersion(String installationId) {
+    private Version getExpectedVersion(String packageName, String businessUnitId) {
         Version version = null;
-        InstallGroupModel installGroupModel = installRepository.findInstallGroup(installationId);
+        InstallGroupModel installGroupModel = installRepository.findInstallGroupForInstallation(businessUnitId);
 
         if (installGroupModel != null) {
-            if ("*".equals(installGroupModel.getTargetVersion())) {
-                version = getLatestExpectedVersion();
+            final String targetVersion = installGroupModel.getPackageVersions().get(packageName);
+            if ("latest".equals(targetVersion)) {
+                version = getLatestExpectedVersion(packageName);
             } else {
                 try {
-                    version = versionFactory.fromString(installGroupModel.getTargetVersion());
+                    version = softwareProvider
+                            .getVersioningFor(packageName)
+                            .fromString(targetVersion);
                 } catch (IllegalArgumentException ex) {
                     log.error(
-                            "could not parse version '{}' from the targeted install group '{}'; no update shall be provided",
-                            installGroupModel.getTargetVersion(),
+                            "could not parse version '{}' of package '{}' from the targeted install group '{}'; no update shall be provided",
+                            targetVersion,
+                            packageName,
                             installGroupModel,
                             ex
                     );
                 }
             }
         } else if (!requireAssignment) {
-            version = getLatestExpectedVersion();
+            version = getLatestExpectedVersion(packageName);
         }
 
         return version;
     }
 
-    private Version getLatestExpectedVersion() {
-        return provider.getLatestVersion();
+    private Version getLatestExpectedVersion(String packageName) {
+        return softwareProvider.getSoftwareProvider(packageName).getLatestVersion();
     }
 
-    private Configuration buildConfiguration(Version version, Path fromZip) throws IOException {
+    private Configuration buildConfiguration(String packageName, Version version, Path fromZip) throws IOException {
         Configuration.Builder configBuilder = Configuration.builder()
-                .baseUri(installUrl + "/update/download/" + version.getVersionString() +"/")
+                .baseUri(installUrl + "/update/download/" + packageName + "/" + version.getVersionString() +"/")
                 .basePath(installBasePath)
+
+                // todo: this only works for commerce apps
                 .property("default.launcher.main.class", "org.jumpmind.pos.app.Commerce");
 
         try (FileSystem zipFs = FileSystems.newFileSystem(fromZip, ClassLoader.getSystemClassLoader())) {

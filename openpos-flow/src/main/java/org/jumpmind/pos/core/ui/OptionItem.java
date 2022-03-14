@@ -2,8 +2,10 @@ package org.jumpmind.pos.core.ui;
 
 import java.io.Serializable;
 
+import lombok.experimental.SuperBuilder;
 import org.jumpmind.pos.core.model.Form;
 
+@SuperBuilder
 public class OptionItem extends ActionItem implements Serializable {
 
     private static final long serialVersionUID = 1L;

@@ -4,15 +4,14 @@
 
     app-warn-button {
         button {
-            padding: 8px 16px;
             border-color: $warn;
             border-style: solid;
-            border-width: 2px;
-
+            white-space: break-spaces;
+            max-width: 100%;
+            
             &[disabled] {
-                border-color: $disabled-border;
+                border-style: none;
             }
         }
     }
-
 }

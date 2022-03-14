@@ -55,6 +55,7 @@ public interface IStateManager {
     public void closeToast(Toast toast);
     public void refreshScreen();
     public void reset();
+    public void reset(Scope initialScope);
     public Object getCurrentState();
     public ApplicationState getApplicationState();
 	public void performOutjections(Object object);
