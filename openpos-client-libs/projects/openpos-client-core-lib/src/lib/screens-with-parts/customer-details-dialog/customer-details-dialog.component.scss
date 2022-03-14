@@ -2,6 +2,7 @@
 @import '../../styles/variables/spacing';
 
 .details-wrapper, .tabs {
+  overflow: auto;
   margin-bottom: 8px;
 }
 
@@ -29,8 +30,8 @@
 }
 
 .buttons {
-  display: grid;
-  grid-auto-flow: column;
+  display: flex;
+  gap: 8px;
   align-content: end;
   justify-content: end;
   grid-column-gap: 8px;
@@ -38,6 +39,10 @@
   margin-bottom: -16px;
   .keybinding {
     margin-left: 10px;
+  }
+
+  &.mobile {
+    app-primary-button, app-secondary-button { flex: 1 1 auto; }
   }
 }
 

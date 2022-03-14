@@ -18,7 +18,7 @@ export class WaffleComponent {
     constructor(private mediaService: OpenposMediaService) {
         const openMap = new Map([
             [MediaBreakpoints.MOBILE_PORTRAIT, false],
-            [MediaBreakpoints.MOBILE_LANDSCAPE, false],
+            [MediaBreakpoints.MOBILE_LANDSCAPE, true],
             [MediaBreakpoints.TABLET_PORTRAIT, false],
             [MediaBreakpoints.TABLET_LANDSCAPE, true],
             [MediaBreakpoints.DESKTOP_PORTRAIT, true],

@@ -27,7 +27,7 @@ export class CustomerDisplayReturnComponent extends PosScreenDirective<any> impl
         super(injector);
         this.isMobile = media.observe(new Map([
             [MediaBreakpoints.MOBILE_PORTRAIT, true],
-            [MediaBreakpoints.MOBILE_LANDSCAPE, false],
+            [MediaBreakpoints.MOBILE_LANDSCAPE, true],
             [MediaBreakpoints.TABLET_PORTRAIT, true],
             [MediaBreakpoints.TABLET_LANDSCAPE, false],
             [MediaBreakpoints.DESKTOP_PORTRAIT, false],
