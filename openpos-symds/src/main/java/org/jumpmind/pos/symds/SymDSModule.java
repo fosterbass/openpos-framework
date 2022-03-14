@@ -1,12 +1,9 @@
 package org.jumpmind.pos.symds;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
-import javax.sql.DataSource;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -17,21 +14,15 @@ import org.jumpmind.pos.service.AbstractRDBMSModule;
 import org.jumpmind.pos.service.ModuleEnabledCondition;
 import org.jumpmind.security.ISecurityService;
 import org.jumpmind.symmetric.ISymmetricEngine;
-import org.jumpmind.symmetric.common.Constants;
 import org.jumpmind.symmetric.common.ParameterConstants;
 import org.jumpmind.symmetric.io.data.Batch;
 import org.jumpmind.symmetric.io.data.CsvData;
 import org.jumpmind.symmetric.io.data.DataContext;
-import org.jumpmind.symmetric.io.data.DataEventType;
 import org.jumpmind.symmetric.io.data.writer.DatabaseWriterFilterAdapter;
-import org.jumpmind.symmetric.io.data.writer.IDatabaseWriterErrorHandler;
-import org.jumpmind.symmetric.service.INodeService;
 import org.jumpmind.symmetric.web.ServerSymmetricEngine;
 import org.jumpmind.symmetric.web.SymmetricEngineHolder;
 import org.jumpmind.symmetric.web.SymmetricServlet;
 import org.jumpmind.symmetric.web.WebConstants;
-import org.jumpmind.util.AppUtils;
-import org.jumpmind.util.LinkedCaseInsensitiveMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -44,7 +35,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import static org.jumpmind.pos.util.RestApiSupport.REST_API_CONTEXT_PATH;
 import static org.jumpmind.symmetric.common.Constants.*;
 
 @Configuration("SymDSModule")
@@ -229,7 +219,7 @@ public class SymDSModule extends AbstractRDBMSModule {
 
     @Override
     protected String getArtifactName() {
-        return "nu-symds";
+        return NAME;
     }
 
     @Override
@@ -292,7 +282,7 @@ public class SymDSModule extends AbstractRDBMSModule {
         RejectUntilLoadIsCompleteFilter filter = new RejectUntilLoadIsCompleteFilter();
         filter.symClient = symClient();
         registrationBean.setFilter(filter);
-        registrationBean.addUrlPatterns(REST_API_CONTEXT_PATH + "/admin/personalizeMe");
+        registrationBean.addUrlPatterns("/admin/personalizeMe");
         registrationBean.setOrder(2);
 
         return registrationBean;
