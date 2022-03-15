@@ -12,13 +12,11 @@ import org.jumpmind.symmetric.ISymmetricEngine;
 import org.jumpmind.symmetric.service.INodeService;
 import org.jumpmind.symmetric.service.IRegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.core.env.Environment;
 
 @Slf4j
 public class InitSymDSStep implements ITransitionStep {
 
-    @Autowired
+    @Autowired(required = false)
     protected SymClient symClient;
 
     @Autowired(required = false)
@@ -43,7 +41,7 @@ public class InitSymDSStep implements ITransitionStep {
 
     @ActionHandler
     boolean onCheckAgain() {
-        if (!symClient.isInitialLoadFinished()) {
+        if (symClient != null && !symClient.isInitialLoadFinished()) {
             showStatus();
             return true;
         } else {

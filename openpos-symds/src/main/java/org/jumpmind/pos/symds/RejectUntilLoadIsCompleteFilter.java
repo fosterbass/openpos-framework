@@ -14,13 +14,13 @@ import java.io.IOException;
 @Slf4j
 public class RejectUntilLoadIsCompleteFilter extends OncePerRequestFilter {
 
-    @Autowired
+    @Autowired(required = false)
     SymClient symClient;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        if (!symClient.isInitialLoadFinished()) {
+        if (symClient != null && !symClient.isInitialLoadFinished()) {
             log.info("Personalization request rejected because an initial load has not completed");
             response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
         } else {
