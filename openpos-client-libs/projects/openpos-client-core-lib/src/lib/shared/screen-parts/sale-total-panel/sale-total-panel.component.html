@@ -9,8 +9,8 @@
                 class="link-customer">
             <span class="wrapper">
                 <span *ngIf="loyaltyBefore" class="loyalty-before">{{loyaltyBefore}}</span>
-                <img *ngIf="screenData.loyaltyButton.icon" [src]="screenData.loyaltyButton.icon | imageUrl"
-                     class="sale-total-loyalty-button-icon">
+                <!-- <img *ngIf="screenData.loyaltyButton.icon" [src]="screenData.loyaltyButton.icon | imageUrl"
+                     class="sale-total-loyalty-button-icon"> -->
                 <span *ngIf="loyaltyAfter" class="loyalty-after">{{loyaltyAfter}}</span>
                 <span *ngIf="keybindsEnabled(screenData.loyaltyButton)" class="muted-color loyalty-keybind">
                     {{screenData.loyaltyButton.keybindDisplayName}}
@@ -74,9 +74,9 @@
                                   [iconClass]="(isMobile$ | async) ? null: 'material-icons mat-36'"></app-icon>
                     </div>
                     <div class="loyalty-icon" responsive-class>
-                        <img *ngIf="screenData.loyaltyButton.icon" [src]="screenData.loyaltyButton.icon | imageUrl"
+                        <!-- <img *ngIf="screenData.loyaltyButton.icon" [src]="screenData.loyaltyButton.icon | imageUrl"
                              responsive-class
-                             class="sale-total-loyalty-button-icon">
+                             class="sale-total-loyalty-button-icon"> -->
                     </div>
                     <div class="membership-details" *ngIf="screenData.membershipVisibleOnLinkButton">
                         <div *ngIf="screenData.customerEmail" class="membership-customer-email" responsive-class>

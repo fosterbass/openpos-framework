@@ -24,7 +24,7 @@ export class TransactionHistoryPartComponent extends ScreenPartComponent<ITransa
     this.isMobile$ = this.mediaService.observe(new Map([
       [MediaBreakpoints.MOBILE_PORTRAIT, true],
       [MediaBreakpoints.MOBILE_LANDSCAPE, true],
-      [MediaBreakpoints.TABLET_PORTRAIT, true],
+      [MediaBreakpoints.TABLET_PORTRAIT, false],
       [MediaBreakpoints.TABLET_LANDSCAPE, false],
       [MediaBreakpoints.SMALL_DESKTOP_PORTRAIT, true],
       [MediaBreakpoints.SMALL_DESKTOP_LANDSCAPE, false],

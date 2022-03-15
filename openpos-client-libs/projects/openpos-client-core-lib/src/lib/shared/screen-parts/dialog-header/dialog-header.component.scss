@@ -16,8 +16,14 @@
     align-self: center;
   }
 
+  .header-text {
+      text-transform: uppercase;
+      font-size: 0.7em;
+      font-weight: 700;
+  }
+
   .header-additional-text {
-    font-size: .9em;
+    font-size: .8em;
     font-weight: normal;
     padding-bottom: 16px;
   }

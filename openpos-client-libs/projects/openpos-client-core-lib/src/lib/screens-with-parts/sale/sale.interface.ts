@@ -20,4 +20,5 @@ export interface SaleInterface extends IAbstractScreen {
     removeOrderAction: IActionItem;
     readOnly: boolean;
     scanIcon: string;
+    itemCounts: any;
 }

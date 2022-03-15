@@ -18,14 +18,46 @@
                 <div class="vertical-divider grey-background"></div>
             </section>
             <div class="sale-items-outer">
-                <app-scan-or-search class="scan-or-search mat-elevation-z1" [defaultAction]="screen.checkoutButton" [focusInitial]="false" [allowImageScanner]="!sidenavOpened">
-                </app-scan-or-search>
 
+                <!-- scan header -->
+                <div class="scan-header">
+                    <div class="scan-header-title">ADD ITEMS</div>
+                    <app-scan-or-search class="scan-or-search mat-elevation-z1" [defaultAction]="screen.checkoutButton" [focusInitial]="false" [allowImageScanner]="!sidenavOpened">
+                    </app-scan-or-search>
+                 </div>
+
+                 <div class="customer-cart-title"><div *ngIf="(items | async)?.length > 0">CUSTOMER CART
+                    <span style="color:#E87324;">{{screen.itemCounts[0].amount}}</span>
+                </div>
+                    <div  *ngIf="screen.customer == null" class="add-customer-link" (click)="doAction('AddCustomerCrest')">
+                        <div class="add-customer-link-text">Add customer</div>
+                        <div class="add-customer-icon">
+                            <svg width="24px" viewBox="0 0 24 24">
+                                <path fill="#959A9D" d="M15,4A4,4 0 0,0 11,8A4,4 0 0,0 15,12A4,4 0 0,0 19,8A4,4 0 0,0 15,4M15,5.9C16.16,5.9 17.1,6.84 17.1,8C17.1,9.16 16.16,10.1 15,10.1A2.1,2.1 0 0,1 12.9,8A2.1,2.1 0 0,1 15,5.9M4,7V10H1V12H4V15H6V12H9V10H6V7H4M15,13C12.33,13 7,14.33 7,17V20H23V17C23,14.33 17.67,13 15,13M15,14.9C17.97,14.9 21.1,16.36 21.1,17V18.1H8.9V17C8.9,16.36 12,14.9 15,14.9Z" />
+                            </svg>
+                        </div>
+                    </div>    
+                </div>
+                <div  *ngIf="screen.customer != null" class="edit-customer-link" (click)="doAction('EditCustomerCrest')">
+                    <div class="edit-customer-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M16 0H8C3.58172 0 0 3.58172 0 8V16C0 20.4183 3.58172 24 8 24H16C20.4183 24 24 20.4183 24 16V8C24 3.58172 20.4183 0 16 0Z" fill="#333E47"/>
+                            <path d="M0 15.8403C2.09874 15.3144 3.96294 14.1053 5.29904 12.4035C6.63513 10.7017 7.36722 8.60385 7.38 6.44027V6.38027C7.38 6.26027 7.38 6.14027 7.38 6.02027C8.86122 6.01917 10.3198 6.38367 11.6264 7.08144C12.9329 7.7792 14.0471 8.78866 14.87 10.0203L15.81 11.4503C16.7079 12.8 17.9253 13.9071 19.3542 14.6729C20.783 15.4388 22.3789 15.8398 24 15.8403V16.0003C24 18.122 23.1571 20.1568 21.6569 21.6571C20.1566 23.1574 18.1217 24.0003 16 24.0003H8C5.87827 24.0003 3.84344 23.1574 2.34315 21.6571C0.842855 20.1568 0 18.122 0 16.0003V15.8403Z" fill="#5FC7CB"/>
+                            </svg>
+                    </div>
+                    <div class="edit-customer-name">{{screen.customer.name}}</div>
+                </div>                
                 <app-sale-item-card-list [ngClass]="{'is-empty': isEmpty}" (itemsChanged)="onItemsChanged($event)" class="sale-list-background"></app-sale-item-card-list>
-
-                <app-status-strip></app-status-strip>
+                <!-- totals -->
+                <div class="total-wrapper mat-elevation-z5">
+                    <app-mobile-totals-part></app-mobile-totals-part>
+                </div>
+                <!-- status -->
+                <div class="status-wrapper">
+                    <app-status-strip></app-status-strip>       
+                </div>     
             </div>
-            <app-sale-total-panel class="sale-total-panel"></app-sale-total-panel>
+
         </div>
         <div *ngIf="(isMobile$ | async)" class="sale-body-mobile">
             <app-mobile-employee-part class="sale-employee-mobile"></app-mobile-employee-part>

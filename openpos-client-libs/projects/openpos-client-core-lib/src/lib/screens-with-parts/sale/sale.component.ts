@@ -51,7 +51,7 @@ export class SaleComponent extends PosScreenDirective<SaleInterface> {
         this.isMobile$ = media.observe(new Map([
             [MediaBreakpoints.MOBILE_PORTRAIT, true],
             [MediaBreakpoints.MOBILE_LANDSCAPE, true],
-            [MediaBreakpoints.TABLET_PORTRAIT, true],
+            [MediaBreakpoints.TABLET_PORTRAIT, false],
             [MediaBreakpoints.TABLET_LANDSCAPE, false],
             [MediaBreakpoints.DESKTOP_PORTRAIT, false],
             [MediaBreakpoints.DESKTOP_LANDSCAPE, false]

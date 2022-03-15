@@ -45,6 +45,8 @@ import { ProgramPlanSelectDialogComponent } from './membership/program-plan-sele
 import {EnrollmentConfirmationDialogComponent} from './membership/enrollment-confirmation-dialog/enrollment-confirmation-dialog.component';
 import { PromptWithInfoScanGiftCardScreenDialogComponent} from './prompt-with-info-scan-gift-card/prompt-with-info-scan-gift-card-screen-dialog.component';
 import { PromptInfoScanGiftCardScreenComponent } from './prompt-with-info-scan-gift-card/prompt-info-scan-gift-card-screen.component';
+import { CrestHomeComponent } from './crest-home/crest-home.component';
+import { CrestEnterComponent } from './crest-enter/crest-enter.component';
 
 const screens = [
     SelectionListScreenComponent,
@@ -53,6 +55,8 @@ const screens = [
     PromptWithInfoScreenComponent,
     PromptInfoScanGiftCardScreenComponent,
     HomeComponent,
+    CrestHomeComponent,
+    CrestEnterComponent,
     ReturnComponent,
     MobileReturnReceiptsSheetComponent,
     DataTableComponent,

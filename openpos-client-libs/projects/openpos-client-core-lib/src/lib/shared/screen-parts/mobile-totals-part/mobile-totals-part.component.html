@@ -15,8 +15,20 @@
                 <app-currency-text [amountText]="screenData.grandTotal.amount"></app-currency-text>
             </div>
         </div>
-        <app-primary-button responsive-class *ngIf="!screenData.readOnly && screenData.checkoutButton"
-            [disabled]="!screenData.checkoutButton.enabled" (click)="doAction(screenData.checkoutButton)"
-            class="mobile-checkout-button">{{screenData.checkoutButton.title}}</app-primary-button>
+        <button fxFlex="1 0 auto"
+        *ngIf="!screenData.readOnly && screenData.checkoutButton"
+        class="button"
+            autofocus
+            responsive-class
+            mat-flat-button
+            [disabled]="!screenData.checkoutButton.enabled" 
+            (click)="doAction(screenData.checkoutButton)"
+            class="mobile-checkout-button">
+        {{screenData.checkoutButton.title}}
+        </button>
+
+        <!-- <app-primary-button responsive-class 
+            
+            >{{screenData.checkoutButton.title}}</app-primary-button> -->
     </div>
 </div>

@@ -1,0 +1,213 @@
+@import '~@angular/material/theming';
+
+.offline-title {
+  text-align: center;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 18px;
+  color: #333E47;
+  padding-top: 16px;
+}
+.offline-title-main {
+  // padding-top: 50px;
+  // padding: 30px;
+
+  text-align: center;
+  font-style: normal;
+  font-weight: 900;
+  font-size: 16px;
+  line-height: 16px;  
+  text-transform: uppercase;
+  color: #333E47;
+}
+
+.outer-container {
+  display: grid;
+  grid-template-columns: 4fr 3fr;
+  grid-template-rows:  2fr 2fr 3fr;
+  grid-template-areas: "customer customer"
+                       "hello notifications"
+                       "actions notifications";
+  grid-column-gap: 48px;
+  grid-row-gap: 32px;
+  height: calc(100% - (120px));
+  margin: 48px;
+  margin-top: 0px;
+}
+.customer {
+  grid-area: customer;
+  border-radius: 16px;
+  padding-top: 32px;  
+  padding-bottom: 8px;
+  background-color: #F6F6F6;
+  text-align: center;
+}
+
+.hello {
+  grid-area: hello;
+  background-color: white;
+  border-radius: 16px;
+}
+.actions {
+  grid-area: actions;
+  border-radius: 16px;
+}
+.notifications {
+  grid-area: notifications;
+  background-color: white;
+  border-radius: 16px;
+  display: grid;
+  grid-row-gap: 20px;
+  grid-template-rows:  1fr 1fr 1fr;
+}
+
+.crest-action {
+  background: #F6F6F6;
+  border-radius: 16px;
+  font-style: normal;
+  font-weight: 900;
+  font-size: 12px;
+  line-height: 12px;  
+  text-transform: uppercase;  
+  color: #333E47;  
+  padding: 16px;
+}
+.crest-action:after {
+  content: "";
+  display: block;
+  padding-bottom: 0;
+}
+
+.crest-sell-action {
+  background: #000000;
+  font-style: normal;
+  font-weight: 900;
+  font-size: 16px;
+  line-height: 16px;  
+  text-transform: uppercase;  
+  color: #FFFFFF;
+  text-align: center;
+  padding-top: 75px;
+}
+
+.actions-title {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 30px;
+  color: #000000;
+  margin-bottom: 40px;
+}
+
+.actions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows:  2fr 2fr 1fr;
+  grid-template-areas: "action1 action2"
+                       "action3 action4"
+                       "manageAction manageAction";
+  grid-column-gap: 24px;
+  grid-row-gap: 24px;
+}
+
+.action1 {
+  grid-area: action1;
+}
+.action2 {
+  grid-area: action2;
+}
+.action3 {
+  grid-area: action3;
+}
+.action4 {
+  grid-area: action4;
+}
+.manage-action {
+  grid-area: manageAction;
+  background: #F6F6F6;
+  border-radius: 16px;
+  width: 100%;
+  font-style: normal;
+  font-weight: 900;
+  font-size: 12px;
+  line-height: 12px;  
+  text-transform: uppercase;  
+  color: #333E47;  
+  padding: 16px;
+}
+
+.offline-image {
+  text-align: center;
+  align-content: center;
+  width: 15vw;
+}
+
+.notification1 {
+  height: 1fr;
+  background: #F6F6F6;
+  border-radius: 16px;
+}
+.notification2 {
+  height: 1fr;
+  background: #F6F6F6;
+  border-radius: 16px;
+}
+.notification3 {
+  height: 1fr;
+  background: #F6F6F6;
+  border-radius: 16px;
+}
+
+.white-icon {
+  color: white;
+  display: unset;
+  background-color: white;
+}
+
+.crest-frame {
+  border: none;
+  width: 100%;
+  height: 90vh;
+}
+
+.action-icon {
+  background: #7CA6BB;
+  border-radius: 8px;
+}
+
+.actions-subtitle {
+font-style: normal;
+font-weight: 400;
+font-size: 12px;
+line-height: 18px;
+color: #333E47;
+margin-bottom: 40px;
+}
+
+.action-icon-container {
+  background: #7CA6BB;
+  border-radius: 8px;
+  width: 48px;
+  height: 36px;
+  padding-top: 15px;
+  text-align: center;
+}
+
+.action-label {
+  padding-top: 60px;
+  
+}
+
+.crest-store-management-action {
+  display: flex;
+  
+}
+
+.manage-icon-container {
+  margin-right: 16px;
+}
+
+.manage-label {
+  padding-top: 34px;
+}

@@ -17,7 +17,7 @@ export class SideNavComponent {
         const openMap = new Map([
             [MediaBreakpoints.MOBILE_PORTRAIT, false],
             [MediaBreakpoints.MOBILE_LANDSCAPE, false],
-            [MediaBreakpoints.TABLET_PORTRAIT, true],
+            [MediaBreakpoints.TABLET_PORTRAIT, false],
             [MediaBreakpoints.TABLET_LANDSCAPE, true],
             [MediaBreakpoints.DESKTOP_PORTRAIT, true],
             [MediaBreakpoints.DESKTOP_LANDSCAPE, true]

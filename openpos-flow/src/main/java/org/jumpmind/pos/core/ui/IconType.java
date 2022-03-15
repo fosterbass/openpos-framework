@@ -92,6 +92,7 @@ public interface IconType {
     public static final String Sales = "Sales"; //local_offer
     public static final String ScaleBalance = "ScaleBalance"; //scale_balance
     public static final String Search = "Search"; //search
+    public static final String Hanger = "Hanger"; //search
     public static final String Security = "Security"; //security
     public static final String Store = "Store"; //storefront
     public static final String StoreCard = "StoreCard"; //card_membership

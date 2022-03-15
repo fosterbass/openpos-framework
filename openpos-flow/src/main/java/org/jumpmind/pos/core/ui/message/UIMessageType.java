@@ -9,6 +9,7 @@ public final class UIMessageType {
     public static final String PROMPT_WITH_OPTIONS = "PromptWithOptions";
     public static final String PROMPT_WITH_INFO = "PromptWithInfo";
     public static final String HOME = "Home";
+    public static final String CREST_HOME = "CrestHome";
     public static final String CHOOSE_OPTIONS = "ChooseOptions";
     public static final String OPTIONS = "Options";
     public static final String SELF_CHECKOUT_HOME = "SelfCheckoutHome";

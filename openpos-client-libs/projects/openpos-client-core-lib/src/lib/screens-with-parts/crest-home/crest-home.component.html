@@ -1,0 +1,78 @@
+<!-- <div [ngStyle]="screen.backgroundImage | backgroundImageUrl" class=""> -->
+<div class="">
+    <app-basic-bacon-strip *ngIf="screen.hasOwnProperty('basicBaconStrip')"></app-basic-bacon-strip>
+    <app-bacon-strip *ngIf="screen.hasOwnProperty('baconStrip')"></app-bacon-strip>
+</div>
+
+<div *ngIf="screen.crestOnlineFlag">
+    <iframe scrolling="no" class="crest-frame" [src]="screen.crestURL | safe"></iframe>
+</div>
+
+<div *ngIf="!screen.crestOnlineFlag" class="outer-container">
+    <div class="customer">    
+        <div class="offline-title-main">Sorry, we're having trouble connecting. </div>
+        <div class="offline-title">Only some options are available </div>     
+        <div>
+            <img #img class="offline-image" [src]="replaceTokens(screen.offlineImageUrl)"/>
+      </div>        
+    </div>
+    <div class="hello">
+
+    </div>
+    <div class="actions">      
+        <div class="actions-title">Actions</div>
+        <div class="actions-grid">
+            
+            <div class="crest-action action1">
+                <div class="action-icon-container">
+                    <svg height="24" width="24" viewBox="0 0 24 24" class="action-icon">
+                    <path fill="white" d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,6A2,2 0 0,0 10,8A2,2 0 0,0 12,10A2,2 0 0,0 14,8A2,2 0 0,0 12,6M12,13C14.67,13 20,14.33 20,17V20H4V17C4,14.33 9.33,13 12,13M12,14.9C9.03,14.9 5.9,16.36 5.9,17V18.1H18.1V17C18.1,16.36 14.97,14.9 12,14.9Z" />
+                    </svg>    
+                </div>
+                <div class="action-label">
+                  Clients
+                </div>
+            </div>
+            <div class="crest-action action2" (click)="doAction('ItemSearch')">
+                <div class="action-icon-container">
+                    <svg height="24" width="24" viewBox="0 0 24 24">
+                      <path fill="white" d="M12 4A3.5 3.5 0 0 0 8.5 7.5H10.5A1.5 1.5 0 0 1 12 6A1.5 1.5 0 0 1 13.5 7.5A1.5 1.5 0 0 1 12 9C11.45 9 11 9.45 11 10V11.75L2.4 18.2A1 1 0 0 0 3 20H21A1 1 0 0 0 21.6 18.2L13 11.75V10.85A3.5 3.5 0 0 0 15.5 7.5A3.5 3.5 0 0 0 12 4M12 13.5L18 18H6Z" />
+                    </svg>
+      
+                  </div>
+                  <div class="action-label">
+                  Browse Products
+                  </div>       
+            </div>
+            <div class="crest-action action3" (click)="doAction('TransactionSearch')">
+                <div class="action-icon-container">
+                    <svg height="24" width="24" viewBox="0 0 24 24" class="action-icon">
+                    <path fill="white" d="M19 6H17C17 3.2 14.8 1 12 1S7 3.2 7 6H5C3.9 6 3 6.9 3 8V20C3 21.1 3.9 22 5 22H19C20.1 22 21 21.1 21 20V8C21 6.9 20.1 6 19 6M12 3C13.7 3 15 4.3 15 6H9C9 4.3 10.3 3 12 3M19 20H5V8H19V20M12 12C10.3 12 9 10.7 9 9H7C7 11.8 9.2 14 12 14S17 11.8 17 9H15C15 10.7 13.7 12 12 12Z" />
+                    </svg>    
+                    </div>
+                    <div class="action-label">
+                    Transactions
+                    </div>            
+            </div>
+            <div class="crest-action action4 crest-sell-action" (click)="doAction('Sell')">
+                Sale
+            </div>
+            <div class="manage-action crest-store-management-action" (click)="doAction('Manage')">
+                <div class="action-icon-container manage-icon-container">
+                    <svg height="24" width="24" viewBox="0 0 24 24" class="action-icon">
+                      <path fill="white" d="M5.06 3C4.63 3 4.22 3.14 3.84 3.42S3.24 4.06 3.14 4.5L2.11 8.91C1.86 10 2.06 10.95 2.72 11.77L3 12.05V19C3 19.5 3.2 20 3.61 20.39S4.5 21 5 21H19C19.5 21 20 20.8 20.39 20.39S21 19.5 21 19V12.05L21.28 11.77C21.94 10.95 22.14 10 21.89 8.91L20.86 4.5C20.73 4.06 20.5 3.7 20.13 3.42C19.77 3.14 19.38 3 18.94 3H5.06M18.89 4.97L19.97 9.38C20.06 9.81 19.97 10.2 19.69 10.55C19.44 10.86 19.13 11 18.75 11C18.44 11 18.17 10.9 17.95 10.66C17.73 10.43 17.61 10.16 17.58 9.84L16.97 5L18.89 4.97M5.06 5H7.03L6.42 9.84C6.3 10.63 5.91 11 5.25 11C4.84 11 4.53 10.86 4.31 10.55C4.03 10.2 3.94 9.81 4.03 9.38L5.06 5M9.05 5H11V9.7C11 10.05 10.89 10.35 10.64 10.62C10.39 10.88 10.08 11 9.7 11C9.36 11 9.07 10.88 8.84 10.59S8.5 10 8.5 9.66V9.5L9.05 5M13 5H14.95L15.5 9.5C15.58 9.92 15.5 10.27 15.21 10.57C14.95 10.87 14.61 11 14.2 11C13.89 11 13.61 10.88 13.36 10.62C13.11 10.35 13 10.05 13 9.7V5M7.45 12.05C8.08 12.67 8.86 13 9.8 13C10.64 13 11.38 12.67 12 12.05C12.69 12.67 13.45 13 14.3 13C15.17 13 15.92 12.67 16.55 12.05C17.11 12.67 17.86 13 18.8 13H19.03V19H5V13H5.25C6.16 13 6.89 12.67 7.45 12.05Z" />
+                    </svg>    
+                  </div>            
+                  <div class="manage-label">
+                      Store Management
+                </div>                
+            </div>
+        </div>
+    </div>
+    <div class="notifications">
+        <div class="notification1"></div>
+        <div class="notification2"></div>
+        <div class="notification3"></div>
+    </div>
+</div>
+

@@ -50,6 +50,11 @@
     outline: none;
 }
 
+.scan-header {
+    background-color: #eee;
+    padding: 20px;
+}
+
 app-image-scanner {
     min-height: 200px;
     place-self: stretch;

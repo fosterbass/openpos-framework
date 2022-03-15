@@ -3,6 +3,9 @@
 .item-card {
     margin: 0px;
     margin-bottom: 16px;
+    border-bottom: 1px solid #d3d3d3;
+    border-radius: 0px;
+
 
     &.mobile {
         margin-bottom: 8px;
