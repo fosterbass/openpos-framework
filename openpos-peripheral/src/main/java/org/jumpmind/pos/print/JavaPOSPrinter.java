@@ -137,7 +137,9 @@ public class JavaPOSPrinter extends AbstractPOSPrinter implements IOpenposPrinte
     @Override
     public int waitForDrawerClose(String cashDrawerId, long timeout) {
         try {
-            this.cashDrawer.waitForDrawerClose(20000, 44000, 2000, 1000);
+            if (isDrawerOpen(cashDrawerId)) {
+                this.cashDrawer.waitForDrawerClose(20000, 44000, 2000, 1000);
+            }
         } catch (Exception e) {
             String msg = String.format("Failure to read the status of the drawer: %s", cashDrawerId);
             reportStatus(msg, e);
