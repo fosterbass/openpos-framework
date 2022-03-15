@@ -27,6 +27,7 @@ import { SplashScreenComponent } from './components/splash-screen/splash-screen.
 import { LockScreenComponent } from './lock-screen/lock-screen.component';
 import locale_enCA from '@angular/common/locales/en-CA';
 import locale_frCA from '@angular/common/locales/fr-CA';
+import locale_esMX from '@angular/common/locales/es-MX';
 import { LocationService, PROVIDERS } from './services/location.service';
 import { LocationProviderDefault } from './location-providers/location-provider-default';
 import { CLIENTCONTEXT } from './client-context/client-context-provider.interface';
@@ -80,6 +81,7 @@ import { KeybindingDialogService } from './keybindings/keybinding-dialog.service
 
 registerLocaleData(locale_enCA, 'en-CA');
 registerLocaleData(locale_frCA, 'fr-CA');
+registerLocaleData(locale_esMX, 'es-MX');
 
 @NgModule({
     entryComponents: [
