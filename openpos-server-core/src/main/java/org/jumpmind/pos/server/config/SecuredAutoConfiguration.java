@@ -42,7 +42,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Configuration
 @EnableConfigurationProperties
-@ConditionalOnProperty(name = "secured.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "secured.enabled", havingValue = "true", matchIfMissing = false)
 public class SecuredAutoConfiguration {
     private static final String DEFAULT_LABEL = "commerce-server";
 
