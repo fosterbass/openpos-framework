@@ -357,6 +357,9 @@
                           (actionClick)="doAction(button)"
                           (click)="doAction(button)">
         <span>{{button.title}}</span>
+        <span *ngIf="keybindsEnabled(button)" class="muted-color keybinding">
+            {{button.keybindDisplayName}}
+        </span>
     </app-secondary-button>
     <app-primary-button responsive-class class="done" *ngIf="screen.doneButton" [disabled]="!screen.doneButton?.enabled"
                         (actionClick)="doAction(screen.doneButton)"
