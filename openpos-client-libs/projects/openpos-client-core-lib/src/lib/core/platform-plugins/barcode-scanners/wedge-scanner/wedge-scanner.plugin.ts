@@ -194,7 +194,7 @@ export class WedgeScannerPlugin implements Scanner {
                 if (key === 'Enter') {
                     key = '\n';
                 }
-                charList.push(e.key);
+                charList.push(key);
             }
         }
 
