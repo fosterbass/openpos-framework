@@ -8,7 +8,7 @@ import { StartupTask } from '../startup-task';
     providedIn: 'root'
 })
 export class AudioStartupTask implements StartupTask {
-    name = 'AudioStartupTask';
+    static readonly taskName = 'AudioStartupTask';
 
     constructor(
         private audioRepositoryService: AudioRepositoryService,

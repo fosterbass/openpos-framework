@@ -16,9 +16,9 @@ export const CONFIGURATION = {
     loadingDialogDelay: 4000,
     confirmConnectionTimeoutMillis: 172800000,
     autoPersonalizationRequestTimeoutMillis: 50000,
+    autoPersonalizationServicePath: null,
     // These properties are static on the client and not overriden by configuration.service.ts
     compatibilityVersion: 'v1',
     incompatibleVersionMessage: 'Application is not compatible with the server.',
-    autoPersonalizationServicePath: null,
     autoFocusFirstOptionsListOption: false
 };

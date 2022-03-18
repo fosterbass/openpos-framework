@@ -1,13 +1,11 @@
 import { Observable } from 'rxjs';
 import { first } from 'rxjs/operators';
+import { AutoPersonalizationRequest } from '../../personalization/auto-personalization-request.interface';
 import { AutoPersonalizationParametersResponse } from '../../personalization/device-personalization.interface';
 import { PersonalizationService } from '../../personalization/personalization.service';
 import { StartupTask } from '../startup-task';
-import { AutoPersonalizationRequest } from '../../personalization/auto-personalization-request.interface';
 
 export abstract class AutoPersonalizationStartupTask implements StartupTask {
-    name = 'AutoPersonalizationStartupTask';
-
     constructor(protected personalization: PersonalizationService) { }
 
     abstract execute(): void | Promise<void> | Observable<any>;

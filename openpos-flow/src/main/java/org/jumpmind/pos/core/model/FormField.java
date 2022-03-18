@@ -1,20 +1,16 @@
 package org.jumpmind.pos.core.model;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.apache.commons.lang3.StringUtils;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jumpmind.pos.core.ui.ActionItem;
 import org.jumpmind.pos.core.ui.validator.IValidatorSpec;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonSetter;
+import java.io.Serializable;
+import java.util.*;
 
 public class FormField implements IFormElement, IField, Serializable {
     private static final long serialVersionUID = 1L;
@@ -248,6 +244,11 @@ public class FormField implements IFormElement, IField, Serializable {
     public FormField maxLength(Integer maxLength) {
         this.setMaxLength(maxLength);
         return this;
+    }
+
+    @JsonIgnore
+    public Optional<Object> getMaxLength() {
+        return Optional.ofNullable(optionalProperties.get("maxLength"));
     }
     
     /**

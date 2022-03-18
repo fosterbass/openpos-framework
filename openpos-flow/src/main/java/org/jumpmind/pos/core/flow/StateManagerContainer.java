@@ -184,6 +184,9 @@ public class StateManagerContainer implements IStateManagerContainer, Applicatio
             if (stateManager.getApplicationState() != null && stateManager.getApplicationState().getDeviceMode() != null) {
                 clientContext.put("deviceMode", stateManager.getApplicationState().getDeviceMode());
             }
+            if (stateManager.getApplicationState() != null && stateManager.getApplicationState().getDeviceMode() != null) {
+                clientContext.put("deviceMode", stateManager.getApplicationState().getDeviceMode());
+            }
 
             clientContext.put("deviceId", stateManager.getDeviceId());
             clientContext.put("appId", stateManager.getAppId());

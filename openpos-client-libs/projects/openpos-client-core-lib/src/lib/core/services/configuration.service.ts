@@ -18,7 +18,7 @@ export class ConfigurationService {
     public versions: Array<IVersion> = [];
     public theme$ = new BehaviorSubject<string>('openpos-default-theme');
 
-    private config$ = new ReplaySubject<Map<string, ConfigChangedMessage>>(1);
+    private config$ = new BehaviorSubject<Map<string, ConfigChangedMessage>>(new Map());
 
     constructor(private sessionService: SessionService) {
         const capturedConfig = new Map<string, ConfigChangedMessage>();
@@ -46,6 +46,10 @@ export class ConfigurationService {
             filter(m => m && m.configType === configType),
             distinct()
         );
+    }
+
+    public peekConfiguration<T extends ConfigChangedMessage>(configType: string): T | undefined {
+        return this.config$.value.get(configType) as T;
     }
 
     protected mapConfig(response: any) {
