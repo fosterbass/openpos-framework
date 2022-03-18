@@ -132,16 +132,9 @@ export class PersonalizationService {
     public getAutoPersonalizationParameters(deviceName: string, url: string):
         Observable<AutoPersonalizationParametersResponse> {
 
-        const requestTimeout = 2000;
-        const retryCount = CONFIGURATION.autoPersonalizationRequestTimeoutMillis / requestTimeout;
-
         console.log('Attempting auto personalization with ' + url);
         return this.http.get<AutoPersonalizationParametersResponse>(url, { params: { deviceName } })
             .pipe(
-                // on some platforms the first or early requests can fail, try a few times before
-                // giving up completely.
-                timeout(requestTimeout),
-                retry(retryCount),
                 tap(response => {
                     if (response) {
                         console.log('Received an auto personalization response from the server', response);

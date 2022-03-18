@@ -9,7 +9,7 @@ export abstract class AutoPersonalizationStartupTask implements StartupTask {
 
     abstract execute(): void | Promise<void> | Observable<any>;
 
-    protected async personalize(deviceName: string, url: string): Promise<void> {
+    protected async getPersonalizationParameters(deviceName: string, url: string): Promise<AutoPersonalizationParametersResponse> {
         let info: AutoPersonalizationParametersResponse;
 
         try {
@@ -19,10 +19,14 @@ export abstract class AutoPersonalizationStartupTask implements StartupTask {
             ).pipe(
                 first()
             ).toPromise();
+
+            return info;
         } catch (e) {
             throw new Error('failed to get personalization parameters');
         }
+    }
 
+    protected async personalize(info: AutoPersonalizationParametersResponse): Promise<void> {
         console.log(`personalizing with server '${info.serverAddress}:${info.serverPort}' as '${info.deviceName}'`);
 
         const params = info.personalizationParams;

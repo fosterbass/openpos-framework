@@ -8,7 +8,7 @@ import { PlatformPluginsStartupTask } from './tasks/platform-plugins.startup-tas
 import { QueryParamsPersonalization } from './tasks/query-params-personalization.startup-task';
 import { SavedSessionPersonalizationStartupTask } from './tasks/saved-session-personalization.startup-task';
 import { SessionConnectStartupTask } from './tasks/session-connect.startup-task';
-import { ZeroConfPersonalizationStartupTask } from './tasks/zero-conf-personalization.startup-task';
+import { ZeroConfPersonalizationStartupTask } from './tasks/zeroconf/zero-conf-personalization.startup-task';
 
 export let startupSequence = all(
     withSplashMessage('Configuring platform...', PlatformDiscoveryStartupTask),

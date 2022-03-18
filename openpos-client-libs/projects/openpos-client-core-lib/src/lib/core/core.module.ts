@@ -69,6 +69,7 @@ import { PowerModule } from './platform-plugins/power/power.module';
 import { OpenposAppComponent } from './components/openpos-app/openpos-app.component';
 import { PLATFORMS } from './platforms/platform.interface';
 import { PLUGINS } from './platform-plugins/platform-plugin.interface';
+import { ZeroConfPersonalizationDialogComponent } from './startup/tasks/zeroconf/zero-conf-personalization-dialog.component';
 
 registerLocaleData(locale_enCA, 'en-CA');
 registerLocaleData(locale_frCA, 'fr-CA');
@@ -80,6 +81,7 @@ registerLocaleData(locale_frCA, 'fr-CA');
         DialogContentComponent,
         SplashScreenComponent,
         LockScreenComponent,
+        ZeroConfPersonalizationDialogComponent
     ],
     declarations: [
         OpenposAppComponent,
@@ -87,7 +89,8 @@ registerLocaleData(locale_frCA, 'fr-CA');
         ConfirmationDialogComponent,
         PersonalizationComponent,
         SplashScreenComponent,
-        LockScreenComponent
+        LockScreenComponent,
+        ZeroConfPersonalizationDialogComponent
     ],
     imports: [
         SharedModule,
