@@ -46,7 +46,7 @@ export class LoyaltyCustomerFormDialogComponent extends PosScreenDirective<Loyal
     countryField: IFormElement;
     addressIconLocationClass: string;
 
-    scanStartControlCharacter: string;
+    wedgeScannerPlugin: WedgeScannerPlugin;
 
     constructor(injector: Injector, private media: OpenposMediaService, private formBuilder: FormBuilder,
                 private scannerService: BarcodeScanner) {
@@ -56,10 +56,9 @@ export class LoyaltyCustomerFormDialogComponent extends PosScreenDirective<Loyal
 
 
     ngOnInit() {
-        const wedgeScannerPlugin = this.scannerService.getScanners().find(
-                        scanner => scanner instanceof WedgeScannerPlugin);
-        if ( wedgeScannerPlugin  ) {
-            this.scanStartControlCharacter = (wedgeScannerPlugin as WedgeScannerPlugin).getStartSequence();
+        if (!!this.scannerService && !!this.scannerService.getScanners()) {
+            this.wedgeScannerPlugin = this.scannerService.getScanners().find(
+                scanner => scanner instanceof WedgeScannerPlugin) as WedgeScannerPlugin;
         }
     }
 
@@ -83,12 +82,12 @@ export class LoyaltyCustomerFormDialogComponent extends PosScreenDirective<Loyal
     }
 
 
-    onScanFieldChanged(formElement: IFormElement): void {
-        const loyaltyNumber = this.screen.formGroup.value[this.loyaltyNumberField.id];
-        if ( loyaltyNumber != null && this.scanStartControlCharacter != null &&
-            loyaltyNumber.startsWith(this.scanStartControlCharacter)) {
-            console.info(`Stripping the scan control character from the start ${loyaltyNumber}`) ;
-            formElement.value = loyaltyNumber.substr(this.scanStartControlCharacter.length);
+    onWedgeScanFieldChanged(formElement: IFormElement): void {
+        let loyaltyNumber = this.screen.formGroup.value[this.loyaltyNumberField.id];
+        if (loyaltyNumber && this.wedgeScannerPlugin) {
+            console.log(`Found wedge scanner plugin, massaging loyalty scan data...`);
+            loyaltyNumber = this.wedgeScannerPlugin.stripWedgeControlCharacters(loyaltyNumber);
+            formElement.value = loyaltyNumber;
             // Update the stripped string into the form control as well
             const patchGroup = {};
             patchGroup[formElement.id] = formElement.value;

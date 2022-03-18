@@ -201,6 +201,24 @@ export class WedgeScannerPlugin implements Scanner {
         return charList;
     }
 
+    public stripWedgeControlCharacters(data: string): string {
+        console.log(`Stripping wedge control characters from ${data}`);
+        if (!this.isCommandKey(this.endSequence) && data.endsWith(this.endSequence)) {
+            data = data.slice(0, data.length - this.endSequence.length);
+        }
+        if (!this.isCommandKey(this.startSequence) && data.startsWith(this.startSequence)) {
+            data = data.slice(this.startSequence.length, data.length);
+        }
+        return data;
+    }
+
+    private isCommandKey(key: string) {
+        if (!!key) {
+            key = key.toLowerCase();
+        }
+        return 'enter' === key || 'tab' === key || 'ctrl' === key || 'alt' === key;
+    }
+
     private getScanData(s: string): ScanData {
         const type = s.slice(0, this.codeTypeLength);
         const scanData: ScanData = { data: s.slice(this.codeTypeLength) };

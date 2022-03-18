@@ -25,6 +25,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { LockScreenService } from '../../../core/lock-screen/lock-screen.service';
 import { KeybindingZoneService } from '../../../core/keybindings/keybinding-zone.service';
 import { filter, takeUntil } from 'rxjs/operators';
+import { WedgeScannerPlugin } from '../../../core/platform-plugins/barcode-scanners/wedge-scanner/wedge-scanner.plugin';
 
 @ScreenPart({
     name: 'scanOrSearch'
@@ -35,7 +36,7 @@ import { filter, takeUntil } from 'rxjs/operators';
     styleUrls: ['./scan-or-search.component.scss']
 })
 export class ScanOrSearchComponent extends ScreenPartComponent<ScanOrSearchInterface>
-        implements OnInit, OnDestroy, OnBecomingActive, OnLeavingActive {
+    implements OnInit, OnDestroy, OnBecomingActive, OnLeavingActive {
     public barcode: string;
     isMobile$: Observable<boolean>;
 
@@ -62,15 +63,16 @@ export class ScanOrSearchComponent extends ScreenPartComponent<ScanOrSearchInter
     private dialogWatcherSub?: Subscription;
     private lockScreenSub?: Subscription;
     public focused: boolean;
+    private wedgeScannerPlugin: WedgeScannerPlugin;
 
     constructor(
-            injector: Injector,
-            mediaService: OpenposMediaService,
-            public imageScanners: BarcodeScanner,
-            public dialog: MatDialog,
-            public lockScreen: LockScreenService,
-            private changeDetector: ChangeDetectorRef,
-            private keybindingZoneService: KeybindingZoneService
+        injector: Injector,
+        mediaService: OpenposMediaService,
+        public imageScanners: BarcodeScanner,
+        public dialog: MatDialog,
+        public lockScreen: LockScreenService,
+        private changeDetector: ChangeDetectorRef,
+        private keybindingZoneService: KeybindingZoneService
     ) {
         super(injector);
         const mobileMap = new Map([
@@ -89,10 +91,10 @@ export class ScanOrSearchComponent extends ScreenPartComponent<ScanOrSearchInter
         this.registerScanner();
 
         this.keybindingZoneService.getShouldDoAction()
-        .pipe(
-            filter(pendingAction => pendingAction.action.keybind === 'Enter'),
-            takeUntil(this.destroyed$)
-        ).subscribe(pendingAction => pendingAction.cancel = this.focused);
+            .pipe(
+                filter(pendingAction => pendingAction.action.keybind === 'Enter'),
+                takeUntil(this.destroyed$)
+            ).subscribe(pendingAction => pendingAction.cancel = this.focused);
 
         if (this.screenData.keyboardLayout) {
             this.keyboardLayout = this.screenData.keyboardLayout;
@@ -105,6 +107,11 @@ export class ScanOrSearchComponent extends ScreenPartComponent<ScanOrSearchInter
                 this.showScannerVisual = false;
             }
         });
+
+        if (!!this.imageScanners && !!this.imageScanners.getScanners()) {
+            this.wedgeScannerPlugin = this.imageScanners.getScanners().find(
+                scanner => scanner instanceof WedgeScannerPlugin) as WedgeScannerPlugin;
+        }
     }
 
     onBecomingActive() {
@@ -171,6 +178,10 @@ export class ScanOrSearchComponent extends ScreenPartComponent<ScanOrSearchInter
 
     public onEnter($event: any): void {
         if (this.barcode && this.barcode.trim().length >= this.screenData.scanMinLength) {
+            if (this.wedgeScannerPlugin) {
+                console.log(`Found wedge scanner plugin, massaging data...`);
+                this.barcode = this.wedgeScannerPlugin.stripWedgeControlCharacters(this.barcode);
+            }
             if ($event) {
                 $event.stopImmediatePropagation();
             }
