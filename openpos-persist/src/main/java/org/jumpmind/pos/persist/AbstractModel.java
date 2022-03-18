@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.jumpmind.pos.persist.model.IAuditableModel;
 import org.jumpmind.pos.util.ClassUtils;
+import org.jumpmind.util.LinkedCaseInsensitiveMap;
 
 
 public abstract class AbstractModel implements IAuditableModel, Serializable {
@@ -33,7 +34,7 @@ public abstract class AbstractModel implements IAuditableModel, Serializable {
     private Map<String, Object> systemData = new HashMap<>();
 
     @JsonIgnore
-    private Map<String, Object> additionalFields = new CaseInsensitiveMap<String, Object>();
+    private Map<String, Object> additionalFields = new LinkedCaseInsensitiveMap<>();
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "__extensionClass")
     private Map<Class, Object> extensions = new HashMap<>();

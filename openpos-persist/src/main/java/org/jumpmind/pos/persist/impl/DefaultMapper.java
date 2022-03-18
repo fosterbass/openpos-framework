@@ -13,26 +13,26 @@ import org.jumpmind.db.sql.Row;
 import org.jumpmind.db.sql.SqlException;
 import org.springframework.jdbc.core.RowMapper;
 
-public class DefaultMapper implements RowMapper<Row> {
+public class DefaultMapper implements RowMapper<DbRow> {
 
     ResultSetMetaData rsMetaData = null;
     int rsColumnCount;
 
     @Override
-    public Row mapRow(ResultSet rs, int rowNum) throws SQLException {
+    public DbRow mapRow(ResultSet rs, int rowNum) throws SQLException {
 
         if (rsMetaData == null) {
             rsMetaData = rs.getMetaData();
             rsColumnCount = rsMetaData.getColumnCount();
         }
 
-        Row mapOfColValues = new Row(rsColumnCount);
+        DbRow row = new DbRow();
         for (int i = 1; i <= rsColumnCount; i++) {
             String key = lookupColumnName(rsMetaData, i);
             Object obj = getResultSetValue(rs, rsMetaData, i, false);
-            mapOfColValues.put(key, obj);
+            row.setColumnValue(key, obj);
         }
-        return mapOfColValues;
+        return row;
     }
 
     private final String lookupColumnName(ResultSetMetaData resultSetMetaData, int columnIndex)

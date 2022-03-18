@@ -150,7 +150,7 @@ public class SecuredAutoConfiguration {
             try {
                 Files.setPosixFilePermissions(parent, PosixFilePermissions.fromString(DEFAULT_SECURITY_DIR_PERMS));
             } catch (UnsupportedOperationException ex) {
-                log.warn("unable to set least perms on {} (non-POSIX-compliant file system)", parent);
+                log.warn("unable to set least perms on {} (non-POSIX-compliant file system)", parent, ex);
             }
         }
 
@@ -196,13 +196,13 @@ public class SecuredAutoConfiguration {
                 } catch (Exception ex) {
                     /* do not allow a "corrupted" key store to be written */
                     Files.deleteIfExists(keyStorePath);
-                    log.error("failed to create key store ({})", ex.toString());
+                    log.error("failed to create key store", ex);
                     throw ex;
                 }
                 try {
                     Files.setPosixFilePermissions(keyStorePath, PosixFilePermissions.fromString(DEFAULT_KEY_STORE_PERMS));
                 } catch (UnsupportedOperationException ex) {
-                    log.warn("unable to set least perms on {} (non-POSIX-compliant file system)", keyStorePath);
+                    log.warn("unable to set least perms on {} (non-POSIX-compliant file system)", keyStorePath, ex);
                 }
             } else {
                 throw new FileNotFoundException(keyStorePath.toString());

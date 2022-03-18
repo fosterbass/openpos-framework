@@ -1,21 +1,41 @@
 package org.jumpmind.pos.util.model;
 
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.reflections.Reflections;
+import org.springframework.expression.spel.ast.TypeCode;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Slf4j
 public final class ITypeCodeRegistry {
 
+    @Data
+    @AllArgsConstructor
+    public static class ITypeCodeCacheKey {
+        Class<?> typeCodeClass;
+        Object value;
+    }
+
     private static Map<Class<? extends ITypeCode>,Set<? extends ITypeCode>> registry = new HashMap<>();
     private static final Object registryLock = new Object();
 
+    private static Map<ITypeCodeCacheKey, ITypeCode> typeCodeCache = new LinkedHashMap<ITypeCodeCacheKey, ITypeCode>() {
+        protected boolean removeEldestEntry(Map.Entry<ITypeCodeCacheKey, ITypeCode> eldest) {
+            return size() > 5000;
+        }
+    };
+
+    public static void putCacheValue(ITypeCodeCacheKey key, ITypeCode typeCode) {
+        typeCodeCache.put(key, typeCode);
+    }
+
+    public static ITypeCode getCacheValue(ITypeCodeCacheKey key) {
+        return typeCodeCache.get(key);
+    }
 
     public static Set<Class<? extends ITypeCode>> types() {
         return Collections.unmodifiableSet(registry.keySet());

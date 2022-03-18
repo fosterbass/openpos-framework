@@ -26,10 +26,7 @@ import org.jumpmind.db.platform.IDatabasePlatform;
 import org.jumpmind.db.platform.IDdlBuilder;
 import org.jumpmind.db.sql.SqlScript;
 import org.jumpmind.pos.persist.*;
-import org.jumpmind.pos.persist.model.AugmenterConfig;
-import org.jumpmind.pos.persist.model.AugmenterHelper;
-import org.jumpmind.pos.persist.model.AugmenterIndexConfig;
-import org.jumpmind.pos.persist.model.AugmenterModel;
+import org.jumpmind.pos.persist.model.*;
 import org.jumpmind.pos.util.clientcontext.ClientContext;
 import org.jumpmind.pos.util.model.ITypeCode;
 import org.slf4j.Logger;
@@ -40,6 +37,8 @@ public class DatabaseSchema {
 
     protected static final Logger log = LoggerFactory.getLogger(DatabaseSchema.class);
     public static final String TRAINING_MODE = "training";
+
+    public static final String DEFAULT_COLUMN_SIZE = "32";
 
     private IDatabasePlatform platform;
     private List<Class<?>> entityClasses;
@@ -52,9 +51,8 @@ public class DatabaseSchema {
     private ClientContext clientContext;
     private Map<Class<?>, ModelClassMetaData> shadowTables;
 
-
     @SneakyThrows
-    public void init(String tablePrefix, IDatabasePlatform platform, List<Class<?>> entityClasses, List<Class<?>> entityExtensionClasses, AugmenterHelper augmenterHelper, ClientContext clientContext, ShadowTablesConfigModel shadowTablesConfig) {
+    public void init(String tablePrefix, IDatabasePlatform platform, List<Class<?>> entityClasses, List<Class<?>> entityExtensionClasses, AugmenterHelper augmenterHelper, ClientContext clientContext, ShadowTablesConfigModel shadowTablesConfig, TagHelper tagHelper) {
         this.platform = platform;
         this.tablePrefix = tablePrefix;
         this.entityClasses = entityClasses;
@@ -66,7 +64,14 @@ public class DatabaseSchema {
         }
         this.clientContext = clientContext;
         this.shadowTablesConfig = shadowTablesConfig;
+
         desiredModel = buildDesiredModel();
+    }
+
+    public void initPhase2() {
+        for (ModelMetaData modelMetaData : classToModelMetaData.values()) {
+            modelMetaData.initPhase2();
+        }
     }
 
     protected Database buildDesiredModel() {
@@ -106,7 +111,7 @@ public class DatabaseSchema {
 
                 if (deviceMode.equalsIgnoreCase(TRAINING_MODE)) {
                     for (ModelClassMetaData regularMeta : metas) {
-                        if (regularMeta.getClazz().equals(superClass)) {
+                        if (regularMeta.getModelClass().equals(superClass)) {
                             ModelClassMetaData shadowMeta = shadowTables.get(superClass);
                             return ((shadowMeta != null) && shadowMeta.hasShadowTable() ? shadowMeta.getShadowTable() : regularMeta.getTable());
                         }
@@ -116,7 +121,7 @@ public class DatabaseSchema {
                 //  If no special Device Mode, use the default approach.
 
                 for (ModelClassMetaData meta : metas) {
-                    if (meta.getClazz().equals(superClass)) {
+                    if (meta.getModelClass().equals(superClass)) {
                         return meta.getTable();
                     }
                 }
@@ -145,13 +150,18 @@ public class DatabaseSchema {
         if (deviceMode.equalsIgnoreCase(TRAINING_MODE))  {
             List<ModelClassMetaData> metaList = new ArrayList<>();
             for (ModelClassMetaData regularMeta : classToModelMetaData.get(entityClass).getModelClassMetaData()) {
-                ModelClassMetaData shadowMeta = shadowTables.get(regularMeta.getClazz());
+                ModelClassMetaData shadowMeta = shadowTables.get(regularMeta.getModelClass());
                 metaList.add((shadowMeta != null) && shadowMeta.hasShadowTable() ? shadowMeta : regularMeta);
             }
             return metaList;
         }
 
-        return classToModelMetaData.get(entityClass).getModelClassMetaData();
+        ModelMetaData modelMetaData = classToModelMetaData.get(entityClass);
+        if (modelMetaData != null) {
+            return modelMetaData.getModelClassMetaData();
+        } else {
+            throw new PersistException("No modelMetaData found for class " + entityClass);
+        }
     }
 
     protected void refreshMetaData(Database actualModel) {
@@ -259,6 +269,11 @@ public class DatabaseSchema {
         }
     }
 
+    public org.jumpmind.db.model.Table getTableForDeviceMode(String deviceMode, Class<?> entityClazz) {
+        List<org.jumpmind.db.model.Table> tables = getTables(deviceMode, entityClazz);
+        return tables != null && tables.size() > 0 ? tables.get(0) : null;
+    }
+
     protected void validateTable(String tablePrefix, Table table) {
         String tableName = getTableName(tablePrefix, table.getName());
         validateName(tableName, "table", tableName);
@@ -297,7 +312,7 @@ public class DatabaseSchema {
     @SneakyThrows
     public static ModelMetaData createMetaData(Class<?> clazz, List<Class<?>> entityExtensionClasses,
                                                IDatabasePlatform databasePlatform, AugmenterHelper augmenterHelper) {
-        List<ModelClassMetaData> list = new ArrayList<>();
+        List<ModelClassMetaData> modelClassMetas = new ArrayList<>();
         Class<?> entityClass = clazz;
         boolean ignoreSuperClasses = false;
         while (entityClass != null && entityClass != Object.class) {
@@ -306,8 +321,8 @@ public class DatabaseSchema {
             if (tblAnnotation != null && !ignoreSuperClasses) {
                 ignoreSuperClasses = tblAnnotation.ignoreSuperTableDef();
                 ModelClassMetaData meta = new ModelClassMetaData();
-                meta.setClazz(entityClass);
-                meta.setExtensionClazzes(myExtensions);
+                meta.setModelClass(entityClass);
+                meta.setExtensionClasses(myExtensions);
                 meta.setPrimaryKeyFieldNames(getPrimaryKeyNames(tblAnnotation));
 
                 Table dbTable = new Table();
@@ -336,14 +351,13 @@ public class DatabaseSchema {
                 }
 
                 meta.setTable(dbTable);
-                ModelValidator.validate(meta);
-                list.add(meta);
+                modelClassMetas.add(meta);
             }
             entityClass = entityClass.getSuperclass();
         }
 
-        for (ModelClassMetaData meta: list) {
-            Class<?> currentClass = meta.getClazz();
+        for (ModelClassMetaData meta: modelClassMetas) {
+            Class<?> currentClass = meta.getModelClass();
             Table dbTable = meta.getTable();
             IndexDefs indexDefs = currentClass.getAnnotation(IndexDefs.class);
             Map<String, IIndex> indices = createIndices(indexDefs, dbTable, meta, databasePlatform);
@@ -358,15 +372,18 @@ public class DatabaseSchema {
         }
 
         ModelMetaData metaData = new ModelMetaData();
-        metaData.setModelClassMetaData(list);
+        metaData.setModelClassMetaData(modelClassMetas);
+        metaData.setAugmenterHelper(augmenterHelper);
         metaData.init();
+
+        modelClassMetas.forEach(classMeta -> ModelValidator.validate(metaData, classMeta));
         return metaData;
     }
 
     private static void createAugmentedFieldsMetaData(ModelClassMetaData meta, List<Column> columns,
                                                       IDatabasePlatform databasePlatform, AugmenterHelper augmenterHelper) {
         if (augmenterHelper != null) {
-            List<AugmenterConfig> configs = augmenterHelper.getAugmenterConfigs(meta.getClazz());
+            List<AugmenterConfig> configs = augmenterHelper.getAugmenterConfigs(meta.getModelClass());
             for (AugmenterConfig config : configs) {
                 meta.getAugmenterConfigs().add(config);
                 for (AugmenterModel augmenterModel : config.getAugmenters()) {
@@ -883,7 +900,7 @@ public class DatabaseSchema {
             //  have whose key is the table name.
 
             for (ModelClassMetaData tableClassMetaData : includeTableList.values()) {
-                trainingModeShadowTableList.put(tableClassMetaData.getClazz(), tableClassMetaData);
+                trainingModeShadowTableList.put(tableClassMetaData.getModelClass(), tableClassMetaData);
             }
 
             //  At this point, we've processed the table list.

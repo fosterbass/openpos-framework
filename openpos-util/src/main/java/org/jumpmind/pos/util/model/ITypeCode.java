@@ -149,7 +149,19 @@ public interface ITypeCode extends Serializable, Comparable<ITypeCode>  {
         if (typeCodeClass == null) {
             throw new NullPointerException("Cannot make ITypeCode instance with null typeCodeClass");
         }
-        
+
+        ITypeCodeRegistry.ITypeCodeCacheKey cacheKey = new ITypeCodeRegistry.ITypeCodeCacheKey(typeCodeClass, value);
+        ITypeCode typeCode = ITypeCodeRegistry.getCacheValue(cacheKey);
+        if (typeCode != null) {
+            return (T)typeCode;
+        }
+
+        typeCode = loadTypeCode(typeCodeClass, value, cacheKey);
+        ITypeCodeRegistry.putCacheValue(cacheKey, typeCode);
+        return (T)typeCode;
+    }
+
+    static <T extends ITypeCode> T loadTypeCode(Class<T> typeCodeClass, String value, ITypeCodeRegistry.ITypeCodeCacheKey cacheKey) {
         Field[] declaredFields = typeCodeClass.getDeclaredFields();
         List<Field> staticFields = new ArrayList<Field>();
         for (Field field : declaredFields) {
@@ -157,6 +169,7 @@ public interface ITypeCode extends Serializable, Comparable<ITypeCode>  {
                 staticFields.add(field);
             }
         }
+
         T madeTypeCode = null;
         try {
             Constructor<T> c = typeCodeClass.getDeclaredConstructor((String.class));
@@ -167,7 +180,7 @@ public interface ITypeCode extends Serializable, Comparable<ITypeCode>  {
             }
             List<ITypeCode> matchingStaticTypeCodes = new ArrayList<>();
             List<Field> matchingStaticTypeCodesFields = new ArrayList<>();
-            
+
             for (Field staticField : staticFields) {
                 if (staticField.getType() == typeCodeClass) {
                     ITypeCode staticTypeCode = (ITypeCode) staticField.get(null);
@@ -184,21 +197,21 @@ public interface ITypeCode extends Serializable, Comparable<ITypeCode>  {
             } else if (matchingStaticTypeCodes.size() > 1) {
                 matchingStaticTypeCodesFields.stream().forEach(f -> {
                     LogFactory.getLog(typeCodeClass).warn(
-                            String.format(typeCodeClass.toString() + 
+                            String.format(typeCodeClass.toString() +
                             " instance with value '" + value + "' and created " +
-                            "with make() has the same value as a " + 
+                            "with make() has the same value as a " +
                             "static field with name '" + f.getName() +
                             "' in that same class. Consider reviewing the class " +
                             "and eliminating duplicates."));
                 });
-                
+
                 // Then just proceed and return the new made instance, since
             }
-            
+
         } catch (Exception ex) {
             LogFactory.getLog(typeCodeClass).error(
-                String.format("Failed to make " + 
-                typeCodeClass.getClass().getSimpleName() + 
+                String.format("Failed to make " +
+                typeCodeClass.getClass().getSimpleName() +
                 " instance with value '" + value + "'"), ex);
         }
 

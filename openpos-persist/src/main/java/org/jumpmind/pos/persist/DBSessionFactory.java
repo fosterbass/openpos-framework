@@ -35,8 +35,8 @@ public class DBSessionFactory {
     AugmenterHelper augmenterHelper;
     ClientContext clientContext;
     ShadowTablesConfigModel shadowTablesConfig;
-
-    private static final String DEFAULT_COLUMN_SIZE = "32";
+    private ModelTagEnhancer modelTagEnhancer;
+    private ModelAugmentEnhancer modelAugmentEnhancer;
 
     public void init(
             IDatabasePlatform databasePlatform,
@@ -80,6 +80,17 @@ public class DBSessionFactory {
         this.shadowTablesConfig = shadowTablesConfig;
 
         this.initSchema();
+
+        modelTagEnhancer = new ModelTagEnhancer(databasePlatform, databaseSchema, tagHelper);
+        modelAugmentEnhancer = new ModelAugmentEnhancer(databasePlatform, databaseSchema, augmenterHelper);
+
+        enhanceSchema();
+    }
+
+    protected void enhanceSchema() {
+        modelTagEnhancer.enhanceTaggedModels(this.modelClasses);
+        modelAugmentEnhancer.augmentModels(this.modelClasses);
+        databaseSchema.initPhase2();
     }
 
     protected void initSchema() {
@@ -90,7 +101,8 @@ public class DBSessionFactory {
                 this.modelExtensionClasses,
                 this.augmenterHelper,
                 this.clientContext,
-                this.shadowTablesConfig
+                this.shadowTablesConfig,
+                this.tagHelper
         );
 
         this.queryTemplates.replaceModelClassNamesWithTableNames(this.databaseSchema, this.modelClasses, (shadowTablesConfig != null) && shadowTablesConfig.validateTablesInQueries());
@@ -98,17 +110,10 @@ public class DBSessionFactory {
     }
 
     public void refreshModels() {
-        processTagsAndAugmentModels();
         databaseSchema.refreshModelMetaData();
     }
 
-    protected void processTagsAndAugmentModels() {
-        enhanceTaggedModels();
-        augmentModels();
-    }
-
     public void createAndUpgrade() {
-        processTagsAndAugmentModels();
         databaseSchema.createAndUpgrade();
     }
 
@@ -129,10 +134,7 @@ public class DBSessionFactory {
         return new DBSession(null, null, databaseSchema, databasePlatform, sessionContext, queryTemplates, dmlTemplates, tagHelper, augmenterHelper);
     }
 
-    public org.jumpmind.db.model.Table getTableForEnhancement(String deviceMode, Class<?> entityClazz) {
-        List<org.jumpmind.db.model.Table> tables = this.databaseSchema.getTables(deviceMode, entityClazz);
-        return tables != null && tables.size() > 0 ? tables.get(0) : null;
-    }
+
 
     public static QueryTemplates getQueryTemplates(String tablePrefix) {
         final String resourceName = tablePrefix + "-query.yml";
@@ -200,201 +202,5 @@ public class DBSessionFactory {
         }
     }
 
-    protected void augmentModels() {
-        if (augmenterHelper != null) {
-            AugmenterConfigs augmenterConfigs = augmenterHelper.getAugmenterConfigs();
-            
-            for (Class<?> clazz : modelClasses) {
-                Augmented[] annotations = clazz.getAnnotationsByType(Augmented.class);
-                if (annotations.length > 0) {
-                    AugmenterConfig augmenterConfig = augmenterConfigs.getConfigByName(annotations[0].name());
-                    if (augmenterConfig != null) {
-                        augmentTable(clazz, augmenterConfig);
-                    }
-                    else {
-                        log.info("Missing augmenter name " + annotations[0].name() + " defined in augmenter configuration");
-                    }
-                }
-            }
-        }
-    }
-
-    protected void augmentTable(Class<?> entityClass, AugmenterConfig augmenterConfig) {
-        //  Normal table.
-
-        Table table = getTableForEnhancement("default", entityClass);
-        warnOrphanedAugmentedColumns(augmenterConfig, table);
-        modifyAugmentColumns(augmenterConfig, table);
-        addAugmentColumns(augmenterConfig, table);
-
-        //  The corresponding shadow table, if any.
-
-        Table shadowTable = getTableForEnhancement("training", entityClass);
-        if ((shadowTable != null) && !shadowTable.getName().equalsIgnoreCase(table.getName())) {
-            warnOrphanedAugmentedColumns(augmenterConfig, shadowTable);
-            modifyAugmentColumns(augmenterConfig, shadowTable);
-            addAugmentColumns(augmenterConfig, shadowTable);
-        }
-    }
-
-    protected void addAugmentColumns(AugmenterConfig augmenterConfig, Table table) {
-        for (AugmenterModel augmenter : augmenterConfig.getAugmenters()) {
-            if (table.getColumnIndex(getColumnName(augmenterConfig.getPrefix(), augmenter)) == -1) {
-                Column tagColumn = generateAugmentColumn(augmenterConfig, augmenter);
-                table.addColumn(tagColumn);
-            }
-        }
-    }
-
-    protected Column generateAugmentColumn(AugmenterConfig augmenterConfig, AugmenterModel augmenter) {
-        return setColumnInfo(new Column(), augmenterConfig.getPrefix(), augmenter);
-    }
-
-    protected void modifyAugmentColumns(AugmenterConfig augmenterConfig, Table table) {
-        for (Column existingColumn : table.getColumns()) {
-            for (AugmenterModel augmenter : augmenterConfig.getAugmenters()) {
-                if (StringUtils.equalsIgnoreCase(getColumnName(augmenterConfig.getPrefix(), augmenter), existingColumn.getName())) {
-                    setColumnInfo(existingColumn, augmenterConfig.getPrefix(), augmenter);
-                    break;
-                }
-            }
-        }
-    }
-
-    protected Column setColumnInfo(Column column, String prefix, AugmenterModel augmenter) {
-        column.setName(getColumnName(prefix, augmenter));
-        column.setDefaultValue(augmenter.getDefaultValue());
-        column.setTypeCode(Types.VARCHAR);
-        if (augmenter.getSize() != null && augmenter.getSize() > 0) {
-            column.setSize(String.valueOf(augmenter.getSize()));
-        } else {
-            column.setSize(DEFAULT_COLUMN_SIZE);
-        }
-        return column;
-    }
-
-    private void warnOrphanedAugmentedColumns(AugmenterConfig augmenterConfig, Table table) {
-        for (Column existingColumn : table.getColumns()) {
-            if (!existingColumn.getName().toUpperCase().startsWith(augmenterConfig.getPrefix())) {
-                continue;
-            }
-
-            boolean matched = false;
-            for (AugmenterModel augmenter : augmenterConfig.getAugmenters()) {
-                if (StringUtils.equalsIgnoreCase(getColumnName(augmenterConfig.getPrefix(), augmenter), existingColumn.getName())) {
-                    matched = true;
-                    break;
-                }
-            }
-            if (!matched) {
-                log.info("Orphaned tag column detected.  This column should be manually dropped if no longer needed: " + table + " "
-                        + existingColumn);
-            }
-        }
-    }
-
-    protected void enhanceTaggedModels() {
-        if (tagHelper != null) {
-            List<TagModel> tags = tagHelper.getTagConfig().getTags();
-
-            for (Class<?> clazz : modelClasses) {
-                Tagged[] annotations = clazz.getAnnotationsByType(Tagged.class);
-                if (annotations.length > 0 || ITaggedModel.class.isAssignableFrom(clazz)) {
-                    boolean includeTagsInPrimaryKey = true;
-                    if (annotations.length > 0) {
-                        includeTagsInPrimaryKey = annotations[0].includeTagsInPrimaryKey();
-                    }
-                    enhanceTaggedTable(clazz, tags, includeTagsInPrimaryKey);
-                }
-            }
-        }
-    }
-
-    protected void enhanceTaggedTable(Class<?> entityClass, List<TagModel> tags, boolean includeInPk) {
-        //  Normal table.
-
-        Table table = getTableForEnhancement("default", entityClass);
-        warnOrphanedTagColumns(tags, table);
-        modifyTagColumns(tags, table, includeInPk);
-        addTagColumns(tags, table, includeInPk);
-
-        //  The corresponding shadow table, if any.
-
-        Table shadowTable = getTableForEnhancement("training", entityClass);
-        if ((shadowTable != null) && !shadowTable.getName().equalsIgnoreCase(table.getName()))  {
-            warnOrphanedTagColumns(tags, shadowTable);
-            modifyTagColumns(tags, shadowTable, includeInPk);
-            addTagColumns(tags, shadowTable, includeInPk);
-        }
-    }
-
-    protected void modifyTagColumns(List<TagModel> tags, Table table, boolean includeInPk) {
-        for (Column existingColumn : table.getColumns()) {
-            for (TagModel tag : tags) {
-                if (StringUtils.equalsIgnoreCase(getColumnName(tag), existingColumn.getName())) {
-                    setColumnInfo(existingColumn, table, tag, includeInPk);
-                    break;
-                }
-            }
-        }
-    }
-
-    protected void addTagColumns(List<TagModel> tags, Table table, boolean modifyPk) {
-        for (TagModel tag : tags) {
-            if (table.getColumnIndex(getColumnName(tag)) == -1) {
-                Column tagColumn = generateTagColumn(tag, table, modifyPk);
-                table.addColumn(tagColumn);
-            }
-        }
-    }
-
-    protected void warnOrphanedTagColumns(List<TagModel> tags, Table table) {
-        for (Column existingColumn : table.getColumns()) {
-            if (!existingColumn.getName().toUpperCase().startsWith(TagModel.TAG_PREFIX)) {
-                continue;
-            }
-
-            boolean matched = false;
-            for (TagModel tag : tags) {
-                if (StringUtils.equalsIgnoreCase(getColumnName(tag), existingColumn.getName())) {
-                    matched = true;
-                    break;
-                }
-            }
-            if (!matched) {
-                log.info("Orphaned tag column detected.  This column should be manually dropped if no longer needed: " + table + " "
-                        + existingColumn);
-            }
-        }
-    }
-
-    protected Column generateTagColumn(TagModel tag, Table table, boolean modifyPk) {
-        return setColumnInfo(new Column(), table, tag, modifyPk);
-    }
-
-    protected Column setColumnInfo(Column column, Table table, TagModel tag, boolean includeInPk) {
-        column.setName(getColumnName(tag));
-        column.setPrimaryKey(includeInPk);
-        if (includeInPk) {
-            column.setPrimaryKeySequence(table.getPrimaryKeyColumnCount() + 1);
-        }
-        column.setRequired(true);
-        column.setDefaultValue(TagModel.TAG_ALL);
-        column.setTypeCode(Types.VARCHAR);
-        if (tag.getSize() > 0) {
-            column.setSize(String.valueOf(tag.getSize()));
-        } else {
-            column.setSize(DEFAULT_COLUMN_SIZE);
-        }
-        return column;
-    }
-
-    protected String getColumnName(TagModel tag) {
-        return databasePlatform.alterCaseToMatchDatabaseDefaultCase(TagModel.TAG_PREFIX + tag.getName().toUpperCase());
-    }
-
-    protected String getColumnName(String prefix, AugmenterModel augmenter) {
-        return databasePlatform.alterCaseToMatchDatabaseDefaultCase(prefix + augmenter.getName().toUpperCase());
-    }
 
 }

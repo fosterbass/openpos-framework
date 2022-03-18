@@ -57,7 +57,7 @@ public class NonBlockingEntropySourceProvider implements EntropySourceProvider {
                 try {
                     SecureRandom.getInstance("NativePRNGNonBlocking").nextBytes(entropy);
                 } catch (NoSuchAlgorithmException ex) {
-                    throw new UnsupportedOperationException(ex);
+                    throw new UnsupportedOperationException("Failed to use NativePRNGNonBlocking", ex);
                 }
                 return entropy;
             }
