@@ -60,7 +60,7 @@ import { ZEROCONF_TOKEN } from './zeroconf/zeroconf';
 import { MDnsZeroconf } from './zeroconf/mdns-zeroconf';
 import { CapacitorZeroconf } from './zeroconf/capacitor-zeroconf';
 import { CapacitorService } from './services/capacitor.service';
-import { LoyaltySignupService } from './services/loyalty-signup.service';
+import { LoyaltySalePartService } from './services/loyalty-sale-part.service';
 import { DebugImageScanner } from './platform-plugins/barcode-scanners/debug-image-scanner/debug-image-scanner.service';
 import { CommerceServerSinkModule } from './logging/commerce-server/commerce-server-sink.module';
 import { NewRelicSinkModule } from './logging/new-relic/new-relic-sink.module';
@@ -159,8 +159,7 @@ registerLocaleData(locale_frCA, 'fr-CA');
         AudioInteractionService,
         AudioRepositoryService,
         { provide: PLUGINS, useExisting: AudioConsolePlugin, multi: true, deps: [AudioService] },
-        Storage,
-        LoyaltySignupService
+        Storage
     ]
 })
 export class CoreModule {

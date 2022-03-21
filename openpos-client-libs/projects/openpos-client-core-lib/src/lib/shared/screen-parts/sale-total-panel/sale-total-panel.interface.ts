@@ -21,6 +21,7 @@ export interface SaleTotalPanelInterface extends IAbstractScreen {
     readOnly: boolean;
     prompt: string;
     statusMessage: string;
+    alertMessage: string;
     profileIcon: string;
     loyaltyIDLabel: string;
     noMembershipsFoundLabel: string;
@@ -30,9 +31,9 @@ export interface SaleTotalPanelInterface extends IAbstractScreen {
     customerMissingInfo: boolean;
     customerMissingInfoIcon: string;
     customerMissingInfoLabel: string;
-    loyaltySignupInProgressTitle: string;
-    loyaltySignupInProgressIcon: string;
-    loyaltySignupInProgressDetailsIcon: string;
+    loyaltyOperationInProgressTitle: string;
+    loyaltyOperationInProgressIcon: string;
+    loyaltyOperationInProgressDetailsIcon: string;
     loyaltyCancelButton: IActionItem;
     membershipVisibleOnLinkButton: boolean;
     rewardsVisibleOnLinkButton: boolean;

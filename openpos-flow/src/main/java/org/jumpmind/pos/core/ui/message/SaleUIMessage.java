@@ -39,6 +39,8 @@ public class SaleUIMessage extends LoyaltySaleUIMessage {
     private boolean locationEnabled;
     private String locationOverridePrompt;
 
+    private String alertMessage;
+
     private boolean enableCollapsibleItems = true;
     private String iconName;
 

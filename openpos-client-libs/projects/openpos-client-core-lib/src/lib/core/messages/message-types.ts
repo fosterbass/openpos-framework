@@ -29,4 +29,5 @@ export class MessageTypes {
     static CLIENT_EXECUTABLE = 'ClientExecutable';
     static CLOSE_STATUS_DETAILS = 'CloseStatusDetails';
     static LOYALTY_SIGNUP = 'LoyaltySignup';
+    static PLCC_APPLY = 'PlccApply';
 }
