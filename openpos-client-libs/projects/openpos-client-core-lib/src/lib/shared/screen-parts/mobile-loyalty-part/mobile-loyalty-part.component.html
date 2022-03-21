@@ -7,9 +7,9 @@
         <app-icon class="mobile-loyalty-button-icon" [iconName]="'Increment'" [iconClass]="'primary md'"></app-icon>
     </div>
 </button>
-<button *ngIf="screenData.customer && screenData.linkedCustomerButton" mat-raised-button
+<button *ngIf="screenData.customer && screenData.loyaltyButton" mat-raised-button
     ngClass="{{'mobile-loyalty-customer-outer' + getHideLogoShowMembershipsClass()}}"
-    (click)="doAction(screenData.linkedCustomerButton)">
+    (click)="doAction(screenData.loyaltyButton)">
     <img *ngIf="screenData.customer.icon && !screenData.mobileLoyaltySaleShowMembershipsHideLogo"
         [src]="screenData.customer.icon | imageUrl" class="mobile-loyalty-image" alt="{{screenData.customer.icon}}">
     <div [ngClass]="'mobile-loyalty-customer-name ' + getHideLogoShowMembershipsClass()">

@@ -1,13 +1,13 @@
 package org.jumpmind.pos.core.ui.message;
 
-import java.util.ArrayList;
-import java.util.List;
 import lombok.Data;
-import org.jumpmind.pos.core.model.Total;
 import org.jumpmind.pos.core.ui.ActionItem;
 import org.jumpmind.pos.core.ui.AssignKeyBindings;
 import org.jumpmind.pos.core.ui.data.AdditionalLabel;
 import org.jumpmind.pos.core.ui.data.OrderSummary;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @AssignKeyBindings
 @Data
@@ -19,19 +19,11 @@ public class SaleUIMessage extends LoyaltySaleUIMessage {
 
     private ActionItem helpButton;
     private ActionItem logoutButton;
-    private ActionItem linkedCustomerButton;
-    private ActionItem linkedEmployeeButton;
     private ActionItem promoButton;
 
     private AdditionalLabel taxExemptCertificateDetail;
 
-    private boolean locationEnabled;
-    private String locationOverridePrompt;
-
-    private boolean enableCollapsibleItems = true;
     private String iconName;
-
-    private boolean mobileLoyaltySaleShowMembershipsHideLogo;
 
     public SaleUIMessage() {
         this.setScreenType(UIMessageType.SALE);
@@ -39,7 +31,7 @@ public class SaleUIMessage extends LoyaltySaleUIMessage {
     }
 
     public void addOrder(OrderSummary orderSummary) {
-        if(this.orders == null) {
+        if (this.orders == null) {
             this.orders = new ArrayList<>();
         }
         this.orders.add(orderSummary);
