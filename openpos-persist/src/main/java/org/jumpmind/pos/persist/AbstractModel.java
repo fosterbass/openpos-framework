@@ -88,7 +88,7 @@ public abstract class AbstractModel implements IAuditableModel, Serializable {
     }
     
     public Map<String, Object> getAdditionalFields() {
-        return new HashMap<>(additionalFields);
+        return Collections.unmodifiableMap(additionalFields);
     }
 
     public void addExtension(Class clazz, Object extension){
