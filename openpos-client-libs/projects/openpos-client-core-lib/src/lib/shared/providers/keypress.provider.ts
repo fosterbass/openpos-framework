@@ -125,7 +125,6 @@ export class KeyPressProvider implements OnDestroy {
         }
 
         if (!CONFIGURATION.enableKeybinds) {
-            console.info('KeyBinds not enabled skipping subscription');
             return new Subscription();
         }
 
