@@ -39,15 +39,18 @@ public final class AppUtils {
         }
     }
 
-    public static Date getLocalDateForOffset(String timezoneOffset) {
-        long currentTime = System.currentTimeMillis();
+    static Date getLocalDateForOffset(long epochMillis, String timezoneOffset) {
         if (StringUtils.isNotBlank(timezoneOffset)) {
-            int myOffset = TimeZone.getDefault().getOffset(currentTime);
-            int theirOffset = TimeZone.getTimeZone("GMT" + timezoneOffset).getOffset(currentTime);
-            return new Date(currentTime - myOffset + theirOffset);
+            int myOffset = TimeZone.getDefault().getOffset(epochMillis);
+            int theirOffset = TimeZone.getTimeZone("GMT" + timezoneOffset).getOffset(epochMillis);
+            return new Date(epochMillis - myOffset + theirOffset);
         } else {
-            return new Date(currentTime);
+            return new Date(epochMillis);
         }
+    }
+
+    public static Date getLocalDateForOffset(String timezoneOffset) {
+        return getLocalDateForOffset(System.currentTimeMillis(), timezoneOffset);
     }
 
     public static String getTimezoneOffset() {
