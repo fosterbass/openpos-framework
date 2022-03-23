@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { fromEvent, merge, Observable, Subject, Subscription } from 'rxjs';
+import { EMPTY, fromEvent, merge, Observable, Subject, Subscription } from 'rxjs';
 import { filter, map, take, takeUntil, tap } from 'rxjs/operators';
 import { CONFIGURATION } from '../../configuration/configuration';
 import { IActionItem } from '../../core/actions/action-item.interface';
@@ -42,10 +42,14 @@ export class KeyPressProvider implements OnDestroy {
     }
 
     globalSubscribe(actions: IActionItem[] | IActionItem): Observable<IActionItem> {
+        if (!actions) {
+            return EMPTY;
+        }
+
         const actionList = Array.isArray(actions) ? actions : [actions];
 
         actionList
-            .filter(action => action.keybind)
+            .filter(action => action && action.keybind)
             .forEach(action => {
                 const key = this.getNormalizedKey(action.keybind);
                 console.log(`[KeyPressProvider]: Globally subscribed to "${key}: ${action.action}"`);
@@ -63,6 +67,10 @@ export class KeyPressProvider implements OnDestroy {
     }
 
     shouldRunGlobalAction(action: IActionItem): boolean {
+        if (!action) {
+            return false;
+        }
+
         // do we need to check if lock screen is enabled now that we stop propagation?
         const isLockScreenEnabled = this.lockScreenService.enabled$.getValue();
 
@@ -79,7 +87,7 @@ export class KeyPressProvider implements OnDestroy {
         const eventKeyBinding = this.parse(eventKey)[0];
 
         return actions
-            .filter(action => action.keybind)
+            .filter(action => action && action.keybind)
             .find(action => {
                 // There can be multiple key bindings per action (comma separated, example: ctrl+p,ctrl+a)
                 const actionKeyBindings = this.parse(action.keybind);
