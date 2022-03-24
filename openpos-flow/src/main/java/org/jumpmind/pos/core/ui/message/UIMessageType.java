@@ -22,6 +22,7 @@ public final class UIMessageType {
     public static final String PRICE_CHECKER_ITEM_DETAIL = "PriceCheckerItemDetail";
     public static final String PRICE_CHECKER_HOME = "PriceCheckerHome";
     public static final String LOADING_DIALOG = "LoadingDialog";
+    public static final String E_WALLET_PAYMENT_DIALOG = "EWalletPaymentDialog";
     public static final String DYNAMIC_FORM = "DynamicForm";
     public static final String ITEM_DETAIL = "ItemDetail";
     public static final String TENDER = "Tender";

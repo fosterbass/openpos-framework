@@ -98,6 +98,9 @@ export class IconService {
         this.icons.set('Password', ['lock.svg', this.defaultIconProvider]);
         this.icons.set('Percent', ['percent.svg', this.defaultIconProvider]);
         this.icons.set('Phone', ['phone.svg', this.defaultIconProvider]);
+        this.icons.set('PhoneIphone', ['phone_iphone.svg', this.defaultIconProvider]);
+        this.icons.set('PhoneLinkRing', ['phonelink_ring.svg', this.defaultIconProvider]);
+        this.icons.set('SpeakerPhone', ['speaker_phone.svg', this.defaultIconProvider]);
         this.icons.set('Pickup', ['schedule.svg', this.defaultIconProvider]);
         this.icons.set('Print', ['print.svg', this.defaultIconProvider]);
         this.icons.set('Productivity', ['chart_trending.svg', this.defaultIconProvider]);

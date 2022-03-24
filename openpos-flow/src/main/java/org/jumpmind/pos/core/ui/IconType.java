@@ -79,6 +79,7 @@ public interface IconType {
     public static final String Password = "Password";
     public static final String Percent = "Percent"; //percent.svg
     public static final String Phone = "Phone"; //phone or call
+    public static final String PhoneLinkRing = "PhoneLinkRing";
     public static final String Pickup = "Pickup"; //schedule
     public static final String Print = "Print"; //print
     public static final String Productivity = "Productivity"; //chart_trending
