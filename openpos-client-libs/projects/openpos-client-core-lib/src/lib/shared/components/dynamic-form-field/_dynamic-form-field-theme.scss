@@ -1,0 +1,9 @@
+@mixin dynamic-form-field-theme($theme) {
+
+    .mat-select-panel{
+        // while the use of !important should generally be avoided, this appears to be the only way to override the min-width 
+        // that is applied directly onto the select panel element by angular matSelectAnimation which sets minWidth: 'calc(100% + 32px)'. This can be
+        // found here: https://github.com/angular/components/blob/59002e1649123922df3532f4be78c485a73c5bc1/src/material/select/select-animations.ts
+        min-width: 100%!important;
+    }
+}
