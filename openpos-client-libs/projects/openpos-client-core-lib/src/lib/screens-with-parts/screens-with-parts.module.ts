@@ -46,6 +46,7 @@ import { CustomerDetailsDialogComponent } from './customer-details-dialog/custom
 import { PromptWithInfoScanGiftCardScreenDialogComponent } from './prompt-with-info-scan-gift-card/prompt-with-info-scan-gift-card-screen-dialog.component';
 import { PromptInfoScanGiftCardScreenComponent } from './prompt-with-info-scan-gift-card/prompt-info-scan-gift-card-screen.component';
 import { Prompt2ScreenDialogComponent } from './prompt2/prompt2-screen-dialog.component';
+import { EWalletPaymentDialogComponent } from './e-wallet-payment-dialog/e-wallet-payment-dialog.component';
 
 const screens = [
     SelectionListScreenComponent,
@@ -95,7 +96,8 @@ const dialogs = [
     CustomerSearchResultDialogComponent,
     DataTableDialogComponent,
     LoyaltyCustomerFormDialogComponent,
-    EnrollmentConfirmationDialogComponent
+    EnrollmentConfirmationDialogComponent,
+    EWalletPaymentDialogComponent
 ];
 
 const parts = [

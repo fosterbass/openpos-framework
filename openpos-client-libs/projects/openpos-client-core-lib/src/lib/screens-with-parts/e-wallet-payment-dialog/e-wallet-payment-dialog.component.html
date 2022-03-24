@@ -1,0 +1,18 @@
+<div class="dialog-outer">
+    <app-dialog-header></app-dialog-header>
+    <div class="dialog-body" responsive-class>
+        <mat-dialog-content>
+            <app-image *ngIf="screen.qrCodeUrl" [imageUrl]="screen.qrCodeUrl" [altText]="'qr code'"></app-image>
+            <div [innerHTML]="screen.message | markdownFormatter"></div>
+        </mat-dialog-content>
+        <mat-dialog-actions *ngIf="screen.cancelButton" class="dialog-actions">
+            <app-secondary-button (click)="doAction(screen.cancelButton)">
+                <span responsive-class>{{screen.cancelButton.title}}</span>
+                <app-icon *ngIf="screen.cancelButton.icon" [iconClass]="'md'" [iconName]="screen.cancelButton.icon">
+                </app-icon>
+            </app-secondary-button>
+        </mat-dialog-actions>
+    </div>
+    <app-image-scanner *ngIf="imageScanners.hasImageScanner" (scan)="scan($event)"></app-image-scanner>
+</div>
+<app-scan-part></app-scan-part>
