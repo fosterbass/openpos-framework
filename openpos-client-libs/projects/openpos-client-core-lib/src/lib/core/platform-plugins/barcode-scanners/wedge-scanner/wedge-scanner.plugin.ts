@@ -21,23 +21,13 @@ export class WedgeScannerPlugin implements Scanner {
     private startSequenceObj = this.getControlStrings(this.startSequence);
     private endSequenceObj = this.getControlStrings(this.endSequence);
 
-    private readonly scanObservable = new Observable(observer => {
-        this.scannerActive = true;
 
-        const subscription = this.createScanBuffer().subscribe({
-            next: d => observer.next(d),
-        });
-
-        return () => {
-            subscription.unsubscribe();
-            this.scannerActive = false;
-        };
-    }).pipe(
-        publish(),
-        refCount()
-    );
+    private scanObservable: Observable<ScanData>;
 
     constructor(sessionService: SessionService, private domEventManager: DomEventManager) {
+
+        // Initialize scan with default setting
+        this.scanObservable = this.createScanObservable();
 
         sessionService.getMessages('ConfigChanged').pipe(
             filter(m => m.configType === 'WedgeScanner')
@@ -61,6 +51,9 @@ export class WedgeScannerPlugin implements Scanner {
             if (m.timeout) {
                 this.timeout = m.timeout;
             }
+
+            // Re-Initialize the scan with updated config received from server
+            this.scanObservable = this.createScanObservable();
         });
 
         sessionService.getMessages('ConfigChanged').pipe(
@@ -71,6 +64,25 @@ export class WedgeScannerPlugin implements Scanner {
                 this.typeMap.set(element, m[element]);
             });
         });
+    }
+
+
+    createScanObservable(): Observable<ScanData> {
+        return  new Observable(observer => {
+            this.scannerActive = true;
+
+            const subscription = this.createScanBuffer().subscribe({
+                next: d => observer.next(d),
+            });
+
+            return () => {
+                subscription.unsubscribe();
+                this.scannerActive = false;
+            };
+        }).pipe(
+                publish(),
+                refCount()
+        );
     }
 
     beginScanning(): Observable<ScanData> {
