@@ -1,24 +1,20 @@
 package org.jumpmind.pos.service.util;
 
+import lombok.NoArgsConstructor;
+import org.jumpmind.pos.persist.model.ScriptVersionModel;
+import org.jumpmind.pos.service.instrumentation.ServiceSampleModel;
+import org.jumpmind.pos.service.model.ModuleModel;
+
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.List;
 
-import org.jumpmind.pos.service.instrumentation.ServiceSampleModel;
-import org.jumpmind.pos.service.model.ModuleModel;
-import org.jumpmind.pos.persist.model.ScriptVersionModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static lombok.AccessLevel.PRIVATE;
 
-public final class ClassUtils extends org.jumpmind.pos.util.ClassUtils {
-    
-    private ClassUtils() {
-    }
-    
-    protected static final Logger logger = LoggerFactory.getLogger(ClassUtils.class);
-
+@NoArgsConstructor(access = PRIVATE)
+public final class ClassUtils {
     public static List<Class<?>> getClassesForPackageAndAnnotation(String packageName, Class<? extends Annotation> annotation) {
-        List<Class<?>> classes = Arrays.asList(new Class[] {ModuleModel.class, ServiceSampleModel.class, ScriptVersionModel.class });
+        List<Class<?>> classes = Arrays.asList(ModuleModel.class, ServiceSampleModel.class, ScriptVersionModel.class);
 
         return org.jumpmind.pos.util.ClassUtils.getClassesForPackageAndAnnotation(packageName, annotation, classes, null);
     }

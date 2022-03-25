@@ -22,6 +22,7 @@ import java.util.stream.Stream;
  * @author Jason Weiss
  */
 @NoArgsConstructor(access = PRIVATE)
+@SuppressWarnings("unused")
 public class RandomSelections {
     /**
      * Selects a random member from an enumerated type's full membership.

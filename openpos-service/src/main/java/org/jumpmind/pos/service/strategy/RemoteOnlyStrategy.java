@@ -1,7 +1,9 @@
 package org.jumpmind.pos.service.strategy;
 
-import lombok.Getter;
-import lombok.Setter;
+import static org.jumpmind.pos.util.RestApiSupport.REST_API_TOKEN_HEADER_NAME;
+
+import static org.springframework.core.annotation.AnnotatedElementUtils.getMergedAnnotation;
+
 import org.jumpmind.pos.service.EndpointInvocationContext;
 import org.jumpmind.pos.service.PosServerException;
 import org.jumpmind.pos.service.ProfileConfig;
@@ -12,8 +14,10 @@ import org.jumpmind.pos.util.model.ServiceResult;
 import org.jumpmind.pos.util.model.ServiceVisit;
 import org.jumpmind.pos.util.status.Status;
 import org.jumpmind.pos.util.web.ConfiguredRestTemplate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.*;
@@ -31,13 +35,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static org.jumpmind.pos.util.RestApiSupport.REST_API_TOKEN_HEADER_NAME;
-
 @Component(RemoteOnlyStrategy.REMOTE_ONLY_STRATEGY)
+@Slf4j
 public class RemoteOnlyStrategy extends AbstractInvocationStrategy implements IInvocationStrategy {
-
-    final Logger logger = LoggerFactory.getLogger(getClass());
-
     static final String REMOTE_ONLY_STRATEGY = "REMOTE_ONLY";
 
     @Autowired
@@ -83,9 +83,9 @@ public class RemoteOnlyStrategy extends AbstractInvocationStrategy implements II
                 serviceVisit.setException(ex);
                 lastException = ex;
                 if (ex instanceof RemoteProfileOfflineException) {
-                    logger.warn("Remote service '{}' is OFFLINE.", profileId);
+                    log.warn("Remote service '{}' is OFFLINE.", profileId);
                 } else {
-                    logger.warn(String.format("Remote service %s unavailable.", profileId), ex);
+                    log.warn(String.format("Remote service %s unavailable.", profileId), ex);
                 }
             } finally {
                 serviceVisit.setElapsedTimeMillis(System.currentTimeMillis()-startTime);
@@ -120,7 +120,7 @@ public class RemoteOnlyStrategy extends AbstractInvocationStrategy implements II
         if (profileConfig.getApiToken() != null) {
             headers.set(REST_API_TOKEN_HEADER_NAME, profileConfig.getApiToken());
         } else {
-            logger.warn("missing apiToken for service profile \"{}\"", profileId);
+            log.warn("missing apiToken for service profile \"{}\"", profileId);
         }
 
         if( clientContext != null ) {
@@ -143,7 +143,7 @@ public class RemoteOnlyStrategy extends AbstractInvocationStrategy implements II
         int connectTimeoutInSecond = profileConfig.getConnectTimeout() > 0 ? profileConfig.getConnectTimeout() : httpTimeoutInSecond;
         ConfiguredRestTemplate template = new ConfiguredRestTemplate(httpTimeoutInSecond, connectTimeoutInSecond);
 
-        RequestMapping mapping = endpointInvocationContext.getMethod().getAnnotation(RequestMapping.class);
+        final RequestMapping mapping = getMergedAnnotation(endpointInvocationContext.getMethod(), RequestMapping.class);
         RequestMethod[] requestMethods = mapping.method();
 
         HttpHeaders headers = getHeaders(profileConfig, profileId);
@@ -220,8 +220,7 @@ public class RemoteOnlyStrategy extends AbstractInvocationStrategy implements II
 
     protected String getRequestParamName(Method method) {
         Annotation[][] types = method.getParameterAnnotations();
-        for (int i = 0; i < types.length; i++) {
-            Annotation[] argAnnotations = types[i];
+        for (Annotation[] argAnnotations : types) {
             for (Annotation annotation : argAnnotations) {
                 if (RequestParam.class.equals(annotation.annotationType())) {
                     return ((RequestParam) annotation).value();

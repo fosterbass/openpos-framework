@@ -19,6 +19,7 @@ import java.util.Date;
  * @author Jason Weiss
  */
 @NoArgsConstructor(access = PRIVATE)
+@SuppressWarnings("unused")
 public class RandomDates {
     private static final Date EARLIEST_DATE = new Date(0);
     private static final Date LATEST_DATE = Date.from(LocalDate.of(2200, 12, 31)

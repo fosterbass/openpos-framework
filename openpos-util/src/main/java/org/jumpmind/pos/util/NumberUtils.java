@@ -1,12 +1,5 @@
 package org.jumpmind.pos.util;
 
-import static lombok.AccessLevel.PRIVATE;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-
-import static java.util.Arrays.stream;
-import static java.util.Comparator.naturalOrder;
-import static java.util.Optional.empty;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
@@ -16,6 +9,12 @@ import java.math.BigInteger;
 import java.util.Objects;
 import java.util.Optional;
 
+import static java.util.Arrays.stream;
+import static java.util.Comparator.naturalOrder;
+import static java.util.Optional.empty;
+import static lombok.AccessLevel.PRIVATE;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+
 /**
  * A set of utilities extending the numeric operations provided by Java and the Apache Commons libraries.
  *
@@ -23,22 +22,20 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor(access = PRIVATE)
 @Slf4j
-@SuppressWarnings("unused")
 public class NumberUtils {
     /**
      * Indicates whether two numbers of the same type are quantitatively identical.
      *
-     * @param <T> the type of numbers being compared
+     * @param <T>  the type of numbers being compared
      * @param val1 the first number
      * @param val2 the second number
-     * @return {@code true} if {@code val1} and {@code val2} are quantitatively identical; {@code true} if both arguments are {@code null};
-     * {@code false} if exactly one argument is {@code null}
+     * @return {@code true} if {@code val1} and {@code val2} are quantitatively identical; {@code true} if both
+     * arguments are {@code null}; {@code false} if exactly one argument is {@code null}
      */
     public static <T extends Number & Comparable<? super T>> boolean isEqual(T val1, T val2) {
         if (val1 == null) {
             return (val2 == null);
-        }
-        else if (val2 == null) {
+        } else if (val2 == null) {
             return false;
         }
         return val1.compareTo(val2) == 0;
@@ -47,10 +44,11 @@ public class NumberUtils {
     /**
      * Indicates whether the first number is greater than the second.
      *
-     * @param <T> the type of numbers being compared
+     * @param <T>  the type of numbers being compared
      * @param val1 the comparison subject number
      * @param val2 the comparison object number
-     * @return {@code true} if {@code val1} is greater than {@code val2}; {@code false} if either argument is {@code null}
+     * @return {@code true} if {@code val1} is greater than {@code val2}; {@code false} if either argument is
+     * {@code null}
      */
     public static <T extends Number & Comparable<? super T>> boolean isGreaterThan(T val1, T val2) {
         return (val1 != null) && (val2 != null) && (val1.compareTo(val2) > 0);
@@ -59,10 +57,11 @@ public class NumberUtils {
     /**
      * Indicates whether the first number is greater than or equal to the second.
      *
-     * @param <T> the type of numbers being compared
+     * @param <T>  the type of numbers being compared
      * @param val1 the comparison subject number
      * @param val2 the comparison object number
-     * @return {@code true} if {@code val1} is greater than or equal to {@code val2}; {@code false} if either argument is {@code null}
+     * @return {@code true} if {@code val1} is greater than or equal to {@code val2}; {@code false} if either argument
+     * is {@code null}
      */
     public static <T extends Number & Comparable<? super T>> boolean isGreaterThanOrEqual(T val1, T val2) {
         return (val1 != null) && (val2 != null) && (val1.compareTo(val2) >= 0);
@@ -71,7 +70,7 @@ public class NumberUtils {
     /**
      * Indicates whether the first number is less than the second.
      *
-     * @param <T> the type of numbers being compared
+     * @param <T>  the type of numbers being compared
      * @param val1 the comparison subject number
      * @param val2 the comparison object number
      * @return {@code true} if {@code val1} is less than {@code val2}; {@code false} if either argument is {@code null}
@@ -83,10 +82,11 @@ public class NumberUtils {
     /**
      * Indicates whether the first number is less than or equal to the second.
      *
-     * @param <T> the type of numbers being compared
+     * @param <T>  the type of numbers being compared
      * @param val1 the comparison subject number
      * @param val2 the comparison object number
-     * @return {@code true} if {@code val1} is less than or equal to {@code val2}; {@code false} if either argument is {@code null}
+     * @return {@code true} if {@code val1} is less than or equal to {@code val2}; {@code false} if either argument is
+     * {@code null}
      */
     public static <T extends Number & Comparable<? super T>> boolean isLessThanOrEqual(T val1, T val2) {
         return (val1 != null) && (val2 != null) && (val1.compareTo(val2) <= 0);
@@ -132,12 +132,9 @@ public class NumberUtils {
         return (val != null) && (numberToLongBits(val) > 0);
     }
 
-    private static long numberToLongBits(Number val) {
-        return Double.doubleToRawLongBits(val.doubleValue());
-    }
-
     /**
-     * Indicates whether the specified number is zero.  This will report {@code true} for all zeroes, regardless of data type or precision.
+     * Indicates whether the specified number is zero.  This will report {@code true} for all zeroes, regardless of data
+     * type or precision.
      *
      * @param val the number to test
      * @return {@code true} if {@code val} is zero; {@code false} if {@code val} is {@code null}
@@ -147,8 +144,8 @@ public class NumberUtils {
     }
 
     /**
-     * Indicates whether the specified number is zero or {@code null}.  This will report {@code true} for all zeroes, regardless of data type or
-     * precision.
+     * Indicates whether the specified number is zero or {@code null}.  This will report {@code true} for all zeroes,
+     * regardless of data type or precision.
      *
      * @param val the number to test
      * @return {@code true} if {@code val} is zero or {@code null}
@@ -160,10 +157,10 @@ public class NumberUtils {
     /**
      * Reports the maximum number among a set of numbers, per their natural ordering.
      *
-     * @param <T> the type of numbers being evaluated and returned
+     * @param <T>  the type of numbers being evaluated and returned
      * @param vals the numbers to evaluate; {@code null} elements will be ignored
-     * @return the maximum among all non-{@code null} numbers in {@code vals}; {@link Optional#empty()} if {@code vals} is {@code null}, empty, or
-     * contains only {@code null} elements
+     * @return the maximum among all non-{@code null} numbers in {@code vals}; {@link Optional#empty()} if {@code vals}
+     * is {@code null}, empty, or contains only {@code null} elements
      */
     @SafeVarargs
     public static <T extends Number & Comparable<? super T>> Optional<T> max(T... vals) {
@@ -173,10 +170,10 @@ public class NumberUtils {
     /**
      * Reports the minimum number among a set of numbers, per their natural ordering.
      *
-     * @param <T> the type of numbers being evaluated and returned
+     * @param <T>  the type of numbers being evaluated and returned
      * @param vals the numbers to evaluate; {@code null} elements will be ignored
-     * @return the minimum among all non-{@code null} numbers in {@code vals}; {@link Optional#empty()} if {@code vals} is {@code null}, empty, or
-     * contains only {@code null} elements
+     * @return the minimum among all non-{@code null} numbers in {@code vals}; {@link Optional#empty()} if {@code vals}
+     * is {@code null}, empty, or contains only {@code null} elements
      */
     @SafeVarargs
     public static <T extends Number & Comparable<? super T>> Optional<T> min(T... vals) {
@@ -261,5 +258,9 @@ public class NumberUtils {
      */
     public static Byte zeroIfNull(Byte val) {
         return defaultIfNull(val, (byte) 0);
+    }
+
+    private static long numberToLongBits(Number val) {
+        return Double.doubleToRawLongBits(val.doubleValue());
     }
 }

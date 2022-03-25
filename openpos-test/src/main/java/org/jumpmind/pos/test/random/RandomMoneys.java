@@ -17,6 +17,7 @@ import org.joda.money.Money;
  * @author Jason Weiss
  */
 @NoArgsConstructor(access = PRIVATE)
+@SuppressWarnings("unused")
 public class RandomMoneys {
     private static final Iterable<CurrencyUnit> possibleCurrencies = asList(AUD, CAD, EUR, GBP, JPY, USD);
     private static final long MAX_VALUE = Long.MAX_VALUE - 1;

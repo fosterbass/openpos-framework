@@ -1,15 +1,16 @@
 package org.jumpmind.pos.test.random;
 
-import static lombok.AccessLevel.PRIVATE;
-import static org.apache.commons.lang3.RandomUtils.nextBoolean;
-
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.Validate;
 
+import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
+
+import static lombok.AccessLevel.PRIVATE;
+import static org.apache.commons.lang3.RandomUtils.nextBoolean;
 
 /**
  * A set of utilities generating random values of various primitive types for seeding unit test data.
@@ -17,10 +18,12 @@ import java.util.OptionalLong;
  * @author Jason Weiss
  */
 @NoArgsConstructor(access = PRIVATE)
+@SuppressWarnings("unused")
 public class RandomPrimitives {
     private static final int MAX_INT = Integer.MAX_VALUE - 1;
     private static final long MAX_LONG = Long.MAX_VALUE - 1;
     private static final double MAX_DOUBLE = Double.MAX_VALUE - 1d;
+    private static final float MAX_FLOAT = Float.MAX_VALUE - 1f;
 
     /**
      * Generates a random {@code boolean}.
@@ -44,10 +47,11 @@ public class RandomPrimitives {
     /**
      * Selects a random {@code boolean} from among the members of a specified collection.
      *
-     * @param candidate1 the first boolean eligible for selection
+     * @param candidate1  the first boolean eligible for selection
      * @param candidatesN any additional booleans eligible for selection
-     * @return a randomly-selected {@code boolean} among the non-{@code null} members of {@code candidate1...candidatesN}; {@code false} if
-     * {@code candidate1} is {@code null} and either {@code candidatesN} is {@code null} or contains only {@code null} elements
+     * @return a randomly-selected {@code boolean} among the non-{@code null} members of {@code candidate1...candidatesN};
+     * {@code false} if {@code candidate1} is {@code null} and either {@code candidatesN} is {@code null} or contains
+     * only {@code null} elements
      */
     public static boolean randomBooleanFrom(Boolean candidate1, Boolean... candidatesN) {
         final Boolean selection = RandomSelections.selectRandomFrom(candidate1, candidatesN);
@@ -58,8 +62,8 @@ public class RandomPrimitives {
      * Selects a random {@code boolean} from among the members of a specified collection.
      *
      * @param candidates all booleans eligible for selection
-     * @return a randomly-selected {@code boolean} among the non-{@code null} members of {@code candidates}; {@code false} if {@code candidates} is
-     * empty, {@code null}, or includes only {@code null} members
+     * @return a randomly-selected {@code boolean} among the non-{@code null} members of {@code candidates};
+     * {@code false} if {@code candidates} is empty, {@code null}, or includes only {@code null} members
      */
     public static boolean randomBooleanFrom(Iterable<Boolean> candidates) {
         final Boolean selection = RandomSelections.selectRandomFrom(candidates);
@@ -112,11 +116,11 @@ public class RandomPrimitives {
     /**
      * Selects a random {@code double} from among the members of a specified collection.
      *
-     * @param candidate1 the first double eligible for selection
+     * @param candidate1  the first double eligible for selection
      * @param candidatesN any additional doubles eligible for selection
      * @return a randomly-selected {@code double} among the non-{@code null} members of {@code candidate1...candidatesN};
-     * {@link OptionalDouble#empty()} if {@code candidate1} is {@code null} and either {@code candidatesN} is {@code null} or contains only {@code
-     * null} elements
+     * {@link OptionalDouble#empty()} if {@code candidate1} is {@code null} and either {@code candidatesN} is
+     * {@code null} or contains only {@code null} elements
      */
     public static OptionalDouble randomDoubleFrom(Double candidate1, Double... candidatesN) {
         final Double selection = RandomSelections.selectRandomFrom(candidate1, candidatesN);
@@ -127,8 +131,9 @@ public class RandomPrimitives {
      * Selects a random {@code double} from among the members of a specified collection.
      *
      * @param candidates all doubles eligible for selection
-     * @return a randomly-selected {@code double} among the non-{@code null} members of {@code candidates}; {@link OptionalDouble#empty()} if
-     * {@code candidates} is empty, {@code null}, or includes only {@code null} members
+     * @return a randomly-selected {@code double} among the non-{@code null} members of {@code candidates};
+     * {@link OptionalDouble#empty()} if {@code candidates} is empty, {@code null}, or includes only {@code null}
+     * members
      */
     public static OptionalDouble randomDoubleFrom(Iterable<Double> candidates) {
         final Double selection = RandomSelections.selectRandomFrom(candidates);
@@ -155,6 +160,97 @@ public class RandomPrimitives {
      */
     public static double randomDoubleLessThan(double max) {
         return randomDoubleImpl(0, max - 1);
+    }
+
+    /**
+     * Generates a random {@code float}.
+     *
+     * @return a randomly-generated, non-negative {@code float}
+     */
+    public static float randomFloat() {
+        return randomFloatImpl(0, MAX_FLOAT);
+    }
+
+    /**
+     * Generates a random {@code float}.
+     *
+     * @param min the minimum result (inclusive); must be >= 0
+     * @return a randomly-generated {@code float} whose value is >= {@code min}
+     * @throws IllegalArgumentException if {@code min} is < 0
+     */
+    public static float randomFloatAtLeast(float min) {
+        return randomFloatImpl(min, MAX_FLOAT);
+    }
+
+    /**
+     * Generates a random {@code float}.
+     *
+     * @param max the maximum result (inclusive); must be >= 0
+     * @return a randomly-generated {@code float} whose value is <= {@code max}
+     * @throws IllegalArgumentException if {@code max} is < 0
+     */
+    public static float randomFloatAtMost(float max) {
+        return randomFloatImpl(0, max);
+    }
+
+    /**
+     * Generates a random {@code float}.
+     *
+     * @param min the minimum result (inclusive); must be >= 0 and <= {@code max}
+     * @param max the maximum result (inclusive); must be >= 0 and >= {@code min}
+     * @return a randomly-generated {@code float} whose value is >= {@code min} and <= {@code max}
+     * @throws IllegalArgumentException if {@code min} is < 0, {@code max} < 0, or {@code min} > {@code max}
+     */
+    public static float randomFloatBetween(float min, float max) {
+        return randomFloatImpl(min, max);
+    }
+
+    /**
+     * Selects a random {@code float} from among the members of a specified collection.
+     *
+     * @param candidate1  the first float eligible for selection
+     * @param candidatesN any additional float eligible for selection
+     * @return a randomly-selected {@code float} among the non-{@code null} members of {@code candidate1...candidatesN};
+     * {@link Optional#empty()} if {@code candidate1} is {@code null} and either {@code candidatesN} is {@code null} or
+     * contains only {@code null} elements
+     */
+    public static Optional<Float> randomFloatFrom(Float candidate1, Float... candidatesN) {
+        final Float selection = RandomSelections.selectRandomFrom(candidate1, candidatesN);
+        return (selection == null) ? Optional.empty() : Optional.of(selection);
+    }
+
+    /**
+     * Selects a random {@code float} from among the members of a specified collection.
+     *
+     * @param candidates all floats eligible for selection
+     * @return a randomly-selected {@code float} among the non-{@code null} members of {@code candidates};
+     * {@link Optional#empty()} if {@code candidates} is empty, {@code null}, or includes only {@code null} members
+     */
+    public static Optional<Float> randomFloatFrom(Iterable<Float> candidates) {
+        final Float selection = RandomSelections.selectRandomFrom(candidates);
+        return (selection == null) ? Optional.empty() : Optional.of(selection);
+    }
+
+    /**
+     * Generates a random {@code float}.
+     *
+     * @param min the minimum result (exclusive); must be >= 0
+     * @return a randomly-generated {@code float} whose value is > {@code min}
+     * @throws IllegalArgumentException if {@code min} is < 0
+     */
+    public static float randomFloatGreaterThan(float min) {
+        return randomFloatImpl(min + 1, MAX_FLOAT);
+    }
+
+    /**
+     * Generates a random {@code float}.
+     *
+     * @param max the maximum result (exclusive); must be > 0
+     * @return a randomly-generated {@code float} whose value is < {@code max}
+     * @throws IllegalArgumentException if {@code max} is <= 0
+     */
+    public static float randomFloatLessThan(float max) {
+        return randomFloatImpl(0, max - 1);
     }
 
     /**
@@ -203,10 +299,11 @@ public class RandomPrimitives {
     /**
      * Selects a random {@code int} from among the members of a specified collection.
      *
-     * @param candidate1 the first integer eligible for selection
+     * @param candidate1  the first integer eligible for selection
      * @param candidatesN any additional integers eligible for selection
-     * @return a randomly-selected {@code int} among the non-{@code null} members of {@code candidate1...candidatesN}; {@link OptionalInt#empty()} if
-     * {@code candidate1} is {@code null} and either {@code candidatesN} is {@code null} or contains only {@code null} elements
+     * @return a randomly-selected {@code int} among the non-{@code null} members of {@code candidate1...candidatesN};
+     * {@link OptionalInt#empty()} if {@code candidate1} is {@code null} and either {@code candidatesN} is {@code null}
+     * or contains only {@code null} elements
      */
     public static OptionalInt randomIntFrom(Integer candidate1, Integer... candidatesN) {
         final Integer selection = RandomSelections.selectRandomFrom(candidate1, candidatesN);
@@ -217,8 +314,8 @@ public class RandomPrimitives {
      * Selects a random {@code int} from among the members of a specified collection.
      *
      * @param candidates all integers eligible for selection
-     * @return a randomly-selected {@code int} among the non-{@code null} members of {@code candidates}; {@link OptionalInt#empty()} if
-     * {@code candidates} is empty, {@code null}, or includes only {@code null} members
+     * @return a randomly-selected {@code int} among the non-{@code null} members of {@code candidates};
+     * {@link OptionalInt#empty()} if {@code candidates} is empty, {@code null}, or includes only {@code null} members
      */
     public static OptionalInt randomIntFrom(Iterable<Integer> candidates) {
         final Integer selection = RandomSelections.selectRandomFrom(candidates);
@@ -293,10 +390,11 @@ public class RandomPrimitives {
     /**
      * Selects a random {@code long} from among the members of a specified collection.
      *
-     * @param candidate1 the first long eligible for selection
+     * @param candidate1  the first long eligible for selection
      * @param candidatesN any additional longs eligible for selection
-     * @return a randomly-selected {@code long} among the non-{@code null} members of {@code candidate1...candidatesN}; {@link OptionalLong#empty()}
-     * if {@code candidate1} is {@code null} and either {@code candidatesN} is {@code null} or contains only {@code null} elements
+     * @return a randomly-selected {@code long} among the non-{@code null} members of {@code candidate1...candidatesN};
+     * {@link OptionalLong#empty()} if {@code candidate1} is {@code null} and either {@code candidatesN} is {@code null}
+     * or contains only {@code null} elements
      */
     public static OptionalLong randomLongFrom(Long candidate1, Long... candidatesN) {
         final Long selection = RandomSelections.selectRandomFrom(candidate1, candidatesN);
@@ -307,8 +405,8 @@ public class RandomPrimitives {
      * Selects a random {@code long} from among the members of a specified collection.
      *
      * @param candidates all longs eligible for selection
-     * @return a randomly-selected {@code long} among the non-{@code null} members of {@code candidates}; {@link OptionalLong#empty()} if
-     * {@code candidates} is empty, {@code null}, or includes only {@code null} members
+     * @return a randomly-selected {@code long} among the non-{@code null} members of {@code candidates};
+     * {@link OptionalLong#empty()} if {@code candidates} is empty, {@code null}, or includes only {@code null} members
      */
     public static OptionalLong randomLongFrom(Iterable<Long> candidates) {
         final Long selection = RandomSelections.selectRandomFrom(candidates);
@@ -342,8 +440,8 @@ public class RandomPrimitives {
         Validate.isTrue(max >= 0, "max must be >= 0");
 
         // Enforce our min/max boundaries.
-        final double boundedMin = Math.max(0, Math.min(MAX_DOUBLE, min));
-        final double boundedMax = Math.min(MAX_DOUBLE, Math.max(0, max));
+        final double boundedMin = Math.min(MAX_DOUBLE, min);
+        final double boundedMax = Math.min(MAX_DOUBLE, max);
 
         Validate.isTrue(min <= max, "min must be <= max");
 
@@ -351,13 +449,27 @@ public class RandomPrimitives {
         return RandomUtils.nextDouble(boundedMin, boundedMax + 1d);
     }
 
+    private static float randomFloatImpl(float min, float max) {
+        Validate.isTrue(min >= 0, "min must be >= 0");
+        Validate.isTrue(max >= 0, "max must be >= 0");
+
+        // Enforce our min/max boundaries.
+        final float boundedMin = Math.min(MAX_FLOAT, min);
+        final float boundedMax = Math.min(MAX_FLOAT, max);
+
+        Validate.isTrue(min <= max, "min must be <= max");
+
+        // Add 1 to max to make the bound inclusive rather than exclusive.
+        return RandomUtils.nextFloat(boundedMin, boundedMax + 1f);
+    }
+
     private static int randomIntImpl(int min, int max) {
         Validate.isTrue(min >= 0, "min must be >= 0");
         Validate.isTrue(max >= 0, "max must be >= 0");
 
         // Enforce our min/max boundaries.
-        final int boundedMin = Math.max(0, Math.min(MAX_INT, min));
-        int boundedMax = Math.min(MAX_INT, Math.max(0, max));
+        final int boundedMin = Math.min(MAX_INT, min);
+        final int boundedMax = Math.min(MAX_INT, max);
 
         Validate.isTrue(boundedMin <= boundedMax, "min must be <= max");
 
@@ -370,8 +482,8 @@ public class RandomPrimitives {
         Validate.isTrue(max >= 0, "max must be >= 0");
 
         // Enforce our min/max boundaries.
-        final long boundedMin = Math.max(0, Math.min(MAX_LONG, min));
-        final long boundedMax = Math.min(MAX_LONG, Math.max(0, max));
+        final long boundedMin = Math.min(MAX_LONG, min);
+        final long boundedMax = Math.min(MAX_LONG, max);
 
         Validate.isTrue(boundedMin <= boundedMax, "min must be <= max");
 

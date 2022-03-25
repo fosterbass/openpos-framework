@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.core.type.filter.AspectJTypeFilter;
 import org.springframework.core.type.filter.TypeFilter;
@@ -109,7 +110,7 @@ public final class RestApiSupport {
      * passed an instance whereas here we only have the interface class
      */
     public static RequestMapping resolveRequestMapping(final Class<?> restApiClass) {
-        return restApiClass.getAnnotation(RequestMapping.class);
+        return AnnotatedElementUtils.getMergedAnnotation(restApiClass, RequestMapping.class);
     }
 
     public static String requestMappingToUrlPattern(final String requestMapping) {

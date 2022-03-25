@@ -16,6 +16,7 @@ import java.util.stream.Stream;
  * @author Jason Weiss
  */
 @NoArgsConstructor(access = PRIVATE)
+@SuppressWarnings("unused")
 public class RandomStrings {
     /**
      * @see RandomStringUtils#randomAlphabetic(int)

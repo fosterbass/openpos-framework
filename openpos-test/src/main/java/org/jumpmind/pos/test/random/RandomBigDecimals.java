@@ -14,6 +14,7 @@ import java.math.BigDecimal;
  * @author Jason Weiss
  */
 @NoArgsConstructor(access = PRIVATE)
+@SuppressWarnings("unused")
 public class RandomBigDecimals {
     private static final long MAX_VALUE = Long.MAX_VALUE - 1L;
     private static final int UNSCALED = 0;
@@ -134,7 +135,6 @@ public class RandomBigDecimals {
     public static BigDecimal randomBigDecimalLessThan(long maxExclusive, int scale) {
         return randomBigDecimalImpl(0, maxExclusive - 1, scale);
     }
-
 
     /**
      * Generates a random {@link BigDecimal} representing a whole-number, un-shifted percentage; <i>e.g.</i> "134%" will be reported as a {@code
@@ -294,8 +294,8 @@ public class RandomBigDecimals {
         final long scaledMax = maxInclusive * (int) Math.pow(10, scale);
 
         // Enforce our min/max boundaries.
-        final long boundedMin = Math.max(0, Math.min(MAX_VALUE, scaledMin));
-        final long boundedMax = Math.min(MAX_VALUE, Math.max(0, scaledMax));
+        final long boundedMin = Math.min(MAX_VALUE, scaledMin);
+        final long boundedMax = Math.min(MAX_VALUE, scaledMax);
 
         Validate.isTrue(boundedMin <= boundedMax, "min must be <= max");
 

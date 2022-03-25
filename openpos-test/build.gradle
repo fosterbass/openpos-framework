@@ -8,6 +8,6 @@ dependencies {
     api "com.h2database:h2:${h2databaseVersion}"
     api "org.springframework:spring-jdbc:$springVersion"
     api "org.springframework:spring-tx:$springVersion"
-    api "org.springframework:spring-test:$springVersion"
+    api "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
 	api 'com.github.tomakehurst:wiremock:2.19.0'
 }
