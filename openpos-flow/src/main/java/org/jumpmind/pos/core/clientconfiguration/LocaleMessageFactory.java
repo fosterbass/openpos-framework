@@ -17,6 +17,9 @@ public class LocaleMessageFactory {
     @Value("${openpos.general.businessUnitLocale:en_US}")
     String businessUnitLocale;
 
+    @Value("${openpos.general.businessRegion:US}")
+    String businessRegion;
+
     @Value("${openpos.general.i18nEnabled:false}")
     boolean i18nEnabled;
 
@@ -30,9 +33,11 @@ public class LocaleMessageFactory {
     public LocaleChangedMessage getMessage() {
         LocaleChangedMessage message = new LocaleChangedMessage();
         if(i18nEnabled) {
+            message.setRegion(businessRegion);
             message.setLocale(businessUnitLocale);
             message.setDisplayLocale(businessUnitLocale);
         } else {
+            message.setRegion("US");
             message.setLocale("en_US");
             message.setDisplayLocale("en_US");
         }

@@ -51,6 +51,8 @@ export interface IFormElement {
     requiredOverridable?: boolean;
     requiredOverridden?: boolean;
     overrideLabel?: string;
+    formatterName?: string;
+    validatorName?: string;
 }
 
 export interface IDynamicListField {

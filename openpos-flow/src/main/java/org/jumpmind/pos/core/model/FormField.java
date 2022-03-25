@@ -42,6 +42,9 @@ public class FormField implements IFormElement, IField, Serializable {
     private boolean requiredOverridable = false;
     private boolean requiredOverridden = false;
 
+    private String formatterName;
+    private String validatorName;
+
     public FormField() {
     }
     
@@ -405,4 +408,19 @@ public class FormField implements IFormElement, IField, Serializable {
         this.requiredOverridden = requiredOverridden;
     }
 
+    public String getFormatterName() {
+        return formatterName;
+    }
+
+    public void setFormatterName(String formatterName) {
+        this.formatterName = formatterName;
+    }
+
+    public String getValidatorName() {
+        return validatorName;
+    }
+
+    public void setValidatorName(String validatorName) {
+        this.validatorName = validatorName;
+    }
 }

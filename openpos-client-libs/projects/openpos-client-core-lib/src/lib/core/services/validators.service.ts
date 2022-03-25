@@ -18,10 +18,13 @@ export class ValidatorsService {
         const US_VALIDATORS = new Map<string, IValidator>();
         const NO_LOCALE_VALIDATORS = new Map<string, IValidator>();
         const CA_VALIDATORS = new Map<string, IValidator>();
+        const HKG_VALIDATORS = new Map<string, IValidator>();
 
         US_VALIDATORS.set('phone', OpenPosValidators.PHONE_US);
         CA_VALIDATORS.set('phone', OpenPosValidators.PHONE_CA);
         CA_VALIDATORS.set('postalcode', { name: 'PostalCode', validationFunc: Validators.minLength(6) });
+
+        HKG_VALIDATORS.set('phone', OpenPosValidators.PHONE_HKG);
 
         NO_LOCALE_VALIDATORS.set('giftcode', OpenPosValidators.GIFT_CODE);
         NO_LOCALE_VALIDATORS.set('date', OpenPosValidators.DATE_MMDDYYYY);
@@ -34,24 +37,23 @@ export class ValidatorsService {
         NO_LOCALE_VALIDATORS.set('gt_0', OpenPosValidators.GT_0);
         NO_LOCALE_VALIDATORS.set('gte_0', OpenPosValidators.GTE_0);
 
-        this.validators.set('en-us', US_VALIDATORS);
         this.validators.set('us', US_VALIDATORS);
         this.validators.set('ca', CA_VALIDATORS);
-        this.validators.set('en-ca', CA_VALIDATORS);
+        this.validators.set('hkg', HKG_VALIDATORS);
 
         this.validators.set('NO-LOCALE', NO_LOCALE_VALIDATORS);
     }
 
     getValidator(validatorSpec: string | IValidatorSpec): ValidatorFn {
-        const locale = this.localeService.getLocale();
+        const region = this.localeService.getRegion();
         if (typeof validatorSpec === 'string') {
-            if (validatorSpec && locale) {
+            if (validatorSpec && region) {
                 const lname = validatorSpec.toLowerCase();
-                const llocale = locale.toLowerCase();
-                // see if we have a validator map for the current locale
-                //  and that locale has the validator we need
-                if (this.validators.get(llocale) && this.validators.get(llocale).get(lname)) {
-                    const v = this.validators.get(llocale).get(lname);
+                const lregion = region.toLowerCase();
+                // see if we have a validator map for the current region
+                //  and that region has the validator we need
+                if (this.validators.get(lregion) && this.validators.get(lregion).get(lname)) {
+                    const v = this.validators.get(lregion).get(lname);
                     return typeof v !== 'undefined' ? v.validationFunc : undefined;
                 }
 
@@ -60,11 +62,11 @@ export class ValidatorsService {
                     return typeof v !== 'undefined' ? v.validationFunc : undefined;
                 }
             }
-            console.info(`No validator found for locale '${locale}' validator name '${validatorSpec}'. Using an 'always valid' validator`);
+            console.info(`No validator found for locale '${region}' validator name '${validatorSpec}'. Using an 'always valid' validator`);
             return () => null;
         } else {
             // Support for dynamically loading validators specified by the server side.
-            // If locale support is needed, that can be handled in the validator implementation
+            // If region support is needed, that can be handled in the validator implementation
             const validatorInstance: IValidator =
                 VALIDATION_CONSTANTS.validators.find(entry => entry.name === validatorSpec.name).validatorClass.prototype;
             validatorInstance.constructor.apply(validatorInstance, [validatorSpec]);

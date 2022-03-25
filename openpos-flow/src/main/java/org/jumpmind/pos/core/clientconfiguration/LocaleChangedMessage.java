@@ -8,6 +8,7 @@ import org.jumpmind.pos.util.model.Message;
 public class LocaleChangedMessage extends Message {
 
     private static final long serialVersionUID = 1L;
+    private String region;
 
     private String locale;
 
@@ -25,6 +26,16 @@ public class LocaleChangedMessage extends Message {
         this();
         setLocale(locale);
         setDisplayLocale(displayLocale);
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        if(region != null) {
+            this.region = region;
+        }
     }
 
     public String getLocale() {

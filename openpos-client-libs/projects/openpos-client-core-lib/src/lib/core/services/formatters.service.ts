@@ -20,7 +20,7 @@ import { DoNothingFormatter } from '../../shared/formatters/do-nothing.formatter
 import { NonNumericFormatter } from '../../shared/formatters/non-numeric.formatter';
 import { WeightFormatter } from '../../shared/formatters/weight.formatter';
 import { PostalCodeGenericFormatter } from '../../shared/formatters/postal-code-generic.formatter';
-
+import { PhoneHKGFormatter } from "../../shared/formatters/phone-hkg.formatter";
 
 @Injectable({
     providedIn: 'root',
@@ -34,7 +34,7 @@ export class FormattersService {
 
         usFormatters.set('phone', defaultPhoneFormatter);
         usFormatters.set('postalcodegeneric', new PostalCodeGenericFormatter());
-        this.formatters.set('en-us', usFormatters);
+        // this.formatters.set('en-us', usFormatters);
         this.formatters.set('us', usFormatters);
 
         const caFormatters = new Map<string, IFormatter>();
@@ -43,15 +43,19 @@ export class FormattersService {
         caFormatters.set('postalcode', new PostalCodeCAFormatter());
         caFormatters.set('postalcodegeneric', new PostalCodeGenericFormatter());
 
+        const hkgFormatters = new Map<string, IFormatter>();
+        hkgFormatters.set('phone', new PhoneHKGFormatter());
+        this.formatters.set('hkg', hkgFormatters);
+
         // Some screens are dependent on 'ca' value, so don't change.  If you have other
         // ca formatters that are language specific, add a second entry in the map for them.
         this.formatters.set('ca', caFormatters);
-        this.formatters.set('en-ca', caFormatters);
+        // this.formatters.set('en-ca', caFormatters);
 
         const ukFormatters = new Map<string, IFormatter>();
         ukFormatters.set('datetime', new DateTimeCAFormatter());
         this.formatters.set('gb', ukFormatters);
-        this.formatters.set('en-gb', ukFormatters);
+        // this.formatters.set('en-gb', ukFormatters);
 
         // If there isn't a specific formatter for a given locale, we fall back these
         const noLocaleFormatters = new Map<string, IFormatter>();
@@ -83,15 +87,14 @@ export class FormattersService {
     }
 
     getFormatter(name: string): IFormatter {
-
-        const locale = this.localeService.getLocale();
-        if (name && locale) {
+        const region = this.localeService.getRegion();
+        if (name && region) {
             const lname = name.toLowerCase();
-            const llocale = locale.toLowerCase();
-            // see if we have a validator map for the current locale
-            //  and that locale has the validator we need
-            if (this.formatters.get(llocale) && this.formatters.get(llocale).get(lname)) {
-                return this.formatters.get(llocale).get(lname);
+            const lregion = region.toLowerCase();
+            // see if we have a validator map for the current region
+            //  and that region has the validator we need
+            if (this.formatters.get(lregion) && this.formatters.get(lregion).get(lname)) {
+                return this.formatters.get(lregion).get(lname);
             }
 
             if (this.formatters.get('NO-LOCALE') && this.formatters.get('NO-LOCALE').get(lname)) {
@@ -100,7 +103,7 @@ export class FormattersService {
         }
 
         if (name) {
-            console.debug(`No formatter found for locale '${locale}' formatter name '${name}'. Using a 'Do Nothing' formatter`);
+            console.debug(`No formatter found for locale '${region}' formatter name '${name}'. Using a 'Do Nothing' formatter`);
         }
         return new DoNothingFormatter();
     }

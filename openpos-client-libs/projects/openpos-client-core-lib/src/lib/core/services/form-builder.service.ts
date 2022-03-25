@@ -111,7 +111,7 @@ export class FormBuilder {
             validators.push(CustomDateValidator.maxDate(element.maxDate));
         }
 
-        validators.push(this.validatorService.getValidator(element.inputType));
+        validators.push(this.validatorService.getValidator(element.validatorName ? element.validatorName : element.inputType));
         if (element.validators) {
             element.validators.forEach(v => validators.push(this.validatorService.getValidator(v)));
         }

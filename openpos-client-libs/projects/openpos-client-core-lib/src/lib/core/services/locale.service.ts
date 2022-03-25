@@ -6,7 +6,7 @@ import { SessionService } from './session.service';
 import { PersonalizationService } from '../personalization/personalization.service';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { switchMap, distinct, tap } from 'rxjs/operators';
-
+export const DEFAULT_REGION = 'US';
 export const DEFAULT_LOCALE = 'en-US';
 
 @Injectable({
@@ -17,6 +17,7 @@ export class LocaleService {
     private showIcons = true;
     private textCache = new Map<string, string>();
 
+    private region$ = new BehaviorSubject<string>(DEFAULT_REGION);
     private locale$ = new BehaviorSubject<string>(DEFAULT_LOCALE);
     private displayLocale$ = new BehaviorSubject<string>(DEFAULT_LOCALE);
 
@@ -29,6 +30,9 @@ export class LocaleService {
     }
 
     handleLocaleChanged(message: any) {
+        if(message.region) {
+            this.region$.next(this.formatLocaleForBrowser(message.region));
+        }
         if (message.locale) {
             this.locale$.next(this.formatLocaleForBrowser(message.locale));
         }
@@ -65,6 +69,10 @@ export class LocaleService {
                 })), tap(v => this.textCache.set(cacheKey, v))
             );
         }
+    }
+
+    getRegion(): string {
+        return this.region$.getValue();
     }
 
     getLocale(): string {
