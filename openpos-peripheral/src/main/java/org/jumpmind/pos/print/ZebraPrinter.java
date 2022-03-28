@@ -309,7 +309,7 @@ public class ZebraPrinter extends AbstractPOSPrinter {
 
     @Override
     public boolean getJrnEmpty() throws JposException {
-        return false;
+        return readPrinterStatus() == ZebraStatusCodes.ZEBRA_HEAD_ERROR;
     }
 
     @Override

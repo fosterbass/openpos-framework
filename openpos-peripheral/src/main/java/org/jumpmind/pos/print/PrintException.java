@@ -11,7 +11,8 @@ import java.util.EnumSet;
 public class PrintException extends RuntimeException {
     public enum StatusCode {
         CoverOpened,
-        OutOfPaper
+        OutOfPaper,
+        HeadError
     }
 
     @Getter
@@ -30,6 +31,10 @@ public class PrintException extends RuntimeException {
 
                 case OutOfPaper:
                     codeMsg = "out of paper";
+                    break;
+                    
+                case HeadError:
+                    codeMsg = "Paper Jam";
                     break;
 
                 default:
