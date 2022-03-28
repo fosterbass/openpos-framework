@@ -45,6 +45,9 @@
     text-align: center;
 }
 
+.sale-total-header {
+}
+
 .sale-total-background {
     grid-template-areas:
         "status-stamp"
@@ -170,6 +173,9 @@
 
     .checkout-keybind {
         padding-left: 8px;
+    }
+
+    .checkout-button {
         align-self: center;
     }
 }

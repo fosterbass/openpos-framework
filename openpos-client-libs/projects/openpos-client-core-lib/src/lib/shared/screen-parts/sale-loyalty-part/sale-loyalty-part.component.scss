@@ -117,7 +117,7 @@ $sale-total-icon-size: 36px;
 
             .grid-container {
                 display: grid;
-                grid-template-columns: auto minmax(0, 6fr) 4fr;
+                grid-template-columns: auto minmax(0, 6fr) auto;
                 grid-template-rows: auto 1fr;
                 gap: $linked-customer-column-gap;
                 grid-template-areas:
@@ -140,6 +140,9 @@ $sale-total-icon-size: 36px;
                     .customer-name {
                         @extend %text-md;
                         line-height: 1.25em;
+                        text-overflow: ellipsis;
+                        overflow: hidden;
+                        white-space: nowrap;
 
                         &.desktop-portrait {
                             font-size: $text-sm;
@@ -155,9 +158,6 @@ $sale-total-icon-size: 36px;
                         &.mobile {
                             line-height: 1rem;
                         }
-                    }
-                    .loyalty-keybind {
-                        margin-left: 10px;
                     }
                 }
                 .icon {
@@ -355,6 +355,5 @@ $sale-total-icon-size: 36px;
 }
 
 .loyalty-keybind {
-    padding-left: 8px;
     align-self: center;
 }

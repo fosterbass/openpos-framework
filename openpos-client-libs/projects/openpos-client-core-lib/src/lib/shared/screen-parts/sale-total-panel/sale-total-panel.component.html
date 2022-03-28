@@ -1,5 +1,5 @@
 <div class="sale-total-wrapper">
-    <app-sale-loyalty-part *ngIf="!(isMobile$ | async) && shouldShowHeader()"></app-sale-loyalty-part>
+    <app-sale-loyalty-part class="sale-total-header" responsive-class *ngIf="!(isMobile$ | async) && shouldShowHeader()"></app-sale-loyalty-part>
     <mat-card class="sale-total-background" responsive-class>
         <div class="status-stamp">
             <app-stamp fitText *ngIf="screenData.statusMessage">
@@ -72,7 +72,7 @@
                 [actionItem]="screenData.checkoutButton" (actionClick)="doMenuItemAction(screenData.checkoutButton)"
                 [disabled]="!screenData.checkoutButton.enabled || (isLoyaltySignupInProgressOnCustomerDisplay$ | async)"
                 (click)="doMenuItemAction(screenData.checkoutButton)" class="sale-total-button">
-                {{screenData.checkoutButton.title}}
+                <span class="checkout-button">{{screenData.checkoutButton.title}}</span>
                 <span *ngIf="keybindsEnabled(screenData.checkoutButton)"
                     class="muted-color checkout-keybind">{{screenData.checkoutButton.keybindDisplayName}}</span>
             </app-primary-button>
