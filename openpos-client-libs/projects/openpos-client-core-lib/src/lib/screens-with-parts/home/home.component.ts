@@ -103,4 +103,13 @@ export class HomeComponent extends PosScreenDirective<HomeInterface> {
     }
     return null;
   }
+
+  // '#f9a842'
+  // colors = ['#1C9DD5', '#0657A1', '#282560', '#00A69B', '#37AC48', '#E83253', '#F9D63B', '#f9a842'];
+  // colors = ['#E7506E', '#4FAC5A','#F8CE0D','#1D9ED1']; // light
+  colors = ['#282560', '#0657A1','#1C9DD5', '#37AC48', '#FAD225', '#f9a842', '#E83253'];
+
+  public getButtonColor(index: number) : string {
+    return this.colors[index % this.colors.length];
+  }
 }

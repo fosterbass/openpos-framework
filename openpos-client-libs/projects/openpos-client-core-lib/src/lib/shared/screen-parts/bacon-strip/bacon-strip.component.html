@@ -1,5 +1,8 @@
-<div class="container mat-elevation-z5" responsive-class [class.container-search-is-expanded]="searchExpanded">
-    <div class="leftside" [class.expanded]="searchExpanded">
+<div class="container mat-elevation-z5" responsive-class>
+    <div class="leftside" [class.expanded]="searchExpanded" [class.container-search-is-expanded]="searchExpanded">
+        <!-- this button is a workaround to hide the initial focus shading on the upper left icon -->
+        <button cdkFocusInitial mat-icon-button type='text' class="hidden-focus-button"></button>
+
         <app-icon-button *ngIf="iconButtonName" [iconName]="iconButtonName"
                          [title]="screenData.headerText"
                          [iconClass]="'md'" (buttonClick)="buttonClick()">

@@ -1,6 +1,6 @@
+<app-dual-action-dialog-header [headerText]="screen.customer.name" [headerIcon]="screen.profileIcon"
+[headerIconClass]="'mat-36'">
 <div *ngIf="(isMobile | async)" class="mobile-dialog-container">
-    <app-dual-action-dialog-header [headerText]="screen.customer.name" [headerIcon]="screen.profileIcon"
-                                   [headerIconClass]="'mat-36'">
         <app-icon [iconName]="pagedContent !== undefined ? screen.backIcon : ''" [iconClass]="'mat-30'"
                   (click)="selectContent(undefined)"></app-icon>
     </app-dual-action-dialog-header>
