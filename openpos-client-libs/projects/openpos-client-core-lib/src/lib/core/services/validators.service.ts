@@ -21,16 +21,20 @@ export class ValidatorsService {
         const HKG_VALIDATORS = new Map<string, IValidator>();
 
         US_VALIDATORS.set('phone', OpenPosValidators.PHONE_US);
+        US_VALIDATORS.set('phonee164', OpenPosValidators.PHONE_E164);
         CA_VALIDATORS.set('phone', OpenPosValidators.PHONE_CA);
+        CA_VALIDATORS.set('phonee164', OpenPosValidators.PHONE_E164);
         CA_VALIDATORS.set('postalcode', { name: 'PostalCode', validationFunc: Validators.minLength(6) });
 
         HKG_VALIDATORS.set('phone', OpenPosValidators.PHONE_HKG);
+        HKG_VALIDATORS.set('phonee164', OpenPosValidators.PHONE_E164);
 
         NO_LOCALE_VALIDATORS.set('giftcode', OpenPosValidators.GIFT_CODE);
         NO_LOCALE_VALIDATORS.set('date', OpenPosValidators.DATE_MMDDYYYY);
         NO_LOCALE_VALIDATORS.set('datemmddyy', OpenPosValidators.DATE_MMDDYY);
         NO_LOCALE_VALIDATORS.set('dateddmmyyyy', OpenPosValidators.DATE_DDMMYYYY);
         NO_LOCALE_VALIDATORS.set('dateddmmyy', OpenPosValidators.DATE_DDMMYY);
+        NO_LOCALE_VALIDATORS.set('phonee164', OpenPosValidators.PHONE_E164);
 
         NO_LOCALE_VALIDATORS.set('email', { name: 'Email', validationFunc: Validators.email });
         NO_LOCALE_VALIDATORS.set('postalcode', { name: 'PostalCode', validationFunc: Validators.minLength(5) });

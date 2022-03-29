@@ -6,11 +6,13 @@ import { RequireAtLeastOneValidator } from './require-at-least-one-validator';
 import { GiftCodeValidator } from './gift-code-validator';
 import { GreaterThanEqZeroValidator } from './greater-than-eq-zero-validator';
 import { PhoneHKGValidator } from "./phone-hkg-validator";
+import {PhoneE164Validator} from "./phone-e164-validator";
 
 export class OpenPosValidators {
     static readonly PHONE_CA = new PhoneCAValidator();
     static readonly PHONE_US = new PhoneUSValidator();
     static readonly PHONE_HKG = new PhoneHKGValidator();
+    static readonly PHONE_E164 = new PhoneE164Validator();
     static readonly GIFT_CODE = new GiftCodeValidator();
     static readonly REQUIRE_AT_LEAST_ONE = new RequireAtLeastOneValidator();
     static readonly DATE_MMDDYY: DateValidator = new DateValidator('DateMMDDYY', 'MMDDYY');

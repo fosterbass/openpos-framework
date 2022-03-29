@@ -21,6 +21,7 @@ import { NonNumericFormatter } from '../../shared/formatters/non-numeric.formatt
 import { WeightFormatter } from '../../shared/formatters/weight.formatter';
 import { PostalCodeGenericFormatter } from '../../shared/formatters/postal-code-generic.formatter';
 import { PhoneHKGFormatter } from "../../shared/formatters/phone-hkg.formatter";
+import {PhoneE164Formatter} from "../../shared/formatters/phone-e164.formatter";
 
 @Injectable({
     providedIn: 'root',
@@ -33,6 +34,7 @@ export class FormattersService {
         const defaultPhoneFormatter = new PhoneUSFormatter();
 
         usFormatters.set('phone', defaultPhoneFormatter);
+        usFormatters.set('phonee164', new PhoneE164Formatter());
         usFormatters.set('postalcodegeneric', new PostalCodeGenericFormatter());
         // this.formatters.set('en-us', usFormatters);
         this.formatters.set('us', usFormatters);
@@ -42,9 +44,11 @@ export class FormattersService {
         caFormatters.set('datetime', new DateTimeCAFormatter());
         caFormatters.set('postalcode', new PostalCodeCAFormatter());
         caFormatters.set('postalcodegeneric', new PostalCodeGenericFormatter());
+        caFormatters.set('phonee164', new PhoneE164Formatter());
 
         const hkgFormatters = new Map<string, IFormatter>();
         hkgFormatters.set('phone', new PhoneHKGFormatter());
+        hkgFormatters.set('phonee164', new PhoneE164Formatter());
         this.formatters.set('hkg', hkgFormatters);
 
         // Some screens are dependent on 'ca' value, so don't change.  If you have other
@@ -69,6 +73,7 @@ export class FormattersService {
         // Use USD formatter as default
         noLocaleFormatters.set('money', new MoneyFormatter(localeService));
         noLocaleFormatters.set('phone', numericFormatter);
+        noLocaleFormatters.set('phonee164', new PhoneE164Formatter());
         noLocaleFormatters.set('percent', new PercentageFormatter());
         noLocaleFormatters.set('percentint', new PercentageFormatter(PercentageFormatter.INTEGER_MODE));
         noLocaleFormatters.set('postalcode', new PostalCodeFormatter());

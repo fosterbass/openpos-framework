@@ -22,6 +22,7 @@ export class ShowErrorsComponent {
         phoneUS: () => 'Phone number is invalid',
         phone: () => 'Phone number is invalid',
         phoneHKG: () => 'Phone number is invalid',
+        phoneE164: () => 'Phone number is invalid',
         date: () => 'Date is invalid',
         datemmddyy: () => 'Date is invalid',
         dateddmmyy: () => 'Date is invalid',
