@@ -39,7 +39,7 @@
         </div>
 
         <mat-card fxLayout="row wrap"  fxFlexAlign="centor"  style="margin:10px 0 5px 0"  *ngIf="(localMenuEnabled && (screen.template.localMenuAtBottom || (screen.template.enableMobileLocalMenu && (smOrXs | async)))) && screen.template.localMenuItems.length > 1 "  >
-            <div *ngFor="let tender of screen.template.localMenuItems" fxFlex="1 1 0">
+            <div *ngFor="let tender of screen.template.localMenuItems" style="flex:1 1 25%; min-width:25%">
                 <div  (click)="doMenuItemAction(tender)" style="margin:10px 10px 10px 10px;text-align:center;min-width: 160px;" [ngStyle.lt-md]="{'min-width':'90px'}" [ngStyle.gt-sm]="{'min-width':'160px'}">
                     <button fxShow.gt-sm="true" fxShow.lt-md="false" mat-fab >
                         <app-icon *ngIf="tender.icon"  [iconName]="tender.icon" style="padding-top:12px"></app-icon>
@@ -47,7 +47,7 @@
                     <button fxShow.gt-sm="false" fxShow.lt-md="true" mat-mini-fab  color=primary-inverse>
                         <app-icon *ngIf="tender.icon"  [iconName]="tender.icon"></app-icon>
                     </button>
-                    <div [ngStyle.lt-md]="{'font-size':'14px','padding-top':'10px'}" [ngStyle.gt-sm]="{'font-size':'24px','padding-top':'15px'}">{{tender.title}}</div>
+                    <div [ngStyle.lt-md]="{'font-size':'11px','padding-top':'10px'}" [ngStyle.gt-sm]="{'font-size':'24px','padding-top':'15px'}">{{tender.title}}</div>
                 </div>
             </div>
         </mat-card>
