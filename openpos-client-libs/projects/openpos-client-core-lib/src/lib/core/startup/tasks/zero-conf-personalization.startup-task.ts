@@ -116,6 +116,6 @@ export class ZeroConfPersonalizationStartupTask extends AutoPersonalizationStart
         // if the secured flag is on, then used https. Value is a string.
         const useHttps = booleanParameter(service.txtRecord.secured);
 
-        await this.personalize({ deviceName }, (useHttps ? 'https' : 'http') + '://' + endpoint);
+        await this.personalize(await this.getPersonalizationParameters({ deviceName }, (useHttps ? 'https' : 'http') + '://' + endpoint));
     }
 }
