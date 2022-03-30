@@ -9,7 +9,7 @@
             white-space: break-spaces;
             max-width: 100%;
             &[disabled] {
-                border-style: none;
+                border-color: $disabled-border;
             }
         }
     }

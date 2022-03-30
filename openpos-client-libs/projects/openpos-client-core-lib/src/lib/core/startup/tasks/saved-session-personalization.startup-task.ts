@@ -23,7 +23,7 @@ export class SavedSessionPersonalizationStartupTask implements StartupTask {
                     await this._personalization.personalizeFromSavedSession().toPromise();
                     break;
                 } catch (e) {
-                    console.warn('personalization from saved session failed; retrying...');
+                    console.warn(`personalization from saved session failed due to reason: ${JSON.stringify(e)}; Retrying...`);
 
                     let count = 5;
 

@@ -46,14 +46,17 @@ export class ScanPartComponent extends ScreenPartComponent<ScanInterface> implem
 
     private registerScanner() {
         if (typeof this.scanServiceSubscription === 'undefined' || this.scanServiceSubscription === null) {
+            console.log(`Registering scan-part scanner...`);
             this.scanServiceSubscription = this.scannerService.beginScanning().subscribe(scanData => {
                 if (this.screenData.scanActionName) {
                     // Do this so that we complete any changes we've already made
+                    console.log(`Received scan data...`);
                     this.focusService.blurCurrentElement();
                     // The setTimeout here makes sure that everything the event chain of
                     // the blur above finishes before the scan action executes because
                     // the timeout queues this up until the microqueue is drained. the
                     // timeout of 1 is to make sure that it gets queued after any other timeout - 0's
+                    console.log(`Queueing scan send with a timeout...`);
                     setTimeout(() => this.doAction({ action: this.screenData.scanActionName, queueIfBlocked: true }, scanData), 1);
                 }
             });

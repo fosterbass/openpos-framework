@@ -13,12 +13,10 @@ import org.jumpmind.pos.persist.*;
 import org.jumpmind.pos.persist.model.*;
 import org.jumpmind.pos.util.ReflectUtils;
 import org.jumpmind.pos.util.model.ITypeCode;
-import org.springframework.util.LinkedCaseInsensitiveMap;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.Map.Entry;
 
 @Slf4j
 public class ModelWrapper {
@@ -28,11 +26,8 @@ public class ModelWrapper {
     private ModelMetaData modelMetaData;
     private AbstractModel model;
     private AugmenterHelper augmenterHelper;
-    
     private Map<String, Object> systemData;
-
-    private LinkedCaseInsensitiveMap<Column> fieldsToColumns = new LinkedCaseInsensitiveMap<Column>();
-    private LinkedCaseInsensitiveMap<Object> columnNamesToValues;
+    private Map<String, Object> columnNamesToValues;
     
     @SuppressWarnings("unchecked")
     public ModelWrapper(AbstractModel model, ModelMetaData modelMetaData, AugmenterHelper augmenterHelper) {
@@ -41,8 +36,8 @@ public class ModelWrapper {
         this.augmenterHelper = augmenterHelper;
 
         modelMetaData.getModelClassMetaData().forEach( modelClassMetaData -> {
-            if(modelClassMetaData.getExtensionClazzes() != null){
-                modelClassMetaData.getExtensionClazzes().forEach(extensionClazz -> {
+            if(modelClassMetaData.getExtensionClasses() != null){
+                modelClassMetaData.getExtensionClasses().forEach(extensionClazz -> {
                     if( !model.getExtensions().containsKey(extensionClazz)){
                         //initialize all the extension classes on the model
                         try {
@@ -69,7 +64,7 @@ public class ModelWrapper {
     }
 
     public void load() {
-        fieldsToColumns = mapFieldsToColumns(model.getClass());
+
     }
 
     public void loadValues() {
@@ -140,81 +135,12 @@ public class ModelWrapper {
     public Map<String, Object> getAdditionalFields() {
         return model.getAdditionalFields();
     }    
-    
-    protected LinkedCaseInsensitiveMap<Column> mapFieldsToColumns(Class<?> resultClass) {
 
-        fieldsToColumns = new LinkedCaseInsensitiveMap<Column>();
-        buildFieldColumnMap(fieldsToColumns, resultClass);
-        fieldsToColumns = orderColumns(fieldsToColumns);
-        return fieldsToColumns;
-    }
-
-    protected void buildFieldColumnMap(LinkedCaseInsensitiveMap<Column> fieldColumnMap, Class<?> clazz) {
-        for (ModelClassMetaData classMetaData : modelMetaData.getModelClassMetaData()) {
-            Map<String, FieldMetaData> fieldMetaDatas = classMetaData.getEntityFieldMetaDatas();
-            fieldMetaDatas.forEach((k,v)->fieldColumnMap.put(v.getField().getName(),v.getColumn()));
-            if (ITaggedModel.class.isAssignableFrom(clazz)) {
-                Column[] columns = classMetaData.getTable().getColumns();
-                for (Column column : columns) {
-                    if (column.getName().toUpperCase().startsWith(TagModel.TAG_PREFIX)) {
-                        fieldColumnMap.put(column.getName(), column);
-                    }
-                }
-            }
-            if (IAugmentedModel.class.isAssignableFrom(clazz) && clazz.getAnnotation(Augmented.class) != null) {
-                List<AugmenterConfig> configs = augmenterHelper.getAugmenterConfigs(clazz);
-                if (CollectionUtils.isNotEmpty(configs)) {
-                    for (AugmenterConfig config : configs) {
-                        if (config != null && config.getPrefix() != null) {
-                            Column[] columns = classMetaData.getTable().getColumns();
-                            for (Column column : columns) {
-                                if (column.getName().toUpperCase().startsWith(config.getPrefix())) {
-                                    fieldColumnMap.put(column.getName(), column);
-                                }
-                            }
-                        }
-                        else {
-                            log.debug("Missing augmenterConfig for class named " + clazz.getSimpleName());
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    protected LinkedCaseInsensitiveMap<Column> orderColumns(LinkedCaseInsensitiveMap<Column> argFieldsToColumns) {
-        LinkedCaseInsensitiveMap<Column> orderedFieldsToColumns = new LinkedCaseInsensitiveMap<>();
-        
-        // Primary keys first.
-        for (Entry<String, Column> entry : argFieldsToColumns.entrySet()) {
-            if (entry.getValue().isPrimaryKey()) {
-                orderedFieldsToColumns.put(entry.getKey(), entry.getValue());  
-            }
-        }
-        
-        // Next regular fields
-        for (Entry<String, Column> entry : argFieldsToColumns.entrySet()) {
-            if (!isRowMaintenanceColumn(entry.getValue())) {
-                orderedFieldsToColumns.put(entry.getKey(), entry.getValue());  
-            }            
-        }
-        
-        // Now maintenance fields.
-        for (Entry<String, Column> entry : argFieldsToColumns.entrySet()) {
-            if (isRowMaintenanceColumn(entry.getValue())) {
-                orderedFieldsToColumns.put(entry.getKey(), entry.getValue());  
-            }            
-        }
-        
-        return orderedFieldsToColumns;
-    }
-
-    protected LinkedCaseInsensitiveMap<Object> mapColumnNamesToValues() {
+    protected Map<String, Object> mapColumnNamesToValues() {
         try {
-            LinkedCaseInsensitiveMap<Object> columnNamesToObjectValues = new LinkedCaseInsensitiveMap<Object>();
-            Set<String> fieldNames = fieldsToColumns.keySet();
+            Map<String, Object> columnNamesToObjectValues = new LinkedHashMap<>();
+            Set<String> fieldNames = getModelMetaData().getFieldsToColumns().keySet();
             List<AugmenterConfig> configs = augmenterHelper.getAugmenterConfigs(model);
-
             for (String fieldName : fieldNames) {
                 AugmenterConfig config = getAugmentedConfigWithPrefix(configs, fieldName);
                 if (fieldName.toUpperCase().startsWith(TagModel.TAG_PREFIX)) {
@@ -227,7 +153,7 @@ public class ModelWrapper {
                     String augmentValue = ((IAugmentedModel) model).getAugmentValue(fieldName.substring(config.getPrefix().length()));
                     columnNamesToObjectValues.put(fieldName, ObjectUtils.defaultIfNull(augmentValue, augmenterHelper.getDefaultValue(fieldName, model)));
                 } else {
-                    Column column = fieldsToColumns.get(fieldName);
+                    Column column = getModelMetaData().getFieldsToColumns().get(fieldName);
                     Object value = getFieldValue(fieldName);
 
                     if (value instanceof Money) {
@@ -242,7 +168,7 @@ public class ModelWrapper {
             return columnNamesToObjectValues;
         } catch (Exception ex) {
             throw new PersistException(
-                    "Failed to getObjectValuesByColumnName on model " + model + " fieldsToColumns: " + fieldsToColumns, ex);
+                    "Failed to getObjectValuesByColumnName on model " + model + " fieldsToColumns: " + getModelMetaData().getFieldsToColumns(), ex);
         }
     }
 
@@ -278,29 +204,12 @@ public class ModelWrapper {
         FieldMetaData fieldMetaData = getFieldMetaData(fieldName);
 
         try {            
-            if (fieldMetaData.getField().getType().isAssignableFrom(Money.class)
-                    && value != null) {
-                Field xRefField = getXRefForField(fieldName);
-                String modelCurrencyCode = (String)getFieldValue(xRefField.getName());
-                if (StringUtils.isEmpty(modelCurrencyCode)) {
-                    throw new PersistException("Money field " + fieldName + " cannot be loaded because crossReference= " + getXrefName(fieldName)
-                    + " does not have a value. Model: " + model); 
-                }
-                CurrencyUnit currency = CurrencyUnit.of(modelCurrencyCode);
-
-                BigDecimal decimalValue;
-                    if(value instanceof String){
-                        decimalValue = new BigDecimal((String)value);
-                    } else{
-                        decimalValue = (BigDecimal)value;
-                    }
-
-                decimalValue = decimalValue.setScale(currency.getDecimalPlaces());
-                value = Money.of(currency, decimalValue);
-            } else if (ITypeCode.class.isAssignableFrom(fieldMetaData.getField().getType())) {
+            if (getModelMetaData().isMoneyField(fieldMetaData.getField().getName()) && value != null) {
+                value = getMoneyValue(fieldName, value);
+            } else if (getModelMetaData().isTypeCodeField(fieldMetaData.getField().getName())) {
                 value = ITypeCode.make((Class<ITypeCode>)fieldMetaData.getField().getType(), value != null ? value.toString() : null);
             }
-            setFieldValue(fieldMetaData,value);
+            setFieldValue(fieldMetaData, value);
         } catch (Exception ex) {
             if (ex instanceof PersistException) {
                 throw (PersistException)ex;
@@ -308,6 +217,27 @@ public class ModelWrapper {
                 throw new PersistException("Failed to set " + fieldName + " to " + value + " on " + model, ex);
             }
         }
+    }
+
+    private Money getMoneyValue(String fieldName, Object value) {
+        Field xRefField = getXRefForField(fieldName);
+        String modelCurrencyCode = (String)getFieldValue(xRefField.getName());
+        if (StringUtils.isEmpty(modelCurrencyCode)) {
+            throw new PersistException("Money field " + fieldName + " cannot be loaded because crossReference= " + getXrefName(fieldName)
+            + " does not have a value. Model: " + model);
+        }
+        CurrencyUnit currency = CurrencyUnit.of(modelCurrencyCode);
+
+        BigDecimal decimalValue;
+        if(value instanceof String){
+            decimalValue = new BigDecimal((String) value);
+        } else{
+            decimalValue = (BigDecimal) value;
+        }
+
+        decimalValue = decimalValue.setScale(currency.getDecimalPlaces());
+        value = Money.of(currency, decimalValue);
+        return (Money)value;
     }
 
     private void setFieldValue(FieldMetaData fieldMetaData, Object value) throws Exception {
@@ -347,7 +277,7 @@ public class ModelWrapper {
         }
     }
 
-    protected BigDecimal handleMoneyField(LinkedCaseInsensitiveMap<Object> columnNamesToObjectValues,
+    protected BigDecimal handleMoneyField(Map<String, Object> columnNamesToObjectValues,
             String fieldName, Column moneyDecimalColumn, Money value) {
         if (value != null) {
             String isoCurrencyCode = value.getCurrencyUnit().getCode();
@@ -445,14 +375,6 @@ public class ModelWrapper {
         }        
         return nullKeyValues;
     }
-    
-    protected boolean isRowMaintenanceColumn(Column column) {
-        String name = column.getName().toUpperCase();
-        return name.equals("CREATE_BY") 
-                || name.equals("CREATE_TIME")
-                || name.equals("UPDATE_BY")
-                || name.equals("UPDATE_TIME");
-    }
 
     public AbstractModel getModel() {
         return model;
@@ -462,7 +384,7 @@ public class ModelWrapper {
         this.model = model;
     }
     
-    public LinkedCaseInsensitiveMap<Object> getColumnNamesToValues() {
+    public Map<String, Object> getColumnNamesToValues() {
         return columnNamesToValues;
     }
 
@@ -477,7 +399,7 @@ public class ModelWrapper {
 
     public Column[] getColumns(Table table) {
         List<Column> columns = new ArrayList<>();
-        for (Column modelColumn : fieldsToColumns.values()) {
+        for (Column modelColumn : getModelMetaData().getFieldsToColumns().values()) {
             for (Column tableColumn : table.getColumns()) {                
                 if (isCompatible(modelColumn, tableColumn)) {
                     columns.add(tableColumn);
@@ -489,13 +411,15 @@ public class ModelWrapper {
     }
 
     private boolean isCompatible(Column col1, Column col2) {
+        if (!col1.getName().equalsIgnoreCase(col2.getName())) {
+            return false;
+        }
+
         boolean equals = col1.equals(col2);
         if (!equals) {
-            if (col1.getName().equalsIgnoreCase(col2.getName())) {
-                equals |= col1.isOfBinaryType() && col2.isOfBinaryType();
-                equals |= col1.isOfTextType() && col2.isOfTextType();
-                equals |= col2.isOfNumericType() && col2.isOfNumericType();
-            }
+            equals |= col1.isOfBinaryType() && col2.isOfBinaryType();
+            equals |= col1.isOfTextType() && col2.isOfTextType();
+            equals |= col2.isOfNumericType() && col2.isOfNumericType();
         }
         return equals;
     }

@@ -14,6 +14,7 @@ import org.jumpmind.pos.persist.cars.CarTrimTypeCode;
 import org.jumpmind.pos.persist.cars.RaceCarModel;
 import org.jumpmind.pos.persist.cars.SubModelCode;
 import org.jumpmind.pos.persist.cars.TestPersistCarsConfig;
+import org.jumpmind.pos.persist.driver.Driver;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,7 +50,7 @@ public class DBSessionTest {
         params.put("model", "Toyota");
         String sql = db.getSelectSql(RaceCarModel.class, params);
         assertEquals(
-                "select c0.vin, c0.model_year, c0.make, c0.model, c0.estimated_value, c0.iso_currency_code, c0.car_trim_type_code, c0.image, c0.antique, c0.sub_model, c0.create_time, c0.create_by, c0.last_update_time, c0.last_update_by, c0.trailer_hitch, c0.tag_dealership_number, c0.color, c1.turbo_charged from car_car c0 join car_race_car c1 on c0.vin=c1.vin and c0.tag_dealership_number=c1.tag_dealership_number where c0.model=${model} and c1.turbo_charged=${turbocharged}",
+                "select c0.vin, c0.model_year, c0.make, c0.model, c0.estimated_value, c0.iso_currency_code, c0.car_trim_type_code, c0.image, c0.antique, c0.sub_model, c0.create_time, c0.create_by, c0.last_update_time, c0.last_update_by, c0.trailer_hitch, c0.tag_dealership_number, c0.color, c1.turbo_charged, c1.last_sold_amount from car_car c0 join car_race_car c1 on c0.vin=c1.vin and c0.tag_dealership_number=c1.tag_dealership_number where c0.model=${model} and c1.turbo_charged=${turbocharged}",
                 sql.toLowerCase());
     }
     
@@ -239,6 +240,7 @@ public class DBSessionTest {
             hyundai.setModelYear("2005");
             hyundai.setTurboCharged(true);
             hyundai.setEstimatedValue(Money.of(CurrencyUnit.USD, new BigDecimal("988.34")));
+            hyundai.setLastSoldAmount(Money.of(CurrencyUnit.USD, new BigDecimal("1066.88")));
             db.save(hyundai);
         }
         {
@@ -251,6 +253,7 @@ public class DBSessionTest {
             assertEquals("2005", hyundaiLookupedUp.getModelYear());
             assertEquals("USD", hyundaiLookupedUp.getIsoCurrencyCode());
             assertEquals(new BigDecimal("988.34"), hyundaiLookupedUp.getEstimatedValue().getAmount());
+            assertEquals(new BigDecimal("1066.88"), hyundaiLookupedUp.getLastSoldAmount().getAmount());
             assertEquals(true, hyundaiLookupedUp.isTurboCharged());
         }         
     }
@@ -279,6 +282,7 @@ public class DBSessionTest {
     }
     @Test
     public void testSaveTagged() {
+
         final String VIN1 = "KMHCN46C58U242743_TAGGED";
         {
             DBSession db = sessionFactory.createDbSession();
@@ -290,7 +294,6 @@ public class DBSessionTest {
             hyundai.setEstimatedValue(Money.of(CurrencyUnit.USD, new BigDecimal("988.34")));
             hyundai.setTagValue("DEALERSHIP_NUMBER", "DLRSHIP1234");
             db.save(hyundai);
-            db.close();
         }
         {
             DBSession db = sessionFactory.createDbSession();
@@ -433,8 +436,8 @@ public class DBSessionTest {
 
             db.close();
         }
-
     }
+
     @Test
     public void testFindByFields() {
         final String VIN1 = "KMHCN46C58U242743";

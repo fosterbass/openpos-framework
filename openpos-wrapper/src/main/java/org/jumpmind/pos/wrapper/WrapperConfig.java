@@ -230,11 +230,16 @@ public class WrapperConfig {
 
     public boolean isAutoUpdateEnabled() {
         return getAutoUpdateServer() != null
+                && getUpdatePackageName() != null
                 && getProperty(properties, "wrapper.updater.enabled", "false").equalsIgnoreCase("true");
     }
 
     public String getAutoUpdateServer() {
         return getProperty(properties, "wrapper.updater.server", null);
+    }
+
+    public String getUpdatePackageName() {
+        return getProperty(properties, "wrapper.updater.package", null);
     }
 
     public File getPendingUpdateFile() {
@@ -246,8 +251,8 @@ public class WrapperConfig {
         return new File(pendingFileLocation);
     }
 
-    public String getInstallationId() {
-        return getProperty(properties, "wrapper.installationid", null);
+    public String getBusinessUnitId() {
+        return getProperty(properties, "wrapper.businessUnitId", null);
     }
 
     String expandWildcard(String classPath) {

@@ -5,6 +5,8 @@ import org.jumpmind.pos.persist.DBSession;
 import org.jumpmind.pos.persist.DBSessionFactory;
 import org.jumpmind.pos.service.AbstractRDBMSModule;
 import org.jumpmind.pos.service.ModuleEnabledCondition;
+import org.jumpmind.pos.update.service.IUpdateManagementService;
+import org.jumpmind.pos.update.service.IUpdateService;
 import org.jumpmind.security.ISecurityService;
 import org.springframework.context.annotation.*;
 import org.springframework.core.annotation.Order;

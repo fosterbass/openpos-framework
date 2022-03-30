@@ -54,6 +54,10 @@ public class ApplicationState {
     private Map<String, UIDataMessageProvider<?>> dataMessageProviderMap;
 
     public void reset(ScheduledAnnotationBeanPostProcessor scheduledAnnotationBeanPostProcessor) {
+        reset(scheduledAnnotationBeanPostProcessor, null);
+    }
+
+    public void reset(ScheduledAnnotationBeanPostProcessor scheduledAnnotationBeanPostProcessor, Scope defaultScope) {
         Object queryParams = scope.getDeviceScope().get("queryParams");
         Object personalizationProperties = scope.getDeviceScope().get("personalizationProperties");
 
@@ -63,10 +67,14 @@ public class ApplicationState {
 
         scope.getDeviceScope().values().stream().
                 filter(s->s.getValue() instanceof AsyncExecutor).
-                map(s-> (AsyncExecutor)s.getValue()).
-                forEach(a->a.stop());
+                map(s-> (AsyncExecutor) s.getValue()).
+                forEach(AsyncExecutor::stop);
 
-        scope = new Scope();
+        if (defaultScope == null) {
+            defaultScope = new Scope();
+        }
+
+        scope = defaultScope;
         stateStack = new LinkedList<>();
         currentContext = null;
         currentTransition = null;

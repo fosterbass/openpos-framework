@@ -4,9 +4,9 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.commons.lang3.StringUtils;
 import org.h2.tools.RunScript;
-import org.joda.money.Money;
 import org.jumpmind.db.model.Column;
 import org.jumpmind.db.model.Table;
 import org.jumpmind.db.platform.IDatabasePlatform;
@@ -17,9 +17,7 @@ import org.jumpmind.db.sql.Row;
 import org.jumpmind.pos.persist.impl.*;
 import org.jumpmind.pos.persist.model.*;
 import org.jumpmind.pos.util.ReflectUtils;
-import org.jumpmind.pos.util.model.ITypeCode;
 import org.jumpmind.properties.TypedProperties;
-import org.jumpmind.util.LinkedCaseInsensitiveMap;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.*;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -80,11 +78,11 @@ public class DBSession {
      * Operations may be accessed through the {@link DBSession#getBulkOperations()} method.
      */
     public final class BulkOperations {
-        public void queryForEachRow(Query<Row> query, int maxResults, Consumer<RowConsumerContext<Row>> rowHandler) {
+        public void queryForEachRow(Query<Row> query, int maxResults, Consumer<RowConsumerContext<DbRow>> rowHandler) {
             queryForEachRow(query, maxResults, Collections.emptyMap(), rowHandler);
         }
 
-        public void queryForEachRow(Query<Row> query, int maxResults, Map<String, Object> params, Consumer<RowConsumerContext<Row>> rowHandler) {
+        public void queryForEachRow(Query<Row> query, int maxResults, Map<String, Object> params, Consumer<RowConsumerContext<DbRow>> rowHandler) {
             final QueryTemplate queryTemplate = getQueryTemplate(query);
 
             try {
@@ -124,7 +122,7 @@ public class DBSession {
 
         private <T> void queryForEachRow(SqlStatement statement, int maxResults, Class<T> resultClass, Consumer<RowConsumerContext<T>> rowHandler) {
             DBSession.this.queryInternal(statement, maxResults, context -> {
-                final Row row = context.getRow();
+                final DbRow row = context.getRow();
 
                 try {
                     final T object = performObjectMapping(row, resultClass);
@@ -319,11 +317,11 @@ public class DBSession {
     }
 
     public <T> List<T> query(Query<T> query) {
-        return query(query, (Map<String, Object>) null, 100);
+        return query(query, new HashMap<String, Object>(), 100);
     }
 
     public <T> List<T> query(Query<T> query, int maxResults) {
-        return query(query, (Map<String, Object>) null, maxResults);
+        return query(query,  new HashMap<String, Object>(), maxResults);
     }
 
     @SuppressWarnings("unchecked")
@@ -430,7 +428,7 @@ public class DBSession {
     }
 
     @SuppressWarnings("unchecked")
-    private <T> T performObjectMapping(Row row, Class<T> resultClass) throws InstantiationException, IllegalAccessException {
+    private <T> T performObjectMapping(DbRow row, Class<T> resultClass) throws InstantiationException, IllegalAccessException {
         T object;
 
         if (resultClass != null) {
@@ -440,7 +438,7 @@ public class DBSession {
                     resultClass.getPackage().getName().equals("java.util") ||
                     resultClass.getPackage().getName().equals("java.sql") ||
                     resultClass.getPackage().getName().equals("java.math")) {
-                object = (T) row.values().iterator().next();
+                object = (T) row.singleValue();
                 if (object != null && !resultClass.isAssignableFrom(object.getClass())) {
                     throw new PersistException(object.getClass().getName() + " is not assignable to " + resultClass.getName());
                 }
@@ -576,7 +574,7 @@ public class DBSession {
             for (String property: queryParamKeys) {
                 boolean isPropertyMapped = entityModelClasses.stream().anyMatch(modelClass -> {
                     ModelMetaData modelMetaData = this.databaseSchema.getModelMetaData(modelClass);
-                    return modelMetaData.getColumnNameForProperty(modelClass, property) != null ||
+                    return modelMetaData.getColumnNameForProperty(property) != null ||
                             isAugmentedProperty(modelClass, property);
                 });
 
@@ -784,7 +782,7 @@ public class DBSession {
         return tables;
     }
 
-    protected void queryInternal(SqlStatement statement, int maxResults, Consumer<RowConsumerContext<Row>> rowHandler) {
+    protected void queryInternal(SqlStatement statement, int maxResults, Consumer<RowConsumerContext<DbRow>> rowHandler) {
         Objects.requireNonNull(statement);
         Objects.requireNonNull(rowHandler);
 
@@ -816,7 +814,7 @@ public class DBSession {
 
                     try (final ResultSet rs = ps.executeQuery()) {
                         while (rs.next() && rowCount < maxResults) {
-                            Row row = mapper.mapRow(rs, ++rowCount);
+                            DbRow row = mapper.mapRow(rs, ++rowCount);
                             if (row != null) {
                                 rowHandler.accept(new RowConsumerContext<>(row));
                             }
@@ -858,10 +856,16 @@ public class DBSession {
     {
         List<T> objects = new ArrayList<>();
 
-        final List<Row> rows = new ArrayList<>();
+        final List<DbRow> rows = new ArrayList<>();
         queryInternal(statement, maxResults, rowConsumerContext -> rows.add(rowConsumerContext.getRow()));
 
-        for (Row row : rows) {
+        CaseInsensitiveMap<String, String> columnsIgnoreCase = null;
+        for (DbRow row : rows) {
+            if (columnsIgnoreCase == null) {
+                // init just once for performance on large result sets.
+                columnsIgnoreCase = row.generateColumnsNamesIgnoreCase();
+            }
+            row.setColumnsNamesIgnoreCase(columnsIgnoreCase);
             objects.add(performObjectMapping(row, resultClass));
         }
 
@@ -886,21 +890,21 @@ public class DBSession {
     }
 
     @SuppressWarnings("unchecked")
-    protected <T> T mapModel(Class<T> resultClass, Row row) throws InstantiationException, IllegalAccessException {
+    protected <T> T mapModel(Class<T> resultClass, DbRow row) throws InstantiationException, IllegalAccessException {
         ModelMetaData modelMetaData = databaseSchema.getModelMetaData(resultClass);
 
         T object = resultClass.newInstance();
         ModelWrapper model = new ModelWrapper((AbstractModel) object, modelMetaData, augmenterHelper);
         model.load();
 
-        LinkedCaseInsensitiveMap<String> matchedColumns = new LinkedCaseInsensitiveMap<String>();
-        LinkedHashMap<String, Object> deferredLoadValues = new LinkedHashMap<>();
+        Map<String, String> matchedColumns = new LinkedHashMap<>();
+        Map<String, Object> deferredLoadValues = new LinkedHashMap<>();
 
-        mapModelHelper(modelMetaData, row, object, model, resultClass, matchedColumns, deferredLoadValues);
+        mapModelHelper(modelMetaData, row, object, model, modelMetaData.getPropertyDescriptors(), matchedColumns, deferredLoadValues);
 
         if(model.getModel().getExtensions() != null){
             model.getModel().getExtensions().forEach( (clazz, o) ->
-                    mapModelHelper(modelMetaData, row, o, model, clazz,matchedColumns,deferredLoadValues));
+                    mapModelHelper(modelMetaData, row, o, model, modelMetaData.getPropertyDescriptorsForExtension(clazz) ,matchedColumns,deferredLoadValues));
         }
 
         addTags(row, matchedColumns, (AbstractModel) object);
@@ -913,22 +917,20 @@ public class DBSession {
 
     private void mapModelHelper(
             ModelMetaData modelMetaData,
-            Row row,
+            DbRow row,
             Object object,
             ModelWrapper modelWrapper,
-            Class<?> resultClass,
-            LinkedCaseInsensitiveMap<String> matchedColumns,
-            LinkedHashMap<String, Object> deferredLoadValues
+            PropertyDescriptor[] propertyDescriptors,
+            Map<String, String> matchedColumns,
+            Map<String, Object> deferredLoadValues
     ) {
-        PropertyDescriptor[] propertyDescriptors = PropertyUtils.getPropertyDescriptors(object);
-
         for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
             String propertyName = propertyDescriptor.getName();
-            String columnName = modelMetaData.getColumnNameForProperty(resultClass, propertyName);
+            String columnName = modelMetaData.getColumnNameForProperty(propertyName);
             if (columnName != null) {
-                if (row.containsKey(columnName)) {
-                    Object value = row.get(columnName);
-                    if (isDefferedLoadField(modelWrapper.getField(propertyName))) {
+                if (row.hasColumn(columnName)) {
+                    Object value = row.getValue(columnName);
+                    if (modelMetaData.isDeferredLoadField(propertyName)) {
                         deferredLoadValues.put(propertyName, value);
                     } else {
                         modelWrapper.setValue(propertyName, value);
@@ -944,13 +946,12 @@ public class DBSession {
             String columnName = DatabaseSchema.camelToSnakeCase(propertyName);
             matchedColumns.put(columnName, null);
         }
-
     }
 
-    protected void addTags(Row row, LinkedCaseInsensitiveMap<String> matchedColumns, AbstractModel model) {
+    protected void addTags(DbRow row, Map<String, String> matchedColumns, AbstractModel model) {
         if (model instanceof ITaggedModel) {
             Map<String, Object> tagValues = new HashMap<>();
-            for (String columnName : row.keySet()) {
+            for (String columnName : row.getColumnNames()) {
                 if (columnName.toUpperCase().startsWith(TagModel.TAG_PREFIX)) {
                     matchedColumns.put(columnName, null);
                     tagValues.put(columnName, row.getString(columnName));
@@ -960,7 +961,7 @@ public class DBSession {
         }
     }
 
-    protected void addAugments(Row row, LinkedCaseInsensitiveMap<String> matchedColumns, AbstractModel model) {
+    protected void addAugments(DbRow row, Map<String, String> matchedColumns, AbstractModel model) {
         if (model instanceof IAugmentedModel) {
             List<AugmenterConfig> configs = augmenterHelper.getAugmenterConfigs(model);
             if (CollectionUtils.isEmpty(configs)) {
@@ -968,7 +969,7 @@ public class DBSession {
                 return;
             }
             Map<String, Object> augmentsValues = new HashMap<>();
-            for (String columnName : row.keySet()) {
+            for (String columnName : row.getColumnNames()) {
                 for (AugmenterConfig config : configs) {
                     if (columnName.toUpperCase().startsWith(config.getPrefix())) {
                         matchedColumns.put(columnName, null);
@@ -980,15 +981,15 @@ public class DBSession {
         }
     }
 
-    protected boolean isDefferedLoadField(Field field) {
-        return field.getType().isAssignableFrom(Money.class) || ITypeCode.class.isAssignableFrom(field.getClass());
-    }
-
-    private Map<String, Object> mapNonModel(Row row) {
+    private Row mapNonModel(DbRow dbRow) {
+        Map<String, Object> rowMap = dbRow.getMap();
+        // Before DbRow was introduced for effenciency, callers expected Row as the default resultClass.
+        Row row = new Row(rowMap.size());
+        row.putAll(rowMap);
         return row;
     }
 
-    protected <T> T mapNonModel(Class<T> resultClass, Row row) throws InstantiationException, IllegalAccessException {
+    protected <T> T mapNonModel(Class<T> resultClass, DbRow row) throws InstantiationException, IllegalAccessException {
         T object = resultClass.newInstance();
         PropertyDescriptor[] propertyDescriptors = PropertyUtils.getPropertyDescriptors(object);
 
@@ -996,8 +997,9 @@ public class DBSession {
             String propertyName = propertyDescriptor.getName();
             String columnName = DatabaseSchema.camelToSnakeCase(propertyName);
 
-            if (row.containsKey(columnName)) {
-                Object value = row.get(columnName);
+            Object value = row.getValueIgnoreCase(columnName);
+
+            if ( value != null) {
                 ReflectUtils.setProperty(object, propertyName, value);
             }
         }
@@ -1005,10 +1007,10 @@ public class DBSession {
         return object;
     }
 
-    protected void addUnmatchedColumns(Row row, Map<String, String> matchedColumns, AbstractModel entity) {
-        for (String rowColumn : row.keySet()) {
+    protected void addUnmatchedColumns(DbRow row, Map<String, String> matchedColumns, AbstractModel entity) {
+        for (String rowColumn : row.getColumnNames()) {
             if (!matchedColumns.containsKey(rowColumn)) {
-                entity.setAdditionalField(rowColumn, row.get(rowColumn));
+                entity.setAdditionalField(rowColumn, row.getValue(rowColumn));
             }
         }
     }

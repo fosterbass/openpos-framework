@@ -187,6 +187,7 @@ import { DisableAutoCompleteDirective } from './directives/disable-auto-complete
 import { SafeHtmlPipe } from './pipes/safe-html.pipe';
 import { ExpansionPanelComponent } from './components/expansion-panel/expansion-panel.component';
 import { PromptFormPartCardComponent } from './screen-parts/prompt-form-part-card/prompt-form-part-card.component';
+import { SaleLoyaltyPartComponent } from './screen-parts/sale-loyalty-part/sale-loyalty-part.component';
 
 const screenParts = [
     TenderPartComponent,
@@ -221,6 +222,7 @@ const screenParts = [
     BannerComponent,
     NotificationsComponent,
     SaleTotalPanelComponent,
+    SaleLoyaltyPartComponent,
     MobileTotalsPartComponent,
     MobileLoyaltyPartComponent,
     MobileEmployeePartComponent,

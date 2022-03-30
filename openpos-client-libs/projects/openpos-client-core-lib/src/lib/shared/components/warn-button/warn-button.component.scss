@@ -1,22 +1,39 @@
 @import "../../../styles/mixins/typography";
 
+:host {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 button {
   @extend %text-md;
-  padding: 8px;
+  border-width: 2px;
+  padding: $text-md/2 $text-md*1.25;
   min-width: 150px;
-
-  &.desktop-portrait {
-    @extend %text-lg;
-    padding: 16px;
-    min-width: 100px;
-  }
+  width: 100%;
 
   &.tablet {
     min-width: 100px;
+    padding: $text-md-tablet/4 $text-md-tablet;
+    font-size: $text-sm-tablet *1.25;
+  }
+
+  &.tablet-portrait {
+    border-width: 1px;
+    min-width: 75px;
+    font-size: $text-xs-mobile*1.75;
   }
 
   &.mobile {
-    @extend %text-sm;
+    border-width: 1px;
+    font-size: $text-xs-mobile*1.25;
     min-width: 75px;
+    padding: $text-sm-mobile/8 $text-sm-mobile*.75;
   }
+}
+
+:host ::ng-deep app-icon {
+  margin: -4px -4px -4px 0;
+  padding: 4px;
 }

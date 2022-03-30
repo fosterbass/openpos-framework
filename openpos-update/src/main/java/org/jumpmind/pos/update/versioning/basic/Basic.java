@@ -4,7 +4,7 @@ import org.jumpmind.pos.update.versioning.Version;
 
 public class Basic extends Version {
     
-    private String basicVersion;
+    private final String basicVersion;
     
     public Basic(String value){
         basicVersion = value;
@@ -17,9 +17,10 @@ public class Basic extends Version {
 
     @Override
     public boolean versionEquals(Version other) {
-        if(other == null){
+        if (other == null) {
             return false;
         }
+
         return basicVersion.equals(other.getVersionString());
     }
 

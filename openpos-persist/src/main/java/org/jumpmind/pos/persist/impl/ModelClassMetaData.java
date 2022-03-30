@@ -1,23 +1,24 @@
 package org.jumpmind.pos.persist.impl;
 
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.util.*;
 
 import lombok.Data;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.jumpmind.db.model.Column;
 import org.jumpmind.db.model.Table;
 import org.jumpmind.pos.persist.PersistException;
 import org.jumpmind.pos.persist.model.AugmenterConfig;
-
-import javax.annotation.sql.DataSourceDefinition;
 
 @Data
 public class ModelClassMetaData {
 
     private Table table;
     private Table shadowTable;
-    private Class<?> clazz;
-    private List<Class<?>> extensionClazzes;
+    private Class<?> modelClass;
+    private List<Class<?>> extensionClasses;
     private String idxPrefix;
     private Map<String, FieldMetaData> entityIdFieldMetaDatas = new LinkedHashMap<>();
     private Map<String, FieldMetaData> entityFieldMetaDatas = new LinkedHashMap<>();
@@ -25,6 +26,8 @@ public class ModelClassMetaData {
     private Set<String> primaryKeyFieldNames = new LinkedHashSet<>();
     private Set<String> augmentedFieldNames = new LinkedHashSet<>();
     private List<AugmenterConfig> augmenterConfigs = new ArrayList<>();
+    PropertyDescriptor[] propertyDescriptors;
+    Map<Class<?>, PropertyDescriptor[]> exentionClassToPropertyDescriptors;
 
     private String shadowPrefix;
     private String modulePrefix;
@@ -54,6 +57,14 @@ public class ModelClassMetaData {
 
     public void init() {
         initPrimaryKeyColumns();
+        propertyDescriptors = PropertyUtils.getPropertyDescriptors(modelClass);
+        exentionClassToPropertyDescriptors = new HashMap<>();
+        if (!CollectionUtils.isEmpty(extensionClasses)) {
+            extensionClasses.
+                    forEach(extensionClass -> exentionClassToPropertyDescriptors.put(extensionClass,
+                            PropertyUtils.getPropertyDescriptors(extensionClass)));
+        }
+
     }
 
     private void initPrimaryKeyColumns() {
@@ -61,7 +72,7 @@ public class ModelClassMetaData {
         for (String primaryKeyFieldName : primaryKeyFieldNames) {
             FieldMetaData fieldMetaData = entityIdFieldMetaDatas.get(primaryKeyFieldName);
             if (fieldMetaData == null) {
-                throw new PersistException("There is no field meta data for field name '" + primaryKeyFieldName + "' for model " + getClazz().getSimpleName());
+                throw new PersistException("There is no field meta data for field name '" + primaryKeyFieldName + "' for model " + getModelClass().getSimpleName());
             }
 
             fieldMetaData.getColumn().setPrimaryKeySequence(primaryKeySequence++);
@@ -92,6 +103,6 @@ public class ModelClassMetaData {
 
     @Override
     public String toString() {
-        return clazz.getName();
+        return modelClass.getName();
     }
 }

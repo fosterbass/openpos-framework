@@ -99,36 +99,40 @@
 
         <div *ngIf="pagedContent === 'rewards'" class="overflow rewardsContentMobile"
              [ngClass]="{'no-promotions': !hasRewards()}">
-            <app-infinite-scroll [dataKey]="screen.rewardsDataKey" [itemTemplate]="itemTemplate"
-                                 [noItemsTemplate]="noItemTemplate" virtualScrollMinBufferPx="700" [itemHeightPx]="150">
-                <ng-template #itemTemplate let-item>
-                    <div class="reward-list line">
-                        <app-rewards-line-item [reward]="item"></app-rewards-line-item>
-                    </div>
-                </ng-template>
-                <ng-template #noItemTemplate>
-                    <div class="no-promotions" responsive-class>
-                        {{screen.noPromotionsLabel}}
-                    </div>
-                </ng-template>
-            </app-infinite-scroll>
+            <ng-container *ngIf="hasRewards()">
+                <app-infinite-scroll [dataKey]="screen.rewardsDataKey" [itemTemplate]="itemTemplate"
+                                     virtualScrollMinBufferPx="700" [itemHeightPx]="150">
+                    <ng-template #itemTemplate let-item>
+                        <div class="reward-list line">
+                            <app-rewards-line-item [reward]="item"></app-rewards-line-item>
+                        </div>
+                    </ng-template>
+                </app-infinite-scroll>
+            </ng-container>
+            <ng-container *ngIf="!hasRewards()">
+                <div class="no-promotions" responsive-class>
+                    {{screen.noPromotionsLabel}}
+                </div>
+            </ng-container>
         </div>
 
         <div *ngIf="pagedContent === 'rewardHistory'" class="rewardsHistoryContentMobile"
              [ngClass]="{'no-promotions': !hasRewardsHistory()}">
-            <app-infinite-scroll [dataKey]="screen.rewardsHistoryDataKey" [itemTemplate]="itemTemplate"
-                                 [noItemsTemplate]="noItemTemplate" virtualScrollMinBufferPx="700" [itemHeightPx]="150">
-                <ng-template #itemTemplate let-item>
-                    <div class="reward-list line">
-                        <app-rewards-history-line-item [reward]="item"></app-rewards-history-line-item>
-                    </div>
-                </ng-template>
-                <ng-template #noItemTemplate>
-                    <div class="no-promotions" responsive-class>
-                        {{screen.noPromotionsLabel}}
-                    </div>
-                </ng-template>
-            </app-infinite-scroll>
+            <ng-container *ngIf="hasRewardsHistory()">
+                <app-infinite-scroll [dataKey]="screen.rewardsHistoryDataKey" [itemTemplate]="itemTemplate"
+                                     virtualScrollMinBufferPx="700" [itemHeightPx]="150">
+                    <ng-template #itemTemplate let-item>
+                        <div class="reward-list line">
+                            <app-rewards-history-line-item [reward]="item"></app-rewards-history-line-item>
+                        </div>
+                    </ng-template>
+                </app-infinite-scroll>
+            </ng-container>
+            <ng-container *ngIf="!hasRewardsHistory()">
+                <div class="no-promotions" responsive-class>
+                    {{screen.noPromotionsLabel}}
+                </div>
+            </ng-container>
         </div>
 
         <div *ngIf="pagedContent === 'itemHistory'" class="itemHistoryContentMobile">
@@ -349,7 +353,7 @@
     </div>
 </div>
 
-<mat-dialog-actions class="buttons">
+<mat-dialog-actions class="buttons" responsive-class>
     <app-secondary-button responsive-class *ngFor="let button of screen.secondaryButtons"
                           class="button"
                           [disabled]="!button?.enabled"
@@ -357,6 +361,9 @@
                           (actionClick)="doAction(button)"
                           (click)="doAction(button)">
         <span>{{button.title}}</span>
+        <span *ngIf="keybindsEnabled(button)" class="muted-color keybinding">
+            {{button.keybindDisplayName}}
+        </span>
     </app-secondary-button>
     <app-primary-button responsive-class class="done" *ngIf="screen.doneButton" [disabled]="!screen.doneButton?.enabled"
                         (actionClick)="doAction(screen.doneButton)"

@@ -1,35 +1,39 @@
 @import '../../../styles/mixins/typography';
 
 .header {
-  .context-box{
-    display: grid;
-    grid-template-columns: auto auto;
-    padding:8px;
-    border-radius: 4px;
-    margin-right: 8px;
+    .context-box {
+        display: grid;
+        grid-template-columns: auto auto;
+        padding: 8px;
+        border-radius: 4px;
+        margin-right: 8px;
 
-    .screen-icon{
-      margin-right: 8px;
+        .screen-icon {
+            margin-right: 8px;
+        }
     }
-  }
-  .header-text-container{
-    align-self: center;
-  }
+    .header-text-container {
+        align-self: center;
+    }
 
-  .header-additional-text {
-    font-size: .9em;
-    font-weight: normal;
-    padding-bottom: 16px;
-  }
+    .header-additional-text {
+        font-size: 0.9em;
+        font-weight: normal;
+        padding-bottom: 16px;
+    }
 
-  &.mobile {
-    font-size: $text-md-mobile*.8;
-  }
+    &.mobile {
+        font-size: $text-md-mobile * 0.8;
+    }
+}
+.header.header-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
 }
 
-@supports not(display: grid) {
-  .back-button {
-    position: absolute;
-    left: 95%;
-  }
+@supports not (display: grid) {
+    .back-button {
+        position: absolute;
+        left: 95%;
+    }
 }

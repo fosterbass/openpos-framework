@@ -1,25 +1,29 @@
 package org.jumpmind.pos.update.service;
 
 import org.jumpmind.pos.service.Endpoint;
-import org.jumpmind.pos.update.model.GetAvailableVersionsResponse;
-import org.jumpmind.pos.update.provider.SoftwareProviderFactory;
+import org.jumpmind.pos.update.provider.SoftwareProvider;
 import org.jumpmind.pos.update.versioning.Version;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Endpoint(path = "/update-mgt/versions")
+@Endpoint(path = "/update-mgt/{package}/versions")
 public class GetAvailableVersionsEndpoint {
     @Autowired
-    SoftwareProviderFactory provider;
+    SoftwareProvider provider;
 
-    public GetAvailableVersionsResponse getAvailableVersions(@RequestParam(required = false, name = "desc") Boolean desc) {
+    public GetAvailableVersionsResponse getAvailableVersions(
+            String packageName,
+            Boolean desc
+    ) {
         final boolean sortDescending = desc != null && desc;
 
-        final List<String> versions = provider.getSoftwareProvider()
+        final List<String> versions = provider
+                .getSoftwareProvider(packageName)
+
+                // todo: software provider doesn't exist?
                 .getAvailableVersions()
                 .stream()
                 .sorted(sortDescending ? Comparator.reverseOrder() : Comparator.naturalOrder())

@@ -54,6 +54,3 @@ queries:
   name: carsByLiteralReplacementInOptionalWhereClause
   optionalWhereClauses: 
     - $${columnName} = ${columnValue}
-
-
-

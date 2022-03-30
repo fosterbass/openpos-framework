@@ -11,7 +11,6 @@ export interface SaleInterface extends IAbstractScreen {
     customerName: string;
     customer: { name: string, label: string, icon: string, id: string };
     noCustomerText: string;
-    linkedCustomerButton: IActionItem;
     locationEnabled: boolean;
     locationOverridePrompt: string;
     checkoutButton: IActionItem;

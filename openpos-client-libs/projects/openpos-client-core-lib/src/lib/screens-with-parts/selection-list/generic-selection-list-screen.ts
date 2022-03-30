@@ -7,7 +7,7 @@ import { ISelectableListData } from '../../shared/components/selectable-item-lis
 import { SelectableItemListComponentConfiguration } from '../../shared/components/selectable-item-list/selectable-item-list.component';
 import { SelectionMode } from '../../core/interfaces/selection-mode.enum';
 import { SessionService } from '../../core/services/session.service';
-import { filter, map, takeUntil } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
 import { IActionItem } from '../../core/actions/action-item.interface';
 import { CONFIGURATION } from '../../configuration/configuration';
 import { SelectableItemInterface } from './selectable-item.interface';

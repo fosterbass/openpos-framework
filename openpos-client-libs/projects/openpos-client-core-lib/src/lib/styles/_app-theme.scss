@@ -277,6 +277,10 @@
         background: rgba(0, 0, 0, 0.72);
     }
 
+    .cdk-overlay-pane {
+        overflow: auto;
+    }
+
     color: map-get(map-get($theme, foreground), text);
 
 }

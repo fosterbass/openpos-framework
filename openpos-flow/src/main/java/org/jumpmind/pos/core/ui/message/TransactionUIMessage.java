@@ -13,53 +13,19 @@ public class TransactionUIMessage extends UIMessage {
     private static final long serialVersionUID = 1L;
 
     private String providerKey;
+    private boolean transactionActive = false;
 
     protected List<Total> totals;
     protected Total grandTotal;
     private List<Total> itemCounts;
+    private boolean enableCollapsibleItems = true;
 
     private ActionItem checkoutButton;
-    private ActionItem loyaltyButton;
-    private ActionItem linkedCustomerButton;
     private ActionItem linkedEmployeeButton;
-
-    private String loyaltySignupInProgressTitle;
-    private String loyaltySignupInProgressIcon;
-    private String loyaltySignupInProgressDetailsIcon;
-    private ActionItem loyaltyCancelButton;
-
-    private String loyaltyIDLabel;
-    private String profileIcon;
-    private List<UIMembership> memberships;
-    private boolean membershipEnabled;
-    private boolean customerMissingInfoEnabled;
-    private boolean customerMissingInfo;
-    private String customerMissingInfoIcon;
-    private String customerMissingInfoLabel;
-    private String memberIcon;
-    private String nonMemberIcon;
-    private String noMembershipsFoundLabel;
-    private ActionItem mobileLoyaltyButton;
-
-    private boolean transactionActive = false;
-
-    private UICustomer customer;
     private UICustomer employee;
 
     private boolean locationEnabled;
     private String locationOverridePrompt;
-
-    private boolean enableCollapsibleItems = true;
-
-    private boolean rewardsVisibleOnLinkButton;
-    private boolean membershipVisibleOnLinkButton;
-    private String customerEmail;
-    private String memberTierLabel;
-    private String rewardsLabel;
-    private String memberTier;
-    private String noPromotionsLabel;
-    private String loyaltyIcon;
-    private List<UILoyaltyReward> loyaltyRewards;
 
     public void addTotal(String name, String amount) {
         if (totals == null) {

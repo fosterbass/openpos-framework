@@ -1,54 +1,48 @@
 queries:
-  - name: getGroupsPairedWithAllActiveVersions
-    select: >
-      select g.*,
-        tv.version as target_version
-      from InstallGroupModel g
-      left join (
-        SELECT group_id, version
-        FROM TargetVersionModel
-        WHERE effective_time <= ${now}
-      ) tv
-      on g.group_id = tv.group_id
+  - name: selectGroupsWithFilter
+    select: select * from InstallGroupModel
     optionalWhereClauses:
-      - g.group_name like ${filter}
+      - group_name like ${filter}
 
-  # Searches for an install group that the specified installation is a member of.
-  # The query results include the assigned version and will only ever result in
-  # an effective model being returned. Results appear in descending order of the
-  # scheduled assignment meaning the first result will always be the actively
-  # targeted version.
-  - name: findGroupForInstallation
+  - name: findGroupForBusinessUnit
     select: >
-      select 
-        g.*, 
-        tv.version as target_version
+      select g.* 
       from InstallGroupModel g
       join InstallGroupMemberModel gm on g.group_id = gm.group_id
-      left join TargetVersionModel tv on g.group_id = tv.group_id
-    where: gm.installation_id = ${installationId} and tv.effective_time <= ${now}
-    orderBy: tv.version desc
+    where: gm.business_unit_id = ${businessUnitId}
 
-  # Gets all versions assigned to the specified group. This includes past
-  # and future. Results should always be in ascending order from the date
-  # they took/take effect.
   - name: getAllVersionsOfGroup
     select: select * from TargetVersionModel
     where: group_id = ${groupId}
-    orderBy: tv.version asc
+    optionalWhereClauses:
+      - package_name = ${package}
+    orderBy: effective_time, create_time
 
-  # Get all the versions of the that have ever been assigned to a group. They
-  # should always be in descending order by their effective start date, so the
-  # first results should always be the currently active version.
   - name: getVersionHistoryOfGroup
     select: select * from TargetVersionModel
-    where: group_id == ${groupId} and tv.effective_start_time <= ${now}
-    orderBy: tv.version desc
+    where: group_id = ${groupId} and effective_time <= ${now}
+    optionalWhereClauses:
+      - package_name = ${package}
+    orderBy: effective_time desc, create_time desc
 
-  # Gets all the versions scheduled to be installed in some future date. They
-  # should always appear in ascending order so that the first result will be
-  # the next version installed.
+  - name: getVersionHistoryOfGroup
+    select: select * from TargetVersionModel
+    where: group_id = ${groupId} and effective_time <= ${now}
+    optionalWhereClauses:
+      - package_name = ${package}
+    orderBy: effective_time desc, create_time desc
+
   - name: getScheduledVersionsOfGroup
     select: select * from TargetVersionModel
-    where: g.group_id = ${groupId} and tv.effective_start_time > ${now}
-    orderBy: version asc
+    where: group_id = ${groupId} and effective_time > ${now}
+    optionalWhereClauses:
+      - package_name = ${package}
+    orderBy: effective_time, create_time
+
+  - name: getGroupMembers
+    select: select * from InstallGroupMemberModel
+    where: group_id = ${groupId}
+
+  - name: findGroupMember
+    select: select * from InstallGroupMemberModel
+    where: group_id = ${groupId} and business_unit_id = ${businessUnitId}

@@ -6,7 +6,6 @@ import org.jumpmind.db.model.IIndex;
 import org.jumpmind.db.model.Table;
 import org.jumpmind.pos.persist.cars.*;
 import org.jumpmind.pos.persist.impl.ModelClassMetaData;
-import org.jumpmind.pos.persist.impl.ModelValidator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.math.BigDecimal;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,7 +70,7 @@ public class SchemaDelegateTest {
     @Test
     public void testDelegateModelValidation() {
         ModelClassMetaData meta = new ModelClassMetaData();
-        meta.setClazz(CarExtendedWarrantyServiceModel.class);
+        meta.setModelClass(CarExtendedWarrantyServiceModel.class);
         //ModelValidator.validate(meta);
     }
 

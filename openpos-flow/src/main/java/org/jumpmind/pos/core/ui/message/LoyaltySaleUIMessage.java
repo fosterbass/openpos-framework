@@ -10,19 +10,31 @@ public class LoyaltySaleUIMessage extends TransactionUIMessage {
 
     private static final long serialVersionUID = 1L;
 
+    private UICustomer customer;
     private ActionItem loyaltyButton;
     private String loyaltyIDLabel;
+    private String loyaltyIcon;
     private String profileIcon;
-    private List<UIMembership> memberships;
-    private boolean membershipEnabled;
+
     private boolean customerMissingInfoEnabled;
     private boolean customerMissingInfo;
     private String customerMissingInfoIcon;
     private String customerMissingInfoLabel;
+    private String customerEmail;
+
     private String checkMarkIcon;
     private String uncheckMarkIcon;
+
+    private List<UIMembership> memberships;
+    private boolean membershipEnabled;
     private String noMembershipsFoundLabel;
+    private String memberIcon;
+    private String nonMemberIcon;
+    private String memberTierLabel;
+    private String memberTier;
+
     private ActionItem mobileLoyaltyButton;
+    private boolean mobileLoyaltySaleShowMembershipsHideLogo;
 
     private String loyaltySignupInProgressTitle;
     private String loyaltySignupInProgressIcon;
@@ -31,11 +43,8 @@ public class LoyaltySaleUIMessage extends TransactionUIMessage {
 
     private boolean rewardsVisibleOnLinkButton;
     private boolean membershipVisibleOnLinkButton;
-    private String customerEmail;
-    private String memberTierLabel;
+
     private String rewardsLabel;
-    private String memberTier;
     private String noPromotionsLabel;
-    private String loyaltyIcon;
     private List<UILoyaltyReward> loyaltyRewards;
 }

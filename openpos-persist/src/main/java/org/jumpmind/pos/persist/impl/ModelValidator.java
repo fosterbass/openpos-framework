@@ -8,23 +8,24 @@ import org.jumpmind.pos.persist.CompositeDef;
 import org.jumpmind.pos.persist.PersistException;
 import org.jumpmind.pos.persist.model.AugmenterConfig;
 
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
 
 public class ModelValidator {
 
-    public static void validate(ModelClassMetaData meta) {
-        checkOrphanedFields(meta);
-        checkCrossRefFields(meta);
-        checkPrimaryKeyFields(meta);
-        checkAugmentedFields(meta);
+    public static void validate(ModelMetaData modelMeta, ModelClassMetaData classMeta) {
+        checkOrphanedFields(modelMeta, classMeta);
+        checkCrossRefFields(modelMeta, classMeta);
+        checkPrimaryKeyFields(modelMeta, classMeta);
+        checkAugmentedFields(modelMeta, classMeta);
     }
 
-    protected static void checkOrphanedFields(ModelClassMetaData meta) {
+    protected static void checkOrphanedFields(ModelMetaData modelMeta, ModelClassMetaData classMeta) {
 
         List<Class<?>> compositeDefClasses;
-        Class<?> modelClass = meta.getClazz();
+        Class<?> modelClass = classMeta.getModelClass();
 
         for (Field field : modelClass.getDeclaredFields()) {
             ColumnDef columnAnnotation = field.getAnnotation(ColumnDef.class);
@@ -51,8 +52,8 @@ public class ModelValidator {
         }
     }
 
-    protected static void checkCrossRefFields(ModelClassMetaData meta) {
-        Class<?> modelClass = meta.getClazz();
+    protected static void checkCrossRefFields(ModelMetaData modelMeta, ModelClassMetaData classMeta) {
+        Class<?> modelClass = classMeta.getModelClass();
         List<Class<?>> compositeDefClasses = getCompositeDefClasses(modelClass);
         for (Field field : modelClass.getDeclaredFields()) {
             ColumnDef columnAnnotation = field.getAnnotation(ColumnDef.class);
@@ -65,12 +66,12 @@ public class ModelValidator {
                     }
                 }
                 if (!StringUtils.isEmpty(columnAnnotation.crossReference())) {
-                    FieldMetaData xRefFieldMeta = meta.getEntityFieldMetaDatas().get(columnAnnotation.crossReference());
-                    if (xRefFieldMeta == null) {
-                        xRefFieldMeta = meta.getEntityIdFieldMetaDatas().get(columnAnnotation.crossReference());
-                    }
-                    if (xRefFieldMeta == null) {
-                        throw new PersistException("No matching field found for ColumnDef crossReference=\"" + columnAnnotation.crossReference() + 
+
+                    Optional<PropertyDescriptor> property =
+                            Arrays.stream(modelMeta.getPropertyDescriptors()).filter(p -> columnAnnotation.crossReference().equals(p.getName())).findFirst();
+
+                    if (!property.isPresent()) {
+                        throw new PersistException("No matching field found for ColumnDef crossReference=\"" + columnAnnotation.crossReference() +
                                 "\" see the \"" + field.getName() + "\" field on model " + modelClass);
                     }
                 }
@@ -78,7 +79,7 @@ public class ModelValidator {
         }    
     }
 
-    protected static void checkAugmentedFields(ModelClassMetaData meta) {
+    protected static void checkAugmentedFields(ModelMetaData metaData, ModelClassMetaData meta) {
         if (CollectionUtils.size(meta.getAugmenterConfigs()) > 1) {
             Map<String, Integer> augmenterNameCounts = new HashMap<>();
             for (AugmenterConfig config : meta.getAugmenterConfigs()) {
@@ -95,19 +96,19 @@ public class ModelValidator {
             }
             for (Map.Entry<String, Integer> entry : augmenterNameCounts.entrySet()) {
                 if (entry.getValue() > 1) {
-                    throw new PersistException("Duplicate augmenter name " + entry.getKey() + " found on model " + meta.getClazz());
+                    throw new PersistException("Duplicate augmenter name " + entry.getKey() + " found on model " + meta.getModelClass());
                 }
             }
         }
     }
 
-    private static void checkPrimaryKeyFields(ModelClassMetaData meta) {
+    private static void checkPrimaryKeyFields(ModelMetaData metaData, ModelClassMetaData meta) {
         Set<String> pkFieldNames = meta.getPrimaryKeyFieldNames();
 
         for (String pkFieldName : pkFieldNames) {
             FieldMetaData fieldMetaData = meta.getFieldMetaData(pkFieldName);
             if (fieldMetaData == null) {
-                throw new PersistException("Model class " + meta.getClazz().getSimpleName() +
+                throw new PersistException("Model class " + meta.getModelClass().getSimpleName() +
                         " declares a primary key field called \"" + pkFieldName + "\" but does not define a field by that name.");
             }
 

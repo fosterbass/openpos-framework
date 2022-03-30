@@ -20,4 +20,15 @@ export class MobileLoyaltyPartComponent extends ScreenPartComponent<MobileLoyalt
         return this.screenData.mobileLoyaltySaleShowMembershipsHideLogo ? ' hide-logo-show-memberships' : '';
     }
 
+    public shouldShowLookupCustomer(): boolean {
+        return !!this.screenData.mobileLoyaltyButton
+            && (!this.screenData.customer || !this.screenData.customer.id);
+    }
+
+    public shouldShowLinkedCustomer(): boolean {
+        return !!this.screenData.loyaltyButton
+            && !!this.screenData.customer
+            && !!this.screenData.customer.id;
+    }
+
 }

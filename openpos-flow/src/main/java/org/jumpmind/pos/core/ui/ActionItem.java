@@ -22,12 +22,13 @@ package org.jumpmind.pos.core.ui;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
 import java.util.List;
 
-@Builder
 @Data
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ActionItem implements Serializable {

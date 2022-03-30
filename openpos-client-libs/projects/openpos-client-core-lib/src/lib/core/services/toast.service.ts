@@ -26,7 +26,7 @@ export class ToastService {
 
     private showMessage(message: any) {
         const toastMessage = message as IToastScreen;
-        if (toastMessage.persistent) {
+        if (toastMessage.persistedId) {
             if (!this.persistedToasts.get(toastMessage.persistedId)) {
                 const toast = this.getToast(toastMessage);
                 this.persistedToasts.set(toastMessage.persistedId, toast);

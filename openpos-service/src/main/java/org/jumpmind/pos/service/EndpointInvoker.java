@@ -389,6 +389,7 @@ public class EndpointInvoker implements InvocationHandler {
             endpointInvocationContext.setResult(result);
 
             endpointFilterManager.filterResponse(endpointInvocationContext);
+            result = endpointInvocationContext.getResult();
 
             endSampleSuccess(sample, endpointInvocationContext);
 

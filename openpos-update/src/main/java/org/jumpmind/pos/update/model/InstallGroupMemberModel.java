@@ -1,7 +1,6 @@
 package org.jumpmind.pos.update.model;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import org.jumpmind.pos.persist.AbstractModel;
 import org.jumpmind.pos.persist.ColumnDef;
 import org.jumpmind.pos.persist.TableDef;
@@ -9,16 +8,15 @@ import org.jumpmind.pos.persist.TableDef;
 import java.util.Date;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.MODULE)
 @EqualsAndHashCode(callSuper = true)
-@TableDef(name = "install_group_member", primaryKey = { "installationId" })
+@TableDef(name = "install_group_member", primaryKey = { "businessUnitId", "groupId" })
 public class InstallGroupMemberModel extends AbstractModel {
-
     @ColumnDef
-    String installationId;
+    String businessUnitId;
 
     @ColumnDef
     String groupId;
-
-    @ColumnDef
-    Date lastUpdateCheck;
 }
