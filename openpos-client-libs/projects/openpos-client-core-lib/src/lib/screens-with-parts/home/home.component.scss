@@ -8,6 +8,7 @@
 
 .menu-button-border {
   @include mat-elevation(10);
+  margin: 20px;
   padding: 20px;
   border-radius: 4px;
 
@@ -109,8 +110,11 @@
     justify-items: center;
     justify-content: center;
     align-content: center;
-    gap: 40px;
-    grid-template-columns: repeat(auto-fit, 200px);
+    grid-template-columns: repeat(auto-fit, 240px);
+
+    &.tablet {
+      // align-content: unset;
+    }
 
     &.mobile {
       grid-template-columns: repeat(auto-fit, 120px);

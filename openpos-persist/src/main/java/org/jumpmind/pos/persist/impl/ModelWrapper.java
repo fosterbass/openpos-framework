@@ -364,9 +364,13 @@ public class ModelWrapper {
                     } catch(Exception ex) {
                     }
                 } else if (!StringUtils.equals(isoCurrencyCode, modelCurrencyCode)) {
-                    throw new PersistException("Money field " + fieldName + " has a crossReference= " + getXrefName(fieldName)
-                            + " currency field, but the currency code does not match. Currency code on Money: " 
-                            + isoCurrencyCode + " currency code on model " + modelCurrencyCode + ". Model: " + model);                
+                     if (decimal.compareTo(BigDecimal.ZERO) == 0) { // zero is zero in any currency.
+                        isoCurrencyCode = modelCurrencyCode;
+                     } else {
+                         throw new PersistException("Money field " + fieldName + " has a crossReference= " + getXrefName(fieldName)
+                                 + " currency field, but the currency code does not match. Currency code on Money: "
+                                 + isoCurrencyCode + " currency code on model " + modelCurrencyCode + ". Model: " + model);
+                     }
                 }
                 columnNamesToObjectValues.put(moneyDecimalColumn.getName(), decimal);
                 columnNamesToObjectValues.put(xRefColumnDef.name() != null ? xRefColumnDef.name() : 
