@@ -17,7 +17,7 @@ import { Observable } from 'rxjs';
 })
 export class SaleTotalPanelComponent extends ScreenPartComponent<SaleTotalPanelInterface> {
 
-    public isLoyaltySignupInProgressOnCustomerDisplay$: Observable<boolean>;
+    public isLoyaltyOperationInProgressOnCustomerDisplay$: Observable<boolean>;
 
     constructor(injector: Injector, media: OpenposMediaService, private loyaltySignupService: LoyaltySalePartService) {
         super(injector);
@@ -30,7 +30,7 @@ export class SaleTotalPanelComponent extends ScreenPartComponent<SaleTotalPanelI
             [MediaBreakpoints.DESKTOP_LANDSCAPE, false]
         ]));
 
-        this.isLoyaltySignupInProgressOnCustomerDisplay$ = this.loyaltySignupService.isActiveOnCustomerDisplay();
+        this.isLoyaltyOperationInProgressOnCustomerDisplay$ = this.loyaltySignupService.isActiveOnCustomerDisplay();
         this.loyaltySignupService.checkCustomerDisplayStatus();
     }
 
