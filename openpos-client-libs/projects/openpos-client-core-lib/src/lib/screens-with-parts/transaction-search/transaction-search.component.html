@@ -118,6 +118,14 @@
                     (formInit)="onSearchAllFormChanges($event)" (formChanges)="onSearchAllFormChanges($event)"
                     formName="searchAllParamsForm" [submitButton]="screen.searchAllButton"></app-dynamic-form-part>
             </div>
+            <div *ngSwitchCase="TransactionSearchMode.SUSPENDED"
+                 [ngClass]="{'change-search-mode-disabled': this.changeSearchModeDisabled}"
+                 class="transaction-search-options transaction-search-options-search-all">
+                <app-primary-button *ngIf="screen.primaryButton" inputType="submit" class="transaction-search-button primary-button-mobile"
+                                    (click)="doAction(screen.primaryButton)">
+                    <span>{{screen.primaryButton.title}}</span>
+                </app-primary-button>
+            </div>
             <div class="transaction-filter-options">
                 <span *ngIf="screen.filtersLabel" class="transaction-filter-options-label">{{screen.filtersLabel}}</span>
                 <mat-chip-list [multiple]="true" [selectable]="true">
