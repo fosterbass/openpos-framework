@@ -13,7 +13,7 @@ import { IActionItem } from '../../../core/actions/action-item.interface';
 import { CONFIGURATION } from '../../../configuration/configuration';
 import { Reward } from '../rewards-line-item/rewards-line-item.interface';
 import { SaleLoyaltyPartInterface } from './sale-loyalty-part.interface';
-import {LoyaltySalePartService} from "../../../core/services/loyalty-sale-part.service";
+import {LoyaltySalePartService} from '../../../core/services/loyalty-sale-part.service';
 
 @ScreenPart({
     name: 'SaleLoyalty'
