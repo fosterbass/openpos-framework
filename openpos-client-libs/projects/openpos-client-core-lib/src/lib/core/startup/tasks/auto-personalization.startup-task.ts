@@ -10,7 +10,8 @@ export abstract class AutoPersonalizationStartupTask implements StartupTask {
 
     abstract execute(): void | Promise<void> | Observable<any>;
 
-    protected async getPersonalizationParameters(request: AutoPersonalizationRequest, url: string): Promise<AutoPersonalizationParametersResponse> {
+    protected async getPersonalizationParameters(request: AutoPersonalizationRequest,
+                                                 url: string): Promise<AutoPersonalizationParametersResponse> {
         let info: AutoPersonalizationParametersResponse;
 
         try {
