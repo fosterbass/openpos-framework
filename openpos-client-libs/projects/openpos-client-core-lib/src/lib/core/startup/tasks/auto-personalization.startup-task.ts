@@ -23,10 +23,10 @@ export abstract class AutoPersonalizationStartupTask implements StartupTask {
                 first()
             ).toPromise();
         } catch (e) {
-            throw new Error('failed to get personalization parameters');
+            throw new Error(`Failed to get personalization parameters using url '${url}'. Error: ${JSON.stringify(e)}`);
         }
 
-        console.log(`personalizing with server '${info.serverAddress}:${info.serverPort}' as '${info.deviceName}'`);
+        console.log(`Personalizing with server '${info.serverAddress}:${info.serverPort}' as '${info.deviceName}'`);
 
         const params = info.personalizationParams;
         let paramsMap: Map<string, string>;
@@ -51,7 +51,7 @@ export abstract class AutoPersonalizationStartupTask implements StartupTask {
                 info.sslEnabled
             ).toPromise();
         } catch (e) {
-            throw new Error('failed to auto personalize with server');
+            throw new Error(`Failed to auto personalize with server. params: ${JSON.stringify(info)}. Error: ${JSON.stringify(e)}`);
         }
     }
 }
