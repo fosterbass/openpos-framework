@@ -70,7 +70,7 @@
                     </ul>
 
                     <div fxLayout="row" fxLayoutAlign="left start" fxLayoutAlign.xs="left">
-                        <button mat-raised-button color="primary" class="devButton" (click)="onDevRestartNode()">Restart Node</button>
+                        <button mat-raised-button color="primary" class="devButton" (click)="onDevResetDevice()">Reset Device</button>
                     </div>
                     <div fxLayout="row" fxLayoutAlign="left start" fxLayoutAlign.xs="left">
                         <input class="devInput" [(ngModel)]="brand">
@@ -422,7 +422,7 @@
         <button mat-menu-item (click)="onDevRefreshView()">Refresh View</button>
         <button mat-menu-item (click)="onDevClearLocalStorage()">Clear Local Storage</button>
         <mat-divider></mat-divider>
-        <button mat-menu-item (click)="onDevRestartNode()">Restart Node</button>
+        <button mat-menu-item (click)="onDevResetDevice()">Reset Device</button>
     </mat-menu>
     <!--
     <mat-menu #logsMenu="matMenu">
