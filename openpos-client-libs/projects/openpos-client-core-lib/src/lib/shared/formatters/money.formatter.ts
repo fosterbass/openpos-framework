@@ -52,8 +52,13 @@ export class MoneyFormatter implements IFormatter {
             amount = `${value}${decimalCharSeparator}00`;
         }
 
-        const locale = this.localeService.getLocale();
-        const currencyCode = this.localeService.getConstant('currencyCode');
+        let locale = this.localeService.getLocale();
+        let currencyCode = this.localeService.getConstant('currencyCode');
+        if (locale === "zh-CN") {
+            locale = "en_GB";
+            currencyCode = "GBP";
+        }
+        
         const currencyPipe = new CurrencyPipe(locale);
         amount = currencyPipe.transform(amount, currencyCode, 'symbol-narrow', '1.2', locale);
 

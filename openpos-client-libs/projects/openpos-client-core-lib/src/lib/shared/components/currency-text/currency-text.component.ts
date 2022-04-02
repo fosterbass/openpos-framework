@@ -80,7 +80,13 @@ export class CurrencyTextComponent implements OnChanges {
     }
 
     private _makeCurrencyValue(localAmtText: string): CurrencyValue {
-        const locale = this.localeService.getLocale();
+        let currencyCode = this.localeService.getConstant('currencyCode');
+        let locale = this.localeService.getLocale();
+        if (locale === "zh-CN") {
+            locale = "en_GB";
+            currencyCode = "GBP";
+            
+        }
         const targetSymbol = this.symbol || this.localeService.getConstant('currencySymbol');
 
         const isNegative = localAmtText.indexOf('-') >= 0;
@@ -102,7 +108,7 @@ export class CurrencyTextComponent implements OnChanges {
         let existingSymbolIdx = localAmtText.indexOf(targetSymbol);
         if (existingSymbolIdx < 0) {
             // No symbol in given text, use currency pipe to insert one
-            const currencyCode = this.localeService.getConstant('currencyCode');
+            
             const currencyPipe = new CurrencyPipe(locale);
             try {
                 localAmtText = currencyPipe.transform(localAmtText, currencyCode, 'symbol-narrow', '1.2', locale);
