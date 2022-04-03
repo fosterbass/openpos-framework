@@ -4,6 +4,18 @@
     <div *ngIf="!(isMobile | async)" class="customer-display-sale-body">
         <div class="customer-display-sale-items-outer">
             <app-sale-item-card-list #scrollList class="customer-display-list-background"></app-sale-item-card-list>
+            <div class="recommendations-conainer">
+                <div class="recommendations-outer-rect">
+                    <div class="recommendations-title">Recommended for you</div>
+                    <div class="recommendations-inner-rect">
+                        <div *ngFor="let item of screen.recommendationItems" class="recommendation-item">
+                            <img class="item-image" [src]="item.imageUrl">
+                            <div class="item-title">{{item.itemDescription}}</div>
+                            <div (click)="doAction('RecommendationTapped', item.itemId)" class="item-details-button">Details</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <app-sale-total-panel></app-sale-total-panel>
     </div>
