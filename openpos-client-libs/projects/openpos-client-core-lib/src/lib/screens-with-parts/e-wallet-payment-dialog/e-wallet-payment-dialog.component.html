@@ -2,7 +2,8 @@
     <app-dialog-header></app-dialog-header>
     <div class="dialog-body" responsive-class>
         <mat-dialog-content>
-            <app-image *ngIf="screen.qrCodeUrl" [imageUrl]="screen.qrCodeUrl" [altText]="'qr code'"></app-image>
+            <img _ngcontent-cwy-c38="" [src]="screen.qrCodeUrl" alt="qr code">
+            <!-- <app-image style="height: 300px;" class="ewalletQrCode" *ngIf="screen.qrCodeUrl" [imageUrl]="screen.qrCodeUrl" [altText]="'qr code'"></app-image> -->
             <div [innerHTML]="screen.message | markdownFormatter"></div>
         </mat-dialog-content>
         <mat-dialog-actions *ngIf="screen.cancelButton" class="dialog-actions">

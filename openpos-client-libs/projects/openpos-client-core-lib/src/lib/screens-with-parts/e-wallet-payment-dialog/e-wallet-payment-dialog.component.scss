@@ -30,3 +30,20 @@ app-image-scanner {
     place-self: stretch;
     grid-row: scandit-area;
 }
+
+img {
+    height: 300px;    
+}
+
+app-image > img {
+    height: 300px;    
+}
+
+
+.ewalletQrCode {
+    min-height: 300px !important;
+    > img {
+        height: 300px;
+    }
+
+}
