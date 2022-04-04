@@ -1,8 +1,6 @@
 package org.jumpmind.pos.devices.model;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import org.jumpmind.pos.persist.AbstractModel;
 import org.jumpmind.pos.persist.ColumnDef;
 import org.jumpmind.pos.persist.TableDef;
@@ -13,6 +11,8 @@ import java.util.List;
 @Builder
 @EqualsAndHashCode(callSuper = true)
 @TableDef(name = "device_personalization", primaryKey = {"deviceName"})
+@NoArgsConstructor
+@AllArgsConstructor
 public class DevicePersonalizationModel extends AbstractModel {
     @ColumnDef
     private String deviceName;
