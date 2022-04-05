@@ -150,7 +150,6 @@ export class PersonalizationService {
                 tap(response => {
                     if (response) {
                         console.info(`Auto personalization response received: ${JSON.stringify(response)}`);
-                        response.sslEnabled = this.sslEnabled$.getValue();
                         this.setFailovers(response.failoverAddresses);
                         this.setPrimaryServer(new ServerLocation(response.serverAddress, response.serverPort, null));
                     }
