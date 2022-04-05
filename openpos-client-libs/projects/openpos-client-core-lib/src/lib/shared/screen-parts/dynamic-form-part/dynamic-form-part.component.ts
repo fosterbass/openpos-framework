@@ -46,6 +46,7 @@ export class DynamicFormPartComponent extends ScreenPartComponent<IForm> impleme
     }
 
     @Input() submitButton: IActionItem;
+    @Input() secondaryButtons: IActionItem[];
 
     constructor(private changeDetectorRef: ChangeDetectorRef, private formBuilder: FormBuilder, injector: Injector) {
         super(injector);

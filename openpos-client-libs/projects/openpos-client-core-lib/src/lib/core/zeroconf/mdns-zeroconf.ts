@@ -69,5 +69,4 @@ export class MDnsZeroconf implements Zeroconf {
             };
         });
     }
-
 }

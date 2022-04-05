@@ -107,3 +107,8 @@
 .no-memberships {
     @extend %text-sm;
 }
+
+.alert-message {
+    @extend %text-sm;
+    justify-self: center;
+}
