@@ -13,7 +13,7 @@ export const DEFAULT_LOCALE = 'en-US';
     providedIn: 'root',
 })
 export class LocaleService {
-    private supportedLocales = ['en-US'];
+    private supportedLocales = ['en-US','en-GB'];
     private showIcons = true;
     private textCache = new Map<string, string>();
 

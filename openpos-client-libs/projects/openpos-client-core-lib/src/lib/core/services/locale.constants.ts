@@ -3,6 +3,7 @@ export const LOCALE_CONSTANTS = {
     currencySymbol: {
         'en-us': '$',
         'en-ca': '$',
+        'en-gb': '£',
         'fr-us': '$',
         'fr-ca': '$',
         default: '$'
@@ -11,6 +12,7 @@ export const LOCALE_CONSTANTS = {
         'en-us': 'USD',
         'fr-us': 'USD',
         'en-ca': 'CAD',
+        'en-gb': 'GBP',
         'fr-ca': 'CAD',
         default: 'USD'
     },
@@ -18,6 +20,7 @@ export const LOCALE_CONSTANTS = {
         'en-us': 'English',
         'fr-us': 'French',
         'en-ca': 'English',
+        'en-gb': 'English',
         'fr-ca': 'French',
         default: 'English'
     },
@@ -25,6 +28,7 @@ export const LOCALE_CONSTANTS = {
         'en-us': 'UnitedStates',
         'fr-us': 'France',
         'en-ca': 'Canada',
+        'en-gb': 'GreatBritain',
         'fr-ca': 'France',
         default: 'UnitedStates'
     }
