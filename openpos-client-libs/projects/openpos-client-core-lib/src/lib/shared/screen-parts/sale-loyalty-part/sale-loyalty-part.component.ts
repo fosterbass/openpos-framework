@@ -9,11 +9,11 @@ import { Component, Injector } from '@angular/core';
 import { ScreenPartComponent } from '../screen-part';
 import { Observable } from 'rxjs';
 import { MediaBreakpoints, OpenposMediaService } from '../../../core/media/openpos-media.service';
-import { LoyaltySignupService } from '../../../core/services/loyalty-signup.service';
 import { IActionItem } from '../../../core/actions/action-item.interface';
 import { CONFIGURATION } from '../../../configuration/configuration';
 import { Reward } from '../rewards-line-item/rewards-line-item.interface';
 import { SaleLoyaltyPartInterface } from './sale-loyalty-part.interface';
+import {LoyaltySalePartService} from '../../../core/services/loyalty-sale-part.service';
 
 @ScreenPart({
     name: 'SaleLoyalty'
@@ -41,7 +41,7 @@ export class SaleLoyaltyPartComponent extends ScreenPartComponent<SaleLoyaltyPar
     public glowPulseRepeatTrigger = true;
     public gradientInnerGlowRepeatTrigger = true;
 
-    constructor(injector: Injector, media: OpenposMediaService, private loyaltySignupService: LoyaltySignupService) {
+    constructor(injector: Injector, media: OpenposMediaService, private loyaltySalePartService: LoyaltySalePartService) {
         super(injector);
         this.isMobile$ = media.observe(new Map([
             [MediaBreakpoints.MOBILE_PORTRAIT, true],
@@ -52,9 +52,9 @@ export class SaleLoyaltyPartComponent extends ScreenPartComponent<SaleLoyaltyPar
             [MediaBreakpoints.DESKTOP_LANDSCAPE, false]
         ]));
 
-        this.isLoyaltySignupInProgressOnCustomerDisplay$ = this.loyaltySignupService.isActiveOnCustomerDisplay();
-        this.loyaltySignupInProgressDetailsMessage$ = this.loyaltySignupService.getCustomerDisplayDetailsMessage();
-        this.loyaltySignupService.checkCustomerDisplayStatus();
+        this.isLoyaltySignupInProgressOnCustomerDisplay$ = this.loyaltySalePartService.isActiveOnCustomerDisplay();
+        this.loyaltySignupInProgressDetailsMessage$ = this.loyaltySalePartService.getCustomerDisplayDetailsMessage();
+        this.loyaltySalePartService.checkCustomerDisplayStatus();
     }
 
     screenDataUpdated() {

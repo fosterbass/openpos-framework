@@ -6,6 +6,8 @@ export const ZEROCONF_TOKEN = new InjectionToken<Array<Zeroconf>>('ZEROCONF');
 export interface Zeroconf {
     watch(type: string, domain: string): Observable<ZeroconfResult>;
 
+    deviceName(): Observable<string>;
+
     isAvailable(): Observable<boolean>;
 }
 

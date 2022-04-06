@@ -5,7 +5,7 @@ import { ScreenPartComponent } from '../screen-part';
 import { IActionItem } from '../../../core/actions/action-item.interface';
 import { CONFIGURATION } from '../../../configuration/configuration';
 import { MediaBreakpoints, OpenposMediaService } from '../../../core/media/openpos-media.service';
-import { LoyaltySignupService } from '../../../core/services/loyalty-signup.service';
+import { LoyaltySalePartService } from '../../../core/services/loyalty-sale-part.service';
 import { Observable } from 'rxjs';
 @ScreenPart({
     name: 'SaleTotalPanel'
@@ -17,9 +17,9 @@ import { Observable } from 'rxjs';
 })
 export class SaleTotalPanelComponent extends ScreenPartComponent<SaleTotalPanelInterface> {
 
-    public isLoyaltySignupInProgressOnCustomerDisplay$: Observable<boolean>;
+    public isLoyaltyOperationInProgressOnCustomerDisplay$: Observable<boolean>;
 
-    constructor(injector: Injector, media: OpenposMediaService, private loyaltySignupService: LoyaltySignupService) {
+    constructor(injector: Injector, media: OpenposMediaService, private loyaltySignupService: LoyaltySalePartService) {
         super(injector);
         this.isMobile$ = media.observe(new Map([
             [MediaBreakpoints.MOBILE_PORTRAIT, true],
@@ -30,7 +30,7 @@ export class SaleTotalPanelComponent extends ScreenPartComponent<SaleTotalPanelI
             [MediaBreakpoints.DESKTOP_LANDSCAPE, false]
         ]));
 
-        this.isLoyaltySignupInProgressOnCustomerDisplay$ = this.loyaltySignupService.isActiveOnCustomerDisplay();
+        this.isLoyaltyOperationInProgressOnCustomerDisplay$ = this.loyaltySignupService.isActiveOnCustomerDisplay();
         this.loyaltySignupService.checkCustomerDisplayStatus();
     }
 
@@ -65,7 +65,6 @@ export class SaleTotalPanelComponent extends ScreenPartComponent<SaleTotalPanelI
 
     public shouldShowLoyaltySignupInProgress(): boolean {
         return !this.screenData.readOnly
-            && !!this.screenData.loyaltyCancelButton;
+                && !!this.screenData.loyaltyCancelButton;
     }
-
 }

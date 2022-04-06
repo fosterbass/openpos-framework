@@ -1,0 +1,21 @@
+
+ul.numbered {
+    > li {
+        list-style-type: decimal;
+    }
+}
+
+ul.steps-list {
+    > li {
+        font-size: 1.5em;
+
+        > div {
+            display: inline-flex;
+            align-items: center;
+
+            > mat-spinner {
+                padding-right: 8px;
+            }
+        }
+    }
+}

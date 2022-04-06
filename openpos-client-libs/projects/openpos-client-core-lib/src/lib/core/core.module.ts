@@ -63,7 +63,7 @@ import { ZEROCONF_TOKEN } from './zeroconf/zeroconf';
 import { MDnsZeroconf } from './zeroconf/mdns-zeroconf';
 import { CapacitorZeroconf } from './zeroconf/capacitor-zeroconf';
 import { CapacitorService } from './services/capacitor.service';
-import { LoyaltySignupService } from './services/loyalty-signup.service';
+import { LoyaltySalePartService } from './services/loyalty-sale-part.service';
 import { DebugImageScanner } from './platform-plugins/barcode-scanners/debug-image-scanner/debug-image-scanner.service';
 import { CommerceServerSinkModule } from './logging/commerce-server/commerce-server-sink.module';
 import { NewRelicSinkModule } from './logging/new-relic/new-relic-sink.module';
@@ -78,6 +78,7 @@ import { KeybindingService } from './keybindings/keybinding.service';
 import { KeybindingLockScreenService } from './keybindings/keybinding-lock-screen.service';
 import { ENTERPRISE_CONFIGS } from './platform-plugins/enterprise-config/enterprise-config.service';
 import { KeybindingDialogService } from './keybindings/keybinding-dialog.service';
+import { ZeroConfPersonalizationDialogComponent } from './startup/tasks/zeroconf/zero-conf-personalization-dialog.component';
 
 registerLocaleData(locale_enCA, 'en-CA');
 registerLocaleData(locale_frCA, 'fr-CA');
@@ -90,6 +91,7 @@ registerLocaleData(locale_esMX, 'es-MX');
         DialogContentComponent,
         SplashScreenComponent,
         LockScreenComponent,
+        ZeroConfPersonalizationDialogComponent
     ],
     declarations: [
         OpenposAppComponent,
@@ -97,7 +99,8 @@ registerLocaleData(locale_esMX, 'es-MX');
         ConfirmationDialogComponent,
         PersonalizationComponent,
         SplashScreenComponent,
-        LockScreenComponent
+        LockScreenComponent,
+        ZeroConfPersonalizationDialogComponent
     ],
     imports: [
         SharedModule,
@@ -171,8 +174,7 @@ registerLocaleData(locale_esMX, 'es-MX');
         AudioInteractionService,
         AudioRepositoryService,
         { provide: PLUGINS, useExisting: AudioConsolePlugin, multi: true, deps: [AudioService] },
-        Storage,
-        LoyaltySignupService
+        Storage
     ]
 })
 export class CoreModule {
