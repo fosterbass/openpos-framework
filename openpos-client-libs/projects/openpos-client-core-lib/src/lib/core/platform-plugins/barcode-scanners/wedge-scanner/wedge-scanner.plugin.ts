@@ -5,6 +5,8 @@ import { SessionService } from '../../../services/session.service';
 import { WEDGE_SCANNER_ACCEPTED_KEYS } from './wedge-scanner-accepted-keys';
 import { DomEventManager } from '../../../services/dom-event-manager.service';
 import { Scanner, ScanData, ScanDataType } from '../scanner';
+import {ConfigurationService} from '../../../services/configuration.service';
+import {WedgeScannerConfigMessage} from '../../../messages/wedge-scanner-config-message';
 
 interface ControlSequence { modifiers: string[]; key: string; }
 
@@ -24,14 +26,15 @@ export class WedgeScannerPlugin implements Scanner {
 
     private scanObservable: Observable<ScanData>;
 
-    constructor(sessionService: SessionService, private domEventManager: DomEventManager) {
+    constructor(private configuration: ConfigurationService, sessionService: SessionService,
+                private domEventManager: DomEventManager) {
 
         // Initialize scan with default setting
+        console.debug('Creating scan observable');
         this.scanObservable = this.createScanObservable();
+        console.debug('Created scan observable');
 
-        sessionService.getMessages('ConfigChanged').pipe(
-            filter(m => m.configType === 'WedgeScanner')
-        ).subscribe(m => {
+        this.configuration.getConfiguration<WedgeScannerConfigMessage> ('WedgeScanner').subscribe(m => {
             if (m.startSequence) {
                 this.startSequence = m.startSequence;
                 this.startSequenceObj = this.getControlStrings(this.startSequence);
@@ -52,13 +55,13 @@ export class WedgeScannerPlugin implements Scanner {
                 this.timeout = m.timeout;
             }
 
+            console.debug('Received config message for WedgeScanner.Re-Creating scan observable');
             // Re-Initialize the scan with updated config received from server
             this.scanObservable = this.createScanObservable();
+            console.debug('Received config message for WedgeScanner.Re-Created scan observable');
         });
 
-        sessionService.getMessages('ConfigChanged').pipe(
-            filter(m => m.configType === 'WedgeScannerTypes')
-        ).subscribe(m => {
+        this.configuration.getConfiguration('WedgeScannerTypes').subscribe(m => {
             this.typeMap = new Map<string, ScanDataType>();
             Object.getOwnPropertyNames(m).forEach(element => {
                 this.typeMap.set(element, m[element]);
