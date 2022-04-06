@@ -50,6 +50,8 @@ export class FormattersService {
 
         const ukFormatters = new Map<string, IFormatter>();
         ukFormatters.set('datetime', new DateTimeCAFormatter());
+        ukFormatters.set('moneyEu', new MoneyFormatter('en-eu', 'EUR'));
+
         this.formatters.set('gb', ukFormatters);
         this.formatters.set('en-gb', ukFormatters);
 
@@ -64,7 +66,7 @@ export class FormattersService {
         noLocaleFormatters.set('giftcode', new GiftCodeFormatter());
         // Use USD formatter as default
         noLocaleFormatters.set('money', new MoneyFormatter(localeService.getLocale(), localeService.getConstant('currencyCode')));
-        noLocaleFormatters.set('moneyEu', new MoneyFormatter('en_EU', 'EUR'));
+        noLocaleFormatters.set('moneyeu', new MoneyFormatter('en-eu', 'EUR'));
         noLocaleFormatters.set('phone', numericFormatter);
         noLocaleFormatters.set('percent', new PercentageFormatter());
         noLocaleFormatters.set('percentint', new PercentageFormatter(PercentageFormatter.INTEGER_MODE));
