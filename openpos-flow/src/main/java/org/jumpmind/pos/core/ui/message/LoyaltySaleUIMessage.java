@@ -36,9 +36,9 @@ public class LoyaltySaleUIMessage extends TransactionUIMessage {
     private ActionItem mobileLoyaltyButton;
     private boolean mobileLoyaltySaleShowMembershipsHideLogo;
 
-    private String loyaltyOperationInProgressTitle;
-    private String loyaltyOperationInProgressIcon;
-    private String loyaltyOperationInProgressDetailsIcon;
+    private String loyaltySignupInProgressTitle;
+    private String loyaltySignupInProgressIcon;
+    private String loyaltySignupInProgressDetailsIcon;
     private ActionItem loyaltyCancelButton;
 
     private boolean rewardsVisibleOnLinkButton;

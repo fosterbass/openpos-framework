@@ -18,7 +18,6 @@ export interface IFormElement {
     selectedIndexes?: number[];
     valueChangedAction?: IActionItem;
     mask?: IMaskSpec;
-    error?: string;
     pattern?: string;
     minValue?: number;
     maxValue?: number;

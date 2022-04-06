@@ -135,7 +135,6 @@ export class PersonalizationService {
     public getAutoPersonalizationParameters(request: AutoPersonalizationRequest, url: string):
         Observable<AutoPersonalizationParametersResponse> {
 
-        console.log('Attempting auto personalization with ' + url);
         const protocol = this.sslEnabled$.getValue() ? 'https://' : 'http://';
         url = protocol + url;
 
@@ -144,6 +143,8 @@ export class PersonalizationService {
 
         return this.http.put<AutoPersonalizationParametersResponse>(url, request)
             .pipe(
+                // on some platforms the first or early requests can fail, try a few times before
+                // giving up completely.
                 timeout(requestTimeout),
                 retry(retryCount),
                 tap(response => {

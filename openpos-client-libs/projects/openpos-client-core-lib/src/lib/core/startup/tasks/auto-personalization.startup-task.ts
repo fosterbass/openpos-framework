@@ -10,25 +10,20 @@ export abstract class AutoPersonalizationStartupTask implements StartupTask {
 
     abstract execute(): void | Promise<void> | Observable<any>;
 
-    protected async getPersonalizationParameters(request: AutoPersonalizationRequest,
-                                                 url: string): Promise<AutoPersonalizationParametersResponse> {
+    protected async personalize(request: AutoPersonalizationRequest, url: string): Promise<void> {
         let info: AutoPersonalizationParametersResponse;
 
         try {
             info = await this.personalization.getAutoPersonalizationParameters(
-                    request,
+                request,
                 url
             ).pipe(
                 first()
             ).toPromise();
-
-            return info;
         } catch (e) {
             throw new Error('failed to get personalization parameters');
         }
-    }
 
-    protected async personalize(info: AutoPersonalizationParametersResponse): Promise<void> {
         console.log(`personalizing with server '${info.serverAddress}:${info.serverPort}' as '${info.deviceName}'`);
 
         const params = info.personalizationParams;

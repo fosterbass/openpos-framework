@@ -33,9 +33,6 @@ export class ShowErrorsComponent {
     };
 
     @Input()
-    private error: string;
-
-    @Input()
     private control: AbstractControlDirective | AbstractControl;
 
     @Input()
@@ -53,13 +50,10 @@ export class ShowErrorsComponent {
     shouldShowErrors(): boolean {
         return this.control &&
         this.control.errors &&
-        this.control.dirty || !!this.error;
+        (this.control.dirty);
     }
 
     listOfErrors(): string[] {
-        if (!!this.error) {
-            return [this.error];
-        }
         return Object.keys(this.control.errors)
         .map(field => this.getMessage(field, this.control.errors[field]));
     }

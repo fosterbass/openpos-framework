@@ -20,9 +20,6 @@
             ngClass="{{'mobile-loyalty-id' + getHideLogoShowMembershipsClass()}}">
             {{screenData.customer.label}}: {{screenData.customer.id}}
         </div>
-        <div responsive-class *ngIf="screenData.alertMessage" class="alert-message">
-            {{screenData.alertMessage}}
-        </div>
     </div>
     <div *ngIf="screenData.mobileLoyaltySaleShowMembershipsHideLogo" class="memberships">
         <app-membership-display *ngFor="let membership of screenData.memberships" class="item" [membership]="membership"

@@ -2,7 +2,6 @@ import {
   Component,
   ViewChild,
   OnChanges,
-  OnInit,
   OnDestroy,
   Output,
   Input,
@@ -12,7 +11,7 @@ import {
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatInput } from '@angular/material/input';
-import { FormGroup, AbstractControl } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { ITextMask, TextMask } from '../../textmask';
 import { DynamicDateFormFieldComponent } from '../dynamic-date-form-field/dynamic-date-form-field.component';
@@ -29,7 +28,7 @@ import { Scan } from '../../../core/oldplugins/scan';
   templateUrl: './dynamic-form-field.component.html',
   styleUrls: ['./dynamic-form-field.component.scss']
 })
-export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterContentInit, OnInit {
+export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterContentInit {
 
   @ViewChild(MatInput) field: MatInput;
   @ViewChild(DynamicDateFormFieldComponent) dateField: DynamicDateFormFieldComponent;
@@ -39,7 +38,6 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterCon
   @Input() formGroup: FormGroup;
 
   public controlName: string;
-  control: AbstractControl;
 
   public keyboardLayout = 'en-US';
 
@@ -138,14 +136,6 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterCon
     }
   }
 
-  ngOnInit() {
-    this.control = this.formGroup.controls[this.formField.id];
-    if (!!this.formField.error) {
-      this.control.markAsTouched();
-      this.control.markAsDirty();
-    }
-  }
-
   ngAfterContentInit(): void {
       if (this.formField.inputType === 'AutoComplete') {
           if (this.formField.value) {
@@ -183,7 +173,6 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterCon
   }
 
   onFormElementChanged(formElement: IFormElement): void {
-    this.resetError();
     this.changed.emit(formElement);
   }
 
@@ -201,7 +190,6 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterCon
   }
 
   openPopTart() {
-    this.resetError();
     const dialogRef = this.dialog.open(PopTartComponent, {
       width: '70%',
       data: {
@@ -304,7 +292,6 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterCon
   }
 
   onPaste(event: ClipboardEvent): boolean {
-    this.resetError();
     let maxLength = this.formField.maxLength;
     const pastedText = event.clipboardData.getData('text');
     // Decreasing expected maxLength for money fields as such fields will be prepopulated with '$' sign
@@ -316,12 +303,6 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterCon
       }
     }
     return pastedText.length <= maxLength;
-  }
-
-  resetError(): void {
-      if (this.formField.error) {
-          this.formField.error = null;
-      }
   }
 }
 

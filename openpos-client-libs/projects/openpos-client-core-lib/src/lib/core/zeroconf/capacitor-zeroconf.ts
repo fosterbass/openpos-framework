@@ -19,4 +19,8 @@ export class CapacitorZeroconf implements Zeroconf {
             tap(result => console.log('ZEROCONF: Observed service', result))
         );
     }
+
+    deviceName(): Observable<string> {
+        return this.capacitorService.getDeviceName();
+    }
 }

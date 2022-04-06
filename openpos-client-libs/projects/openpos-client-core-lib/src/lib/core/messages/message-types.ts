@@ -32,5 +32,4 @@ export class MessageTypes {
     static LOYALTY_SIGNUP = 'LoyaltySignup';
     static PUSH_REGISTER = 'PushNotificationRegister';
     static EXIT_CLIENT_APP = 'ExitClientApp';
-    static PLCC_APPLY = 'PlccApply';
 }

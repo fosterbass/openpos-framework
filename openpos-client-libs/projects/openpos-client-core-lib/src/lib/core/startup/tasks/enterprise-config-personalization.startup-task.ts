@@ -44,7 +44,7 @@ export class EnterpriseConfigPersonalizationStartupTask extends AutoPersonalizat
 
             console.info(`Attempting auto-personalization using URL from Enterprise Configuration: ${url}`);
             const deviceName = await this.getDeviceName();
-            return this.personalize(await this.getPersonalizationParameters({deviceName, additionalAttributes: config}, url));
+            return this.personalize({deviceName, additionalAttributes: config}, url);
         } else {
             throw new Error(Object.keys(config).length === 0 ?
                 `No Enterprise config found, skipping auto personalization with Enterprise config` :

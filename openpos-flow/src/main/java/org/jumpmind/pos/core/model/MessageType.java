@@ -29,5 +29,4 @@ public final class MessageType {
     public static final String DataClear = "DataClear";
     public static final String LoyaltySignup = "LoyaltySignup";
     public static final String ExitClientApp = "ExitClientApp";
-    public static final String PlccApply = "PlccApply";
 }
