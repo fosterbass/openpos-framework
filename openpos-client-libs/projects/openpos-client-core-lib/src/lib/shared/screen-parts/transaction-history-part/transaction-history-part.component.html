@@ -12,7 +12,7 @@
     <div class="transaction-history-details" responsive-class>
         <div class="detail-field" responsive-class>
             <span *ngIf="screenData.labels" class="detail-label">{{screenData.labels.transactionDate}}:</span>
-            <span class="detail-value" responsive-class>{{screenData.transactionDate | date: 'M/d/yyyy h:mm a'}}</span>
+            <span class="detail-value" responsive-class>{{screenData.transactionDate | date: 'd/M/yyyy h:mm a'}}</span>
         </div>
         <div class="detail-field" responsive-class>
             <span *ngIf="screenData.labels" class="detail-label">{{screenData.labels.deviceId}}:</span>
