@@ -94,8 +94,7 @@ export class SaleTotalPanelComponent extends ScreenPartComponent<SaleTotalPanelI
     }
 
     public shouldShowLoyaltyOperationInProgress(): boolean {
-        return !this.screenData.readOnly
-            && !!this.screenData.loyaltyCancelButton;
+        return !this.screenData.readOnly;
     }
 
     public shouldShowLinkedCustomer(): boolean {

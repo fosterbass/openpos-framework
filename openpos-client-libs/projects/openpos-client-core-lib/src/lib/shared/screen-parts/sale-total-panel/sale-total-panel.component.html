@@ -29,7 +29,8 @@
                 <div class="loyalty-customer-operation-display-message">
                     {{screenData.loyaltyOperationInProgressTitle}}
                 </div>
-                <app-icon-button class="loyalty-customer-operation-display-cancel-button"
+                <app-icon-button *ngIf="screenData.loyaltyCancelButton"
+                                 class="loyalty-customer-operation-display-cancel-button"
                                  (buttonClick)="doAction(screenData.loyaltyCancelButton)"
                                  [actionItem]="screenData.loyaltyCancelButton"
                                  iconName="close"
@@ -46,7 +47,8 @@
                                   iconClass="notification-icon"
                                   [@swing]="loyaltyOperationInProgressDetailsMessage$ | async"></app-icon>
                     </div>
-                    <div class="notification-message" [@glowContract]="loyaltyOperationInProgressDetailsMessage$ | async">
+                    <div class="notification-message"
+                         [@glowContract]="loyaltyOperationInProgressDetailsMessage$ | async">
                         {{loyaltyOperationInProgressDetailsMessage$ | async}}
                     </div>
                 </div>
@@ -75,13 +77,14 @@
                             </div>
                         </ng-container>
                         <div *ngIf="keybindsEnabled(screenData.linkedCustomerButton)"
-                              class="muted-color loyalty-keybind">{{screenData.linkedCustomerButton.keybindDisplayName}}</div>
+                             class="muted-color loyalty-keybind">{{screenData.linkedCustomerButton.keybindDisplayName}}</div>
                     </div>
                     <div class="icon">
                         <app-icon [iconName]="screenData.profileIcon"
                                   [iconClass]="(isMobile$ | async) ? null: 'material-icons mat-36'"></app-icon>
                     </div>
-                    <div class="memberships" [ngClass]="{'rewards-hidden': !screenData.rewardsVisibleOnLinkButton}" responsive-class>
+                    <div class="memberships" [ngClass]="{'rewards-hidden': !screenData.rewardsVisibleOnLinkButton}"
+                         responsive-class>
                         <div *ngIf="isMissingCustomerInfo()" class="customer-missing-info">
                             <app-warn-button responsive-class>
                                 <app-icon [iconName]="screenData.customerMissingInfoIcon" responsive-class
