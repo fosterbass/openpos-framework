@@ -67,8 +67,6 @@ export class FormattersService {
         noLocaleFormatters.set('phone', numericFormatter);
         noLocaleFormatters.set('percent', new PercentageFormatter());
         noLocaleFormatters.set('percentint', new PercentageFormatter(PercentageFormatter.INTEGER_MODE));
-        noLocaleFormatters.set('postalcode', new PostalCodeFormatter());
-        noLocaleFormatters.set('postalcodegeneric', new PostalCodeGenericFormatter());
         noLocaleFormatters.set('uspostalcode', numericFormatter);
         noLocaleFormatters.set('income', new IncomeFormatter());
         noLocaleFormatters.set('stateidnumber', new StateIDNumberFormatter());
