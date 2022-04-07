@@ -18,4 +18,6 @@ public interface IStateManagerContainer {
 
     void changeBrand(String deviceId, String brand);
 
+    void resetStateManager(String deviceId);
+
 }
