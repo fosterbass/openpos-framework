@@ -13,6 +13,11 @@ dependencies {
 
     // caching implementation
     implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '2.6.2'
+    
+    implementation group: 'org.springframework', name: 'spring-webmvc', version: "${springVersion}"
+    implementation group: 'org.springframework', name: 'spring-messaging', version: "${springVersion}"
+    implementation group: 'org.springframework', name: 'spring-websocket', version: "${springVersion}"
+    implementation group: 'org.springframework', name: 'spring-context-support', version: "${springVersion}"
 
     implementation("io.springfox:springfox-boot-starter:3.0.0") {
             exclude module: "spring-boot-starter-tomcat"
