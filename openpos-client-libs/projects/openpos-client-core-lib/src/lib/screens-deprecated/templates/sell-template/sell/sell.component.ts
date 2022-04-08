@@ -66,7 +66,6 @@ export class SellComponent extends AbstractTemplate<any> {
   }
 
   public doMenuItemAction(menuItem: IActionItem) {
-    this.localMenuEnabled = false;
     if (this.isMenuItemEnabled(menuItem)) {
       this.actionService.doAction(menuItem);
     }
