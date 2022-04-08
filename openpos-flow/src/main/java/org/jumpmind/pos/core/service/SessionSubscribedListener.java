@@ -1,11 +1,7 @@
 package org.jumpmind.pos.core.service;
 
-import io.prometheus.client.Gauge;
-import org.apache.commons.lang3.StringUtils;
-import org.jumpmind.pos.core.flow.ScopeType;
-import org.jumpmind.pos.devices.model.DeviceModel;
-import org.jumpmind.pos.util.Version;
-import org.jumpmind.pos.util.event.DeviceConnectedEvent;
+import static org.jumpmind.pos.util.AppUtils.setupLogging;
+
 import org.jumpmind.pos.core.flow.IStateManager;
 import org.jumpmind.pos.core.flow.IStateManagerContainer;
 import org.jumpmind.pos.core.ui.DialogProperties;
@@ -14,20 +10,18 @@ import org.jumpmind.pos.core.ui.message.DialogUIMessage;
 import org.jumpmind.pos.core.ui.messagepart.DialogHeaderPart;
 import org.jumpmind.pos.core.ui.messagepart.MessagePartConstants;
 import org.jumpmind.pos.devices.model.DeviceModel;
-import org.jumpmind.pos.devices.service.model.PersonalizationParameters;
 import org.jumpmind.pos.server.config.MessageUtils;
 import org.jumpmind.pos.server.config.SessionSubscribedEvent;
 import org.jumpmind.pos.server.service.IMessageService;
 import org.jumpmind.pos.server.service.SessionConnectListener;
 import org.jumpmind.pos.util.Version;
-import org.jumpmind.pos.util.Versions;
 import org.jumpmind.pos.util.event.DeviceConnectedEvent;
 import org.jumpmind.pos.util.event.EventPublisher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
@@ -37,39 +31,28 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static org.jumpmind.pos.util.AppUtils.setupLogging;
-
 @Component
+@Slf4j
 public class SessionSubscribedListener implements ApplicationListener<SessionSubscribedEvent>, MessageUtils {
-    final Logger log = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    IStateManagerContainer stateManagerContainer;
+    private IStateManagerContainer stateManagerContainer;
 
     @Autowired
-    IMessageService messageService;
+    private IMessageService messageService;
 
     @Autowired
-    SessionConnectListener sessionAuthTracker;
+    private SessionConnectListener sessionAuthTracker;
 
     @Value("${openpos.incompatible.version.message:The compatibility version of the client does not match the server}")
-    String incompatibleVersionMessage;
-
-    @Autowired(required = false)
-    PersonalizationParameters personalizationParameters;
+    private String incompatibleVersionMessage;
 
     @Autowired
-    ApplicationContext applicationContext;
+    private EventPublisher eventPublisher;
 
-    @Autowired
-    Versions versions;
-
-    @Autowired
-    EventPublisher eventPublisher;
-
-
+    @SuppressWarnings("unchecked")
     @Override
-    synchronized public void onApplicationEvent(SessionSubscribedEvent event) {
+    public synchronized void onApplicationEvent(SessionSubscribedEvent event) {
         Message<?> msg = event.getMessage();
         String sessionId = (String) msg.getHeaders().get("simpSessionId");
         Map<String, Object> queryParams = sessionAuthTracker.getQueryParams(sessionId);
@@ -136,12 +119,12 @@ public class SessionSubscribedListener implements ApplicationListener<SessionSub
             stateManager.getApplicationState().getScope().setDeviceScope("device", sessionAuthTracker.getDeviceModel(sessionId));
             stateManager.getApplicationState().getScope().setDeviceScope("powerStatus", sessionAuthTracker.getPowerStatus(sessionId));
 
-            eventPublisher.publish(new DeviceConnectedEvent(deviceId, appId, stateManager.getPairedDeviceId(),
-                    (List<Version>) queryParams.get("deviceVersions")));
-
             if (!created) {
                 stateManager.refreshScreen();
             }
+
+            eventPublisher.publish(new DeviceConnectedEvent(deviceId, appId, stateManager.getPairedDeviceId(),
+                    (List<Version>) queryParams.get("deviceVersions")));
 
             SubscribedSessionMetric.inc(deviceId);
         } catch (Exception ex) {
