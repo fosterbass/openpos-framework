@@ -24,7 +24,7 @@ export abstract class AutoPersonalizationStartupTask implements StartupTask {
 
             return info;
         } catch (e) {
-            throw new Error('failed to get personalization parameters');
+            throw new Error(`Failed to get personalization parameters using url '${url}'. Error: ${JSON.stringify(e)}`);
         }
     }
 
@@ -54,7 +54,7 @@ export abstract class AutoPersonalizationStartupTask implements StartupTask {
                 info.sslEnabled
             ).toPromise();
         } catch (e) {
-            throw new Error('failed to auto personalize with server');
+            throw new Error(`Failed to auto personalize with server. params: ${JSON.stringify(info)}. Error: ${JSON.stringify(e)}`);
         }
     }
 }

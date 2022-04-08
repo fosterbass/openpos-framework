@@ -4,6 +4,7 @@ import jpos.events.DataEvent;
 import org.jumpmind.pos.core.flow.IStateManager;
 import org.jumpmind.pos.core.flow.IStateManagerContainer;
 import org.jumpmind.pos.core.flow.ScopeValue;
+import org.jumpmind.pos.core.flow.StateManagerContainer;
 import org.jumpmind.pos.core.flow.config.FlowConfig;
 import org.jumpmind.pos.core.flow.config.StateConfig;
 import org.jumpmind.pos.core.javapos.SimulatedScannerService;
@@ -39,6 +40,9 @@ public class DevToolsActionListener implements IActionListener {
 
     @Autowired
     IStateManagerContainer stateManagerFactory;
+
+    @Autowired
+    StateManagerContainer stateManagerContainer;
 
     @Autowired
     IMessageService messageService;
@@ -107,6 +111,14 @@ public class DevToolsActionListener implements IActionListener {
 
         } else if (action.getName().contains("::Brand")) {
             updateBrand(deviceId, ((Map<String, String>) action.getData()).get("brand"));
+
+        } else if (action.getName().contains("::Reset")) {
+            if (action.getName().contains("::Device")) {
+                stateManagerContainer.getAllStateManagers().stream().
+                    filter(stateMgr -> stateMgr.getDeviceId().equals(deviceId)).
+                    forEach(stateMgr -> stateMgr.reset()
+                );
+            }
         }
 
         messageService.sendMessage(deviceId, createMessage(stateManager, deviceId));

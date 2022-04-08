@@ -546,6 +546,11 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
         window.open(customerDisplay);
     }
 
+    public onDevResetDevice(): void {
+        this.session.publish('DevTools::Reset::Device', DevMenuComponent.MSG_TYPE);
+        this.session.connectToStomp();
+    }
+
     public onDevRestartNode(): Promise<{ success: boolean, message: string }> {
         const prom = new Promise<{ success: boolean, message: string }>((resolve, reject) => {
             const port = this.personalization.getServerPort$().getValue();

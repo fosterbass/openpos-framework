@@ -15,6 +15,7 @@ The WedgeScanner configuration object is as follows:
         codeTypeLength: 1
         endSequence: 'Enter'
         startSequence: '*'
+        enabled: true
 ```
 
 **codeTypeLength** is the number of characters to split off the front of the scan to represent the barcode type
@@ -22,6 +23,8 @@ The WedgeScanner configuration object is as follows:
 **startSequence** is the key sequence that marks the start of a scan. This can be a character and optionaly a modifier key. ex 'ctrl+b' or 'alt+k'
 
 **endSequence** is the key sequence that marks the end of a scan. Valid values are the same as startSequence.
+
+**enabled** is whether the plugin should be enabled
 
 ### WedgeScannerTypes
 

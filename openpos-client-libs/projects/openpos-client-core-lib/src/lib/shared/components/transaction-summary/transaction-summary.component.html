@@ -98,10 +98,10 @@
                       iconClass="trans-icon-secondary mat-24"></app-icon>
         </div>
     </div>
-    <div class="summary-action" responsive-class>
-        <app-icon-button *ngIf="transactionSummary.actions && (transactionSummary.actions[transactionSummary.actions.length - 1])?.icon"
-                [iconName]="(transactionSummary.actions[transactionSummary.actions.length - 1]).icon"
-                [iconClass]="'mat-24'" (buttonClick)="onClick(transactionSummary.actions[transactionSummary.actions.length - 1])">
+    <div class="summary-actions" responsive-class>
+        <app-icon-button *ngFor="let button of transactionSummary.actions"
+                         [iconName]="button.icon"
+                         [iconClass]="'mat-24'" (buttonClick)="onClick(button)">
         </app-icon-button>
     </div>
 </div>
