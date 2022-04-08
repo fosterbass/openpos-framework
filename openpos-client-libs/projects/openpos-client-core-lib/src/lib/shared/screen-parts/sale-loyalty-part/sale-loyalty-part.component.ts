@@ -109,7 +109,6 @@ export class SaleLoyaltyPartComponent extends ScreenPartComponent<SaleLoyaltyPar
     }
 
     public shouldShowLoyaltySignupInProgress(): boolean {
-        return !this.screenData.readOnly
-            && !!this.screenData.loyaltyCancelButton;
+        return !this.screenData.readOnly;
     }
 }

@@ -29,7 +29,8 @@
             <div class="loyalty-signup-customer-display-message">
                 {{screenData.loyaltySignupInProgressTitle}}
             </div>
-            <app-icon-button class="loyalty-signup-customer-display-cancel-button"
+            <app-icon-button *ngIf="screenData.loyaltyCancelButton"
+                             class="loyalty-signup-customer-display-cancel-button"
                              (buttonClick)="doAction(screenData.loyaltyCancelButton)"
                              [actionItem]="screenData.loyaltyCancelButton"
                              iconName="close"
