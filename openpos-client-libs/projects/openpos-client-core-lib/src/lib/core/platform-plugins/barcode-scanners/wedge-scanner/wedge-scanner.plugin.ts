@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { iif, Observable, of, SubscribableOrPromise, Subscription } from 'rxjs';
 import { map, filter, bufferToggle, timeout, catchError, windowToggle, tap, mergeAll, publish, refCount } from 'rxjs/operators';
-import { SessionService } from '../../../services/session.service';
 import { WEDGE_SCANNER_ACCEPTED_KEYS } from './wedge-scanner-accepted-keys';
 import { DomEventManager } from '../../../services/dom-event-manager.service';
 import { Scanner, ScanData, ScanDataType } from '../scanner';
-import {ConfigurationService} from '../../../services/configuration.service';
-import {WedgeScannerConfigMessage} from '../../../messages/wedge-scanner-config-message';
+import { ConfigurationService } from '../../../services/configuration.service';
+import { WedgeScannerConfigMessage } from '../../../messages/wedge-scanner-config-message';
 
 interface ControlSequence { modifiers: string[]; key: string; }
 
@@ -22,19 +21,25 @@ export class WedgeScannerPlugin implements Scanner {
     private scannerActive: boolean;
     private startSequenceObj = this.getControlStrings(this.startSequence);
     private endSequenceObj = this.getControlStrings(this.endSequence);
+    private enabled = true;
 
+    private startScanBuffer: Observable<any>;
+    private stopScanBuffer: Observable<any>;
+    private keypressBlocker: Subscription;
+    private scannerBuffer: Observable<ScanData>;
+
+    private scannerSubscription: Subscription;
 
     private scanObservable: Observable<ScanData>;
 
-    constructor(private configuration: ConfigurationService, sessionService: SessionService,
-                private domEventManager: DomEventManager) {
+    constructor(private configuration: ConfigurationService, private domEventManager: DomEventManager) {
 
         // Initialize scan with default setting
         console.debug('Creating scan observable');
         this.scanObservable = this.createScanObservable();
         console.debug('Created scan observable');
 
-        this.configuration.getConfiguration<WedgeScannerConfigMessage> ('WedgeScanner').subscribe(m => {
+        this.configuration.getConfiguration<WedgeScannerConfigMessage>('WedgeScanner').subscribe(m => {
             if (m.startSequence) {
                 this.startSequence = m.startSequence;
                 this.startSequenceObj = this.getControlStrings(this.startSequence);
@@ -54,6 +59,9 @@ export class WedgeScannerPlugin implements Scanner {
             if (m.timeout) {
                 this.timeout = m.timeout;
             }
+            if (!!m.enabled) {
+                this.enabled = m.enabled;
+            }
 
             console.debug('Received config message for WedgeScanner.Re-Creating scan observable');
             // Re-Initialize the scan with updated config received from server
@@ -71,20 +79,35 @@ export class WedgeScannerPlugin implements Scanner {
 
 
     createScanObservable(): Observable<ScanData> {
-        return  new Observable(observer => {
-            this.scannerActive = true;
-
-            const subscription = this.createScanBuffer().subscribe({
-                next: d => observer.next(d),
-            });
-
-            return () => {
-                subscription.unsubscribe();
-                this.scannerActive = false;
-            };
-        }).pipe(
+        return iif(
+            () => this.enabled,
+            // true
+            new Observable(observer => {
+                this.scannerActive = true;
+                if (this.scannerSubscription) {
+                    this.scannerSubscription.unsubscribe();
+                }
+                this.scannerSubscription = this.createScanBuffer().subscribe({
+                    next: d => observer.next(d),
+                });
+                return () => {
+                    this.scannerSubscription.unsubscribe();
+                    this.scannerActive = false;
+                };
+            }).pipe(
                 publish(),
                 refCount()
+            ),
+            // false
+            new Observable(observer => {
+                if (this.scannerSubscription) {
+                    this.scannerSubscription.unsubscribe();
+                }
+                console.log(`WedgeScanner disabled. Not starting.`);
+            }).pipe(
+                publish(),
+                refCount()
+            )
         );
     }
 
@@ -93,47 +116,57 @@ export class WedgeScannerPlugin implements Scanner {
     }
 
     private createScanBuffer(): Observable<ScanData> {
-        const startScanBuffer = this.domEventManager.createEventObserver(window, 'keydown', { capture: true }).pipe(
-            filter((e: KeyboardEvent) => this.filterForControlSequence(this.startSequenceObj, e),
-                tap(e => console.debug(`Starting Scan Capture: ${e}`))));
+        if (!this.startScanBuffer) {
+            this.startScanBuffer = this.domEventManager.createEventObserver(window, 'keydown', { capture: true }).pipe(
+                filter((e: KeyboardEvent) => this.filterForControlSequence(this.startSequenceObj, e),
+                    tap(e => console.debug(`Starting Scan Capture: ${e}`))));
+        }
+        if (!this.stopScanBuffer) {
+            this.stopScanBuffer = this.domEventManager.createEventObserver(window, 'keydown', { capture: true }).pipe(
+                timeout(this.timeout),
+                filter((e: KeyboardEvent) => this.filterForControlSequence(this.endSequenceObj, e)),
+                tap(e => console.debug(`Stopping Scan Capture: ${e}`)),
+                catchError(e => {
+                    console.debug('Scan Capture timed out');
+                    return of('timed out');
+                }),
+            );
+        }
 
-        const stopScanBuffer = this.domEventManager.createEventObserver(window, 'keydown', { capture: true }).pipe(
-            timeout(this.timeout),
-            filter((e: KeyboardEvent) => this.filterForControlSequence(this.endSequenceObj, e)),
-            tap(e => console.debug(`Stopping Scan Capture: ${e}`)),
-            catchError(e => {
-                console.debug('Scan Capture timed out');
-                return of('timed out');
-            }),
-        );
+        if (!this.keypressBlocker) {
+            // This subscription will block keyboard events during a scan
+            this.keypressBlocker =
+                this.domEventManager.createEventObserver(window, ['keypress', 'keyup', 'keydown'], { capture: true }).pipe(
+                    windowToggle(this.startScanBuffer, () => this.stopScanBuffer),
+                    mergeAll()
+                ).subscribe((e: KeyboardEvent) => {
+                    if (e.type === 'keydown') {
+                        e.stopPropagation();
+                    } else {
+                        e.stopImmediatePropagation();
+                    }
+                    e.preventDefault();
+                });
+        }
 
-        // This subscription will block keyboard events during a scan
-        this.domEventManager.createEventObserver(window, ['keypress', 'keyup', 'keydown'], { capture: true }).pipe(
-            windowToggle(startScanBuffer, () => stopScanBuffer),
-            mergeAll()
-        ).subscribe((e: KeyboardEvent) => {
-            if (e.type === 'keydown') {
-                e.stopPropagation();
-            } else {
-                e.stopImmediatePropagation();
-            }
-            e.preventDefault();
-        });
+        if (!this.scannerBuffer) {
+            // buffer up all keydown events and prevent them from propagating while scanning
+            this.scannerBuffer = this.domEventManager.createEventObserver(window, 'keydown', { capture: true }).pipe(
+                bufferToggle(
+                    this.startScanBuffer,
+                    () => this.stopScanBuffer
+                ),
+                // We need to filter out any incomplete scans
+                filter((events: KeyboardEvent[]) => this.filterForControlSequence(this.endSequenceObj, events[events.length - 1])),
+                tap(events => console.debug(`Complete Scan: ${events.map(e => e.key).join(', ')}`)),
+                map((events: KeyboardEvent[]) => this.convertKeyEventsToChars(events)),
+                // Join the buffer into a string and remove the start and stop characters
+                map((s) => s.join('')),
+                map((s: string) => this.getScanData(s))
+            );
+        }
 
-        // buffer up all keydown events and prevent them from propagating while scanning
-        return this.domEventManager.createEventObserver(window, 'keydown', { capture: true }).pipe(
-            bufferToggle(
-                startScanBuffer,
-                () => stopScanBuffer
-            ),
-            // We need to filter out any incomplete scans
-            filter((events: KeyboardEvent[]) => this.filterForControlSequence(this.endSequenceObj, events[events.length - 1])),
-            tap(events => console.debug(`Complete Scan: ${events.map(e => e.key).join(', ')}`)),
-            map((events: KeyboardEvent[]) => this.convertKeyEventsToChars(events)),
-            // Join the buffer into a string and remove the start and stop characters
-            map((s) => s.join('')),
-            map((s: string) => this.getScanData(s))
-        );
+        return this.scannerBuffer;
     }
 
     private getControlStrings(sequence: string): ControlSequence {

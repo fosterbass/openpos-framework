@@ -6,21 +6,27 @@ import { ScanData } from '../scanner';
 import { DomEventManager } from '../../../services/dom-event-manager.service';
 import { Subscription, of, Subject } from 'rxjs';
 import { ElectronService } from 'ngx-electron';
+import { WedgeScannerConfigMessage } from '../../../messages/wedge-scanner-config-message';
+import { MessageTypes } from '../../../messages/message-types';
+import { ConfigurationService } from '../../../services/configuration.service';
 
 describe('WedgeScanner', () => {
 
-    const config = {
-        configType: 'WedgeScanner',
+    const config: WedgeScannerConfigMessage = {
         startSequence: '*',
         endSequence: 'Enter',
         codeTypeLength: 1,
-        timeout: null
+        timeout: null,
+        enabled: true,
+        acceptKeys: null,
+        type: MessageTypes.CONFIG_CHANGED,
+        configType: 'WedgeScanner'
     };
 
     let scanResults: ScanData[];
     let keyDownEvents: KeyboardEvent[];
     let subscription: Subscription;
-    let sessionService: jasmine.SpyObj<SessionService>;
+    let configService: jasmine.SpyObj<ConfigurationService>;
     let domEventManager: jasmine.SpyObj<DomEventManager>;
     let wedgeScannerPlugin: WedgeScannerPlugin;
     let domEventManagerSpy;
@@ -59,22 +65,22 @@ describe('WedgeScanner', () => {
     }
 
     function setup() {
-        const sessionSpy = jasmine.createSpyObj('SessionService', ['getMessages']);
+        const configSpy = jasmine.createSpyObj('ConfigurationService', ['getConfiguration']);
         domEventManagerSpy = jasmine.createSpyObj('DomEventManager', ['createEventObserver']);
 
         TestBed.configureTestingModule({
             providers: [
                 WedgeScannerPlugin,
                 ElectronService,
-                { provide: SessionService, useValue: sessionSpy },
+                { provide: ConfigurationService, useValue: configSpy },
                 { provide: DomEventManager, useValue: domEventManagerSpy}
             ]
         });
 
-        sessionService = TestBed.inject(SessionService) as jasmine.SpyObj<SessionService>;
         domEventManager = TestBed.inject(DomEventManager) as jasmine.SpyObj<DomEventManager>;
+        configService = TestBed.inject(ConfigurationService) as jasmine.SpyObj<ConfigurationService>;
 
-        sessionService.getMessages.and.callFake(getConfig);
+        configService.getConfiguration.and.callFake(getConfig);
 
         wedgeScannerPlugin = TestBed.inject(WedgeScannerPlugin);
     }

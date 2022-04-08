@@ -6,4 +6,5 @@ export class WedgeScannerConfigMessage extends ConfigChangedMessage {
     codeTypeLength: number;
     timeout: number;
     acceptKeys: string[];
+    enabled: boolean;
 }
