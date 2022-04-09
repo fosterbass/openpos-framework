@@ -47,23 +47,19 @@ export class SaleTotalPanelComponent extends ScreenPartComponent<SaleTotalPanelI
 
     public shouldShowHeader(): boolean {
         return this.shouldShowLookupCustomer()
-            || this.shouldShowLoyaltySignupInProgress()
             || this.shouldShowLinkedCustomer();
     }
 
-    public shouldShowLookupCustomer(): boolean {
+    private shouldShowLookupCustomer(): boolean {
         return !this.screenData.readOnly
             && !!this.screenData.loyaltyButton
             && !this.screenData.customer;
     }
 
-    public shouldShowLinkedCustomer(): boolean {
+    private shouldShowLinkedCustomer(): boolean {
         return !this.screenData.readOnly
             && !!this.screenData.loyaltyButton
             && !!this.screenData.customer;
     }
 
-    public shouldShowLoyaltySignupInProgress(): boolean {
-        return !this.screenData.readOnly;
-    }
 }
