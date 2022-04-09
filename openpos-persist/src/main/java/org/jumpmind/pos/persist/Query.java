@@ -1,8 +1,9 @@
 package org.jumpmind.pos.persist;
 
 public class Query<T> {
-    public static <T> Query<T> named(String name, Class<T> clazz) {
-        return new Query<T>().named(name).result(clazz);
+
+    public static <P> Query<P> named(String name, Class<P> clazz) {
+        return new Query<P>().named(name).result(clazz);
     }
 
     private String name;
