@@ -5,7 +5,6 @@ import { ActionService } from '../../../core/actions/action.service';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog } from '@angular/material/dialog';
 import { OpenposMediaService } from '../../../core/media/openpos-media.service';
-import { ElectronService } from 'ngx-electron';
 import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provider.interface';
 import { TimeZoneContext } from '../../../core/client-context/time-zone-context';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
@@ -33,7 +32,6 @@ describe('TransactionSummaryComponent', () => {
 
         { provide: MatDialog, useClass: MockMatDialog },
         { provide: OpenposMediaService, useClass: MockOpenposMediaService },
-        { provide: ElectronService, useClass: MockElectronService },
         { provide: ClientContext, useValue: {} },
         { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
       ]

@@ -3,7 +3,6 @@ import { ConfigurationService } from './configuration.service';
 import { SessionService } from './session.service';
 import { TestBed } from '@angular/core/testing';
 import { cold, getTestScheduler } from 'jasmine-marbles';
-import { ElectronService } from 'ngx-electron';
 
 describe('ConfigurationService', () => {
 
@@ -25,7 +24,6 @@ describe('ConfigurationService', () => {
         const sessionSpy = jasmine.createSpyObj('SessionService', ['getMessages']);
         TestBed.configureTestingModule({
             providers: [
-                ElectronService,
                 { provide: SessionService, useValue: sessionSpy },
             ]
         });

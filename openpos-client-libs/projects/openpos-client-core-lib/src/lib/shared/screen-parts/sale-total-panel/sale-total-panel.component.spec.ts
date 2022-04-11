@@ -5,7 +5,6 @@ import { Subscription, Observable, of } from 'rxjs';
 import { SaleTotalPanelComponent } from './sale-total-panel.component';
 import { SaleTotalPanelInterface } from './sale-total-panel.interface';
 import { MatDialog } from '@angular/material/dialog';
-import { ElectronService } from 'ngx-electron';
 import { TimeZoneContext } from '../../../core/client-context/time-zone-context';
 import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provider.interface';
 import { ActionService } from '../../../core/actions/action.service';
@@ -24,7 +23,6 @@ class MockKeyPressProvider {
         return new Subscription();
     }
 }
-class MockElectronService { }
 class ClientContext { }
 
 describe('SaleTotalPanelComponent', () => {
@@ -50,7 +48,6 @@ describe('SaleTotalPanelComponent', () => {
                     { provide: MatDialog, useClass: MockMatDialog },
                     { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobile },
                     { provide: KeyPressProvider, useClass: MockKeyPressProvider },
-                    { provide: ElectronService, useClass: MockElectronService },
                     { provide: ClientContext, useValue: {} },
                     { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
                 ],

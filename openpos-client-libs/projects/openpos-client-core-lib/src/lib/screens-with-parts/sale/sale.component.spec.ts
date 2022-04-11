@@ -7,7 +7,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { KeyPressProvider } from '../../shared/providers/keypress.provider';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ActionService } from '../../core/actions/action.service';
-import { ElectronService } from 'ngx-electron';
 import { BaconStripComponent } from '../../shared/screen-parts/bacon-strip/bacon-strip.component';
 import { ImageUrlPipe } from '../../shared/pipes/image-url.pipe';
 import { TimeZoneContext } from '../../core/client-context/time-zone-context';
@@ -50,7 +49,6 @@ describe('SaleComponent', () => {
                     { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobile },
                     { provide: MatBottomSheet, useClass: MockMatBottomSheet },
                     { provide: KeyPressProvider, useClass: MockKeyPressProvider },
-                    { provide: ElectronService, useClass: MockElectronService },
                     { provide: ClientContext, useValue: {} },
                     { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
                 ],

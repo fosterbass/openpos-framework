@@ -8,7 +8,6 @@ import { FormattersService } from '../../../core/services/formatters.service';
 import { CustomerDetails } from './customer-information.interface';
 import { MatDialog } from '@angular/material/dialog';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ElectronService } from 'ngx-electron';
 import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provider.interface';
 import { TimeZoneContext } from '../../../core/client-context/time-zone-context';
 import { Subscription } from 'rxjs';
@@ -37,7 +36,6 @@ describe('CustomerInformationComponent', () => {
             providers: [
                 { provide: MatDialog, useClass: MockMatDialog },
                 { provide: ActionService, useClass: MockActionService },
-                { provide: ElectronService, useClass: MockElectronService },
                 { provide: KeyPressProvider, useClass: MockKeyPressProvider },
                 { provide: ClientContext, useValue: {} },
                 { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
