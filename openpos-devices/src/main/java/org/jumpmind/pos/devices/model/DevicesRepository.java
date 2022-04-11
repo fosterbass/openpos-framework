@@ -121,6 +121,16 @@ public class DevicesRepository {
         saveDeviceAuth(deviceId, deviceAuth);
     }
 
+    @CacheEvict(value = CACHE_NAME, allEntries = true)
+    public void setBrand(String deviceId, String newBrand) {
+        String deviceAuth = getDeviceAuth(deviceId);
+        DeviceModel device = getDeviceByAuth(deviceAuth);
+
+        device.setBrand(newBrand);
+        saveDevice(device);
+        saveDeviceAuth(deviceId, deviceAuth);
+    }
+
     public String getDeviceAuth(String deviceId) {
         DeviceAuthModel deviceAuthModel = getDeviceAuthModel(deviceId);
 

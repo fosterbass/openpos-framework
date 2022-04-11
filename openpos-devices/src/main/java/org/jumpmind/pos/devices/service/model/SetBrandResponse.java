@@ -10,6 +10,6 @@ import org.jumpmind.pos.devices.model.DeviceModel;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SetAppIdResponse {
+public class SetBrandResponse {
     private DeviceModel device;
 }

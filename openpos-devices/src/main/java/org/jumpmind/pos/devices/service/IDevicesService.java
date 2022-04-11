@@ -56,4 +56,7 @@ public interface IDevicesService {
 
     @RequestMapping(path = "/setAppId", method = RequestMethod.POST)
     public SetAppIdResponse setAppId(@RequestBody SetAppIdRequest request);
+
+    @RequestMapping(path = "/setBrand", method = RequestMethod.PUT)
+    public SetBrandResponse setBrand(@RequestBody SetBrandRequest request);
 }

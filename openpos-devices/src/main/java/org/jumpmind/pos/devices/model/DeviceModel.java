@@ -1,13 +1,11 @@
 package org.jumpmind.pos.devices.model;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.StreamSupport;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.commons.lang3.StringUtils;
 import org.jumpmind.pos.persist.*;
@@ -67,7 +65,8 @@ public class DeviceModel extends AbstractModel implements ITaggedModel {
     @Builder.Default
     private String deviceMode = DEVICE_MODE_DEFAULT;
 
-    public static final String DEVICE_MODE_DEFAULT  = "default";
+    public static final String BRAND_DEFAULT = "default";
+    public static final String DEVICE_MODE_DEFAULT = "default";
     public static final String DEVICE_MODE_TRAINING = "training";
 
     @Override
@@ -99,7 +98,7 @@ public class DeviceModel extends AbstractModel implements ITaggedModel {
     public void updateTags(AbstractEnvironment env) {
         MutablePropertySources propSrcs = env.getPropertySources();
         StreamSupport.stream(propSrcs.spliterator(), false)
-                .filter(ps -> ps instanceof EnumerablePropertySource)
+                .filter(EnumerablePropertySource.class::isInstance)
                 .map(ps -> ((EnumerablePropertySource<?>) ps).getPropertyNames())
                 .flatMap(Arrays::<String>stream)
                 .filter(propName -> propName.startsWith("openpos.tags"))
@@ -121,23 +120,46 @@ public class DeviceModel extends AbstractModel implements ITaggedModel {
     }
 
     @JsonIgnore
-    public boolean isDefaultDeviceMode()  {
-        return (deviceMode == null ? true : deviceMode.equals(DEVICE_MODE_DEFAULT));
+    public boolean isDefaultDeviceMode() {
+        return deviceMode == null || DEVICE_MODE_DEFAULT.equals(deviceMode);
     }
 
     @JsonIgnore
-    public void setDefaultDeviceMode()  {
+    public void setDefaultDeviceMode() {
         deviceMode = DEVICE_MODE_DEFAULT;
     }
 
     @JsonIgnore
-    public boolean isTrainingDeviceMode()  {
-        return (deviceMode == null ? false : deviceMode.equals(DEVICE_MODE_TRAINING));
+    public boolean isTrainingDeviceMode() {
+        return DEVICE_MODE_TRAINING.equals(deviceMode);
     }
 
     @JsonIgnore
-    public void setTrainingDeviceMode()  {
+    public void setTrainingDeviceMode() {
         deviceMode = DEVICE_MODE_TRAINING;
+    }
+
+    @JsonIgnore
+    public String getBrand() {
+        if (CollectionUtils.isNotEmpty(deviceParamModels)) {
+            return deviceParamModels.stream()
+                    .filter(param -> "brandId".equals(param.getParamName()))
+                    .findFirst()
+                    .map(DeviceParamModel::getParamValue)
+                    .orElse(BRAND_DEFAULT);
+        }
+        String brandTag = getTagValue("brand");
+        return StringUtils.isNotBlank(brandTag) ? brandTag : BRAND_DEFAULT;
+    }
+
+    @JsonIgnore
+    public void setBrand(String brand) {
+        setTagValue("brand", brand);
+        deviceParamModels
+                .stream()
+                .filter(param -> "brandId".equals(param.getParamName()))
+                .findFirst()
+                .ifPresent(existingBrand -> existingBrand.setParamValue(brand));
     }
 
     private List<DeviceParamModel> deviceParamModels;
