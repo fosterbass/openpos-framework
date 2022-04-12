@@ -58,3 +58,7 @@ company:
 
 brand:
   id: 0
+
+springfox:
+    documentation:
+        auto-startup: false
