@@ -1,5 +1,5 @@
 import { ConfigChangedMessage } from './config-changed-message';
 
-export interface ScanditCapacitorMessage extends ConfigChangedMessage {
+export interface CapacitorMessage extends ConfigChangedMessage {
     licenseKey: string;
 }

@@ -2,7 +2,7 @@ import { Injectable, NgZone } from '@angular/core';
 import { Capacitor } from '@capacitor/core';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, map, mergeMap, switchMap, take, timeout } from 'rxjs/operators';
-import { ScanditCapacitorMessage } from '../../../messages/scandit-capacitor-message';
+import { CapacitorMessage } from '../../../messages/capacitor-message';
 import { ConfigurationService } from '../../../services/configuration.service';
 import { IPlatformPlugin } from '../../platform-plugin.interface';
 import { ImageScanner, ScannerViewRef, ScanData } from '../scanner';
@@ -28,7 +28,7 @@ export class ScanditCapacitorImageScanner implements ImageScanner, IPlatformPlug
         return this._config.getConfiguration('ScanditCapacitor').pipe(
             take(1),
             timeout(10000),
-            switchMap((config: ScanditCapacitorMessage) => {
+            switchMap((config: CapacitorMessage) => {
                 if (config.licenseKey) {
                     return of(scandit.initialize({
                         apiKey: config.licenseKey
