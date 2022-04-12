@@ -38,6 +38,10 @@ public class MoneyCalculator {
         return money(currencyId, new BigDecimal(d), RoundingMode.HALF_UP);
     }
 
+    public static Money elseZero(Money amount, String currencyCode) {
+        return amount != null ? amount : zero(currencyCode);
+    }
+
     public static Money money(String currencyId, BigDecimal value) {
         return money(currencyId, value, RoundingMode.HALF_UP);
     }
