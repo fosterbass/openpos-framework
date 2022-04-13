@@ -40,6 +40,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.jumpmind.pos.util.AppUtils.setupLogging;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Component
 @Slf4j
@@ -83,9 +84,9 @@ public class StateManagerContainer implements IStateManagerContainer, Applicatio
         StateManager stateManager = stateManagersByDeviceId.get(deviceId);
         if (stateManager == null) {
             stateManager = applicationContext.getBean(StateManager.class);
-            setCurrentStateManager(stateManager);
             clientContext.put("deviceId", deviceId);
             clientContext.put("appId", appId);
+            setCurrentStateManager(stateManager);
             setClientContextVersions();
             if (personalizationProperties != null) {
                 personalizationProperties.entrySet().forEach(entry -> clientContext.put(entry.getKey(), entry.getValue()));
@@ -196,8 +197,12 @@ public class StateManagerContainer implements IStateManagerContainer, Applicatio
                 clientContext.put("deviceMode", stateManager.getApplicationState().getDeviceMode());
             }
 
-            clientContext.put("deviceId", stateManager.getDeviceId());
-            clientContext.put("appId", stateManager.getAppId());
+            if (isNotBlank(stateManager.getDeviceId())) {
+                clientContext.put("deviceId", stateManager.getDeviceId());
+            }
+            if (isNotBlank(stateManager.getAppId())) {
+                clientContext.put("appId", stateManager.getAppId());
+            }
             setClientContextVersions();
             if (clientContextUpdaters != null) {
                 for (IClientContextUpdater clientContextUpdater : clientContextUpdaters) {
