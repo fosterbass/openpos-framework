@@ -51,7 +51,7 @@ public class MoneyCalculator {
     }
 
     public static Money money(String currencyId, BigDecimal value, RoundingMode roundingMode) {
-        return Money.of(CurrencyUnit.of(currencyId), value, roundingMode);
+        return Money.of(CurrencyUnit.of(currencyId), value != null ? value : BigDecimal.ZERO, roundingMode);
     }
 
     public static boolean isZero(Money money) {
