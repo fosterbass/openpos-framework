@@ -49,3 +49,15 @@ textarea {
 .bold-font-weight {
   font-weight: bold;
 }
+
+.barcode-scanner {
+  display: grid;
+  width: 100%;
+  min-height: 200px;
+}
+
+.barcode-toggle {
+    app-icon {
+        margin: 8px 4px;
+    }
+}

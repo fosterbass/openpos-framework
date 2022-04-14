@@ -18,6 +18,16 @@
             <button *ngIf="isScanAllowed()" type="button" mat-button matSuffix mat-icon-button (click)="onScan(formField)">
                 <mat-icon svgIcon="barcode"></mat-icon>
             </button>
+            <button class="barcode-toggle" *ngIf="isImageScanAllowed()" matSuffix
+                    mat-flat-button type="button"
+                    color=primary
+                    (click)="onImageScan()">
+                <app-icon iconName="barcode"></app-icon>
+            </button>
+            <div class="barcode-scanner" *ngIf="showScanner">
+                <app-image-scanner (scan)="onBarcodeScanned($event)" (scanChanged)="showScanner = $event">
+                </app-image-scanner>
+            </div>
                  
             <input class="poptart" *ngSwitchCase="'PopTart'" matInput [formControlName]="formField.id" [formControl]="control" [placeholder]="getPlaceholderText(formField)"
                  [required]="formField.required" (click)="openPopTart()" 
