@@ -469,11 +469,11 @@ public class DatabaseSchema {
     private static void parseIndexDef(IndexDef indexDef, Table table, Map<String, IIndex> indices, ModelClassMetaData metaData, IDatabasePlatform platform) {
         if (indexDef.column() != null && !indexDef.column().isEmpty()) {
             Column column = findColumn(indexDef.column(), table, platform);
-            createIndex(indexDef, column, indexDef.column(), indices, metaData.getIdxPrefix());
+            createIndex(table, indexDef, column, indexDef.column(), indices, metaData.getIdxPrefix());
         } else if (indexDef.columns() != null && indexDef.columns().length > 0) {
             for (String columnName : indexDef.columns()) {
                 Column column = findColumn(columnName, table, platform);
-                createIndex(indexDef, column, columnName, indices, metaData.getIdxPrefix());
+                createIndex(table, indexDef, column, columnName, indices, metaData.getIdxPrefix());
             }
         } else {
             log.warn("Unable to create index '{}', no columns found in definition", indexDef.name());
@@ -490,7 +490,7 @@ public class DatabaseSchema {
         return table.getColumnWithName(snakeCase);
     }
 
-    private static void createIndex(IndexDef indexDef, Column column, String columnName, Map<String, IIndex> indices, String idxPrefix) {
+    private static void createIndex(Table table, IndexDef indexDef, Column column, String columnName, Map<String, IIndex> indices, String idxPrefix) {
         if (column != null && indexDef != null) {
             String indexName = idxPrefix != null && !idxPrefix.isEmpty() ? idxPrefix + "_" + indexDef.name() : indexDef.name();
             boolean unique = indexDef.unique();
@@ -503,7 +503,7 @@ public class DatabaseSchema {
             }
             index.addColumn(new IndexColumn(column));
         } else {
-            log.warn("Unable to create index for column '{}', unable to find column on table", columnName);
+            log.warn("Unable to create index for column '{}', unable to find column on table {}", columnName, table.getName());
         }
     }
 
