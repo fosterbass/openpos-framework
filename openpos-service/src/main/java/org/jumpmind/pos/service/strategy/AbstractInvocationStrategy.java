@@ -35,17 +35,21 @@ abstract public class AbstractInvocationStrategy {
     }
     
     public static <A extends Annotation> A getAnnotation(Object object, Method method, Class<A> annotation) {
+        Class<?>[] interfaces = object.getClass().getInterfaces();
+        A objectAnnotations = findAnnotation(interfaces, annotation);
+
         Class<?> methodClazz = method.getDeclaringClass();
-        A a = methodClazz.getAnnotation(annotation);
-        if (a == null) {
-            Class<?>[] interfaces = methodClazz.getInterfaces();
-            a = findAnnotation(interfaces, annotation);
-            if (a == null) {
-                interfaces = object.getClass().getInterfaces();
-                a = findAnnotation(interfaces, annotation);
-            }
+        A interfaceAnnotations = methodClazz.getAnnotation(annotation);
+        if (interfaceAnnotations == null) {
+            interfaces = methodClazz.getInterfaces();
+            interfaceAnnotations = findAnnotation(interfaces, annotation);
         }
-        return a;
+        if (interfaceAnnotations == null ||
+                (interfaceAnnotations != null && !interfaceAnnotations.equals(objectAnnotations))) {
+            return objectAnnotations;
+        } else {
+            return interfaceAnnotations;
+        }
     }
 
     static <A extends Annotation> A findAnnotation(Class<?>[] classes, Class<A> annotation) {
