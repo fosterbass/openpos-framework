@@ -2,6 +2,7 @@ package org.jumpmind.pos.service;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.h2.tools.Server;
 import org.jumpmind.db.model.Table;
@@ -18,6 +19,7 @@ import org.jumpmind.pos.persist.impl.ShadowTablesConfigModel;
 import org.jumpmind.pos.persist.model.AugmenterHelper;
 import org.jumpmind.pos.persist.model.TagHelper;
 import org.jumpmind.pos.service.model.ModuleModel;
+import org.jumpmind.pos.util.ArtifactVersion;
 import org.jumpmind.pos.util.clientcontext.ClientContext;
 import org.jumpmind.properties.TypedProperties;
 import org.jumpmind.security.ISecurityService;
@@ -57,13 +59,12 @@ import static org.apache.commons.lang3.StringUtils.*;
 import static org.jumpmind.db.util.BasicDataSourcePropertyConstants.*;
 import static org.jumpmind.pos.service.util.ClassUtils.getClassesForPackageAndAnnotation;
 
+@Slf4j
 @Configuration
 @EnableTransactionManagement
 @DependsOn({"tagConfig", "augmenterConfigs"})
 @ConfigurationProperties(prefix = "openpos.module")
 abstract public class AbstractRDBMSModule extends AbstractServiceFactory implements IModule, IRDBMSModule {
-
-    protected final Logger log = LoggerFactory.getLogger(getClass());
 
     private final static String SYS_PROP_DISABLE_JUMPMIND_DRIVER = "jumpmind.commerce.disable.jdbc.driver";
 
@@ -123,36 +124,14 @@ abstract public class AbstractRDBMSModule extends AbstractServiceFactory impleme
 
     static Server h2Server;
 
+    ArtifactVersion artifactVersion;
+
     @Override
     public String getVersion() {
-        String version = new AbstractVersion() {
-            @Override
-            protected String getArtifactName() {
-                return AbstractRDBMSModule.this.getArtifactName();
-            }
-        }.version();
-        if (version.equals("development")) {
-            version = findDevelopmentVersion();
+        if (artifactVersion == null) {
+            artifactVersion = ArtifactVersion.builder().artifactName(getArtifactName()).build();
         }
-        return version;
-    }
-
-    private String findDevelopmentVersion() {
-        File dir = new File("../");
-        File[] files = dir.listFiles();
-        for (File file: files) {
-            if (file.isDirectory() && file.getName().endsWith("-assemble")) {
-                File gradleProperties = new File(file, "gradle.properties");
-                if (gradleProperties.exists()) {
-                    TypedProperties props = new TypedProperties(gradleProperties);
-                    String version = props.get("version");
-                    if (version.endsWith("-SNAPSHOT")) {
-                        return version.substring(0, version.length()-"-SNAPSHOT".length());
-                    }
-                }
-            }
-        }
-        return "1000.0.0";
+        return artifactVersion.version();
     }
 
     abstract protected String getArtifactName();
