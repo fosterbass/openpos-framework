@@ -7,6 +7,7 @@ import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +23,7 @@ public final class AppUtils {
     static AtomicReference<String> HOST_NAME = new AtomicReference<String>(null);
 
     private static FastDateFormat timezoneFormatter = FastDateFormat.getInstance("Z");
-        
+
     private AppUtils() {
     }
 
@@ -118,6 +119,15 @@ public final class AppUtils {
             log.debug("Thread sleep interrupted.", ex);
         }
     }
+    public static Date getTimezoneOffsetCorrectedDate(Date serverDate, int serverOffsetMillis, String clientOffsetString) {
+        int absOffset = Math.abs(serverOffsetMillis);
+        String strServerOffset = String.format("%s%02d:%02d",serverOffsetMillis < 0 ? "-" : "+",
+                TimeUnit.MILLISECONDS.toHours(absOffset),
+                TimeUnit.MILLISECONDS.toMinutes(absOffset) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(absOffset))
+        );
+
+        return getTimezoneOffsetCorrectedDate(serverDate, strServerOffset, clientOffsetString);
+    }
 
     // TODO: Should be either dealing with UTC or client timezone, not trying to convert from unknown server TZ to client tz
     public static Date getTimezoneOffsetCorrectedDate(Date serverDate, String serverOffsetString, String clientOffsetString) {
@@ -132,8 +142,8 @@ public final class AppUtils {
                 LocalDateTime serverLocalDateTime = serverDate.toInstant().atOffset(serverOffset).toLocalDateTime();
                 LocalDateTime clientLocalDateTime = serverDate.toInstant().atOffset(clientOffset).toLocalDateTime();
 
-                long hoursOffset = ChronoUnit.HOURS.between(clientLocalDateTime, serverLocalDateTime);
-                return Date.from(serverLocalDateTime.minusHours(hoursOffset).toInstant(serverOffset));
+                long minutesOffset = ChronoUnit.MINUTES.between(clientLocalDateTime, serverLocalDateTime);
+                return Date.from(serverLocalDateTime.minusMinutes(minutesOffset).toInstant(serverOffset));
             } catch (Exception e) {
                 log.warn("Could not convert date using server and client offsets, returning original date", e);
                 return serverDate;

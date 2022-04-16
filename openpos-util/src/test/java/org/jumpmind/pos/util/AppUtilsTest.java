@@ -175,4 +175,85 @@ public class AppUtilsTest {
         Date correctedDate = AppUtils.getTimezoneOffsetCorrectedDate(date, "invalid offset", "-01:00");
         assertThat(correctedDate).isEqualTo(date);
     }
+
+    @Test
+    public void serverAndClientOffsetsAre0_withIntegerServerOffset() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2021, Calendar.OCTOBER, 26, 2, 0);
+        Date date = calendar.getTime();
+        Date correctedDate = AppUtils.getTimezoneOffsetCorrectedDate(date, 0, "+00:00");
+        calendar.setTime(correctedDate);
+        // Client and server have same time
+        assertThat(calendar.get(Calendar.YEAR)).isEqualTo(2021);
+        assertThat(calendar.get(Calendar.MONTH)).isEqualTo(Calendar.OCTOBER);
+        assertThat(calendar.get(Calendar.DAY_OF_MONTH)).isEqualTo(26);
+        assertThat(calendar.get(Calendar.HOUR)).isEqualTo(2);
+        assertThat(calendar.get(Calendar.AM_PM)).isEqualTo(Calendar.AM);
+        assertThat(calendar.get(Calendar.MINUTE)).isZero();
+    }
+
+    @Test
+    public void serverOffsetIs0_clientOffsetIsNeg4_withIntegerServerOffset() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2021, Calendar.OCTOBER, 26, 2, 0);
+        Date date = calendar.getTime();
+        Date correctedDate = AppUtils.getTimezoneOffsetCorrectedDate(date, 0, "-04:00");
+        calendar.setTime(correctedDate);
+        // Client should be 4 hours behind server
+        assertThat(calendar.get(Calendar.YEAR)).isEqualTo(2021);
+        assertThat(calendar.get(Calendar.MONTH)).isEqualTo(Calendar.OCTOBER);
+        assertThat(calendar.get(Calendar.DAY_OF_MONTH)).isEqualTo(25);
+        assertThat(calendar.get(Calendar.HOUR)).isEqualTo(10);
+        assertThat(calendar.get(Calendar.AM_PM)).isEqualTo(Calendar.PM);
+        assertThat(calendar.get(Calendar.MINUTE)).isZero();
+    }
+
+    @Test
+    public void serverOffsetIsNeg430_clientOffsetIsNeg4_withIntegerServerOffset() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2021, Calendar.OCTOBER, 26, 2, 0);
+        Date date = calendar.getTime();
+        Date correctedDate = AppUtils.getTimezoneOffsetCorrectedDate(date, -16200000, "-04:00");
+        calendar.setTime(correctedDate);
+        // Client should be 30 mins ahead of server
+        assertThat(calendar.get(Calendar.YEAR)).isEqualTo(2021);
+        assertThat(calendar.get(Calendar.MONTH)).isEqualTo(Calendar.OCTOBER);
+        assertThat(calendar.get(Calendar.DAY_OF_MONTH)).isEqualTo(26);
+        assertThat(calendar.get(Calendar.HOUR)).isEqualTo(2);
+        assertThat(calendar.get(Calendar.MINUTE)).isEqualTo(30);
+        assertThat(calendar.get(Calendar.AM_PM)).isEqualTo(Calendar.AM);
+    }
+
+    @Test
+    public void serverOffsetIsNeg4_clientOffsetIs0_withIntegerServerOffset() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2021, Calendar.OCTOBER, 26, 2, 0);
+        Date date = calendar.getTime();
+        Date correctedDate = AppUtils.getTimezoneOffsetCorrectedDate(date, -14400000, "+00:00");
+        calendar.setTime(correctedDate);
+        // Client should be 4 hours ahead of server
+        assertThat(calendar.get(Calendar.YEAR)).isEqualTo(2021);
+        assertThat(calendar.get(Calendar.MONTH)).isEqualTo(Calendar.OCTOBER);
+        assertThat(calendar.get(Calendar.DAY_OF_MONTH)).isEqualTo(26);
+        assertThat(calendar.get(Calendar.HOUR)).isEqualTo(6);
+        assertThat(calendar.get(Calendar.MINUTE)).isEqualTo(0);
+        assertThat(calendar.get(Calendar.AM_PM)).isEqualTo(Calendar.AM);
+    }
+
+    @Test
+    public void serverOffsetIsPos4_clientOffsetIs0_withIntegerServerOffset() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2021, Calendar.OCTOBER, 26, 2, 0);
+        Date date = calendar.getTime();
+        Date correctedDate = AppUtils.getTimezoneOffsetCorrectedDate(date, 14400000, "+00:00");
+        calendar.setTime(correctedDate);
+        // Client should be 4 hours ahead of server
+        assertThat(calendar.get(Calendar.YEAR)).isEqualTo(2021);
+        assertThat(calendar.get(Calendar.MONTH)).isEqualTo(Calendar.OCTOBER);
+        assertThat(calendar.get(Calendar.DAY_OF_MONTH)).isEqualTo(25);
+        assertThat(calendar.get(Calendar.HOUR)).isEqualTo(10);
+        assertThat(calendar.get(Calendar.MINUTE)).isEqualTo(0);
+        assertThat(calendar.get(Calendar.AM_PM)).isEqualTo(Calendar.PM);
+    }
+
 }
