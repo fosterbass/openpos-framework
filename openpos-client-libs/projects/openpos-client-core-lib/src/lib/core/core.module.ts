@@ -22,7 +22,6 @@ import { PersonalizationComponent } from './personalization/personalization.comp
 import { ToastService } from './services/toast.service';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ElectronService, NgxElectronModule } from 'ngx-electron';
 import { CordovaPlatform } from './platforms/cordova.platform';
 import { NCRPaymentPlugin } from './platform-plugins/cordova-plugins/ncr-payment-plugin';
 import { SplashScreenComponent } from './components/splash-screen/splash-screen.component';
@@ -44,7 +43,6 @@ import { AudioConsolePlugin } from './audio/audio-console.plugin';
 import { ScanditCapacitorImageScanner } from './platform-plugins/barcode-scanners/scandit-capacitor/scandit-capacitor.service';
 import { IMAGE_SCANNERS, SCANNERS } from './platform-plugins/barcode-scanners/scanner';
 import { BarcodeScanner } from './platform-plugins/barcode-scanners/barcode-scanner.service';
-import { ClientExecutableService } from './services/client-executable.service';
 import { CapacitorIosPlatform } from './platforms/capacitor-ios.platform';
 import { CapacitorAndroidPlatform } from './platforms/capacitor-android.platform';
 import { AilaScannerCordovaPlugin } from './platform-plugins/barcode-scanners/aila-scanner-cordova/aila-scanner-cordova.plugin';
@@ -70,6 +68,7 @@ import { OpenposAppComponent } from './components/openpos-app/openpos-app.compon
 import { PLATFORMS } from './platforms/platform.interface';
 import { PLUGINS } from './platform-plugins/platform-plugin.interface';
 import { ZeroConfPersonalizationDialogComponent } from './startup/tasks/zeroconf/zero-conf-personalization-dialog.component';
+import { ElectronPlatform } from './platforms/electron.platform';
 
 registerLocaleData(locale_enCA, 'en-CA');
 registerLocaleData(locale_frCA, 'fr-CA');
@@ -96,7 +95,6 @@ registerLocaleData(locale_frCA, 'fr-CA');
         SharedModule,
         BrowserModule,
         BrowserAnimationsModule,
-        NgxElectronModule,
         ToastrModule.forRoot(),
         CommerceServerSinkModule,
         NewRelicSinkModule,
@@ -118,7 +116,7 @@ registerLocaleData(locale_frCA, 'fr-CA');
         MediaMatcher,
         StompRService,
         BarcodeScanner,
-        { provide: ZEROCONF_TOKEN, useClass: MDnsZeroconf, multi: true, deps: [ElectronService] },
+        { provide: ZEROCONF_TOKEN, useClass: MDnsZeroconf, multi: true, deps: [ElectronPlatform] },
         { provide: ZEROCONF_TOKEN, useClass: CapacitorZeroconf, multi: true, deps: [CapacitorService] },
         AilaScannerCordovaPlugin,
         ScanditScannerCordovaPlugin,
@@ -143,6 +141,7 @@ registerLocaleData(locale_frCA, 'fr-CA');
         { provide: PLATFORMS, useExisting: CordovaPlatform, multi: true },
         { provide: PLATFORMS, useExisting: CapacitorIosPlatform, multi: true },
         { provide: PLATFORMS, useExisting: CapacitorAndroidPlatform, multi: true },
+        { provide: PLATFORMS, useExisting: ElectronPlatform, multi: true },
         { provide: STORAGE_CONTAINERS, useClass: CapacitorStorageService, multi: true },
         CapacitorPrinterPlugin,
         { provide: PRINTERS, useExisting: CapacitorPrinterPlugin, multi: true },
@@ -169,7 +168,6 @@ export class CoreModule {
         private injector: Injector,
         toastService: ToastService,
         uiDataService: UIDataMessageService,
-        clientExecutableService: ClientExecutableService,
         keyProvider: KeyPressProvider) {
         throwIfAlreadyLoaded(parentModule, 'CoreModule');
         AppInjector.instance = this.injector;

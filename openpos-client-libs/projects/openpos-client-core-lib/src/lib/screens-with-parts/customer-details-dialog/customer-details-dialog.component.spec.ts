@@ -9,7 +9,6 @@ import { IActionItem } from '../../core/actions/action-item.interface';
 import { PhonePipe } from '../../shared/pipes/phone.pipe';
 import { MatDialog } from '@angular/material/dialog';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ElectronService } from 'ngx-electron';
 import { CLIENTCONTEXT } from '../../core/client-context/client-context-provider.interface';
 import { TimeZoneContext } from '../../core/client-context/time-zone-context';
 import { Observable, of } from 'rxjs';
@@ -20,7 +19,6 @@ import { MarkdownFormatterPipe } from '../../shared/pipes/markdown-formatter.pip
 
 class MockActionService { }
 class MockMatDialog { }
-class MockElectronService { }
 class ClientContext { }
 
 describe('CustomerDetailsDialog', () => {
@@ -64,7 +62,6 @@ describe('CustomerDetailsDialog', () => {
           { provide: ActionService, useClass: MockActionService },
           { provide: MatDialog, useClass: MockMatDialog },
           { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobileFalse },
-          { provide: ElectronService, useClass: MockElectronService },
           { provide: ClientContext, useValue: {} },
           { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
         ],
@@ -377,7 +374,6 @@ describe('CustomerDetailsDialog', () => {
           { provide: ActionService, useClass: MockActionService },
           { provide: MatDialog, useClass: MockMatDialog },
           { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobileTrue },
-          { provide: ElectronService, useClass: MockElectronService },
           { provide: ClientContext, useValue: {} },
           { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
         ],
@@ -445,7 +441,6 @@ describe('CustomerDetailsDialog', () => {
           { provide: ActionService, useClass: MockActionService },
           { provide: MatDialog, useClass: MockMatDialog },
           { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobileFalse },
-          { provide: ElectronService, useClass: MockElectronService },
           { provide: ClientContext, useValue: {} },
           { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
         ],

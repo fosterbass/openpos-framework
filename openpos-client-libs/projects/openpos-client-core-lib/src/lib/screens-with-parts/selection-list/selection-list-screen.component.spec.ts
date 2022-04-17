@@ -4,7 +4,6 @@ import { ActionService } from '../../core/actions/action.service';
 import { IActionItem } from '../../core/actions/action-item.interface';
 import { By } from '@angular/platform-browser';
 import { SelectionListInterface } from '../selection-list/selection-list.interface';
-import { ElectronService } from 'ngx-electron';
 import { CLIENTCONTEXT } from '../../core/client-context/client-context-provider.interface';
 import { TimeZoneContext } from '../../core/client-context/time-zone-context';
 import { MatDialog } from '@angular/material/dialog';
@@ -20,7 +19,6 @@ class MockActionService {
     doAction(action: IActionItem) { }
 }
 class MockMatDialog { }
-class MockElectronService { }
 class ClientContext { }
 
 describe('SelectionListScreenComponent', () => {
@@ -48,7 +46,6 @@ describe('SelectionListScreenComponent', () => {
                 providers: [
                     { provide: ActionService, useClass: MockActionService },
                     { provide: MatDialog, useClass: MockMatDialog },
-                    { provide: ElectronService, useClass: MockElectronService },
                     { provide: ClientContext, useValue: {} },
                     { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
                 ],

@@ -1,7 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
-import { ElectronService } from 'ngx-electron';
 import { ActionService } from '../../../core/actions/action.service';
 import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provider.interface';
 import { TimeZoneContext } from '../../../core/client-context/time-zone-context';
@@ -27,7 +26,6 @@ describe('ScreenGestureComponent', () => {
             providers: [
                 { provide: MatDialog, useValue: mockService },
                 { provide: ActionService, useValue: mockService },
-                { provide: ElectronService, useValue: mockService },
                 { provide: KeyPressProvider, useValue: mockService },
                 { provide: ClientContext, useValue: {} },
                 { provide: CLIENTCONTEXT, useClass: TimeZoneContext }

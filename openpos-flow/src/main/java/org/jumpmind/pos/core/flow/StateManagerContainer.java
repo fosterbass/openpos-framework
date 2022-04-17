@@ -115,11 +115,21 @@ public class StateManagerContainer implements IStateManagerContainer, Applicatio
     @Override
     public void changeBrand(String deviceId, String brand) {
         IStateManager stateManager = stateManagersByDeviceId.get(deviceId);
-        stateManager.getClientContext().put("brandId", brand);
-        Map<String, String> properties = stateManager.getApplicationState().getScopeValue("personalizationProperties");
-        properties.put("brandId", brand);
-        stateManager.sendConfigurationChangedMessage();
-        stateManager.reset();
+        if (stateManager != null) {
+            stateManager.getClientContext().put("brandId", brand);
+            Map<String, String> properties = stateManager.getApplicationState().getScopeValue("personalizationProperties");
+            properties.put("brandId", brand);
+            stateManager.sendConfigurationChangedMessage();
+            stateManager.reset();
+        }
+    }
+
+    @Override
+    public void resetStateManager(String deviceId) {
+        IStateManager stateManager = stateManagersByDeviceId.get(deviceId);
+        if (stateManager != null) {
+            stateManager.reset();
+        }
     }
 
     private List<TransitionStepConfig> createTransitionSteps(String appId, String deviceId) {

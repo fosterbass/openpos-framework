@@ -5,7 +5,6 @@ import { cold, getTestScheduler } from 'jasmine-marbles';
 import { ScanData } from '../scanner';
 import { DomEventManager } from '../../../services/dom-event-manager.service';
 import { Subscription, of, Subject } from 'rxjs';
-import { ElectronService } from 'ngx-electron';
 
 describe('WedgeScanner', () => {
 
@@ -65,7 +64,6 @@ describe('WedgeScanner', () => {
         TestBed.configureTestingModule({
             providers: [
                 WedgeScannerPlugin,
-                ElectronService,
                 { provide: SessionService, useValue: sessionSpy },
                 { provide: DomEventManager, useValue: domEventManagerSpy}
             ]

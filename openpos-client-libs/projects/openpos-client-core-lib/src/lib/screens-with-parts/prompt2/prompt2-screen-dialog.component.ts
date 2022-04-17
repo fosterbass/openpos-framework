@@ -24,6 +24,7 @@ export class Prompt2ScreenDialogComponent extends PosScreenDirective<PromptPlusP
     activeImageScanInput?: BaseFormControl;
 
     private _barcodeScanSubscription?: Subscription;
+    private _alwaysBarcodeScanning?: boolean;
 
     get hasImageScannerSupport(): boolean {
         return this._barcodeScanner.hasImageScanner;
@@ -112,6 +113,16 @@ export class Prompt2ScreenDialogComponent extends PosScreenDirective<PromptPlusP
         }
 
         this.rootFormGroup = root;
+
+        const scanControl = this.screen.items
+                                .filter(instanceOfTextInput)
+                                .filter(t => t.allowBarcodeScanEntry);
+
+        this._alwaysBarcodeScanning = scanControl.length === 1;
+
+        if (this._alwaysBarcodeScanning && !this.hasImageScannerSupport) {
+            this._startBarcodeScanning(scanControl[0]);
+        }
     }
 
     ngOnDestroy(): void {
@@ -125,15 +136,21 @@ export class Prompt2ScreenDialogComponent extends PosScreenDirective<PromptPlusP
     }
 
     onInputFocused(control: BaseFormControl) {
-        if (instanceOfTextInput(control) && control.allowBarcodeScanEntry) {
-            this._barcodeScanSubscription = this._barcodeScanner.beginScanning().subscribe(data => {
-                this.acceptScanInputForControl(control, data);
-            });
+        if (instanceOfTextInput(control) && control.allowBarcodeScanEntry && !this._alwaysBarcodeScanning) {
+            this._startBarcodeScanning(control);
         }
     }
 
     onInputBlurred() {
+      if (!this._alwaysBarcodeScanning) {
         this._stopBarcodeScanning();
+        }
+    }
+
+    private _startBarcodeScanning(control: BaseFormControl) {
+      this._barcodeScanSubscription = this._barcodeScanner.beginScanning().subscribe(data => {
+                    this.acceptScanInputForControl(control, data);
+      });
     }
 
     private _stopBarcodeScanning() {

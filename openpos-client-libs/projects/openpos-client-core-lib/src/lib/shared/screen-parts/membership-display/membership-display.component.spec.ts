@@ -7,7 +7,6 @@ import { By } from '@angular/platform-browser';
 import { Membership } from './memebership-display.interface';
 import { MatDialog } from '@angular/material/dialog';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ElectronService } from 'ngx-electron';
 import { TimeZoneContext } from '../../../core/client-context/time-zone-context';
 import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provider.interface';
 import { KeyPressProvider } from '../../providers/keypress.provider';
@@ -36,7 +35,6 @@ describe('MembershipDisplayComponent', () => {
             providers: [
                 { provide: MatDialog, useClass: MockMatDialog },
                 { provide: ActionService, useClass: MockActionService },
-                { provide: ElectronService, useClass: MockElectronService },
                 { provide: KeyPressProvider, useClass: MockKeyPressProvider },
                 { provide: ClientContext, useValue: {} },
                 { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
