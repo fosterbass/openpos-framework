@@ -173,7 +173,7 @@ public class SecuredAutoConfiguration {
             KeyStore keyStore = KeyStore.getInstance(config.getKeyStoreType(), BouncyCastleProvider.PROVIDER_NAME);
             Path keyStorePath = Paths.get(config.getKeyStorePath());
             if (keyStorePath.toFile().exists()) {
-                log.info("loading key store from {}", keyStorePath);
+                log.info("loading key store from {}", keyStorePath.toFile().getCanonicalPath());
                 try (InputStream is = Files.newInputStream(keyStorePath, StandardOpenOption.READ)) {
                     keyStore.load(is, readPassword(config.getKeyStorePasswordEnvName()));
                 }
