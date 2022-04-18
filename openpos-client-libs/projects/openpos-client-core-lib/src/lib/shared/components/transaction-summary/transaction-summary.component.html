@@ -99,9 +99,9 @@
         </div>
     </div>
     <div class="summary-actions" responsive-class>
-        <app-icon-button *ngFor="let button of transactionSummary.actions"
-                         [iconName]="button.icon"
-                         [iconClass]="'mat-24'" (buttonClick)="onClick(button)">
-        </app-icon-button>
+        <app-kebab-label-button #kebab *ngIf="transactionSummary.actions.length > 0;"
+                                [menuItems]="transactionSummary.actions"
+                                (menuItemClick)="onClick($event)" class="primary item-kebab-label">
+        </app-kebab-label-button>
     </div>
 </div>

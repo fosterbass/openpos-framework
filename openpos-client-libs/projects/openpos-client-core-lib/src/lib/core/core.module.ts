@@ -47,7 +47,9 @@ import { ClientExecutableService } from './services/client-executable.service';
 import { CapacitorIosPlatform } from './platforms/capacitor-ios.platform';
 import { CapacitorAndroidPlatform } from './platforms/capacitor-android.platform';
 import { AilaScannerCordovaPlugin } from './platform-plugins/barcode-scanners/aila-scanner-cordova/aila-scanner-cordova.plugin';
-import { InfineaScannerCordovaPlugin } from './platform-plugins/barcode-scanners/infinea-scanner-cordova/infinea-scanner-cordova.plugin';
+import { InfineaScannerCordovaPlugin } from './platform-plugins/barcode-scanners/infinea-scanner/infinea-scanner-cordova/infinea-scanner-cordova.plugin';
+import {InfineaScannerCapacitorPlugin} from './platform-plugins/barcode-scanners/infinea-scanner/infinea-scanner-capacitor/infinea-scanner-capacitor.plugin';
+import {Dpp255CapacitorPlugin} from './platform-plugins/printers/dpp-255-capacitor.plugin';
 import { WedgeScannerPlugin } from './platform-plugins/barcode-scanners/wedge-scanner/wedge-scanner.plugin';
 import { ServerScannerPlugin } from './platform-plugins/barcode-scanners/server-scanner/server-scanner.service';
 import { ScanditScannerCordovaPlugin } from './platform-plugins/barcode-scanners/scandit-scanner-cordova/scandit-scanner-cordova.plugin';
@@ -57,6 +59,7 @@ import { Storage } from './storage/storage.service';
 import { STORAGE_CONTAINERS } from './storage/storage-container';
 import { ZebraBluetoothPrinterCordovaPlugin } from './platform-plugins/cordova-plugins/zebra-bluetooth-printer-cordova-plugin';
 import { CapacitorPrinterPlugin } from './platform-plugins/printers/capacitor-printer.plugin';
+import {InfineaSdkPlugin} from './platform-plugins/capacitor-plugins/infinea-sdk.plugin';
 import { AirwatchCordovaPlugin } from './platform-plugins/cordova-plugins/airwatch-cordova-plugin';
 import { ExitAppPlugin } from './platform-plugins/cordova-plugins/auto-exit';
 import { ZEROCONF_TOKEN } from './zeroconf/zeroconf';
@@ -136,6 +139,7 @@ registerLocaleData(locale_esMX, 'es-MX');
         { provide: SCANNERS, useExisting: AilaScannerCordovaPlugin, multi: true },
         { provide: SCANNERS, useExisting: WedgeScannerPlugin, multi: true },
         { provide: SCANNERS, useExisting: InfineaScannerCordovaPlugin, multi: true },
+        { provide: SCANNERS, useExisting: InfineaScannerCapacitorPlugin, multi: true },
         { provide: SCANNERS, useExisting: ServerScannerPlugin, multi: true, deps: [SessionService] },
         { provide: IMAGE_SCANNERS, useExisting: ScanditScannerCordovaPlugin, multi: true },
         { provide: IMAGE_SCANNERS, useExisting: ScanditCapacitorImageScanner, multi: true },
@@ -153,6 +157,9 @@ registerLocaleData(locale_esMX, 'es-MX');
         { provide: PLUGINS, useExisting: ZebraBluetoothPrinterCordovaPlugin, multi: true, deps: [CordovaService, SessionService] },
         { provide: PLUGINS, useExisting: AirwatchCordovaPlugin, multi: true, deps: [CordovaService] },
         { provide: PLUGINS, useExisting: ExitAppPlugin, multi: true, deps: [CordovaService, SessionService] },
+        { provide: PLUGINS, useExisting: InfineaScannerCapacitorPlugin, multi: true },
+        { provide: PLUGINS, useExisting: Dpp255CapacitorPlugin, multi: true },
+        { provide: PLUGINS, useExisting: InfineaSdkPlugin, multi: true},
         { provide: PLATFORMS, useExisting: CordovaPlatform, multi: true },
         { provide: PLATFORMS, useExisting: CapacitorIosPlatform, multi: true },
         { provide: PLATFORMS, useExisting: CapacitorAndroidPlatform, multi: true },
@@ -161,6 +168,7 @@ registerLocaleData(locale_esMX, 'es-MX');
         CapacitorPrinterPlugin,
         { provide: PRINTERS, useExisting: CapacitorPrinterPlugin, multi: true },
         { provide: PRINTERS, useExisting: ZebraBluetoothPrinterCordovaPlugin, multi: true, deps: [CordovaService, SessionService] },
+        { provide: PRINTERS, useExisting: Dpp255CapacitorPlugin, multi: true},
         LocationService,
         { provide: PROVIDERS, useExisting: LocationProviderDefault, multi: true },
         { provide: ENTERPRISE_CONFIGS, useExisting: AirwatchCordovaPlugin, multi: true, deps: [CordovaService] },

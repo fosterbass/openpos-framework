@@ -14,7 +14,7 @@
     &.mobile-landscape,
     &.mobile-portrait {
         column-gap: $small-space;
-        grid-template-columns: 50px 1fr auto 50px;
+        grid-template-columns: 37px 1fr auto;
         grid-template-areas:
             "trans-type trans trans trans"
             "trans-type details total action"
@@ -195,7 +195,6 @@
     grid-area: actions;
     justify-self: right;
     grid-row: 2;
-    margin-top: 16px;
 }
 
 .summary-action { grid-area: action; }
@@ -223,5 +222,10 @@
         &:last-child {
             margin-right: 0;
         }
+    }
+}
+::ng-deep .item-kebab-label {
+    button {
+        padding: 0px;
     }
 }
