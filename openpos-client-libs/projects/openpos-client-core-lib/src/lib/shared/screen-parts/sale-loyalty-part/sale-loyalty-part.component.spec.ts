@@ -2,7 +2,6 @@ import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Observable, of } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
-import { ElectronService } from 'ngx-electron';
 import { TimeZoneContext } from '../../../core/client-context/time-zone-context';
 import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provider.interface';
 import { ActionService } from '../../../core/actions/action.service';
@@ -20,8 +19,6 @@ import { SaleLoyaltyPartInterface } from './sale-loyalty-part.interface';
 
 class MockMatDialog { }
 class MockActionService { }
-class MockElectronService { }
-class ClientContext { }
 
 describe('SaleLoyaltyPartComponent', () => {
     let component: SaleLoyaltyPartComponent;
@@ -47,8 +44,6 @@ describe('SaleLoyaltyPartComponent', () => {
                     { provide: ActionService, useClass: MockActionService },
                     { provide: MatDialog, useClass: MockMatDialog },
                     { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobile },
-                    { provide: ElectronService, useClass: MockElectronService },
-                    { provide: ClientContext, useValue: {} },
                     { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
                 ]
             }).compileComponents();

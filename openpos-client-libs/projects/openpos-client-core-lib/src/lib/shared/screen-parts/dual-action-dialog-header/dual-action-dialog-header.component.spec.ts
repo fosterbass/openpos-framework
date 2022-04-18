@@ -1,9 +1,6 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
-import {Subscription} from 'rxjs';
-import {ElectronService} from 'ngx-electron';
 import {CLIENTCONTEXT} from '../../../core/client-context/client-context-provider.interface';
 import {TimeZoneContext} from '../../../core/client-context/time-zone-context';
 import {ActionService} from '../../../core/actions/action.service';
@@ -34,7 +31,6 @@ describe('DualActionDialogHeaderComponent', () => {
                 providers: [
                     { provide: ActionService, useClass: MockActionService },
                     { provide: MatDialog, useClass: MockMatDialog },
-                    { provide: ElectronService, useClass: MockElectronService },
                     { provide: ClientContext, useValue: {}},
                     { provide: CLIENTCONTEXT, useClass: TimeZoneContext}
                 ]

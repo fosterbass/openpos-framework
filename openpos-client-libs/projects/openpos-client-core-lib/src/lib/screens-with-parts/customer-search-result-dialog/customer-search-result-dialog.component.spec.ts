@@ -22,10 +22,6 @@ class MockActionService {
 
 class MockMatDialog { }
 
-class MockElectronService { }
-
-class ClientContext { }
-
 describe('CustomerSearchResultDialogComponent', () => {
     let component: CustomerSearchResultDialogComponent;
     let fixture: ComponentFixture<CustomerSearchResultDialogComponent>;
@@ -57,7 +53,6 @@ describe('CustomerSearchResultDialogComponent', () => {
                 KeybindingZoneService,
                 { provide: ActionService, useClass: MockActionService },
                 { provide: MatDialog, useClass: MockMatDialog },
-                { provide: ClientContext, useValue: {} },
                 { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
             ],
             schemas: [

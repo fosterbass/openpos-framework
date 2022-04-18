@@ -13,8 +13,6 @@ import { By } from '@angular/platform-browser';
 import { Membership } from '../membership-display/memebership-display.interface';
 
 class MockMatDialog { }
-class MockElectronService { }
-class ClientContext { }
 
 @Component({
     selector: 'app-membership-display',
@@ -55,7 +53,6 @@ describe('DisplayCustomerLookupComponent', () => {
                 ],
                 providers: [
                     { provide: MatDialog, useClass: MockMatDialog },
-                    { provide: ClientContext, useValue: {} },
                     { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
                 ],
                 schemas: [
@@ -128,7 +125,6 @@ describe('DisplayCustomerLookupComponent', () => {
                 ],
                 providers: [
                     { provide: MatDialog, useClass: MockMatDialog },
-                    { provide: ClientContext, useValue: {} },
                     { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
                 ],
                 schemas: [

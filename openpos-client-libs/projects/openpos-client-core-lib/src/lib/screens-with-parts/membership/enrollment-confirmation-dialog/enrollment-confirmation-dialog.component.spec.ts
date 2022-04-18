@@ -6,7 +6,6 @@ import {EnrollmentConfirmationDialogInterface} from './enrollment-confirmation-d
 import {ActionService} from '../../../core/actions/action.service';
 import {MatDialog} from '@angular/material/dialog';
 import {OpenposMediaService} from '../../../core/media/openpos-media.service';
-import {ElectronService} from 'ngx-electron';
 import {TimeZoneContext} from '../../../core/client-context/time-zone-context';
 import {CLIENTCONTEXT} from '../../../core/client-context/client-context-provider.interface';
 import {IActionItem} from '../../../core/actions/action-item.interface';
@@ -20,8 +19,6 @@ import { SecondaryButtonComponent } from '../../../shared/components/secondary-b
 
 class MockActionService {}
 class MockMatDialog {}
-class MockElectronService {}
-class ClientContext {}
 
 describe('EnrollmentConfirmationDialog', () => {
     let component: EnrollmentConfirmationDialogComponent;
@@ -57,8 +54,6 @@ describe('EnrollmentConfirmationDialog', () => {
                     { provide: ActionService, useClass: MockActionService },
                     { provide: MatDialog, useClass: MockMatDialog },
                     { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobileFalse },
-                    { provide: ElectronService, useClass: MockElectronService },
-                    { provide: ClientContext, useValue: {}},
                     { provide: CLIENTCONTEXT, useClass: TimeZoneContext}
                 ]
             }).compileComponents();
@@ -94,8 +89,6 @@ describe('EnrollmentConfirmationDialog', () => {
                     { provide: ActionService, useClass: MockActionService },
                     { provide: MatDialog, useClass: MockMatDialog },
                     { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobileFalse },
-                    { provide: ElectronService, useClass: MockElectronService },
-                    { provide: ClientContext, useValue: {}},
                     { provide: CLIENTCONTEXT, useClass: TimeZoneContext}
                 ]
             }).compileComponents();

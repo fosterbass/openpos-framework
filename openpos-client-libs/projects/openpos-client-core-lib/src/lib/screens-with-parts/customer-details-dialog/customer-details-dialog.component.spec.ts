@@ -31,7 +31,6 @@ import { KeybindingZoneService } from '../../core/keybindings/keybinding-zone.se
 
 class MockActionService { }
 class MockMatDialog { }
-class ClientContext { }
 
 describe('CustomerDetailsDialog', () => {
   let component: CustomerDetailsDialogComponent;
@@ -92,7 +91,6 @@ describe('CustomerDetailsDialog', () => {
           { provide: ActionService, useClass: MockActionService },
           { provide: MatDialog, useClass: MockMatDialog },
           { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobileFalse },
-          { provide: ClientContext, useValue: {} },
           { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
         ]
       }).compileComponents();
@@ -467,7 +465,6 @@ describe('CustomerDetailsDialog', () => {
           { provide: ActionService, useClass: MockActionService },
           { provide: MatDialog, useClass: MockMatDialog },
           { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobileTrue },
-          { provide: ClientContext, useValue: {} },
           { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
         ]
       }).compileComponents();
@@ -561,7 +558,6 @@ describe('CustomerDetailsDialog', () => {
           { provide: ActionService, useClass: MockActionService },
           { provide: MatDialog, useClass: MockMatDialog },
           { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobileFalse },
-          { provide: ClientContext, useValue: {} },
           { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
         ]
       }).compileComponents();

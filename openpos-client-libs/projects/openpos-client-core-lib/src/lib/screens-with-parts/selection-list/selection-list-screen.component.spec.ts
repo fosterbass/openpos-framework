@@ -20,7 +20,6 @@ class MockActionService {
     doAction(action: IActionItem) { }
 }
 class MockMatDialog { }
-class ClientContext { }
 
 describe('SelectionListScreenComponent', () => {
     let component: SelectionListScreenComponent;
@@ -48,7 +47,6 @@ describe('SelectionListScreenComponent', () => {
                     KeybindingZoneService,
                     { provide: ActionService, useClass: MockActionService },
                     { provide: MatDialog, useClass: MockMatDialog },
-                    { provide: ClientContext, useValue: {} },
                     { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
                 ],
                 schemas: [

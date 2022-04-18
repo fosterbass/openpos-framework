@@ -2,10 +2,8 @@ import { ActionService } from '../../../core/actions/action.service';
 import { validateExist} from '../../../utilites/test-utils';
 import { MatDialog } from '@angular/material/dialog';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ElectronService } from 'ngx-electron';
 import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provider.interface';
 import { TimeZoneContext } from '../../../core/client-context/time-zone-context';
-import { Subscription } from 'rxjs';
 import { ProgramPlanDetailsComponent } from './program-plan-details.component';
 import { Plan } from '../../../screens-with-parts/membership/plan-interface';
 import { ActionItem } from '../../../core/actions/action-item';
@@ -17,8 +15,6 @@ import { PlanDetailsDisplayComponent } from '../plan-details-display/plan-detail
 
 class MockActionService { }
 class MockMatDialog { }
-class MockElectronService { }
-class ClientContext { }
 
 describe('ProgramPlanDetailsComponent', () => {
     let component: ProgramPlanDetailsComponent;
@@ -35,8 +31,6 @@ describe('ProgramPlanDetailsComponent', () => {
             providers: [
                 { provide: MatDialog, useClass: MockMatDialog },
                 { provide: ActionService, useClass: MockActionService },
-                { provide: ElectronService, useClass: MockElectronService },
-                { provide: ClientContext, useValue: {} },
                 { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
             ]
         }).compileComponents();
