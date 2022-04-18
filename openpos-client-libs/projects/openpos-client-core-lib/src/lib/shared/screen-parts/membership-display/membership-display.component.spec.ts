@@ -6,18 +6,14 @@ import { By } from '@angular/platform-browser';
 import { Membership } from './memebership-display.interface';
 import { MatDialog } from '@angular/material/dialog';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ElectronService } from 'ngx-electron';
 import { TimeZoneContext } from '../../../core/client-context/time-zone-context';
 import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provider.interface';
-import { Subscription } from 'rxjs';
 import { MockComponent } from 'ng-mocks';
 import { IconComponent } from '../../components/icon/icon.component';
 import { MatChip, MatChipList } from '@angular/material/chips';
 
 class MockActionService { }
 class MockMatDialog { }
-class MockElectronService { }
-class ClientContext { }
 
 describe('MembershipDisplayComponent', () => {
     let component: MembershipDisplayComponent;
@@ -35,8 +31,6 @@ describe('MembershipDisplayComponent', () => {
             providers: [
                 { provide: MatDialog, useClass: MockMatDialog },
                 { provide: ActionService, useClass: MockActionService },
-                { provide: ElectronService, useClass: MockElectronService },
-                { provide: ClientContext, useValue: {} },
                 { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
             ]
         }).compileComponents();

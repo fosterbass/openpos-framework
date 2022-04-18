@@ -6,20 +6,17 @@ import { OpenposMediaService } from '../../core/media/openpos-media.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ActionService } from '../../core/actions/action.service';
-import { ElectronService } from 'ngx-electron';
 import { ImageUrlPipe } from '../../shared/pipes/image-url.pipe';
 import { TimeZoneContext } from '../../core/client-context/time-zone-context';
 import { CLIENTCONTEXT } from '../../core/client-context/client-context-provider.interface';
 import { SaleInterface } from './sale.interface';
-import { Subscription, Observable, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { validateDoesNotExist, validateExist } from '../../utilites/test-utils';
 import { ISellItem } from '../../core/interfaces/sell-item.interface';
 
 class MockMatDialog { }
 class MockActionService { }
 class MockMatBottomSheet { }
-class MockElectronService { }
-class ClientContext { }
 
 describe('SaleComponent', () => {
     let component: SaleComponent;
@@ -44,8 +41,6 @@ describe('SaleComponent', () => {
                     { provide: MatDialog, useClass: MockMatDialog },
                     { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobile },
                     { provide: MatBottomSheet, useClass: MockMatBottomSheet },
-                    { provide: ElectronService, useClass: MockElectronService },
-                    { provide: ClientContext, useValue: {} },
                     { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
                 ],
                 schemas: [
@@ -86,8 +81,6 @@ describe('SaleComponent', () => {
                     { provide: MatDialog, useClass: MockMatDialog },
                     { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobile },
                     { provide: MatBottomSheet, useClass: MockMatBottomSheet },
-                    { provide: ElectronService, useClass: MockElectronService },
-                    { provide: ClientContext, useValue: {} },
                     { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
                 ],
                 schemas: [NO_ERRORS_SCHEMA]

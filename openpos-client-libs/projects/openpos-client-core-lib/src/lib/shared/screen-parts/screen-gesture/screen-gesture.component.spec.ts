@@ -1,7 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
-import { ElectronService } from 'ngx-electron';
 import { ActionService } from '../../../core/actions/action.service';
 import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provider.interface';
 import { TimeZoneContext } from '../../../core/client-context/time-zone-context';
@@ -14,7 +13,6 @@ describe('ScreenGestureComponent', () => {
     let fixture: ComponentFixture<ScreenGestureComponent>;
 
     const mockService = { doAction: () => { } };
-    class ClientContext { }
     const action = 'Back';
     const unlockPans: PanEvent[] = [{ angleLower: -90, angleUpper: 0, distance: 500 }];
     const unlockSwipes = [SwipeEvent.SWIPE_UP, SwipeEvent.SWIPE_DOWN, SwipeEvent.SWIPE_LEFT, SwipeEvent.SWIPE_RIGHT];
@@ -26,8 +24,6 @@ describe('ScreenGestureComponent', () => {
             providers: [
                 { provide: MatDialog, useValue: mockService },
                 { provide: ActionService, useValue: mockService },
-                { provide: ElectronService, useValue: mockService },
-                { provide: ClientContext, useValue: {} },
                 { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
             ]
         }).compileComponents();

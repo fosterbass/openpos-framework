@@ -6,7 +6,6 @@
     "entryFile": "src/public-api.ts",
     "umdModuleIds": {
       "@stomp/ng2-stompjs": "@stomp/ng2-stompjs",
-      "ngx-electron": "ngx-electron",
       "ngx-toastr": "ngx-toastr",
       "angular2-text-mask": "angular2-text-mask",
       "showdown": "showdown",

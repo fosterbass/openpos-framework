@@ -68,6 +68,11 @@ public class Form implements Serializable {
         formElements.add(formElement);
         return formElement;
     }
+
+    public void makeFieldScannable(String fieldId) {
+        FormField field = getField(fieldId);
+        field.imageScanEnabled(true);
+    }
     
     public CheckboxField addCheckbox(String id, String label) {
         return this.addCheckbox(id, label, false);

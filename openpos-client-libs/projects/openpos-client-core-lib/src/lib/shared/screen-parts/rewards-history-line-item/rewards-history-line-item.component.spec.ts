@@ -3,7 +3,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Observable, of, Subscription } from 'rxjs';
 import { MediaBreakpoints, OpenposMediaService } from '../../../core/media/openpos-media.service';
-import { ElectronService } from 'ngx-electron';
 import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provider.interface';
 import { TimeZoneContext } from '../../../core/client-context/time-zone-context';
 import { ActionService } from '../../../core/actions/action.service';
@@ -16,8 +15,6 @@ import { IconComponent } from '../../components/icon/icon.component';
 
 class MockActionService { }
 class MockMatDialog { }
-class MockElectronService { }
-class ClientContext { }
 
 describe('RewardsHistoryLineItemComponent', () => {
     let component: RewardsHistoryLineItemComponent;
@@ -46,8 +43,6 @@ describe('RewardsHistoryLineItemComponent', () => {
                     { provide: ActionService, useClass: MockActionService },
                     { provide: MatDialog, useClass: MockMatDialog },
                     { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobileFalse },
-                    { provide: ElectronService, useClass: MockElectronService },
-                    { provide: ClientContext, useValue: {} },
                     { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
                 ]
             }).compileComponents();
@@ -244,8 +239,6 @@ describe('RewardsHistoryLineItemComponent', () => {
                     { provide: ActionService, useClass: MockActionService },
                     { provide: MatDialog, useClass: MockMatDialog },
                     { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobileTrue },
-                    { provide: ElectronService, useClass: MockElectronService },
-                    { provide: ClientContext, useValue: {} },
                     { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
                 ]
             }).compileComponents();
@@ -286,8 +279,6 @@ describe('RewardsHistoryLineItemComponent', () => {
                     { provide: ActionService, useClass: MockActionService },
                     { provide: MatDialog, useClass: MockMatDialog },
                     { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobileFalse },
-                    { provide: ElectronService, useClass: MockElectronService },
-                    { provide: ClientContext, useValue: {} },
                     { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
                 ]
             }).compileComponents();

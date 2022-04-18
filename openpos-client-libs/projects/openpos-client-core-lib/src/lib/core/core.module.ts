@@ -20,7 +20,6 @@ import { PersonalizationComponent } from './personalization/personalization.comp
 import { ToastService } from './services/toast.service';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ElectronService, NgxElectronModule } from 'ngx-electron';
 import { CordovaPlatform } from './platforms/cordova.platform';
 import { NCRPaymentPlugin } from './platform-plugins/cordova-plugins/ncr-payment-plugin';
 import { SplashScreenComponent } from './components/splash-screen/splash-screen.component';
@@ -43,7 +42,6 @@ import { AudioConsolePlugin } from './audio/audio-console.plugin';
 import { ScanditCapacitorImageScanner } from './platform-plugins/barcode-scanners/scandit-capacitor/scandit-capacitor.service';
 import { IMAGE_SCANNERS, SCANNERS } from './platform-plugins/barcode-scanners/scanner';
 import { BarcodeScanner } from './platform-plugins/barcode-scanners/barcode-scanner.service';
-import { ClientExecutableService } from './services/client-executable.service';
 import { CapacitorIosPlatform } from './platforms/capacitor-ios.platform';
 import { CapacitorAndroidPlatform } from './platforms/capacitor-android.platform';
 import { AilaScannerCordovaPlugin } from './platform-plugins/barcode-scanners/aila-scanner-cordova/aila-scanner-cordova.plugin';
@@ -66,7 +64,6 @@ import { ZEROCONF_TOKEN } from './zeroconf/zeroconf';
 import { MDnsZeroconf } from './zeroconf/mdns-zeroconf';
 import { CapacitorZeroconf } from './zeroconf/capacitor-zeroconf';
 import { CapacitorService } from './services/capacitor.service';
-import { LoyaltySalePartService } from './services/loyalty-sale-part.service';
 import { DebugImageScanner } from './platform-plugins/barcode-scanners/debug-image-scanner/debug-image-scanner.service';
 import { CommerceServerSinkModule } from './logging/commerce-server/commerce-server-sink.module';
 import { NewRelicSinkModule } from './logging/new-relic/new-relic-sink.module';
@@ -82,6 +79,7 @@ import { KeybindingLockScreenService } from './keybindings/keybinding-lock-scree
 import { ENTERPRISE_CONFIGS } from './platform-plugins/enterprise-config/enterprise-config.service';
 import { KeybindingDialogService } from './keybindings/keybinding-dialog.service';
 import { ZeroConfPersonalizationDialogComponent } from './startup/tasks/zeroconf/zero-conf-personalization-dialog.component';
+import { ElectronPlatform } from './platforms/electron.platform';
 
 registerLocaleData(locale_enCA, 'en-CA');
 registerLocaleData(locale_frCA, 'fr-CA');
@@ -109,7 +107,6 @@ registerLocaleData(locale_esMX, 'es-MX');
         SharedModule,
         BrowserModule,
         BrowserAnimationsModule,
-        NgxElectronModule,
         ToastrModule.forRoot(),
         CommerceServerSinkModule,
         NewRelicSinkModule,
@@ -131,7 +128,7 @@ registerLocaleData(locale_esMX, 'es-MX');
         MediaMatcher,
         StompRService,
         BarcodeScanner,
-        { provide: ZEROCONF_TOKEN, useClass: MDnsZeroconf, multi: true, deps: [ElectronService] },
+        { provide: ZEROCONF_TOKEN, useClass: MDnsZeroconf, multi: true, deps: [ElectronPlatform] },
         { provide: ZEROCONF_TOKEN, useClass: CapacitorZeroconf, multi: true, deps: [CapacitorService] },
         AilaScannerCordovaPlugin,
         ScanditScannerCordovaPlugin,
@@ -163,6 +160,7 @@ registerLocaleData(locale_esMX, 'es-MX');
         { provide: PLATFORMS, useExisting: CordovaPlatform, multi: true },
         { provide: PLATFORMS, useExisting: CapacitorIosPlatform, multi: true },
         { provide: PLATFORMS, useExisting: CapacitorAndroidPlatform, multi: true },
+        { provide: PLATFORMS, useExisting: ElectronPlatform, multi: true },
         { provide: STORAGE_CONTAINERS, useClass: CapacitorStorageService, multi: true },
         { provide: STORAGE_CONTAINERS, useClass: CordovaStorageService, multi: true },
         CapacitorPrinterPlugin,
@@ -192,7 +190,6 @@ export class CoreModule {
         private injector: Injector,
         toastService: ToastService,
         uiDataService: UIDataMessageService,
-        clientExecutableService: ClientExecutableService,
         pushNotificationService: PushNotificationService,
         keybindingService: KeybindingService,
         keybindingDialogService: KeybindingDialogService,

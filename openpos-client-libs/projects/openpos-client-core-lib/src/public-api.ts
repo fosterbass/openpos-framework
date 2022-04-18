@@ -431,5 +431,8 @@ export * from './lib/shared/pipes/localized-date-no-time.pipe';
 export * from './lib/shared/components/rounded-input/rounded-input.component';
 export * from './lib/shared/screen-parts/prompt-button-row/prompt-button-row.component';
 
+export * from './lib/core/platforms/electron.platform';
+export * from './lib/core/platforms/electron';
+
 export * from './lib/core/startup/startup-task';
 export { startupSequence } from './lib/core/startup/startup-sequence';

@@ -326,6 +326,16 @@ public class FormField implements IFormElement, IField, Serializable {
         this.put("scanEnabled", scanEnabled);
     }
 
+
+    public FormField imageScanEnabled(Boolean imageScanEnabled) {
+        this.setImageScanEnabled(imageScanEnabled);
+        return this;
+    }
+
+    public void setImageScanEnabled(Boolean imageScanEnabled) {
+        this.put("imageScanEnabled", imageScanEnabled);
+    }
+
     /**
      * Use {@link #setValidators(List)} instead
      * @deprecated

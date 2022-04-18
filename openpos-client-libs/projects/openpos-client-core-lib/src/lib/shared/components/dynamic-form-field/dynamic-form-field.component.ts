@@ -23,6 +23,9 @@ import { ScreenService } from '../../../core/services/screen.service';
 import { OldPluginService } from '../../../core/services/old-plugin.service';
 import { BarcodeScannerPlugin } from '../../../core/oldplugins/barcode-scanner.plugin';
 import { Scan } from '../../../core/oldplugins/scan';
+import { BarcodeScanner } from '../../../core/platform-plugins/barcode-scanners/barcode-scanner.service';
+import { ScanData } from '../../../core/platform-plugins/barcode-scanners/scanner';
+import { ActionService } from '../../../core/actions/action.service';
 
 @Component({
   selector: 'app-dynamic-form-field',
@@ -40,6 +43,8 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterCon
 
   public controlName: string;
   control: AbstractControl;
+
+  showScanner = false;
 
   public keyboardLayout = 'en-US';
 
@@ -73,7 +78,9 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterCon
     public session: SessionService,
     public screenService: ScreenService,
     protected dialog: MatDialog,
-    private pluginService: OldPluginService
+    private pluginService: OldPluginService,
+    private _barcodeScanner: BarcodeScanner,
+    private _actionService: ActionService
   ) { }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -247,6 +254,22 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterCon
     return this.formField.scanEnabled && !this.formField.disabled &&
       ['NumericText', 'AlphanumericText'].indexOf(this.formField.inputType) >= 0;
   }
+
+  isImageScanAllowed(): boolean {
+    return this.formField.imageScanEnabled
+      && ['NumericText', 'AlphanumericText'].indexOf(this.formField.inputType) >= 0
+      && this._barcodeScanner.hasImageScanner;
+  }
+
+  onImageScan(): void {
+    this.showScanner = !this.showScanner && this.isImageScanAllowed();
+    console.log('scanner show changed', this.showScanner);
+  }
+
+  onBarcodeScanned(data: ScanData) {
+    this.showScanner = false;
+    this._actionService.doAction({ action: 'ScanBarcode', queueIfBlocked: true }, data);
+   }
 
   /**
    * This method is invoked when the user presses the Scan button on the field.

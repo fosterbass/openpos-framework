@@ -28,6 +28,7 @@ export interface IFormElement {
     disabled?: boolean;
     select?: boolean;
     checked?: boolean;
+    imageScanEnabled?: boolean;
     keyboardPreference?: string;
     confirmationDialog?: IConfirmationDialog;
     confirmationMessage?: string;

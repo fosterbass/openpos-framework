@@ -4,7 +4,6 @@ import { ActionService } from '../../../core/actions/action.service';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog } from '@angular/material/dialog';
 import { OpenposMediaService } from '../../../core/media/openpos-media.service';
-import { ElectronService } from 'ngx-electron';
 import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provider.interface';
 import { TimeZoneContext } from '../../../core/client-context/time-zone-context';
 import { Observable, of } from 'rxjs';
@@ -16,8 +15,6 @@ import {CurrencyTextComponent} from '../currency-text/currency-text.component';
 
 class MockActionService { }
 class MockMatDialog { }
-class MockElectronService { }
-class ClientContext { }
 
 describe('TransactionSummaryComponent', () => {
   let component: TransactionSummaryComponent;
@@ -42,8 +39,6 @@ describe('TransactionSummaryComponent', () => {
         { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobileFalse },
         { provide: ActionService, useCass: MockActionService },
         { provide: MatDialog, useClass: MockMatDialog },
-        { provide: ElectronService, useClass: MockElectronService },
-        { provide: ClientContext, useValue: {} },
         { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
       ]
     }).compileComponents();

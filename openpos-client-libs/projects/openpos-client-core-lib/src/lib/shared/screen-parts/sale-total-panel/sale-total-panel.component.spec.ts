@@ -3,7 +3,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { Observable, of } from 'rxjs';
 import { SaleTotalPanelComponent } from './sale-total-panel.component';
 import { MatDialog } from '@angular/material/dialog';
-import { ElectronService } from 'ngx-electron';
 import { TimeZoneContext } from '../../../core/client-context/time-zone-context';
 import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provider.interface';
 import { ActionService } from '../../../core/actions/action.service';
@@ -19,8 +18,6 @@ import { SaleTotalPanelInterface } from './sale-total-panel.interface';
 
 class MockMatDialog { }
 class MockActionService { }
-class MockElectronService { }
-class ClientContext { }
 
 describe('SaleTotalPanelComponent', () => {
     let component: SaleTotalPanelComponent;
@@ -46,8 +43,6 @@ describe('SaleTotalPanelComponent', () => {
                     { provide: ActionService, useClass: MockActionService },
                     { provide: MatDialog, useClass: MockMatDialog },
                     { provide: OpenposMediaService, useClass: MockOpenposMediaServiceMobile },
-                    { provide: ElectronService, useClass: MockElectronService },
-                    { provide: ClientContext, useValue: {} },
                     { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
                 ]
             }).compileComponents();
