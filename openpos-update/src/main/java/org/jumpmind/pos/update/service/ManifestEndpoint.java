@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
-@Endpoint(path = "/manifest/{businessUnitId}/{package}")
+@Endpoint(path = "/update/manifest/{businessUnitId}/{package}")
 public class ManifestEndpoint {
 
     @Autowired
