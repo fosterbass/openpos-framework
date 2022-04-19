@@ -19,7 +19,7 @@ public class StatusManagerPrinterStatusReporter implements IStatusReporter, IPri
     public static final String STATUS_ICON = "print";
 
     @Override
-    public StatusReport getStatus(IStatusManager statusManager) {
+    public StatusReport getStatus(IStatusManager statusManager, String deviceId) {
         // in the future, this could call EscPosPrinter.getPrinterStatus() for a live status
         // diagnostic from the printer.
         this.statusManager = statusManager;

@@ -41,7 +41,7 @@ public class RemoteProfileStatusMonitor implements IStatusReporter {
     }
 
     @Override
-    public StatusReport getStatus(IStatusManager statusManager) {
+    public StatusReport getStatus(IStatusManager statusManager, String deviceId) {
         this.statusManager = statusManager;
         if (lastStatus == null) {
             this.lastStatus = new StatusReport(STATUS_NAME, STATUS_ICON, Status.Unknown, "");
