@@ -12,9 +12,9 @@ public class ConfirmationDialog implements Serializable {
     private ActionItem cancelAction;
 	
 	public ConfirmationDialog() {
-	    confirmAction = new ActionItem("Yes", "Yes");
+	    confirmAction = new ActionItem("Yes", "key:common:action.yes.label");
 	    confirmAction.setAutoAssignEnabled(false);
-	    cancelAction = new ActionItem("No", "No");
+	    cancelAction = new ActionItem("No", "key:common:action.no.label");
 	    cancelAction.setAutoAssignEnabled(false);
 	}
 	

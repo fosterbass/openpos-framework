@@ -85,9 +85,9 @@ public class InitSymDSStep implements ITransitionStep {
         DialogUIMessage screen = new DialogUIMessage();
         screen.setId("NotRegisteredDialog");
         DialogHeaderPart headerPart = new DialogHeaderPart();
-        headerPart.setHeaderText("This device is not registered for data replication");
+        headerPart.setHeaderText("key:device:notregistered.header.label");
         screen.addMessagePart(MessagePartConstants.DialogHeader, headerPart);
-        screen.addButton(new ActionItem("CheckAgain", "Check Again"));
+        screen.addButton(new ActionItem("CheckAgain", "key:device:action.checkagain.label"));
         stateManager.showScreen(screen);
     }
 
@@ -95,9 +95,9 @@ public class InitSymDSStep implements ITransitionStep {
         DialogUIMessage screen = new DialogUIMessage();
         screen.setId("DataLoadInProgressDialog");
         DialogHeaderPart headerPart = new DialogHeaderPart();
-        headerPart.setHeaderText("The initial data load is in progress ...");
+        headerPart.setHeaderText("key:device:dataloadinprogress.header.label");
         screen.addMessagePart(MessagePartConstants.DialogHeader, headerPart);
-        screen.addButton(new ActionItem("CheckAgain", "Check Again"));
+        screen.addButton(new ActionItem("CheckAgain", "key:device:action.checkagain.label"));
         stateManager.showScreen(screen);
     }
 

@@ -24,7 +24,7 @@ public class PromptConfig {
     private BigDecimal min;
     private BigDecimal max;
     private DialogProperties dialogProperties;
-    private ActionItem actionMenuItem = new ActionItem("Next", "Next", true);
+    private ActionItem actionMenuItem = new ActionItem("key:common:action.next.label", "Next", true);
     private List<ActionItem> otherActions = new ArrayList<>();
     private String id;
     private boolean allowScan;

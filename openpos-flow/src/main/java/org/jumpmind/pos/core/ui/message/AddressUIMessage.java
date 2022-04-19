@@ -18,7 +18,7 @@ public class AddressUIMessage extends DynamicFormUIMessage {
     private StatusStripPart statusStrip = new StatusStripPart();
 
     public AddressUIMessage() {
-        ActionItem submitButton = new ActionItem("Next", "Next", IconType.Forward);
+        ActionItem submitButton = new ActionItem("Next", "key:common:action.next.label", IconType.Forward);
         submitButton.setKeybind(KeyConstants.KEY_ENTER);
         setSubmitButton(submitButton);
     }

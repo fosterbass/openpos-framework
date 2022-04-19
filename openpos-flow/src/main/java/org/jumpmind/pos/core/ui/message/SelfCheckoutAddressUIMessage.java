@@ -8,12 +8,12 @@ public class SelfCheckoutAddressUIMessage extends SelfCheckoutFormUIMessage impl
 
     private static final long serialVersionUID = 1L;
 
-    private String streetAddressPlaceholder = "Street Address";
-    private String addressLine2Placeholder = "Address Line 2";
-    private String localityPlaceholder = "City";
-    private String statePlaceholder = "State";
-    private String postalCodePlaceholder = "Postal Code";
-    private String countryPlaceholder = "Country";
+    private String streetAddressPlaceholder = "key:common:label.address.streetAddress";
+    private String addressLine2Placeholder = "key:common:label.address.addressLine2";
+    private String localityPlaceholder = "key:common:label.address.locality";
+    private String statePlaceholder = "key:common:label.address.state";
+    private String postalCodePlaceholder = "key:common:label.address.postalCode";
+    private String countryPlaceholder = "key:common:label.address.country";
 
     private boolean autoComplete = true;
 

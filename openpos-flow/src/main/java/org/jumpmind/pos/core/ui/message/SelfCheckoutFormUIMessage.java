@@ -32,7 +32,7 @@ public class SelfCheckoutFormUIMessage extends UIMessage implements IHasForm {
 
     public SelfCheckoutFormUIMessage() {
         setScreenType(UIMessageType.SELF_CHECKOUT_FORM);
-        ActionItem submitButton = new ActionItem("Next", "Next", IconType.Forward);
+        ActionItem submitButton = new ActionItem("Next", "key:common:action.next.label", IconType.Forward);
         submitButton.setKeybind(KeyConstants.KEY_ENTER);
         setSubmitButton(submitButton);
     }

@@ -31,10 +31,10 @@ public class DialogBuilderTest {
 
         assertEquals(1, screen.getPromptButtonRow().getSecondaryButtons().size());
         assertEquals(1, screen.getPromptButtonRow().getSecondaryButtons().stream().filter(
-                m -> DialogBuilder.CANCEL_BUTTON_KEY.equals(m.getTitle()) && DialogBuilder.CANCEL_BUTTON_KEY.equals(m.getAction())).count()
+                m -> DialogBuilder.CANCEL_BUTTON_LABEL.equals(m.getTitle()) && DialogBuilder.CANCEL_BUTTON_ACTION.equals(m.getAction())).count()
         );
-        assertEquals(DialogBuilder.OK_BUTTON_KEY, screen.getPromptButtonRow().getPrimaryButton().getTitle());
-        assertEquals(DialogBuilder.OK_BUTTON_KEY, screen.getPromptButtonRow().getPrimaryButton().getAction());
+        assertEquals(DialogBuilder.OK_BUTTON_LABEL, screen.getPromptButtonRow().getPrimaryButton().getTitle());
+        assertEquals(DialogBuilder.OK_BUTTON_ACTION, screen.getPromptButtonRow().getPrimaryButton().getAction());
 
 
         DialogHeaderPart headerPart = (DialogHeaderPart) screen.get(MessagePartConstants.DialogHeader);
@@ -55,7 +55,7 @@ public class DialogBuilderTest {
         DialogUIMessage screen = config.build();
 
         assertEquals(0, screen.getPromptButtonRow().getSecondaryButtons().size());
-        assertEquals(DialogBuilder.OK_BUTTON_KEY, screen.getPromptButtonRow().getPrimaryButton().getTitle());
+        assertEquals(DialogBuilder.OK_BUTTON_LABEL, screen.getPromptButtonRow().getPrimaryButton().getTitle());
 
         DialogHeaderPart headerPart = (DialogHeaderPart) screen.get(MessagePartConstants.DialogHeader);
         assertNull(headerPart.getHeaderText());
@@ -72,14 +72,14 @@ public class DialogBuilderTest {
     @Test
     public void testCustomOkButton_ForOkCancelDialogBuild() {
         DialogBuilder config = new DialogBuilder(DialogBuilder.OK_CANCEL_TYPE, "Message Line 1")
-                .title("My title").putAction(DialogBuilder.OK_BUTTON_KEY, "customOkAction");
+                .title("My title").putAction(DialogBuilder.OK_BUTTON_ACTION, "customOkAction");
         DialogUIMessage screen = config.build();
 
         assertEquals(1, screen.getPromptButtonRow().getSecondaryButtons().size());
         assertEquals(1, screen.getPromptButtonRow().getSecondaryButtons().stream().filter(
-                m -> DialogBuilder.CANCEL_BUTTON_KEY.equals(m.getTitle()) && DialogBuilder.CANCEL_BUTTON_KEY.equals(m.getAction())).count()
+                m -> DialogBuilder.CANCEL_BUTTON_LABEL.equals(m.getTitle()) && DialogBuilder.CANCEL_BUTTON_ACTION.equals(m.getAction())).count()
         );
-        assertEquals(DialogBuilder.OK_BUTTON_KEY, screen.getPromptButtonRow().getPrimaryButton().getTitle());
+        assertEquals(DialogBuilder.OK_BUTTON_ACTION, screen.getPromptButtonRow().getPrimaryButton().getTitle());
         assertEquals("customOkAction", screen.getPromptButtonRow().getPrimaryButton().getAction());
 
         DialogHeaderPart headerPart = (DialogHeaderPart) screen.get(MessagePartConstants.DialogHeader);
@@ -97,7 +97,7 @@ public class DialogBuilderTest {
     @Test
     public void testCustomButtonTitle() {
         DialogBuilder config = new DialogBuilder(DialogBuilder.OK_CANCEL_TYPE, "Message Line 1")
-                .title("My title").putAction(DialogBuilder.OK_BUTTON_KEY, "Yes", "customOkAction");
+                .title("My title").putAction(DialogBuilder.OK_BUTTON_ACTION, "Yes", "customOkAction");
         DialogUIMessage screen = config.build();
 
         assertEquals("Yes", screen.getPromptButtonRow().getPrimaryButton().getTitle());
