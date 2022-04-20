@@ -1,13 +1,9 @@
 package org.jumpmind.pos.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 import org.jumpmind.pos.util.DefaultObjectMapper;
 import org.jumpmind.pos.util.model.ErrorResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -33,7 +29,13 @@ public class GlobalExceptionHandler {
     @ResponseBody
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResult handleErrors(Throwable ex, WebRequest request) {
-        log.warn("A web request failed:  " + request.getDescription(true), ex);
+        log.warn("A web request failed:  " + request.getDescription(true));
+        if (ex instanceof PosServerException && ((PosServerException)ex).isLogMessageOnly()) {
+            log.warn(ex.getMessage());
+            log.debug("", ex);
+        } else {
+            log.warn("", ex);
+        }
         String message = ex.getMessage();
         try {
             DefaultObjectMapper.defaultObjectMapper().writeValue(new StringWriter(), ex);
