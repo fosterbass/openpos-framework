@@ -3,21 +3,19 @@ package org.jumpmind.pos.core.screeninterceptor;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.Map.Entry;
 
-import org.joda.money.Money;
+import lombok.extern.slf4j.Slf4j;
 import org.jumpmind.pos.core.flow.IMessageInterceptor;
 import org.jumpmind.pos.util.ClassUtils;
 import org.jumpmind.pos.util.model.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Slf4j
 public abstract class AbstractMessagePropertyCrawlerInterceptor<T extends Message> implements IMessageInterceptor<T> {
 
-    Logger logger = LoggerFactory.getLogger(getClass());
-    
     private static final Set<Class<?>> WRAPPER_TYPES = getWrapperTypes();
 
     public static boolean isWrapperType(Class<?> clazz) {
@@ -37,10 +35,10 @@ public abstract class AbstractMessagePropertyCrawlerInterceptor<T extends Messag
         ret.add(Void.class);
         return ret;
     }
-    
+
     public abstract List<IMessagePropertyStrategy<T>> getMessagePropertyStrategies();
     public abstract void setMessagePropertyStrategies(List<IMessagePropertyStrategy<T>> strategies);
-    
+
     @Override
     public void intercept(String deviceId, T message) {
         Map<String, Object> messageContext = new HashMap<>();
@@ -66,7 +64,7 @@ public abstract class AbstractMessagePropertyCrawlerInterceptor<T extends Messag
                             field.set(obj, doStrategies(deviceId, field, obj, message, messageContext));
                         }
                     } catch (IllegalArgumentException | IllegalAccessException e) {
-                        logger.error("Failed to set property value", e);
+                        log.error("Failed to set property value", e);
                     }
 
                     if (!processCollections(deviceId, value, message, messageContext) && shouldProcess(field) && shouldProcess(type)) {
@@ -78,7 +76,7 @@ public abstract class AbstractMessagePropertyCrawlerInterceptor<T extends Messag
                     }
 
                 } catch (Exception e) {
-                    logger.warn("", e);
+                    log.warn("", e);
                 }
             }
             clazz = clazz.getSuperclass();
@@ -93,7 +91,14 @@ public abstract class AbstractMessagePropertyCrawlerInterceptor<T extends Messag
             for (int i = 0; i < list.size(); i++) {
                 Object fieldObj = list.get(i);
                 if (fieldObj != null) {
-                    list.set(i, doStrategies(deviceId, fieldObj, fieldObj.getClass(), message, messageContext));
+                    try {
+                        list.set(i, doStrategies(deviceId, fieldObj, fieldObj.getClass(), message, messageContext));
+                    } catch (UnsupportedOperationException ex) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("Can't modify list " + list, ex);
+                        }
+                    }
+
                     if (!processCollections(deviceId, fieldObj, message, messageContext) && shouldProcess(fieldObj.getClass())) {
                         processFields(deviceId, fieldObj, message, messageContext);
                     }
@@ -146,7 +151,7 @@ public abstract class AbstractMessagePropertyCrawlerInterceptor<T extends Messag
             Class<?> clazz = (property != null ? property.getClass() : field.getType());
             return doStrategies(deviceId, property, clazz, message, messageContext);
         } catch (IllegalArgumentException | IllegalAccessException e) {
-            logger.error("Failed to crawl message property", e);
+            log.error("Failed to crawl message property", e);
         }
         return obj;
     }
