@@ -4,6 +4,7 @@ export class PersonalizationRequest {
         public deviceId: string,
         public appId: string,
         public deviceType: string,
+        public pairedAppId?: string,
         public pairedDeviceId?: string
     ) { }
 

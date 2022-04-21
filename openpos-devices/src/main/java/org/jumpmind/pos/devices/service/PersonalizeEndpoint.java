@@ -1,6 +1,7 @@
 package org.jumpmind.pos.devices.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.jumpmind.pos.devices.DeviceNotAuthorizedException;
 import org.jumpmind.pos.devices.DeviceNotFoundException;
 import org.jumpmind.pos.devices.DeviceUpdater;
@@ -39,12 +40,12 @@ public class PersonalizeEndpoint {
         String authToken = request.getDeviceToken();
         final String deviceId = request.getDeviceId();
         final String appId = request.getAppId();
+        final String pairedAppId = request.getPairedAppId();
         final String pairedDeviceId = request.getPairedDeviceId();
 
         DeviceModel deviceModel;
 
         if (isNotBlank(deviceId) && isNotBlank(appId)) {
-
             try {
                 log.info("Validating auth request of {} as {}", deviceId, appId);
                 String auth = devicesRepository.getDeviceAuth(request.getDeviceId());
@@ -74,7 +75,7 @@ public class PersonalizeEndpoint {
             deviceModel = new DeviceModel();
             deviceModel.setAppId(appId);
             deviceModel.setDeviceId(deviceId);
-            deviceModel.setPairedDeviceId(pairedDeviceId);
+
             if (request.getPersonalizationParameters() != null) {
                 deviceModel.setDeviceParamModels(
                         request.getPersonalizationParameters().keySet().stream().map(key -> new DeviceParamModel(key, request.getPersonalizationParameters().get(key))).collect(Collectors.toList())
@@ -85,11 +86,34 @@ public class PersonalizeEndpoint {
         } else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "DeviceId and AppId or AuthToken are required for personalization");
         }
-        if (deviceModel.getPairedDeviceId() == null && request.getPairedDeviceId() != null) {
+
+        // ensure the paired device actually exists before trying to pair with it
+        if (StringUtils.isNotBlank(pairedAppId) && StringUtils.isNotBlank(pairedDeviceId)) {
+            DeviceModel pairedDeviceModel = devicesRepository.getDevice(pairedDeviceId);
+
+            if (pairedDeviceModel == null) {
+                pairedDeviceModel = DeviceModel.builder()
+                        .deviceId(pairedDeviceId)
+                        .deviceParamModels(
+                                request.getPersonalizationParameters() != null
+                                        ? request.getPersonalizationParameters().keySet().stream().map(key -> new DeviceParamModel(key, request.getPersonalizationParameters().get(key))).collect(Collectors.toList())
+                                        : null
+                        )
+                        .build();
+            }
+
+            pairedDeviceModel.setAppId(pairedAppId);
+
+            deviceUpdater.updateDevice(pairedDeviceModel);
+        }
+
+        deviceUpdater.updateDevice(deviceModel);
+
+        if (deviceModel.getPairedDeviceId() == null && pairedDeviceId != null) {
             devicesRepository.pairDevice(deviceModel.getDeviceId(), request.getPairedDeviceId());
             deviceModel = devicesRepository.getDevice(deviceModel.getDeviceId());
         }
-        deviceUpdater.updateDevice(deviceModel);
+
         return PersonalizationResponse.builder()
                 .authToken(authToken)
                 .deviceModel(deviceModel)

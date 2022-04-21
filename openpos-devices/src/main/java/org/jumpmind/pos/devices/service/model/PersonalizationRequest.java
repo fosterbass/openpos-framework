@@ -15,6 +15,7 @@ public class PersonalizationRequest {
     private String deviceToken;
     private String deviceId;
     private String appId;
+    private String pairedAppId;
     private String pairedDeviceId;
     private Map<String, String> personalizationParameters;
 }

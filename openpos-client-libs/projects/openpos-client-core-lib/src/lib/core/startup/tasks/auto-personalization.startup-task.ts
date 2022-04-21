@@ -45,14 +45,27 @@ export abstract class AutoPersonalizationStartupTask implements StartupTask {
         }
 
         try {
-            await this.personalization.personalize(
-                info.serverAddress,
-                info.serverPort,
-                info.deviceId,
-                info.appId,
-                paramsMap,
-                info.sslEnabled
-            ).toPromise();
+            if (!!info.deviceToken) {
+                await this.personalization.personalizeWithToken(
+                    info.serverAddress,
+                    info.serverPort,
+                    info.deviceToken,
+                    info.sslEnabled,
+                    info.pairedAppId,
+                    info.pairedDeviceId
+                ).toPromise();
+            } else {
+                await this.personalization.personalize(
+                    info.serverAddress,
+                    info.serverPort,
+                    info.deviceId,
+                    info.appId,
+                    paramsMap,
+                    info.sslEnabled,
+                    info.pairedAppId,
+                    info.pairedDeviceId
+                ).toPromise();
+            }
         } catch (e) {
             throw new Error(`Failed to auto personalize with server. params: ${JSON.stringify(info)}. Error: ${JSON.stringify(e)}`);
         }
