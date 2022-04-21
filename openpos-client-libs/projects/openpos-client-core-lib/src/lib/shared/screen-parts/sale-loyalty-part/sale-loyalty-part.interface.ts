@@ -16,9 +16,9 @@ export interface SaleLoyaltyPartInterface extends IAbstractScreen {
     customerMissingInfo: boolean;
     customerMissingInfoIcon: string;
     customerMissingInfoLabel: string;
-    loyaltySignupInProgressTitle: string;
-    loyaltySignupInProgressIcon: string;
-    loyaltySignupInProgressDetailsIcon: string;
+    loyaltyOperationInProgressTitle: string;
+    loyaltyOperationInProgressIcon: string;
+    loyaltyOperationInProgressDetailsIcon: string;
     loyaltyCancelButton: IActionItem;
     membershipVisibleOnLinkButton: boolean;
     rewardsVisibleOnLinkButton: boolean;

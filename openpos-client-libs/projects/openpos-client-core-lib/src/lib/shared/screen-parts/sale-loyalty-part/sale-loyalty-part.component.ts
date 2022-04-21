@@ -36,8 +36,8 @@ export class SaleLoyaltyPartComponent extends ScreenPartComponent<SaleLoyaltyPar
     private loyaltyIconToken = '${icon}';
     public loyaltyBefore: string;
     public loyaltyAfter: string;
-    public isLoyaltySignupInProgressOnCustomerDisplay$: Observable<boolean>;
-    public loyaltySignupInProgressDetailsMessage$: Observable<string>;
+    public isLoyaltyOperationInProgressOnCustomerDisplay$: Observable<boolean>;
+    public loyaltyOperationInProgressDetailsMessage$: Observable<string>;
     public glowPulseRepeatTrigger = true;
     public gradientInnerGlowRepeatTrigger = true;
 
@@ -52,8 +52,8 @@ export class SaleLoyaltyPartComponent extends ScreenPartComponent<SaleLoyaltyPar
             [MediaBreakpoints.DESKTOP_LANDSCAPE, false]
         ]));
 
-        this.isLoyaltySignupInProgressOnCustomerDisplay$ = this.loyaltySalePartService.isActiveOnCustomerDisplay();
-        this.loyaltySignupInProgressDetailsMessage$ = this.loyaltySalePartService.getCustomerDisplayDetailsMessage();
+        this.isLoyaltyOperationInProgressOnCustomerDisplay$ = this.loyaltySalePartService.isActiveOnCustomerDisplay();
+        this.loyaltyOperationInProgressDetailsMessage$ = this.loyaltySalePartService.getCustomerDisplayDetailsMessage();
         this.loyaltySalePartService.checkCustomerDisplayStatus();
     }
 
@@ -108,7 +108,7 @@ export class SaleLoyaltyPartComponent extends ScreenPartComponent<SaleLoyaltyPar
             && !!this.screenData.customer.id;
     }
 
-    public shouldShowLoyaltySignupInProgress(): boolean {
+    public shouldShowLoyaltyOperationInProgress(): boolean {
         return !this.screenData.readOnly;
     }
 }
