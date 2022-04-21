@@ -20,14 +20,13 @@ public class TestServiceConfig {
         return new Proxy();
     }
 
-
     @RestController("test")
     @RequestMapping("/this/is/a/test")
     interface ITest {
         public void test();
     }
 
-    class Proxy implements ITest {
+    public class Proxy implements ITest {
         @Override
         public void test() {
         }
