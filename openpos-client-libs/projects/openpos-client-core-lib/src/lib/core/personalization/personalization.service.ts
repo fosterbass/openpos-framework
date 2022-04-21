@@ -166,10 +166,11 @@ export class PersonalizationService {
         deviceId: string,
         appId: string,
         personalizationProperties?: Map<string, string>,
-        sslEnabled?: boolean
+        sslEnabled?: boolean,
+        pairedAppId?: string,
+        pairedDeviceId?: string
     ): Observable<string> {
-
-        const request = new PersonalizationRequest(this.deviceToken$.getValue(), deviceId, appId, null);
+        const request = new PersonalizationRequest(this.deviceToken$.getValue(), deviceId, appId, pairedAppId, pairedDeviceId);
         return this.sendPersonalizationRequest(sslEnabled, serverName, serverPort, request, personalizationProperties);
     }
 
@@ -178,9 +179,10 @@ export class PersonalizationService {
         serverPort: string,
         deviceToken: string,
         sslEnabled?: boolean,
+        pairedAppId?: string,
         pairedDeviceId?: string
     ): Observable<string> {
-        const request = new PersonalizationRequest(deviceToken, null, null, null, pairedDeviceId);
+        const request = new PersonalizationRequest(deviceToken, null, null, null, pairedAppId, pairedDeviceId);
         return this.sendPersonalizationRequest(sslEnabled, serverName, serverPort, request, null);
     }
 
