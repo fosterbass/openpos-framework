@@ -8,48 +8,49 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
 
+import static java.util.Collections.singletonList;
+
 @RunWith(MockitoJUnitRunner.class)
 public class ServiceSpecificConfigTest {
+    private ServiceSpecificConfig serviceSpecificConfig;
 
-    String modulePath;
-    String endpointPath;
-    String serviceTestId;
-    int endpointIndex;
-    SamplingConfig samplingConfig;
-    EndpointSpecificConfig endpointSpecificConfig;
-
-
-    ServiceSpecificConfig serviceSpecificConfig = new ServiceSpecificConfig();
+    private String modulePath;
+    private String endpointPath;
+    private String serviceTestId;
+    private SamplingConfig samplingConfig;
+    private EndpointSpecificConfig endpointSpecificConfig;
 
     @Mock
-    IConfigApplicator iConfigApplicator;
+    private IConfigApplicator iConfigApplicator;
 
     @Before
-    public void before(){
-        MockitoAnnotations.initMocks(this);
+    public void before() {
+        serviceSpecificConfig = new ServiceSpecificConfig();
+
+        MockitoAnnotations.openMocks(this);
         serviceTestId = "TestID";
-        endpointIndex = 0;
         modulePath = String.format("openpos.services.specificConfig.%s.samplingConfig", serviceTestId);
-        endpointPath = String.format("openpos.services.specificConfig.%s.endpoints[%d]", serviceTestId, endpointIndex);
+        endpointPath = String.format("openpos.services.specificConfig.%s.endpoints[%d]", serviceTestId, 0);
         serviceSpecificConfig.additionalConfigSource = iConfigApplicator;
 
         samplingConfig = new SamplingConfig();
-        serviceSpecificConfig.samplingConfig = samplingConfig;
+        serviceSpecificConfig.setSamplingConfig(samplingConfig);
 
-        List<EndpointSpecificConfig> endpointSpecificConfigList = new ArrayList<>();
         endpointSpecificConfig = new EndpointSpecificConfig();
-        endpointSpecificConfigList.add(endpointSpecificConfig);
-        serviceSpecificConfig.setEndpoints(endpointSpecificConfigList);
+        serviceSpecificConfig.setEndpoints(singletonList(endpointSpecificConfig));
     }
 
     @Test
     public void findAdditionalConfigsWithNullSampleConfig() {
-        serviceSpecificConfig.samplingConfig = null;
+        serviceSpecificConfig.setSamplingConfig(null);
         serviceSpecificConfig.findAdditionalConfigs(serviceTestId);
+
         verify(iConfigApplicator, atLeastOnce()).applyAdditionalConfiguration(eq(modulePath), any(SamplingConfig.class));
         verify(iConfigApplicator, atLeastOnce()).applyAdditionalConfiguration(eq(endpointPath), eq(endpointSpecificConfig));
     }
@@ -58,6 +59,7 @@ public class ServiceSpecificConfigTest {
     public void findAdditionalConfigsWithNullAdditionalConfigSource() {
         serviceSpecificConfig.additionalConfigSource = null;
         serviceSpecificConfig.findAdditionalConfigs(serviceTestId);
+
         verify(iConfigApplicator, never()).applyAdditionalConfiguration(eq(modulePath), eq(samplingConfig));
         verify(iConfigApplicator, never()).applyAdditionalConfiguration(eq(endpointPath), eq(EndpointSpecificConfig.class));
     }

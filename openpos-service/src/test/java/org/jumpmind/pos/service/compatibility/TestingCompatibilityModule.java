@@ -1,6 +1,6 @@
 package org.jumpmind.pos.service.compatibility;
 
-import org.jumpmind.pos.service.EndpointInvoker;
+import org.jumpmind.pos.service.EndpointInvocationHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -14,7 +14,7 @@ import java.lang.reflect.Proxy;
 public class TestingCompatibilityModule {
 
     @Autowired
-    protected EndpointInvoker dispatcher;
+    protected EndpointInvocationHandler dispatcher;
 
     @Bean
     ITestingCustomerService testingCustomerService() {

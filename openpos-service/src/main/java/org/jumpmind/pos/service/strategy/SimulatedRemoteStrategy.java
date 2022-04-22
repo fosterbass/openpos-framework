@@ -1,19 +1,21 @@
 package org.jumpmind.pos.service.strategy;
 
+import org.jumpmind.pos.service.EndpointInvocationContext;
+import org.jumpmind.pos.util.DefaultObjectMapper;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import org.jumpmind.pos.service.ServiceSpecificConfig;
-import org.jumpmind.pos.util.DefaultObjectMapper;
+import org.apache.commons.lang3.function.Failable;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.AnnotatedParameterizedType;
-import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Map;
+
+import static java.util.Arrays.stream;
 
 @Component(SimulatedRemoteStrategy.SIMULATED_REMOTE_STRATEGY)
-public class SimulatedRemoteStrategy extends LocalOnlyStrategy implements IInvocationStrategy {
+public class SimulatedRemoteStrategy extends LocalOnlyStrategy {
 
     static final String SIMULATED_REMOTE_STRATEGY = "SIMULATED_REMOTE";
 
@@ -23,22 +25,31 @@ public class SimulatedRemoteStrategy extends LocalOnlyStrategy implements IInvoc
     }
 
     @Override
-    public Object invoke(List<String> profileIds, Object proxy, Method method, Map<String, Object> endpoints, Object[] args) throws Throwable {
-        ObjectMapper mapper = DefaultObjectMapper.build();
+    public Object invoke(EndpointInvocationContext endpointInvocationContext) throws Throwable {
+        final ObjectMapper mapper = DefaultObjectMapper.build();
         mapper.setSerializationInclusion(JsonInclude.Include.ALWAYS);
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
-        Object[] newArgs = null;
-        if (args != null) {
-            newArgs = new Object[args.length];
-            for (int i = 0; i < args.length; i++) {
-                newArgs[i] = mapper.readValue(mapper.writeValueAsString(args[i]), args[i].getClass());
-            }
-        }
-        Object retObj = super.invoke(profileIds, proxy, method, endpoints, newArgs);
+
+        final Object[] arguments = (endpointInvocationContext.getArguments() == null)
+                ? null
+                : stream(endpointInvocationContext.getArguments())
+                        .map(Failable.asFunction(arg -> mapper.readValue(mapper.writeValueAsString(arg), arg.getClass())))
+                        .toArray();
+
+        final Object retObj = super.invoke(endpointInvocationContext.withArguments(arguments));
+
         if (retObj instanceof List<?>) {
-            String className = ((AnnotatedParameterizedType) method.getAnnotatedReturnType()).getAnnotatedActualTypeArguments()[0].getType().getTypeName();
-            return mapper.readValue(mapper.writeValueAsString(retObj), mapper.getTypeFactory().constructCollectionType(List.class, Class.forName(className)));
+            final String className = ((AnnotatedParameterizedType) endpointInvocationContext.getMethod().getAnnotatedReturnType())
+                    .getAnnotatedActualTypeArguments()[0]
+                    .getType()
+                    .getTypeName();
+
+            return mapper.readValue(
+                    mapper.writeValueAsString(retObj),
+                    mapper.getTypeFactory().constructCollectionType(List.class, Class.forName(className)));
         }
-        return retObj != null ? mapper.readValue(mapper.writeValueAsString(retObj), retObj.getClass()) : null;
+        return (retObj != null)
+                ? mapper.readValue(mapper.writeValueAsString(retObj), retObj.getClass())
+                : null;
     }
 }

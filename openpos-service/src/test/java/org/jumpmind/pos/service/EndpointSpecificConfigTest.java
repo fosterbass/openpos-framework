@@ -30,13 +30,13 @@ public class EndpointSpecificConfigTest {
         path = String.format("openpos.services.specificConfig.%s.endpoints[%d].samplingConfig", serviceTestId, endpointIndex);
         endpointSpecificConfig.additionalConfigSource = iConfigApplicator;
         samplingConfig = new SamplingConfig();
-        endpointSpecificConfig.samplingConfig = samplingConfig;
+        endpointSpecificConfig.setSamplingConfig(samplingConfig);
 
     }
 
     @Test
     public void findAdditionalConfigsWithNullSampleConfig() {
-        endpointSpecificConfig.samplingConfig = null;
+        endpointSpecificConfig.setSamplingConfig(null);
         endpointSpecificConfig.findAdditionalConfigs(serviceTestId, endpointIndex);
         verify(iConfigApplicator, atLeastOnce()).applyAdditionalConfiguration(eq(path), any(SamplingConfig.class));
     }
@@ -45,6 +45,6 @@ public class EndpointSpecificConfigTest {
     public void findAdditionalConfigsWithNullAdditionalConfigSource() {
         endpointSpecificConfig.additionalConfigSource = null;
         endpointSpecificConfig.findAdditionalConfigs(serviceTestId, endpointIndex);
-        verify(iConfigApplicator, never()).applyAdditionalConfiguration(eq(path), eq(samplingConfig));
+        verify(iConfigApplicator, never()).applyAdditionalConfiguration(path, samplingConfig);
     }
 }
