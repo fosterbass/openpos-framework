@@ -1,18 +1,20 @@
 package org.jumpmind.pos.service;
 
-import java.lang.reflect.Proxy;
-
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 
-abstract public class AbstractServiceFactory {
+import java.lang.reflect.Proxy;
+
+import static lombok.AccessLevel.PROTECTED;
+
+@NoArgsConstructor(access = PROTECTED)
+public abstract class AbstractServiceFactory {
 
     @Autowired
-    protected EndpointInvoker dispatcher;
+    private EndpointInvocationHandler dispatcher;
 
     @SuppressWarnings("unchecked")
     protected <T> T buildService(Class<T> serviceInterface) {
-        return (T) Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class[] { serviceInterface },
-                dispatcher);
+        return (T) Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class[] { serviceInterface }, dispatcher);
     }
-
 }

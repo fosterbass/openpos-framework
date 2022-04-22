@@ -1,6 +1,11 @@
-package org.jumpmind.pos.service;
+package org.jumpmind.pos.service.strategy;
 
+import org.jumpmind.pos.service.EndpointInvocationHandler;
+import org.jumpmind.pos.service.TestEndpoint;
+import org.jumpmind.pos.service.TestEndpointOverride;
+import org.jumpmind.pos.service.TestServiceConfig;
 import org.jumpmind.pos.service.TestServiceConfig.Proxy;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +21,13 @@ import static org.junit.Assert.assertEquals;
 public class LocalOnlyStrategyTest {
 
     @Autowired
-    EndpointInvoker dispatcher;
+    private EndpointInvocationHandler dispatcher;
 
     @Autowired
-    TestEndpoint endpoint;
+    private TestEndpoint endpoint;
 
     @Autowired
-    TestEndpointOverride override;
+    private TestEndpointOverride override;
 
     @Test
     public void testThatOverrideIsCalled() throws Throwable {
@@ -32,6 +37,4 @@ public class LocalOnlyStrategyTest {
         assertEquals(0, endpoint.invokeCount);
         assertEquals(1, override.invokeCount);
     }
-
-
 }

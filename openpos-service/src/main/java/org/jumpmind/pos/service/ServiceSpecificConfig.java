@@ -1,46 +1,31 @@
 package org.jumpmind.pos.service;
 
 import org.jumpmind.pos.service.strategy.InvocationStrategy;
+
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static lombok.AccessLevel.NONE;
+
 @Component
+@Getter
+@Setter
 public class ServiceSpecificConfig implements Cloneable {
 
     @Autowired(required = false)
+    @Getter(NONE)
+    @Setter(NONE)
     IConfigApplicator additionalConfigSource;
 
-    protected List<String> profileIds = null;
-    protected InvocationStrategy strategy = InvocationStrategy.LOCAL_ONLY;
-    protected List<EndpointSpecificConfig> endpoints = new ArrayList<>();
-    protected SamplingConfig samplingConfig = null;
-
-    public SamplingConfig getSamplingConfig() { return samplingConfig; }
-
-    public void setSamplingConfig(SamplingConfig samplingConfig) {this.samplingConfig = samplingConfig;}
-
-    public List<String> getProfileIds() {
-        return profileIds;
-    }
-
-    public void setProfileIds(List<String> profileIds) {
-        this.profileIds = profileIds;
-    }
-
-    public InvocationStrategy getStrategy() {
-        return strategy;
-    }
-
-    public void setStrategy(InvocationStrategy strategy) {
-        this.strategy = strategy;
-    }
-
-    public List<EndpointSpecificConfig> getEndpoints() { return endpoints; }
-
-    public void setEndpoints(List<EndpointSpecificConfig> endpoints) { this.endpoints = endpoints; }
+    private List<String> profileIds;
+    private InvocationStrategy strategy = InvocationStrategy.LOCAL_ONLY;
+    private List<EndpointSpecificConfig> endpoints = new ArrayList<>();
+    private SamplingConfig samplingConfig;
 
     public ServiceSpecificConfig copy() {
         ServiceSpecificConfig copy;
@@ -66,5 +51,9 @@ public class ServiceSpecificConfig implements Cloneable {
                 additionalConfigSource.applyAdditionalConfiguration(startsWith, endpoints.get(index));
             }
         }
+    }
+
+    public boolean isSamplingEnabled() {
+        return (samplingConfig != null) && samplingConfig.isEnabled();
     }
 }
