@@ -239,7 +239,7 @@ public class RemoteOnlyStrategy implements IInvocationStrategy {
         int connectTimeoutInSecond = profileConfig.getConnectTimeout() > 0 ? profileConfig.getConnectTimeout() : httpTimeoutInSecond;
         ConfiguredRestTemplate template = new ConfiguredRestTemplate(httpTimeoutInSecond, connectTimeoutInSecond);
 
-        final RequestMapping mapping = getMergedAnnotation(endpointInvocationContext.getMethod(), RequestMapping.class);
+        RequestMapping mapping = endpointInvocationContext.getMethod().getAnnotation(RequestMapping.class);
         RequestMethod[] requestMethods = mapping.method();
 
         HttpHeaders headers = getHeaders(profileConfig, profileId);
