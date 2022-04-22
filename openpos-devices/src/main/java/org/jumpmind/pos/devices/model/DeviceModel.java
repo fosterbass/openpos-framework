@@ -8,6 +8,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
+
+import static org.apache.logging.log4j.util.Strings.isNotBlank;
+
 import org.jumpmind.pos.persist.*;
 import org.jumpmind.pos.persist.model.ITaggedModel;
 import org.jumpmind.pos.util.model.IDeviceAttributes;
@@ -161,7 +164,7 @@ public class DeviceModel extends AbstractModel implements ITaggedModel, IDeviceA
                     .orElse(BRAND_DEFAULT);
         }
         String brandTag = getTagValue("brand");
-        return StringUtils.isNotBlank(brandTag) ? brandTag : BRAND_DEFAULT;
+        return isNotBlank(brandTag) ? brandTag : BRAND_DEFAULT;
     }
 
     @JsonIgnore
