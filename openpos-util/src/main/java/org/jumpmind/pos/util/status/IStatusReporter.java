@@ -1,5 +1,5 @@
 package org.jumpmind.pos.util.status;
 
 public interface IStatusReporter {
-    StatusReport getStatus(IStatusManager statusManager);
+    StatusReport getStatus(IStatusManager statusManager, String deviceId);
 }

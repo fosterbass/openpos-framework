@@ -6,5 +6,5 @@ public interface IStatusManager {
 
     public StatusReport getLastKnownStatus(String statusName);
 
-    public StatusReport getRealTimeStatus(String statusName);
+    public StatusReport getRealTimeStatus(String statusName, String deviceId);
 }

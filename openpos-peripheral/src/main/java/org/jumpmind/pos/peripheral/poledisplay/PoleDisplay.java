@@ -80,7 +80,7 @@ public class PoleDisplay implements IStatusReporter {
     }
 
     @Override
-    public StatusReport getStatus(IStatusManager statusManager) {
+    public StatusReport getStatus(IStatusManager statusManager, String deviceId) {
         this.statusManager = statusManager;
 
         Status status = (peripheralConnection != null && peripheralConnection.getOut() != null)
