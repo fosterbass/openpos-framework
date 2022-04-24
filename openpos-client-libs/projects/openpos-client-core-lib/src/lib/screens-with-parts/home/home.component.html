@@ -16,7 +16,7 @@
             <div responsive-class class="menu-button" 
                  gdAuto="column" 
                  (click)="doAction(menuItem)"
-                 [style]="'padding-top:30px;color: white; border:1px;border-style:dashed; background-color: ' + getButtonColor(i)">
+                 [style]="'padding-top:30px;color: white; border:1px; background-color: ' + getButtonColor(i)">
                     <div class="menu-button-content">
                         <app-icon iconName="{{menuItem.icon}}" [iconClass]="(iconClass | async)"></app-icon>
                         <div class="menu-button-title">{{menuItem.title}}</div>
