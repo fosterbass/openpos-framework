@@ -2,6 +2,7 @@ package org.jumpmind.pos.server.config;
 
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.asn1.x509.*;
 import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.cert.X509CertificateHolder;
@@ -170,7 +171,7 @@ public class SecuredAutoConfiguration {
             throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException, OperatorCreationException, NoSuchProviderException {
         log.debug("initializing commerce server key store from {}", config);
         try {
-            KeyStore keyStore = KeyStore.getInstance(config.getKeyStoreType(), BouncyCastleProvider.PROVIDER_NAME);
+            KeyStore keyStore = initKeyStore(config);
             Path keyStorePath = Paths.get(config.getKeyStorePath());
             if (keyStorePath.toFile().exists()) {
                 log.info("loading key store from {}", keyStorePath.toFile().getCanonicalPath());
@@ -211,6 +212,19 @@ public class SecuredAutoConfiguration {
         } finally {
             Security.removeProvider(BouncyCastleProvider.PROVIDER_NAME);
         }
+    }
+
+    private KeyStore initKeyStore(SecuredConfiguration config) throws KeyStoreException, NoSuchProviderException {
+        KeyStore keystore;
+        if (StringUtils.isNotBlank(config.getKeyStoreSecurityProvider())) {
+            log.info("Using security provider '{}' to load keystore", config.getKeyStoreSecurityProvider());
+            keystore = KeyStore.getInstance(config.getKeyStoreType(), config.getKeyStoreSecurityProvider());
+        } else {
+            log.info("Using default Java security provider to load keystore");
+            keystore = KeyStore.getInstance(config.getKeyStoreType());
+        }
+
+        return keystore;
     }
 
     @Bean
