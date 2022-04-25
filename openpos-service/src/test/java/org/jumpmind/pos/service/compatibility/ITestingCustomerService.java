@@ -1,27 +1,26 @@
 package org.jumpmind.pos.service.compatibility;
 
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
-@Api(tags = "Testing Customer Service", description = "This service exposes endpoints to retrieve customer information")
+@Tag(name = "Testing Customer Service", description = "This service exposes endpoints to retrieve customer information")
 @RestController("testingCustomer")
 @RequestMapping("/testingCustomer")
 public interface ITestingCustomerService {
 
-    @RequestMapping(path = "/getCustomer", method = RequestMethod.POST)
+    @PostMapping("/getCustomer")
     @ResponseBody
-    public TestingGetCustomerResponse getCustomer(@RequestBody String customerId);
+    TestingGetCustomerResponse getCustomer(@RequestBody String customerId);
 
-    @RequestMapping(path = "/saveCustomer", method = RequestMethod.POST)
+    @PostMapping("/saveCustomer")
     @ResponseBody
-    public TestingSaveCustomerResponse saveCustomer(@RequestBody TestingSaveCustomerRequest saveCustomerRequest);
+    TestingSaveCustomerResponse saveCustomer(@RequestBody TestingSaveCustomerRequest saveCustomerRequest);
 
-    @RequestMapping(path = "/unlinkCustomer", method = RequestMethod.POST)
+    @PostMapping("/unlinkCustomer")
     @ResponseBody
-    public TestingSaveCustomerResponse unlinkCustomer(@RequestBody TestingSaveCustomerRequest saveCustomerRequest);
+    TestingSaveCustomerResponse unlinkCustomer(@RequestBody TestingSaveCustomerRequest saveCustomerRequest);
 
-    @RequestMapping(path = "/getLoyaltyPromotions", method = RequestMethod.POST)
+    @PostMapping("/getLoyaltyPromotions")
     @ResponseBody
-    public TestingGetLoyaltyPromotionsResponse getLoyaltyPromotions(@RequestBody String customerId);
-
+    TestingGetLoyaltyPromotionsResponse getLoyaltyPromotions(@RequestBody String customerId);
 }

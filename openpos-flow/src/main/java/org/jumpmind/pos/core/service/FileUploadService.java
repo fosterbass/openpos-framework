@@ -1,86 +1,74 @@
 package org.jumpmind.pos.core.service;
 
-import java.io.IOException;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.multipart.MultipartFile;
-
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import springfox.documentation.annotations.ApiIgnore;
-
 @Controller
-@ApiIgnore
+@Hidden
 @RequestMapping(value = "fileupload")
+@Slf4j
 public class FileUploadService implements IFileUploadService {
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private final Map<String, Consumer<FileUploadInfo>> nodeUploadHandlers = new HashMap<>();
 
-    protected Map<String, Consumer<FileUploadInfo>> nodeUploadHandlers = new HashMap<>();
-    
     public void registerNodeUploadHandler(String nodeId, String context, Consumer<FileUploadInfo> handler) {
         this.nodeUploadHandlers.put(this.makeNodeUploadHandlerKey(nodeId, context), handler);
-        logger.info("Node file upload handler successfully registered for node '{}' at context '{}'", nodeId, context);
+        log.info("Node file upload handler successfully registered for node '{}' at context '{}'", nodeId, context);
     }
-    
+
     @Override
     public void registerNodeUploadHandler(IFileUploadHandler handler) {
         this.registerNodeUploadHandler(handler.getNodeId(), handler.getUploadContext(), handler.getUploadHandler());
-    }    
-    
-    @RequestMapping(method = RequestMethod.GET, value = "ping")
+    }
+
+    @GetMapping("ping")
     @ResponseBody
     public Pong ping() {
-        logger.info("Recevied a ping request");
+        log.info("Received a ping request");
         return new Pong();
     }
-    
+
     /**
      * Web service to receive a file upload from a client.
-     * 
+     *
      * @param nodeId The node where the file should be copied to.
      * @param context The category/scope within the node that the uploaded file is associated with.  Allows for a way to handle
-     *   files with differing IFileUploadHandlers. 
+     * files with differing IFileUploadHandlers.
      * @param filename The name the file should have if/when saved to the local filesystem.
      * @param file The file data itself.
-     * @throws IOException Thrown if there is any problem receiving/storing the file.
      */
-    @RequestMapping(method = RequestMethod.POST, value = "uploadToNode")
+    @PostMapping("uploadToNode")
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    @ApiResponses({ 
-        @ApiResponse(code = 500, message = "Error", response = Error.class),
-        @ApiResponse(code = 404, message = "Context not found", response = Error.class)
-    })
+    @ApiResponse(responseCode = "500", description = "Error", content = @Content(schema = @Schema(implementation = Error.class)))
+    @ApiResponse(responseCode = "404", description = "Context not found", content = @Content(schema = @Schema(implementation = Error.class)))
     public void uploadToNode(
-        @RequestParam("nodeId") String nodeId, 
+        @RequestParam("nodeId") String nodeId,
         @RequestParam("targetContext") String context,
         @RequestParam("filename") String filename,
         @RequestParam("file") MultipartFile file,
-        @RequestParam("chunkIndex") Integer chunkIndex) throws IOException {
-            
+        @RequestParam("chunkIndex") Integer chunkIndex) {
+
         String handlerKey = this.makeNodeUploadHandlerKey(nodeId, context);
         if (this.nodeUploadHandlers.containsKey(handlerKey)) {
             FileUploadInfo fileUploadInfo = new FileUploadInfo(nodeId, context, filename, file);
             fileUploadInfo.setChunkIndex(chunkIndex);
             this.nodeUploadHandlers.get(handlerKey).accept(fileUploadInfo);
         } else {
-            String err = String.format("No upload handler exists for %s, has one been registered?", this.makeNodeUploadHandlerKey(nodeId, context));
-            logger.error(err);
+            String err = String.format("No upload handler exists for %s.  Has one been registered?", this.makeNodeUploadHandlerKey(nodeId, context));
+            log.error(err);
             throw new ContextNotFoundException(err);
         }
     }
@@ -98,51 +86,37 @@ public class FileUploadService implements IFileUploadService {
     protected Error handleContextNotFoundException(ContextNotFoundException ex) {
         return new Error(ex.getMessage(), ExceptionUtils.getStackTrace(ex));
     }
-    
+
     protected String makeNodeUploadHandlerKey(String nodeId, String context) {
         return String.format("%s/%s", nodeId, context);
     }
-    
-    class Pong implements Serializable {
+
+    private static class Pong implements Serializable {
         private static final long serialVersionUID = 1L;
 
         public boolean isPong() {
             return true;
         }
     }
-    
-    class ContextNotFoundException extends RuntimeException {
 
+    private static class ContextNotFoundException extends RuntimeException {
         private static final long serialVersionUID = 1L;
-        
-        public ContextNotFoundException() {
-        }
-        public ContextNotFoundException(String message) {
+
+        ContextNotFoundException(String message) {
             super(message);
         }
-        public ContextNotFoundException(String message, Throwable ex) {
-            super(message, ex);
-        }
     }
-    
-    
-    @ApiModel(description = "The model an exception will be mapped to")
-    class Error implements Serializable {
+
+    @Schema(description = "The model an exception will be mapped to")
+    private static class Error implements Serializable {
         private static final long serialVersionUID = 1L;
 
         private String message;
         private String stackTrace;
 
-        public Error(String message) {
-            this.message = message;
-        }
-        
-        public Error(String message, String stackTrace) {
+        Error(String message, String stackTrace) {
             this.message = message;
             this.stackTrace = stackTrace;
-        }
-
-        public Error() {
         }
 
         public void setMessage(String message) {
@@ -160,7 +134,5 @@ public class FileUploadService implements IFileUploadService {
         public String getStackTrace() {
             return stackTrace;
         }
-
     }
-
 }

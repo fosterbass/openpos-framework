@@ -20,23 +20,26 @@
  */
 package org.jumpmind.pos.core.flow;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.jumpmind.pos.core.error.IErrorHandler;
 import org.jumpmind.pos.core.flow.config.IFlowConfigProvider;
 import org.jumpmind.pos.core.flow.config.TransitionStepConfig;
-import org.jumpmind.pos.core.service.IScreenService;
 import org.jumpmind.pos.util.Version;
 import org.jumpmind.pos.util.Versions;
 import org.jumpmind.pos.util.clientcontext.ClientContext;
 import org.jumpmind.pos.util.event.Event;
+
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.jumpmind.pos.util.AppUtils.setupLogging;
@@ -45,28 +48,23 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 @Component
 @Slf4j
 public class StateManagerContainer implements IStateManagerContainer, ApplicationListener<Event> {
+    private final Map<String, StateManager> stateManagersByDeviceId = new HashMap<>();
+    private final ThreadLocal<IStateManager> currentStateManager = new InheritableThreadLocal<>();
 
     @Autowired
-    IFlowConfigProvider flowConfigProvider;
+    private IFlowConfigProvider flowConfigProvider;
 
     @Autowired
-    IScreenService screenService;
-
-    @Autowired
-    ApplicationContext applicationContext;
+    private ApplicationContext applicationContext;
 
     @Autowired(required = false)
-    IErrorHandler errorHandler;
+    private IErrorHandler errorHandler;
 
     @Autowired
-    ClientContext clientContext;
+    private ClientContext clientContext;
 
     @Autowired(required = false)
-    List<IClientContextUpdater> clientContextUpdaters;
-
-    Map<String, StateManager> stateManagersByDeviceId = new HashMap<>();
-
-    ThreadLocal<IStateManager> currentStateManager = new InheritableThreadLocal<>();
+    private List<IClientContextUpdater> clientContextUpdaters;
 
     private Map<String,String> versions;
 
@@ -89,7 +87,7 @@ public class StateManagerContainer implements IStateManagerContainer, Applicatio
             setCurrentStateManager(stateManager);
             setClientContextVersions();
             if (personalizationProperties != null) {
-                personalizationProperties.entrySet().forEach(entry -> clientContext.put(entry.getKey(), entry.getValue()));
+                personalizationProperties.forEach((key, value) -> clientContext.put(key, value));
             }
 
             stateManager.setTransitionSteps(createTransitionSteps(appId, deviceId));
@@ -151,19 +149,21 @@ public class StateManagerContainer implements IStateManagerContainer, Applicatio
             steps.add(config);
         }
 
-        Collections.sort(steps, (o1, o2) -> {
-            Integer o1order = 0;
-            Integer o2order = 0;
+        steps.sort((o1, o2) -> {
+            int o1order = 0;
+            int o2order = 0;
             try {
                 o1order = o1.getTransitionStepClass().getAnnotation(Order.class).value();
-            } catch (NullPointerException ex) {
+            }
+            catch (NullPointerException ex) {
             }
             try {
                 o2order = o2.getTransitionStepClass().getAnnotation(Order.class).value();
-            } catch (NullPointerException ex) {
+            }
+            catch (NullPointerException ex) {
             }
 
-            return o1order.compareTo(o2order);
+            return Integer.compare(o1order, o2order);
         });
         return steps;
     }
@@ -177,12 +177,7 @@ public class StateManagerContainer implements IStateManagerContainer, Applicatio
     }
 
     public synchronized List<StateManager> getAllStateManagers() {
-        List<StateManager> allStateManagers = new ArrayList<>();
-        for (StateManager stateManager : stateManagersByDeviceId.values()) {
-            allStateManagers.add(stateManager);
-        }
-
-        return allStateManagers;
+        return new ArrayList<>(stateManagersByDeviceId.values());
     }
 
     public void setCurrentStateManager(IStateManager stateManager) {
@@ -227,8 +222,7 @@ public class StateManagerContainer implements IStateManagerContainer, Applicatio
     }
 
     private void setClientContextVersions() {
-        getVersions().entrySet().forEach(e ->
-            clientContext.put("version." + e.getKey(), e.getValue()));
+        getVersions().forEach((key, value) -> clientContext.put("version." + key, value));
     }
 
     private Map<String,String> getVersions() {
@@ -238,5 +232,4 @@ public class StateManagerContainer implements IStateManagerContainer, Applicatio
 
         return versions;
     }
-
 }

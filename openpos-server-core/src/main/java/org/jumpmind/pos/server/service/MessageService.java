@@ -1,21 +1,20 @@
 package org.jumpmind.pos.server.service;
 
-import java.sql.Date;
-import java.time.Instant;
-import java.util.*;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
-import javax.annotation.PostConstruct;
-
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.map.PassiveExpiringMap;
 import org.jumpmind.pos.server.model.Action;
 import org.jumpmind.pos.server.model.CachedMessage;
 import org.jumpmind.pos.server.model.FetchMessage;
 import org.jumpmind.pos.util.DefaultObjectMapper;
 import org.jumpmind.pos.util.web.NotFoundException;
 import org.jumpmind.pos.util.web.ServerException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.v3.oas.annotations.Hidden;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.map.PassiveExpiringMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.Message;
@@ -25,36 +24,43 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.annotation.PostConstruct;
+import java.sql.Date;
+import java.time.Instant;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
-import springfox.documentation.annotations.ApiIgnore;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
-@ApiIgnore
+@Hidden
 @CrossOrigin
 @Controller
 public class MessageService implements IMessageService {
 
-    ObjectMapper mapper = DefaultObjectMapper.defaultObjectMapper();
+    private final ObjectMapper mapper = DefaultObjectMapper.defaultObjectMapper();
 
     @Autowired
-    SimpMessagingTemplate template;
+    private SimpMessagingTemplate template;
 
     @Value("${openpos.screens.jsonIncludeNulls:true}")
-    boolean jsonIncludeNulls = true;
+    private boolean jsonIncludeNulls;
 
     @Value("${openpos.general.websocket.sendBufferSizeLimit:8192000}")
-    int websocketSendBufferLimit;
+    private int websocketSendBufferLimit;
 
     @Value("${openpos.general.message.cacheTimeout:300000}")
-    int messageCacheTimeout;
+    private int messageCacheTimeout;
 
-    @Autowired(required=false)
-    List<IActionListener> actionListeners;
+    @Autowired(required = false)
+    private List<IActionListener> actionListeners;
 
     private Map<String, CachedMessage> cachedMessageMap;
 
@@ -66,8 +72,8 @@ public class MessageService implements IMessageService {
             mapper.setSerializationInclusion(Include.NON_NULL);
         }
     }
-    
-    @RequestMapping(method = RequestMethod.GET, value = "ping", produces="application/json")
+
+    @GetMapping(path = "ping", produces = APPLICATION_JSON_VALUE)
     @ResponseBody
     public String ping() {
         log.info("Received a ping request");
@@ -78,7 +84,7 @@ public class MessageService implements IMessageService {
     public void action(@DestinationVariable String deviceId, @Payload Action action, Message<?> message) {
         if (action.getType() == null) {
             throw new ServerException("Message/action must have a type. " + message);
-        }        
+        }
         boolean handled = false;
         for (IActionListener actionListener : actionListeners) {
             if (action.getType() != null && actionListener.getRegisteredTypes() != null &&
@@ -87,9 +93,9 @@ public class MessageService implements IMessageService {
                 actionListener.actionOccurred(deviceId, action);
             }
         }
-        
+
         if (!handled) {
-            throw new ServerException("Message/action was not handled by any action listeners. message=[" + 
+            throw new ServerException("Message/action was not handled by any action listeners. message=[" +
                     message + "] actionListeners=[" + actionListeners + "]");
         }
     }
@@ -102,7 +108,7 @@ public class MessageService implements IMessageService {
 
             String jsonString = messageToJson(message);
 
-            byte[] json = jsonString.getBytes("UTF-8");
+            byte[] json = jsonString.getBytes(UTF_8);
 
             if( json.length <= websocketSendBufferLimit ){
                 this.template.send(topic.toString(), MessageBuilder.withPayload(json).build());
@@ -110,7 +116,7 @@ public class MessageService implements IMessageService {
                 String id = UUID.randomUUID().toString();
                 String fetchMessageJson = messageToJson(FetchMessage.builder().messageIdToFetch(id).build());
                 cachedMessageMap.put(id, CachedMessage.builder().message(message).cachedTime(Date.from(Instant.now())).build());
-                this.template.send(topic.toString(), MessageBuilder.withPayload(fetchMessageJson.getBytes("UTF-8")).build());
+                this.template.send(topic.toString(), MessageBuilder.withPayload(fetchMessageJson.getBytes(UTF_8)).build());
             }
         } catch (RuntimeException ex) {
             throw ex;
@@ -119,10 +125,9 @@ public class MessageService implements IMessageService {
         }
     }
 
-    @RequestMapping(method = RequestMethod.GET,  value = "api/app/device/{deviceId}/message/{id}")
+    @GetMapping("api/app/device/{deviceId}/message/{id}")
     @ResponseBody
     public String getCachedMessage(@PathVariable("deviceId") String deviceId, @PathVariable("id") String id){
-
         try{
             if(cachedMessageMap.containsKey(id)){
                 try {
@@ -142,7 +147,7 @@ public class MessageService implements IMessageService {
             throw e;
         }
     }
-    
+
     protected String messageToJson(org.jumpmind.pos.util.model.Message message) throws JsonProcessingException {
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(message);
     }
