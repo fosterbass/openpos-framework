@@ -3,7 +3,9 @@ package org.jumpmind.pos.util;
 import java.net.InetAddress;
 import java.nio.charset.Charset;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.TimeZone;
@@ -120,12 +122,7 @@ public final class AppUtils {
         }
     }
     public static Date getTimezoneOffsetCorrectedDate(Date serverDate, int serverOffsetMillis, String clientOffsetString) {
-        int absOffset = Math.abs(serverOffsetMillis);
-        String strServerOffset = String.format("%s%02d:%02d",serverOffsetMillis < 0 ? "-" : "+",
-                TimeUnit.MILLISECONDS.toHours(absOffset),
-                TimeUnit.MILLISECONDS.toMinutes(absOffset) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(absOffset))
-        );
-
+        String strServerOffset = getTimezone(serverOffsetMillis);
         return getTimezoneOffsetCorrectedDate(serverDate, strServerOffset, clientOffsetString);
     }
 
@@ -150,5 +147,29 @@ public final class AppUtils {
             }
         }
         return serverDate;
+    }
+
+    /**
+     * Converts offset to millis
+     *
+     */
+    public static int convertOffsetToMillis(String offsetString) {
+        ZoneOffset clientOffset = ZoneOffset.of(offsetString);
+        return (int) (clientOffset.get(ChronoField.OFFSET_SECONDS) * 1000L);
+    }
+
+    /**
+     * Converts offset in millis to timezone
+     *
+     * @param offsetMillis
+     * @return
+     */
+    public static String getTimezone(int offsetMillis){
+        int absOffset = Math.abs(offsetMillis);
+        String strOffset = String.format("%s%02d:%02d", offsetMillis < 0 ? "-" : "+",
+                TimeUnit.MILLISECONDS.toHours(absOffset),
+                TimeUnit.MILLISECONDS.toMinutes(absOffset) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(absOffset))
+        );
+        return strOffset;
     }
 }
