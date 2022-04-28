@@ -19,7 +19,7 @@ import static java.lang.Integer.MAX_VALUE;
 @Component
 @Order(MAX_VALUE - 100)
 public class SwaggerStartupTask extends AbstractStartupTask {
-    @Value("${server.port}")
+    @Value("${server.port:6140}")
     private int appPort;
 
     @Value("${springdoc.api-docs.path:/v3/api-docs}")
