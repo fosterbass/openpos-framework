@@ -15,6 +15,7 @@ import java.util.Set;
 public class ClientContext {
     public static final String BUSINESS_UNIT_ID = "businessUnitId";
     public static final String TIMEZONE_OFFSET = "timezoneOffset";
+    public static final String CURRENCY_ID = "currencyId";
 
     private ThreadLocal<Map<String, String>> propertiesMap = new ThreadLocal<>();
     final Logger log = LoggerFactory.getLogger(getClass());

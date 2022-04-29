@@ -1,4 +1,4 @@
-<div [formGroup]="formGroup">
+<div [formGroup]="formGroup" (input)="resetError()">
 
     <mat-button-toggle-group *ngIf="formField.inputType==='ToggleButton'" [formControlName]="formField.id" (change)="onFormElementChanged(formField)">
         <mat-button-toggle *ngFor="let value of values" [value]="value">
@@ -10,7 +10,7 @@
         <mat-form-field responsive-class style="width:100%" [ngSwitch]="formField.inputType">
             <app-icon *ngIf="formField.iconName" matPrefix iconName="{{formField.iconName}}" iconClass="material-icons md"></app-icon>
             <mat-hint *ngIf="formField.hintText">{{formField.hintText}}</mat-hint>
-            <input *ngSwitchDefault matInput cdkFocusInitial id="{{formField.id}}" [formControlName]="formField.id" [formControl]="formGroup.controls[formField.id]" [placeholder]="getPlaceholderText(formField)"
+            <input *ngSwitchDefault matInput cdkFocusInitial id="{{formField.id}}" [formControlName]="formField.id" [formControl]="control" [placeholder]="getPlaceholderText(formField)"
                 [formatterName]="formField.inputType" [required]="isRequired()" (change)="onFormElementChanged(formField)" (paste)="onPaste($event)"
                 [attr.minlength]="formField.minLength" [attr.maxlength]="formField.maxLength" [attr.pattern]="formField.pattern" [readonly]="formField.disabled" [attr.tabindex]="formField.tabindex"
                 [keyboardLayout]="keyboardLayout" [attr.type]="isNumericField() ? 'tel' : 'text'"
@@ -18,8 +18,18 @@
             <button *ngIf="isScanAllowed()" type="button" mat-button matSuffix mat-icon-button (click)="onScan(formField)">
                 <mat-icon svgIcon="barcode"></mat-icon>
             </button>
+            <button class="barcode-toggle" *ngIf="isImageScanAllowed()" matSuffix
+                    mat-flat-button type="button"
+                    color=primary
+                    (click)="onImageScan()">
+                <app-icon iconName="barcode"></app-icon>
+            </button>
+            <div class="barcode-scanner" *ngIf="showScanner">
+                <app-image-scanner (scan)="onBarcodeScanned($event)" (scanChanged)="showScanner = $event">
+                </app-image-scanner>
+            </div>
                  
-            <input class="poptart" *ngSwitchCase="'PopTart'" matInput [formControlName]="formField.id" [formControl]="formGroup.controls[formField.id]" [placeholder]="getPlaceholderText(formField)"
+            <input class="poptart" *ngSwitchCase="'PopTart'" matInput [formControlName]="formField.id" [formControl]="control" [placeholder]="getPlaceholderText(formField)"
                  [required]="isRequired()" (click)="openPopTart()"
                  readonly id="{{formField.id}}">
 
@@ -36,10 +46,10 @@
             </mat-select>
 
             <textarea *ngSwitchCase="'TextArea'" [value]="formField.value" [formControlName]="formField.id" [readonly]="formField.disabled" [name]="formField.id" [placeholder]="getPlaceholderText(formField)"
-                matInput matTextareaAutosize matAutosizeMinRows="2" [required]="isRequired()" (change)="onFormElementChanged(formField)" id="{{formField.id}}"></textarea>       
+                matInput matTextareaAutosize matAutosizeMinRows="2" [required]="isRequired()" (change)="onFormElementChanged(formField)" id="{{formField.id}}"></textarea>
 
             <mat-error>
-                <app-show-errors [control]="formGroup.controls[formField.id]" [additionalValidationMessages]="formField.validationMessages"></app-show-errors>
+                <app-show-errors [error]="formField.error" [control]="control" [additionalValidationMessages]="formField.validationMessages"></app-show-errors>
             </mat-error>
             <mat-checkbox *ngIf="formField.requiredOverridable" matSuffix class="form-field-override" [formControlName]="formField.id + '.override'" [checked]="formField.requiredOverridden" [value]="formField.requiredOverridden" [labelPosition]="'after'"
                 (change)="onFormElementOverridden(formField)" id="{{formField.id}} + '.override'">{{this.formField.overrideLabel}}</mat-checkbox>
@@ -56,7 +66,7 @@
         [minDate]="formField.minDate" [maxDate]="formField.maxDate"
         (valueChange)="onFormElementChanged(formField)"></app-dynamic-date-form-field>
         <mat-error>
-            <app-show-errors [control]="formGroup.controls[formField.id]" [additionalValidationMessages]="formField.validationMessages"></app-show-errors>
+            <app-show-errors [error]="formField.error" [control]="control" [additionalValidationMessages]="formField.validationMessages"></app-show-errors>
         </mat-error>
     </ng-container>
 
@@ -68,18 +78,18 @@
     <ng-container *ngIf="formField.inputType==='Counter'">
         <app-counter [formGroup]="formGroup" [controlName]="formField.id" [label]="formField.label" 
         [(value)]="formField.value" [minVal]="formField.minValue" [maxVal]="formField.maxValue" 
-        [required]="isRequired()" [readOnly]="formField.disabled" [keyboardLayout]="keyboardLayout" 
+        [required]="isRequired()" [readOnly]="formField.disabled" [keyboardLayout]="keyboardLayout"
         [iconName]="formField.iconName" 
         [attrType]="isNumericField() ? 'tel' : 'text'" (valueChange)="onFormElementChanged(formField)"></app-counter>
         <mat-error>
-            <app-show-errors class="error" [control]="formGroup.controls[controlName]" [additionalValidationMessages]="formField.validationMessages"></app-show-errors>
+            <app-show-errors class="error" [control]="control" [additionalValidationMessages]="formField.validationMessages"></app-show-errors>
         </mat-error>
     </ng-container>
 
     <ng-container *ngIf="formField.inputType==='DatePartChooser'">
         <app-date-part-chooser-field [formGroup]="formGroup" [controlName]="formField.id"
             [placeholder]="getPlaceholderText(formField)" 
-            [(model)]="formField" [required]="isRequired()" [iconName]="formField.iconName" 
+            [(model)]="formField" [required]="isRequired()" [iconName]="formField.iconName"
             [formatterName]="formField.formatter || formField.mode || formField.inputType"
             [modifyAllowed]="!formField.disabled" [deleteAllowed]="!formField.disabled"
             [hideButtons]="formField.hideButtons" (change)="onFormElementChanged(formField)">

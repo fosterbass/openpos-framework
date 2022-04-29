@@ -1,10 +1,11 @@
 package org.jumpmind.pos.util;
 
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.core.type.filter.AspectJTypeFilter;
 import org.springframework.core.type.filter.TypeFilter;
@@ -21,18 +22,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class RestApiSupport {
     public static final String REST_API_CONTEXT_PATH = "/rest";
-
     public static final String REST_API_TOKEN_HEADER_NAME = "X-API-Token";
-    /**
-     * @see org.jumpmind.pos.util.ApiTokenGenerator#generateApiToken()
-     */
-    public static final String REST_API_LOOPBACK_TOKEN = "LjVHdqj47ecbHVnkBB35";
 
     private static final UnaryOperator<String> REQUEST_MAPPING_TO_WILDCARD_URI_PATTERN = requestMapping -> requestMapping + "/*";
-
-    public static String generateApiToken() {
-        return new ApiTokenGenerator().generateApiToken();
-    }
 
     public static Set<Class<?>> findRestApiControllers(final String packageName) {
         return findRestApiControllers(packageName, newRestApiScanner());
@@ -54,7 +46,7 @@ public final class RestApiSupport {
         ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false) {
             /*
              * stock Spring impl will refuse to yield interfaces or abstract
-             * classes, but OpenPOS and JMC typically apply the @Api and
+             * classes, but OpenPOS and JMC typically apply the @Tag and
              * @RestController annotations to interfaces
              */
             @Override
@@ -92,11 +84,11 @@ public final class RestApiSupport {
         scanner.addExcludeFilter(new AspectJTypeFilter(ignoreExpression.toString(), Thread.currentThread().getContextClassLoader()));
 
         /*
-         * we are interested in @Api- AND @RestController-annotated components,
+         * we are interested in @Tag- AND @RestController-annotated components,
          * specifically; when running tests, we don't want the scanner to pick
          * up test fixtures that are only @RestController-annotated
          */
-        TypeFilter apiAnnotated = new AnnotationTypeFilter(Api.class);
+        TypeFilter apiAnnotated = new AnnotationTypeFilter(Tag.class);
         TypeFilter restControllerAnnotated = new AnnotationTypeFilter(RestController.class);
         TypeFilter apiAndRestControllerAnnotated = (mr, mrf) -> apiAnnotated.match(mr, mrf) && restControllerAnnotated.match(mr, mrf);
         scanner.addIncludeFilter(apiAndRestControllerAnnotated);
@@ -109,7 +101,7 @@ public final class RestApiSupport {
      * passed an instance whereas here we only have the interface class
      */
     public static RequestMapping resolveRequestMapping(final Class<?> restApiClass) {
-        return restApiClass.getAnnotation(RequestMapping.class);
+        return AnnotatedElementUtils.getMergedAnnotation(restApiClass, RequestMapping.class);
     }
 
     public static String requestMappingToUrlPattern(final String requestMapping) {

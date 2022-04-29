@@ -1,13 +1,11 @@
 package org.jumpmind.pos.core.ui.message;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.jumpmind.pos.core.model.MessageType;
 import org.jumpmind.pos.util.model.Message;
 
+@EqualsAndHashCode(callSuper = true)
 @Builder
 @Data
 @NoArgsConstructor

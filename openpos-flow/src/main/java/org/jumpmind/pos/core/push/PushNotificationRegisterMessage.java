@@ -6,7 +6,7 @@ import org.jumpmind.pos.core.ui.message.UIMessageType;
 public class PushNotificationRegisterMessage extends UIMessage {
     private static final long serialVersionUID = 1L;
 
-    PushNotificationRegisterMessage() {
+    public PushNotificationRegisterMessage() {
         setScreenType(UIMessageType.PUSH_REGISTER);
     }
 

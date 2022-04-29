@@ -7,7 +7,7 @@ import { StartupTask } from '../startup-task';
     providedIn: 'root'
 })
 export class CapacitorHideStatusbarStartupTask implements StartupTask {
-    name = 'CapacitorHideStatusbarStartupTask';
+    static readonly taskName = 'CapacitorHideStatusbarStartupTask';
 
     constructor(private _capacitor: CapacitorService) { }
 

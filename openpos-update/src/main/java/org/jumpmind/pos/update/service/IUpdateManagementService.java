@@ -1,9 +1,11 @@
 package org.jumpmind.pos.update.service;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 @RestController("update-mgt")
 @RequestMapping("/update-mgt")
+@Tag(name="Auto Update Management Service")
 public interface IUpdateManagementService {
     @RequestMapping(path = "/{package}/versions", method = RequestMethod.GET)
     GetAvailableVersionsResponse getAvailableVersions(

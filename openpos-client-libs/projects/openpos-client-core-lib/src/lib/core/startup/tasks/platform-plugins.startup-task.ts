@@ -9,7 +9,7 @@ import { StartupTask } from '../startup-task';
     providedIn: 'root'
 })
 export class PlatformPluginsStartupTask implements StartupTask {
-    name = 'PlatformPluginsStartupTask';
+    static readonly taskName = 'PlatformPluginsStartupTask';
 
     constructor(
         @Optional() @Inject(PLUGINS)

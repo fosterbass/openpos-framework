@@ -1,5 +1,6 @@
 package org.jumpmind.pos.update.service;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -11,6 +12,7 @@ import java.io.IOException;
 
 @RestController("update")
 @RequestMapping("/update")
+@Tag(name="Auto Update Service")
 public interface IUpdateService {
 
     @RequestMapping(path = "/manifest/{businessUnitId}/{package}", method = RequestMethod.GET)

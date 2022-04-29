@@ -1,7 +1,7 @@
 <div class="sale-loyalty" responsive-class>
     <button responsive-class
             mat-flat-button
-            *ngIf="shouldShowLookupCustomer() && !(isLoyaltySignupInProgressOnCustomerDisplay$ | async)"
+            *ngIf="shouldShowLookupCustomer() && !(isLoyaltyOperationInProgressOnCustomerDisplay$ | async)"
             [actionItem]="screenData.loyaltyButton"
             (actionClick)="doAction(screenData.loyaltyButton)"
             (click)="doAction(screenData.loyaltyButton)"
@@ -19,40 +19,42 @@
         <app-icon iconClass="loyalty-arrow sm" [iconName]="'keyboard_arrow_right'"></app-icon>
     </button>
     <div responsive-class
-         class="loyalty-signup-customer-display"
-         *ngIf="shouldShowLoyaltySignupInProgress() && (isLoyaltySignupInProgressOnCustomerDisplay$ | async)">
-        <div class="loyalty-signup-customer-display-in-progress">
-            <app-icon [iconName]="screenData.loyaltySignupInProgressIcon"
+         class="loyalty-customer-operation-display"
+         *ngIf="shouldShowLoyaltyOperationInProgress() && (isLoyaltyOperationInProgressOnCustomerDisplay$ | async)">
+        <div class="loyalty-customer-operation-display-in-progress">
+            <app-icon [iconName]="screenData.loyaltyOperationInProgressIcon"
                       [@glowPulse]="glowPulseRepeatTrigger"
                       (@glowPulse.done)="repeatGlowPulse()"
-                      iconClass="loyalty-signup-customer-display-icon"></app-icon>
-            <div class="loyalty-signup-customer-display-message">
-                {{screenData.loyaltySignupInProgressTitle}}
+                      iconClass="loyalty-customer-operation-display-icon"></app-icon>
+            <div class="loyalty-customer-operation-display-message">
+                {{screenData.loyaltyOperationInProgressTitle}}
             </div>
-            <app-icon-button class="loyalty-signup-customer-display-cancel-button"
+            <app-icon-button *ngIf="screenData.loyaltyCancelButton"
+                             class="loyalty-customer-operation-display-cancel-button"
                              (buttonClick)="doAction(screenData.loyaltyCancelButton)"
                              [actionItem]="screenData.loyaltyCancelButton"
                              iconName="close"
                              [title]="screenData.loyaltyCancelButton.title"></app-icon-button>
         </div>
-        <div [@shake]="loyaltySignupInProgressDetailsMessage$ | async">
+        <div [@shake]="loyaltyOperationInProgressDetailsMessage$ | async">
             <div class="notification"
                  responsive-class
-                 [@gradientInnerGlow]="loyaltySignupInProgressDetailsMessage$ | async"
+                 [@gradientInnerGlow]="loyaltyOperationInProgressDetailsMessage$ | async"
                  (@gradientInnerGlow.done)="repeatGradientInnerGlow()">
                 <div class="notification-icon-container"
-                     [@throb]="loyaltySignupInProgressDetailsMessage$ | async">
-                    <app-icon [iconName]="screenData.loyaltySignupInProgressDetailsIcon"
+                     [@throb]="loyaltyOperationInProgressDetailsMessage$ | async">
+                    <app-icon [iconName]="screenData.loyaltyOperationInProgressDetailsIcon"
                               iconClass="notification-icon"
-                              [@swing]="loyaltySignupInProgressDetailsMessage$ | async"></app-icon>
+                              [@swing]="loyaltyOperationInProgressDetailsMessage$ | async"></app-icon>
                 </div>
-                <div class="notification-message" [@glowContract]="loyaltySignupInProgressDetailsMessage$ | async">
-                    {{loyaltySignupInProgressDetailsMessage$ | async}}
+                <div class="notification-message"
+                     [@glowContract]="loyaltyOperationInProgressDetailsMessage$ | async">
+                    {{loyaltyOperationInProgressDetailsMessage$ | async}}
                 </div>
             </div>
         </div>
     </div>
-    <button *ngIf="shouldShowLinkedCustomer() && !(isLoyaltySignupInProgressOnCustomerDisplay$ | async)"
+    <button *ngIf="shouldShowLinkedCustomer() && !(isLoyaltyOperationInProgressOnCustomerDisplay$ | async)"
             class="linked-customer-summary header"
             style="width: 100%;"
             responsive-class

@@ -3,8 +3,10 @@ import createAutoCorrectedDatePipe from 'text-mask-addons/dist/createAutoCorrect
 import { FormGroup } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { DateAdapter } from '@angular/material/core';
 import { MatInput } from '@angular/material/input';
 import { DateUtils, DatePartPositions } from '../../utils/date.utils';
+import { LocaleService } from '../../../core/services/locale.service';
 
 import type { MatDatepicker } from '@angular/material/datepicker';
 
@@ -67,7 +69,8 @@ export class DynamicDateFormFieldComponent implements OnInit {
   maximumDate: Date;
   startAt: Date;
 
-  constructor(@Optional() private datePipe: DatePipe) {
+  constructor(@Optional() private datePipe: DatePipe, private _adapter: DateAdapter<any>, private localeService: LocaleService) {
+    this._adapter.setLocale(localeService.getLocale());
   }
 
   ngOnInit() {

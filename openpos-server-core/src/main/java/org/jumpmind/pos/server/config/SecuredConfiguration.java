@@ -94,6 +94,14 @@ public class SecuredConfiguration implements InitializingBean {
     @Setter
     String trustStorePasswordEnvName;
 
+    /**
+     * If not defined, the default Java Security Provider will be used for loading the keystore. Specify "BC" to use
+     * BouncyCastle.
+     */
+    @Getter
+    @Setter
+    String keyStoreSecurityProvider;
+
     @Override
     public void afterPropertiesSet() {
         log.info("Using {}", this);

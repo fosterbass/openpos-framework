@@ -11,7 +11,7 @@ import { StartupTask } from '../startup-task';
     providedIn: 'root'
 })
 export class SessionConnectStartupTask implements StartupTask {
-    name = 'SessionConnectStartupTask';
+    static readonly taskName = 'SessionConnectStartupTask';
 
     constructor(
         private _session: SessionService,

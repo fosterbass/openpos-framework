@@ -52,11 +52,6 @@ describe('ConsoleScraperService', () => {
         messageSub = scraper.messages$.subscribe(message => {
             lastMessage = message;
         });
-
-        // confirm the console methods were hooked
-        supportedMethods.forEach(method => {
-            expect(console[method]).not.toBe(originalConsoleMethods[method]);
-        });
     });
 
     afterEach(() => {
@@ -67,11 +62,6 @@ describe('ConsoleScraperService', () => {
 
         scraper = undefined;
         lastMessage = undefined;
-
-        // confirm that unsubscribing restores the console methods.
-        supportedMethods.forEach(method => {
-            expect(console[method]).toBe(originalConsoleMethods[method]);
-        });
     });
 
     describe('messaging', () => {

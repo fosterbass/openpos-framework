@@ -1,20 +1,16 @@
 package org.jumpmind.pos.core.model;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.apache.commons.lang3.StringUtils;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jumpmind.pos.core.ui.ActionItem;
 import org.jumpmind.pos.core.ui.validator.IValidatorSpec;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonSetter;
+import java.io.Serializable;
+import java.util.*;
 
 public class FormField implements IFormElement, IField, Serializable {
     private static final long serialVersionUID = 1L;
@@ -30,10 +26,20 @@ public class FormField implements IFormElement, IField, Serializable {
     private String label;
     private String additionalStyle;
     private String fieldId;
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
+    }
+
     /* has to be set to a blank value by default because null values are not serialized in nu commerce and therefore aren't bound on the client side */
     private String value = "";
     private boolean required = true;
     private boolean sensitive = false;
+    private String error;
 
     private boolean readOnly = false;
 
@@ -249,6 +255,11 @@ public class FormField implements IFormElement, IField, Serializable {
         this.setMaxLength(maxLength);
         return this;
     }
+
+    @JsonIgnore
+    public Optional<Object> getMaxLength() {
+        return Optional.ofNullable(optionalProperties.get("maxLength"));
+    }
     
     /**
      * When this value is set, the client will call back upon the selected value changing with an action whose name is the same 
@@ -313,6 +324,16 @@ public class FormField implements IFormElement, IField, Serializable {
 
     public void setScanEnabled(Boolean scanEnabled) {
         this.put("scanEnabled", scanEnabled);
+    }
+
+
+    public FormField imageScanEnabled(Boolean imageScanEnabled) {
+        this.setImageScanEnabled(imageScanEnabled);
+        return this;
+    }
+
+    public void setImageScanEnabled(Boolean imageScanEnabled) {
+        this.put("imageScanEnabled", imageScanEnabled);
     }
 
     /**

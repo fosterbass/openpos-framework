@@ -26,7 +26,6 @@ public class SchemaObjectRemoveInterceptor implements IAlterDatabaseInterceptor 
                 log.info("Preserve unrecognized column as not required: " + removeColumnChange.getColumn());
                 if (removeColumnChange.getColumn().isRequired()) {
                     ColumnRequiredChange columnRequiredChange = new ColumnRequiredChange(removeColumnChange.getChangedTable(), removeColumnChange.getColumn());
-                    columnRequiredChange.getChangedColumn().setRequired(false);
                     interceptedChanges.add(columnRequiredChange);
                 }
             } else if ((modelChange instanceof RemoveIndexChange)) {

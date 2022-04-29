@@ -14,13 +14,15 @@ public class DialogBuilder {
     public final static String OK_TYPE          = "OK";
     public final static String OK_CANCEL_TYPE   = "OK_CANCEL";
 
-    public final static String OK_BUTTON_KEY = "Ok";
-    public final static String CANCEL_BUTTON_KEY = "Cancel";
+    public final static String OK_BUTTON_ACTION = "Ok";
+    public final static String OK_BUTTON_LABEL = "key:common:action.ok.label";
+    public final static String CANCEL_BUTTON_ACTION = "Cancel";
+    public final static String CANCEL_BUTTON_LABEL = "key:common:action.ok.label";
     
     protected static final Map<String, ActionItem> DEFAULT_BUTTON_ACTIONS = new HashMap<>();
     static {
-        DEFAULT_BUTTON_ACTIONS.put(OK_BUTTON_KEY, new ActionItem(OK_BUTTON_KEY, OK_BUTTON_KEY));
-        DEFAULT_BUTTON_ACTIONS.put(CANCEL_BUTTON_KEY, new ActionItem(CANCEL_BUTTON_KEY, CANCEL_BUTTON_KEY));
+        DEFAULT_BUTTON_ACTIONS.put(OK_BUTTON_ACTION, new ActionItem(OK_BUTTON_ACTION, OK_BUTTON_LABEL));
+        DEFAULT_BUTTON_ACTIONS.put(CANCEL_BUTTON_ACTION, new ActionItem(CANCEL_BUTTON_ACTION, CANCEL_BUTTON_LABEL));
         // Add new buttons here
     }
     
@@ -130,12 +132,12 @@ public class DialogBuilder {
         
         switch (this.getDialogType()) {
             case OK_CANCEL_TYPE:
-                screen.addButton(this.getAction(OK_BUTTON_KEY));
-                screen.addButton(this.getAction(CANCEL_BUTTON_KEY));
+                screen.addButton(this.getAction(OK_BUTTON_ACTION));
+                screen.addButton(this.getAction(CANCEL_BUTTON_ACTION));
                 break;
             case OK_TYPE:
             default:
-                screen.addButton(this.getAction(OK_BUTTON_KEY));
+                screen.addButton(this.getAction(OK_BUTTON_ACTION));
             
         }
         

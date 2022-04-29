@@ -1,28 +1,15 @@
 package org.jumpmind.pos.core.service;
 
-import java.io.*;
-import java.lang.reflect.Field;
-import java.util.*;
-
-import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletResponse;
-
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.SerializationUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.jumpmind.pos.core.content.ContentProviderService;
 import org.jumpmind.pos.core.error.IErrorHandler;
-import org.jumpmind.pos.core.flow.ApplicationState;
-import org.jumpmind.pos.core.flow.FlowException;
-import org.jumpmind.pos.core.flow.IMessageInterceptor;
-import org.jumpmind.pos.core.flow.IStateManager;
-import org.jumpmind.pos.core.flow.IStateManagerContainer;
-import org.jumpmind.pos.core.flow.SessionTimer;
+import org.jumpmind.pos.core.flow.*;
 import org.jumpmind.pos.core.model.Form;
 import org.jumpmind.pos.core.model.IDynamicListField;
 import org.jumpmind.pos.core.model.IFormElement;
-import org.jumpmind.pos.core.ui.*;
+import org.jumpmind.pos.core.ui.CloseToast;
+import org.jumpmind.pos.core.ui.IHasForm;
+import org.jumpmind.pos.core.ui.Toast;
+import org.jumpmind.pos.core.ui.UIMessage;
 import org.jumpmind.pos.core.ui.data.UIDataMessageProvider;
 import org.jumpmind.pos.core.util.LogFormatter;
 import org.jumpmind.pos.server.model.Action;
@@ -30,8 +17,14 @@ import org.jumpmind.pos.server.service.IActionListener;
 import org.jumpmind.pos.server.service.IMessageService;
 import org.jumpmind.pos.util.DefaultObjectMapper;
 import org.jumpmind.pos.util.web.MimeTypeUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.v3.oas.annotations.Hidden;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.SerializationUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -40,42 +33,47 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import springfox.documentation.annotations.ApiIgnore;
+import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
-@ApiIgnore
+@Hidden
 @CrossOrigin
 @Controller
 public class ScreenService implements IScreenService, IActionListener {
-
-    ObjectMapper mapper = DefaultObjectMapper.defaultObjectMapper();
-
-    @Autowired
-    IStateManagerContainer stateManagerContainer;
-
-    @Value("${openpos.screens.jsonIncludeNulls:true}")
-    boolean jsonIncludeNulls = true;
-
-    @Value("${openpos.ui.content.maxage:null}")
-    String contentMaxAge;
-
     @Autowired
     LogFormatter logFormatter;
 
-    @Autowired
-    IMessageService messageService;
+    private final ObjectMapper mapper = DefaultObjectMapper.defaultObjectMapper();
 
     @Autowired
-    UIDataMessageProviderService uiDataMessageProviderService;
+    private IStateManagerContainer stateManagerContainer;
+
+    @Value("${openpos.screens.jsonIncludeNulls:true}")
+    private boolean jsonIncludeNulls;
+
+    @Value("${openpos.ui.content.maxage:null}")
+    private String contentMaxAge;
 
     @Autowired
-    ApplicationContext applicationContext;
+    private IMessageService messageService;
 
     @Autowired
-    IErrorHandler errorHandler;
+    private UIDataMessageProviderService uiDataMessageProviderService;
+
+    @Autowired
+    private ApplicationContext applicationContext;
+
+    @Autowired
+    private IErrorHandler errorHandler;
 
     @PostConstruct
     public void init() {
@@ -83,9 +81,9 @@ public class ScreenService implements IScreenService, IActionListener {
             mapper.setSerializationInclusion(Include.NON_NULL);
         }
     }
-    
+
     @SuppressWarnings("deprecation")
-    @RequestMapping(method = RequestMethod.GET, value = "api/appId/{appId}/deviceId/{deviceId}/content")
+    @GetMapping("api/appId/{appId}/deviceId/{deviceId}/content")
     public void getImageAsByteArray(
             HttpServletResponse response,
             @PathVariable String appId,
@@ -135,7 +133,7 @@ public class ScreenService implements IScreenService, IActionListener {
         }
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "api/app/{appId}/node/{deviceId}/control/{controlId}")
+    @GetMapping("api/app/{appId}/node/{deviceId}/control/{controlId}")
     @ResponseBody
     public String getComponentValues(
             @PathVariable String appId,
@@ -143,15 +141,14 @@ public class ScreenService implements IScreenService, IActionListener {
             @PathVariable String controlId,
             @RequestParam(name = "searchTerm", required = false) String searchTerm,
             @RequestParam(name = "sizeLimit", defaultValue = "1000") Integer sizeLimit) {
+
         log.info("Received a request to load component values for {} {} {}", appId, deviceId, controlId);
         String result = getComponentValues(appId, deviceId, controlId, getLastScreen(deviceId), searchTerm, sizeLimit);
+
         if (result == null) {
             result = getComponentValues(appId, deviceId, controlId, getLastDialog(deviceId), searchTerm, sizeLimit);
         }
-        if (result == null) {
-            result = "[]";
-        }
-        return result;
+        return (result == null) ? "[]" : result;
     }
 
     private String getComponentValues(
@@ -161,6 +158,7 @@ public class ScreenService implements IScreenService, IActionListener {
             UIMessage screen,
             String searchTerm,
             Integer sizeLimit) {
+
         String result = null;
         if (screen instanceof IHasForm) {
             IHasForm dynamicScreen = (IHasForm) screen;
@@ -178,9 +176,9 @@ public class ScreenService implements IScreenService, IActionListener {
                 } catch (IOException e) {
                     throw new RuntimeException("Error while serializing the component values.", e);
                 }
-                result = new String(out.toByteArray());
-                log.info("Responding to request to load component values {} {} {} with {} values", appId, deviceId, controlId,
-                        valueList.size());
+                result = out.toString();
+
+                log.info("Responding to request to load component values {} {} {} with {} values", appId, deviceId, controlId, valueList.size());
             } else {
                 log.info("Unable to find the valueList for the requested component {} {} {}.", appId, deviceId, controlId);
             }
@@ -190,7 +188,7 @@ public class ScreenService implements IScreenService, IActionListener {
 
     @Override
     public Collection<String> getRegisteredTypes() {
-        return Arrays.asList(new String[] { "Screen", "KeepAlive" });
+        return Arrays.asList("Screen", "KeepAlive");
     }
 
     @Override
@@ -212,7 +210,7 @@ public class ScreenService implements IScreenService, IActionListener {
                 } else {
                     deserializeForm(stateManager.getApplicationState(), action);
                     action.setOriginatesFromDeviceFlag(true);
-                    
+
                     try {
                         log.debug("Posting action {}", action);
                         stateManager.doAction(action);
@@ -248,44 +246,32 @@ public class ScreenService implements IScreenService, IActionListener {
     public UIMessage getLastDialog(String deviceId) {
         IStateManager stateManager = stateManagerContainer.retrieve(deviceId, true);
         ApplicationState applicationState = stateManager != null ? stateManager.getApplicationState() : null;
-        if (applicationState != null) {
-            return applicationState.getLastDialog();
-        } else {
-            return null;
-        }
+
+        return (applicationState != null) ? applicationState.getLastDialog() : null;
     }
 
     @Override
     public UIMessage getLastScreen(String deviceId) {
         IStateManager stateManager = stateManagerContainer.retrieve(deviceId, true);
         ApplicationState applicationState = stateManager != null ? stateManager.getApplicationState() : null;
-        if (applicationState != null) {
-            return applicationState.getLastScreen();
-        } else {
-            return null;
-        }
+
+        return (applicationState != null) ? applicationState.getLastScreen() : null;
     }
-    
+
     @Override
     public UIMessage getLastPreInterceptedScreen(String deviceId) {
         IStateManager stateManager = stateManagerContainer.retrieve(deviceId, true);
         ApplicationState applicationState = stateManager != null ? stateManager.getApplicationState() : null;
-        if (applicationState != null) {
-            return applicationState.getLastPreInterceptedScreen();
-        } else {
-            return null;
-        }
+
+        return (applicationState != null) ? applicationState.getLastPreInterceptedScreen() : null;
     }
-    
+
     @Override
     public UIMessage getLastPreInterceptedDialog(String deviceId) {
         IStateManager stateManager = stateManagerContainer.retrieve(deviceId, true);
         ApplicationState applicationState = stateManager != null ? stateManager.getApplicationState() : null;
-        if (applicationState != null) {
-            return applicationState.getLastPreInterceptedDialog();
-        } else {
-            return null;
-        }
+
+        return (applicationState != null) ? applicationState.getLastPreInterceptedDialog() : null;
     }
 
     @Override
@@ -344,12 +330,10 @@ public class ScreenService implements IScreenService, IActionListener {
     protected void interceptToast(String deviceId, Toast toast) {
         String[] toastInterceptorBeanNames = applicationContext.getBeanNamesForType(ResolvableType.forClassWithGenerics(IMessageInterceptor.class, Toast.class));
 
-        if (toastInterceptorBeanNames != null) {
-            for (String beanName: toastInterceptorBeanNames) {
-                @SuppressWarnings("unchecked")
-                IMessageInterceptor<Toast> toastInterceptor =  (IMessageInterceptor<Toast>) applicationContext.getBean(beanName);
-                toastInterceptor.intercept(deviceId, toast);
-            }
+        for (String beanName : toastInterceptorBeanNames) {
+            @SuppressWarnings("unchecked")
+            IMessageInterceptor<Toast> toastInterceptor = (IMessageInterceptor<Toast>) applicationContext.getBean(beanName);
+            toastInterceptor.intercept(deviceId, toast);
         }
     }
 
@@ -362,17 +346,14 @@ public class ScreenService implements IScreenService, IActionListener {
             toastInterceptor.intercept(deviceId, closeToast);
         }
     }
-    
+
     protected void interceptScreen(String deviceId, UIMessage screen) {
         String[] screenInterceptorBeanNames = applicationContext.getBeanNamesForType(ResolvableType.forClassWithGenerics(IMessageInterceptor.class, UIMessage.class));
 
-        if (screenInterceptorBeanNames != null) {
-            for (String beanName: screenInterceptorBeanNames) {
-                @SuppressWarnings("unchecked")
-                IMessageInterceptor<UIMessage> screenInterceptor =  (IMessageInterceptor<UIMessage>) applicationContext.getBean(beanName);
-                screenInterceptor.intercept(deviceId, screen);
-                
-            }
+        for (String beanName : screenInterceptorBeanNames) {
+            @SuppressWarnings("unchecked")
+            IMessageInterceptor<UIMessage> screenInterceptor = (IMessageInterceptor<UIMessage>) applicationContext.getBean(beanName);
+            screenInterceptor.intercept(deviceId, screen);
         }
     }
 
@@ -380,9 +361,9 @@ public class ScreenService implements IScreenService, IActionListener {
         if (hasForm(applicationState)) {
             try {
                 Form form = mapper.convertValue(action.getData(), Form.class);
-                
+
                 if (form != null) {
-                    // Sometimes Jackson convertValue method will produce an empty 
+                    // Sometimes Jackson convertValue method will produce an empty
                     // Form object even if the given action data doesn't even resemble a form!
                     if (Form.isAssignableFrom(action.getData())) {
                         action.setData(form);
@@ -402,14 +383,14 @@ public class ScreenService implements IScreenService, IActionListener {
     }
 
     protected boolean hasForm(ApplicationState applicationState) {
-        if (applicationState.getLastDialog() != null) {
-            return applicationState.getLastDialog() instanceof IHasForm;
-        } else {
-            return applicationState.getLastScreen() instanceof IHasForm;
-        }
+        return (applicationState.getLastDialog() != null)
+                ? applicationState.getLastDialog() instanceof IHasForm
+                : applicationState.getLastScreen() instanceof IHasForm;
     }
 
     protected void setFieldValue(Field field, Object target, Object value) {
+        // TODO Validate this method is ever called.
+        // TODO Move this logic to a utility method or delegate to one from here.
         try {
             field.setAccessible(true);
             field.set(target, value);
@@ -419,18 +400,15 @@ public class ScreenService implements IScreenService, IActionListener {
     }
 
     protected String getFieldValueAsString(Field field, Object target) {
+        // TODO Validate this method is ever called.
+        // TODO Move this logic to a utility method or delegate to one from here.
         try {
             field.setAccessible(true);
             Object value = field.get(target);
-            if (value != null) {
-                return String.valueOf(value);
-            } else {
-                return null;
-            }
 
+            return (value != null) ? String.valueOf(value) : null;
         } catch (Exception ex) {
             throw new FlowException("Field to get value for field " + field + " from target " + target, ex);
         }
     }
-
 }

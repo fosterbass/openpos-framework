@@ -12,7 +12,7 @@ public class LoadingMessage extends Message {
 
     public LoadingMessage() {
         setType(MessageType.Loading);
-        this.title = "Loading...";
+        this.title = "key:common:label.loading";
     }
 
     public LoadingMessage(String title) {

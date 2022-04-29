@@ -18,6 +18,7 @@ export interface IFormElement {
     selectedIndexes?: number[];
     valueChangedAction?: IActionItem;
     mask?: IMaskSpec;
+    error?: string;
     pattern?: string;
     minValue?: number;
     maxValue?: number;
@@ -27,6 +28,7 @@ export interface IFormElement {
     disabled?: boolean;
     select?: boolean;
     checked?: boolean;
+    imageScanEnabled?: boolean;
     keyboardPreference?: string;
     confirmationDialog?: IConfirmationDialog;
     confirmationMessage?: string;

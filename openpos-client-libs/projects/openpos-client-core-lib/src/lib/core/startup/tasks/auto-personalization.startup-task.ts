@@ -1,32 +1,35 @@
 import { Observable } from 'rxjs';
 import { first } from 'rxjs/operators';
+import { AutoPersonalizationRequest } from '../../personalization/auto-personalization-request.interface';
 import { AutoPersonalizationParametersResponse } from '../../personalization/device-personalization.interface';
 import { PersonalizationService } from '../../personalization/personalization.service';
 import { StartupTask } from '../startup-task';
-import { AutoPersonalizationRequest } from '../../personalization/auto-personalization-request.interface';
 
 export abstract class AutoPersonalizationStartupTask implements StartupTask {
-    name = 'AutoPersonalizationStartupTask';
-
     constructor(protected personalization: PersonalizationService) { }
 
     abstract execute(): void | Promise<void> | Observable<any>;
 
-    protected async personalize(request: AutoPersonalizationRequest, url: string): Promise<void> {
+    protected async getPersonalizationParameters(request: AutoPersonalizationRequest,
+                                                 url: string): Promise<AutoPersonalizationParametersResponse> {
         let info: AutoPersonalizationParametersResponse;
 
         try {
             info = await this.personalization.getAutoPersonalizationParameters(
-                request,
+                    request,
                 url
             ).pipe(
                 first()
             ).toPromise();
+
+            return info;
         } catch (e) {
             throw new Error(`Failed to get personalization parameters using url '${url}'. Error: ${JSON.stringify(e)}`);
         }
+    }
 
-        console.log(`Personalizing with server '${info.serverAddress}:${info.serverPort}' as '${info.deviceName}'`);
+    protected async personalize(info: AutoPersonalizationParametersResponse): Promise<void> {
+        console.log(`personalizing with server '${info.serverAddress}:${info.serverPort}' as '${info.deviceName}'`);
 
         const params = info.personalizationParams;
         let paramsMap: Map<string, string>;
@@ -42,14 +45,27 @@ export abstract class AutoPersonalizationStartupTask implements StartupTask {
         }
 
         try {
-            await this.personalization.personalize(
-                info.serverAddress,
-                info.serverPort,
-                info.deviceId,
-                info.appId,
-                paramsMap,
-                info.sslEnabled
-            ).toPromise();
+            if (!!info.deviceToken) {
+                await this.personalization.personalizeWithToken(
+                    info.serverAddress,
+                    info.serverPort,
+                    info.deviceToken,
+                    info.sslEnabled,
+                    info.pairedAppId,
+                    info.pairedDeviceId
+                ).toPromise();
+            } else {
+                await this.personalization.personalize(
+                    info.serverAddress,
+                    info.serverPort,
+                    info.deviceId,
+                    info.appId,
+                    paramsMap,
+                    info.sslEnabled,
+                    info.pairedAppId,
+                    info.pairedDeviceId
+                ).toPromise();
+            }
         } catch (e) {
             throw new Error(`Failed to auto personalize with server. params: ${JSON.stringify(info)}. Error: ${JSON.stringify(e)}`);
         }

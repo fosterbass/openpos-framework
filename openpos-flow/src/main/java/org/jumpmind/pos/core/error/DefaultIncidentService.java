@@ -1,10 +1,15 @@
 package org.jumpmind.pos.core.error;
 
 import org.jumpmind.pos.core.flow.ErrorGlobalActionHandler;
+import org.jumpmind.pos.core.screeninterceptor.ResourceLookupScreenPropertyStrategy;
+import org.jumpmind.pos.core.screeninterceptor.ResourceLookupStringBuilder;
+import org.jumpmind.pos.core.service.IResourceLookupService;
 import org.jumpmind.pos.core.ui.ActionItem;
 import org.jumpmind.pos.core.ui.message.ErrorDialogUIMessage;
 import org.jumpmind.pos.util.model.Message;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
@@ -21,14 +26,21 @@ import java.util.function.BiFunction;
 @Component
 public class DefaultIncidentService implements IIncidentService {
 
+    @Autowired
+    ResourceLookupScreenPropertyStrategy resourceLookupScreenPropertyStrategy;
+
     private static final String INCIDENT_ID_FILENAME = ".incident_id";
 
     private String incidentIdFileLocation;
     private BiFunction<IncidentContext, String, String> incidentMessageFn =
-        (ctx, incId) -> String.format("Unfortunately, an unexpected error has occurred. Please report this incident using the following id: %s.", incId);
+        (ctx, incId) -> {
+            String json = new ResourceLookupStringBuilder("incident.message", "common").toJson();
+            String result = this.resourceLookupScreenPropertyStrategy.doStrategy(ctx.getDeviceId(), json, String.class, null, null).toString();
+            return String.format(result, incId);
+        };
 
-    private String incidentTitle = "An Unexpected Error Occurred";
-    private String incidentButtonTitle = "Continue";
+    private String incidentTitle = "key:common:incident.title";
+    private String incidentButtonTitle = "key:common:action.continue.label";
     private String incidentImageUrl = "content:error";
     private String incidentAction = ErrorGlobalActionHandler.RESET_STATE_MANAGER;
     private String incidentMessage = null;

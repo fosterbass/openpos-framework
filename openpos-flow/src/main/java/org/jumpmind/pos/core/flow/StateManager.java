@@ -1248,6 +1248,11 @@ public class StateManager implements IStateManager {
             updatedProperties.put("appId", applicationState.getAppId());
             registerPersonalizationProperties(updatedProperties);
         }
+        if(StringUtils.isNotEmpty(localeMessageFactory.getMessage().getLocale())) {
+            Map<String,String> updatedProperties = new HashMap<>(properties);
+            updatedProperties.put("locale", localeMessageFactory.getMessage().getLocale());
+            registerPersonalizationProperties(updatedProperties);
+        }
         List<String> additionalTags = applicationState.getScopeValue("additionalTagsForConfiguration");
 
         try {

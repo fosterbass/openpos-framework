@@ -1,5 +1,7 @@
 package org.jumpmind.pos.util;
 
+import static lombok.AccessLevel.PRIVATE;
+
 import java.io.ByteArrayInputStream;
 
 import java.io.ByteArrayOutputStream;
@@ -8,12 +10,33 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.util.List;
+import java.util.function.Function;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 
+@NoArgsConstructor(access = PRIVATE)
 @Slf4j
 public class ObjectUtils {
+    /**
+     * Returns the result of applying a function to the specified object.  If that object is {@code null}, or if the
+     * result of applying the function is {@code null}, the supplied default value will be returned.
+     *
+     * @param <R> the type of object to which the mapper function will be applied
+     * @param <T> the type of object returned by the method
+     * @param obj the object to which {@code mapper} is applied
+     * @param mapper the mapping function to apply to {@code obj}; cannot be {@code null}
+     * @param def the default value to return
+     * @return the result of calling {@code mapper.apply(obj)} if both {@code obj} is non-{@code null} and the function
+     * call result is non-{@code null}; {@code def} otherwise
+     */
+    public static <R, T> T defaultIfNull(R obj, Function<R, T> mapper, T def) {
+        final T response = (obj == null) ? null : mapper.apply(obj);
+        return (response == null) ? def : response;
+    }
 
     public static void mapFields(Object source, Object destination) {
         BeanUtils.copyProperties(source, destination);
@@ -33,7 +56,7 @@ public class ObjectUtils {
         try {
             ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
             ObjectInputStream in = new ObjectInputStream(bis);
-            return (T) in.readObject();            
+            return (T) in.readObject();
         } catch (Exception ex) {
             log.warn("Failed to deserialize byte array.", ex);
             return null;
@@ -44,7 +67,7 @@ public class ObjectUtils {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutput out;
         try {
-            out = new ObjectOutputStream(bos);   
+            out = new ObjectOutputStream(bos);
             out.writeObject(object);
             out.flush();
             return bos.toByteArray();
@@ -56,7 +79,7 @@ public class ObjectUtils {
             } catch (IOException ex) {
                 log.debug("Failed to close byte output stream object " + object, ex);
             }
-        }      
+        }
         return null;
     }
 
@@ -72,6 +95,4 @@ public class ObjectUtils {
         finder.searchRecursive(parent);
         return finder.getResults();
     }
-
-
 }

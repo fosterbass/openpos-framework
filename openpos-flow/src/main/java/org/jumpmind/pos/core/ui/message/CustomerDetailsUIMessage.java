@@ -63,6 +63,7 @@ public class CustomerDetailsUIMessage extends UIMessage {
     private String itemHistoryLabel;
     private String itemHistoryIcon;
     private String itemHistoryFilterLabel;
+    private String plccAccountDetailsLabel;
 
     private UICustomerItemHistoryFilter itemHistoryFilter;
 

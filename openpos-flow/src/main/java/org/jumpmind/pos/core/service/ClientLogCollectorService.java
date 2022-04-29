@@ -1,54 +1,48 @@
 package org.jumpmind.pos.core.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import io.swagger.v3.oas.annotations.Hidden;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
 
+import javax.annotation.PostConstruct;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
 @RestController
-@ApiIgnore
+@Hidden
+@Slf4j
 public class ClientLogCollectorService {
-    Logger logger = LoggerFactory.getLogger(getClass());
-
     @Value("${openpos.clientLogCollector.timestampFormat:#{null}}")
     protected String timestampFormat;
-    
+
     protected DateTimeFormatter timestampFormatter;
-    
-    public ClientLogCollectorService() {
-        logger.info("Client log created");
-    }
-    
+
     @PostConstruct
     protected void init() {
         if (timestampFormat != null) {
             try {
                 this.timestampFormatter = DateTimeFormatter.ofPattern(timestampFormat).withZone(ZoneId.systemDefault());
             } catch (Exception ex) {
-                logger.error("openpos.clientLogCollector.timestampFormat value of '{}' is not valid.", this.timestampFormat);
+                log.error("openpos.clientLogCollector.timestampFormat value of '{}' is not valid.", this.timestampFormat);
             }
         }
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "api/appId/{appId}/deviceId/{deviceId}/clientlogs")
+    @PostMapping("api/appId/{appId}/deviceId/{deviceId}/clientlogs")
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
     public void clientLogs(
             @PathVariable String appId,
             @PathVariable String deviceId,
-            @RequestBody List<ClientLogEntry> clientLogEntries
-            ){
+            @RequestBody List<ClientLogEntry> clientLogEntries) {
+
         MDC.put("appId", appId);
         MDC.put("deviceId", deviceId);
+
         for (ClientLogEntry clientLogEntry : clientLogEntries) {
             String message = clientLogEntry.getMessage();
 
@@ -57,20 +51,21 @@ public class ClientLogCollectorService {
             } else {
                 MDC.put("timestamp", clientLogEntry.getTimestamp().toString());
             }
-            if(clientLogEntry.getType() != null){
-                switch(clientLogEntry.getType()){
+
+            if (clientLogEntry.getType() != null) {
+                switch (clientLogEntry.getType()) {
                     case info:
                     case log:
-                        logger.info(message);
+                        log.info(message);
                         break;
                     case warn:
-                        logger.warn(message);
+                        log.warn(message);
                         break;
                     case error:
-                        logger.error(message);
+                        log.error(message);
                         break;
                     case debug:
-                        logger.debug(message);
+                        log.debug(message);
                         break;
                 }
             }

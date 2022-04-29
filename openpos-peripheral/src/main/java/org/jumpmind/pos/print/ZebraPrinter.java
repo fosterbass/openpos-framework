@@ -11,6 +11,7 @@ import jpos.services.EventCallbacks;
 import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.jumpmind.pos.util.AppUtils;
 import org.jumpmind.pos.util.ClassUtils;
 import org.jumpmind.pos.util.status.Status;
 
@@ -243,9 +244,10 @@ public class ZebraPrinter extends AbstractPOSPrinter {
 
     @Override
     public int readPrinterStatus() {
-        if (isSocketConnection()) {
+        if (isSocketConnection() && getBool(this.settings.get("statusModeEnabled"), true)) {
             writer.print(COMMAND_ENABLE_ZPL);
             writer.flush();
+            AppUtils.sleep(getInt(this.settings.get("languageSwapSleep"), 500));
             Connection connection = new TcpConnection(this.settings.get("hostName").toString(), TcpConnection.DEFAULT_ZPL_TCP_PORT);
             try {
                 connection.open();
@@ -368,6 +370,14 @@ public class ZebraPrinter extends AbstractPOSPrinter {
             value = Integer.parseInt((String)object);
         } else if (object instanceof Integer) {
             value = (Integer)object;
+        }
+        return value;
+    }
+    
+    private boolean getBool(Object object, boolean defaultValue) {
+        boolean value = defaultValue;
+        if (object instanceof Boolean) {
+            value = (boolean) object;
         }
         return value;
     }

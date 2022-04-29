@@ -9,4 +9,5 @@ export interface MobileLoyaltyPartInterface extends IAbstractScreen {
     mobileLoyaltySaleShowMembershipsHideLogo: boolean;
     memberships: Membership[];
     noMembershipsFoundLabel: string;
+    alertMessage: string;
 }

@@ -16,7 +16,7 @@ import java.nio.file.Path;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-@Endpoint(path = DownloadEndpoint.PATH + "{version}/**")
+@Endpoint(path = DownloadEndpoint.PATH + "{package}/{version}/**")
 public class DownloadEndpoint {
     static final String PATH = "/update/download/";
 
@@ -43,9 +43,8 @@ public class DownloadEndpoint {
             return;
         }
 
-
         String path = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-        path = path.substring(PATH.length() + version.length() + 1);
+        path = path.substring(PATH.length() + packageName.length() + version.length() + 2);
 
         final Path fromZip = softwareProvider.getSoftwareProvider(packageName).getSoftwareVersion(parsedVersion);
 

@@ -135,6 +135,7 @@ export class PersonalizationService {
     public getAutoPersonalizationParameters(request: AutoPersonalizationRequest, url: string):
         Observable<AutoPersonalizationParametersResponse> {
 
+        console.log('Attempting auto personalization with ' + url);
         const protocol = this.sslEnabled$.getValue() ? 'https://' : 'http://';
         url = protocol + url;
 
@@ -143,8 +144,6 @@ export class PersonalizationService {
 
         return this.http.put<AutoPersonalizationParametersResponse>(url, request)
             .pipe(
-                // on some platforms the first or early requests can fail, try a few times before
-                // giving up completely.
                 timeout(requestTimeout),
                 retry(retryCount),
                 tap(response => {
@@ -177,10 +176,11 @@ export class PersonalizationService {
         deviceId: string,
         appId: string,
         personalizationProperties?: Map<string, string>,
-        sslEnabled?: boolean
+        sslEnabled?: boolean,
+        pairedAppId?: string,
+        pairedDeviceId?: string
     ): Observable<string> {
-
-        const request = new PersonalizationRequest(this.deviceToken$.getValue(), deviceId, appId, null);
+        const request = new PersonalizationRequest(this.deviceToken$.getValue(), deviceId, appId, pairedAppId, pairedDeviceId);
         return this.sendPersonalizationRequest(sslEnabled, serverName, serverPort, request, personalizationProperties);
     }
 
@@ -189,9 +189,10 @@ export class PersonalizationService {
         serverPort: string,
         deviceToken: string,
         sslEnabled?: boolean,
+        pairedAppId?: string,
         pairedDeviceId?: string
     ): Observable<string> {
-        const request = new PersonalizationRequest(deviceToken, null, null, null, pairedDeviceId);
+        const request = new PersonalizationRequest(deviceToken, null, null, null, pairedAppId, pairedDeviceId);
         return this.sendPersonalizationRequest(sslEnabled, serverName, serverPort, request, null);
     }
 

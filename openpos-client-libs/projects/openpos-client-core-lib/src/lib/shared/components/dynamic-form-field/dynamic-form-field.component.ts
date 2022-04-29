@@ -2,6 +2,7 @@ import {
   Component,
   ViewChild,
   OnChanges,
+  OnInit,
   OnDestroy,
   Output,
   Input,
@@ -11,7 +12,7 @@ import {
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatInput } from '@angular/material/input';
-import { FormGroup } from '@angular/forms';
+import { FormGroup, AbstractControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { ITextMask, TextMask } from '../../textmask';
 import { DynamicDateFormFieldComponent } from '../dynamic-date-form-field/dynamic-date-form-field.component';
@@ -22,13 +23,16 @@ import { ScreenService } from '../../../core/services/screen.service';
 import { OldPluginService } from '../../../core/services/old-plugin.service';
 import { BarcodeScannerPlugin } from '../../../core/oldplugins/barcode-scanner.plugin';
 import { Scan } from '../../../core/oldplugins/scan';
+import { BarcodeScanner } from '../../../core/platform-plugins/barcode-scanners/barcode-scanner.service';
+import { ScanData } from '../../../core/platform-plugins/barcode-scanners/scanner';
+import { ActionService } from '../../../core/actions/action.service';
 
 @Component({
   selector: 'app-dynamic-form-field',
   templateUrl: './dynamic-form-field.component.html',
   styleUrls: ['./dynamic-form-field.component.scss']
 })
-export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterContentInit {
+export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterContentInit, OnInit {
 
   @ViewChild(MatInput) field: MatInput;
   @ViewChild(DynamicDateFormFieldComponent) dateField: DynamicDateFormFieldComponent;
@@ -38,6 +42,9 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterCon
   @Input() formGroup: FormGroup;
 
   public controlName: string;
+  control: AbstractControl;
+
+  showScanner = false;
 
   public keyboardLayout = 'en-US';
 
@@ -71,7 +78,9 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterCon
     public session: SessionService,
     public screenService: ScreenService,
     protected dialog: MatDialog,
-    private pluginService: OldPluginService
+    private pluginService: OldPluginService,
+    private _barcodeScanner: BarcodeScanner,
+    private _actionService: ActionService
   ) { }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -136,6 +145,14 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterCon
     }
   }
 
+  ngOnInit() {
+    this.control = this.formGroup.controls[this.formField.id];
+    if (!!this.formField.error) {
+      this.control.markAsTouched();
+      this.control.markAsDirty();
+    }
+  }
+
   ngAfterContentInit(): void {
       if (this.formField.inputType === 'AutoComplete') {
           if (this.formField.value) {
@@ -173,6 +190,7 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterCon
   }
 
   onFormElementChanged(formElement: IFormElement): void {
+    this.resetError();
     this.changed.emit(formElement);
   }
 
@@ -190,6 +208,7 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterCon
   }
 
   openPopTart() {
+    this.resetError();
     const dialogRef = this.dialog.open(PopTartComponent, {
       width: '70%',
       data: {
@@ -235,6 +254,22 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterCon
     return this.formField.scanEnabled && !this.formField.disabled &&
       ['NumericText', 'AlphanumericText'].indexOf(this.formField.inputType) >= 0;
   }
+
+  isImageScanAllowed(): boolean {
+    return this.formField.imageScanEnabled
+      && ['NumericText', 'AlphanumericText'].indexOf(this.formField.inputType) >= 0
+      && this._barcodeScanner.hasImageScanner;
+  }
+
+  onImageScan(): void {
+    this.showScanner = !this.showScanner && this.isImageScanAllowed();
+    console.log('scanner show changed', this.showScanner);
+  }
+
+  onBarcodeScanned(data: ScanData) {
+    this.showScanner = false;
+    this._actionService.doAction({ action: 'ScanBarcode', queueIfBlocked: true }, data);
+   }
 
   /**
    * This method is invoked when the user presses the Scan button on the field.
@@ -292,6 +327,7 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterCon
   }
 
   onPaste(event: ClipboardEvent): boolean {
+    this.resetError();
     let maxLength = this.formField.maxLength;
     const pastedText = event.clipboardData.getData('text');
     // Decreasing expected maxLength for money fields as such fields will be prepopulated with '$' sign
@@ -303,6 +339,12 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterCon
       }
     }
     return pastedText.length <= maxLength;
+  }
+
+  resetError(): void {
+      if (this.formField.error) {
+          this.formField.error = null;
+      }
   }
 }
 

@@ -1,10 +1,10 @@
 package org.jumpmind.pos.service.compatibility;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.jumpmind.pos.service.EndpointInvoker;
 import org.jumpmind.pos.service.TestServiceConfig;
 import org.jumpmind.pos.util.DefaultObjectMapper;
 import org.jumpmind.pos.util.clientcontext.ClientContext;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,23 +23,19 @@ import java.util.List;
 @ContextConfiguration(classes = {TestServiceConfig.class})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class BackwardCompatibilityTest {
+    private final ObjectMapper objectMapper = DefaultObjectMapper.defaultObjectMapper();
 
     @Autowired
-    ITestingCustomerService testingCustomerService;
+    private ITestingCustomerService testingCustomerService;
 
     @Autowired
-    ClientContext clientContext;
-
-    @Autowired
-    EndpointInvoker endpointInvoker;
+    private ClientContext clientContext;
 
     @LocalServerPort
     private int port;
 
     @Autowired
     private TestRestTemplate restTemplate;
-
-    private ObjectMapper objectMapper = DefaultObjectMapper.defaultObjectMapper();
 
     @Test
     public void testNoVersionGet() {
@@ -223,7 +219,7 @@ public class BackwardCompatibilityTest {
         String jsonResponse =
                 restTemplate.postForObject("http://localhost:" + port + "/testingCustomer/getLoyaltyPromotions",
                         "\"1234\"", String.class);
-        
+
         // checking that rewardAmount got converted into a Money.
         int index = jsonResponse.indexOf("\"rewardAmount\":{\"");
         Assert.assertTrue(index > 0);

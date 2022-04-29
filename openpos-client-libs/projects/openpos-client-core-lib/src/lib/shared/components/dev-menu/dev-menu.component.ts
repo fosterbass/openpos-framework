@@ -2,9 +2,9 @@ import { ConfigurationService } from '../../../core/services/configuration.servi
 import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef, Renderer2, ElementRef } from '@angular/core';
 import { Component, ViewChild, HostListener, OnInit } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
-import { MatSnackBar, MatSnackBarRef, SimpleSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { CONFIGURATION } from '../../../configuration/configuration';
 import { PersonalizationService } from '../../../core/personalization/personalization.service';
@@ -16,7 +16,6 @@ import { ActionMap } from '../../../core/interfaces/action-map.interface';
 import { Element } from '../../../core/interfaces/element.interface';
 import { ScreenService } from '../../../core/services/screen.service';
 import { DialogService } from '../../../core/services/dialog.service';
-import { ElectronService } from 'ngx-electron';
 import { SessionService } from '../../../core/services/session.service';
 import { DeviceService } from '../../../core/services/device.service';
 import { IconService } from '../../../core/services/icon.service';
@@ -30,6 +29,7 @@ import { map } from 'rxjs/operators';
 import { KioskModeController } from '../../../core/platform-plugins/kiosk/kiosk-controller.service';
 
 import type { MatExpansionPanel } from '@angular/material/expansion';
+import { ElectronPlatform } from '../../../core/platforms/electron.platform';
 
 @Component({
     selector: 'app-dev-menu',
@@ -137,10 +137,10 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
         private cd: ChangeDetectorRef,
         private elRef: ElementRef,
         public renderer: Renderer2,
-        private electron: ElectronService,
         private configurationService: ConfigurationService,
         private discovery: DiscoveryService,
         public kioskMode: KioskModeController,
+        private electronPlatform: ElectronPlatform
     ) {
 
         if (CONFIGURATION.useTouchListener) {
@@ -396,12 +396,15 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
                 this.logsAvailable = false;
             });
         }
+
         if (this.personalization.getPersonalizationSuccessful$().getValue()) {
             this.session.publish('DevTools::Get', DevMenuComponent.MSG_TYPE);
         } else {
             console.info(`DevTools can't fetch server status since device is not yet personalized.`);
         }
+
         this.showDevMenu = !this.showDevMenu;
+
         if (!this.personalization.getPersonalizationSuccessful$().getValue()) {
             // Due to a bug in the WKWebview, the below is needed on cordova to get the
             // DevMenu to show on the iPad when personalization has failed.  Without this code,
@@ -410,7 +413,8 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
             // Sigh.  But I am leaving this in for now at least so that *a* DevMenu shows.
             this.cd.detectChanges();
         }
-        this.brand = this.personalization.getPersonalizationProperties$().getValue().get('brandId');
+
+        this.brand = this.personalization.getPersonalizationProperties$().getValue()?.get('brandId') ?? '';
     }
 
     public onDevMenuRefresh() {
@@ -701,15 +705,19 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
     }
 
     public isElectronEnabled() {
-        return this.electron.isElectronApp;
+        return this.electronPlatform.platformPresent();
     }
 
-    public toggleChromiumDevTools() {
-        this.electron.ipcRenderer.send('toggleDevTools');
+    public async toggleChromiumDevTools()  {
+        if (this.isElectronEnabled()) {
+            await window.openposElectron.toggleDevTools();
+        }
     }
 
-    public exitElectronApp() {
-        this.electron.ipcRenderer.send('exitApp');
+    public async exitElectronApp() {
+        if (this.isElectronEnabled()) {
+            await window.openposElectron.quit();
+        }
     }
 
     public getLocalTheme(): Observable<string> {

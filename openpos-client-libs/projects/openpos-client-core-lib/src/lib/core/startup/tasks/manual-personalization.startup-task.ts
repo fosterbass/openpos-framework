@@ -9,7 +9,7 @@ import { StartupTask } from '../startup-task';
     providedIn: 'root'
 })
 export class ManualPersonalizeStartupTask implements StartupTask {
-    name = 'ManualPersonalizeStartupTask';
+    static readonly taskName = 'ManualPersonalizeStartupTask';
 
     constructor(
         private _dialog: MatDialog

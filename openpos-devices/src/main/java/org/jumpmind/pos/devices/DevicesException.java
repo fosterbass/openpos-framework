@@ -12,13 +12,14 @@ public class DevicesException extends PosServerException {
 
     public DevicesException(String message, Throwable cause) {
         super(message, cause);
+        this.logMessageOnly = true;
     }
 
     public DevicesException(String message) {
-        super(message);
+        this(message, null);
     }
 
     public DevicesException(Throwable cause) {
-        super(cause);
+        this(cause.getMessage(), cause);
     }
 }

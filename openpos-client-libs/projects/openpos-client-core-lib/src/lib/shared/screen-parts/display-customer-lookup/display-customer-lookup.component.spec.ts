@@ -7,15 +7,12 @@ import { Observable } from 'rxjs';
 import { PhonePipe } from '../../pipes/phone.pipe';
 import { MatDialog } from '@angular/material/dialog';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ElectronService } from 'ngx-electron';
 import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provider.interface';
 import { TimeZoneContext } from '../../../core/client-context/time-zone-context';
 import { By } from '@angular/platform-browser';
 import { Membership } from '../membership-display/memebership-display.interface';
 
 class MockMatDialog { }
-class MockElectronService { }
-class ClientContext { }
 
 @Component({
     selector: 'app-membership-display',
@@ -56,8 +53,6 @@ describe('DisplayCustomerLookupComponent', () => {
                 ],
                 providers: [
                     { provide: MatDialog, useClass: MockMatDialog },
-                    { provide: ElectronService, useClass: MockElectronService },
-                    { provide: ClientContext, useValue: {} },
                     { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
                 ],
                 schemas: [
@@ -130,8 +125,6 @@ describe('DisplayCustomerLookupComponent', () => {
                 ],
                 providers: [
                     { provide: MatDialog, useClass: MockMatDialog },
-                    { provide: ElectronService, useClass: MockElectronService },
-                    { provide: ClientContext, useValue: {} },
                     { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
                 ],
                 schemas: [

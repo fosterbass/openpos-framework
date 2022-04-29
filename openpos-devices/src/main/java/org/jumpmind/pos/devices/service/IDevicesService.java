@@ -1,61 +1,65 @@
 package org.jumpmind.pos.devices.service;
 
-import io.swagger.annotations.Api;
 import org.jumpmind.pos.devices.service.model.*;
 import org.jumpmind.pos.util.SuppressMethodLogging;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 import static org.jumpmind.pos.util.RestApiSupport.REST_API_CONTEXT_PATH;
 
-@Api(tags = "Devices Service")
+@Tag(name = "Devices Service")
 @RestController("devices")
 @RequestMapping(REST_API_CONTEXT_PATH + "/devices")
 public interface IDevicesService {
 
-    @RequestMapping(path = "/personalizationConfig")
-    public PersonalizationConfigResponse getPersonalizationConfig();
+    @RequestMapping("/personalizationConfig")
+    PersonalizationConfigResponse getPersonalizationConfig();
 
-    @RequestMapping(path = "/personalize", method = RequestMethod.POST)
+    @PostMapping("/personalize")
     @ResponseBody
-    public PersonalizationResponse personalize(@RequestBody PersonalizationRequest request);
+    PersonalizationResponse personalize(@RequestBody PersonalizationRequest request);
 
     @SuppressMethodLogging
-    @RequestMapping(path = "/device", method = RequestMethod.POST)
+    @PostMapping("/device")
     @ResponseBody
-    public GetDeviceResponse getDevice(@RequestBody GetDeviceRequest request);
+    GetDeviceResponse getDevice(@RequestBody GetDeviceRequest request);
 
     @SuppressMethodLogging
-    @RequestMapping(path = "/myDevice", method = RequestMethod.GET)
+    @GetMapping("/myDevice")
     @ResponseBody
-    public GetDeviceResponse getMyDevice();
+    GetDeviceResponse getMyDevice();
 
-    @RequestMapping(path = "/authenticate", method = RequestMethod.POST)
+    @PostMapping("/authenticate")
     @ResponseBody
-    public AuthenticateDeviceResponse authenticateDevice(@RequestBody AuthenticateDeviceRequest request);
+    AuthenticateDeviceResponse authenticateDevice(@RequestBody AuthenticateDeviceRequest request);
 
-    @RequestMapping(path = "/disconnectDevice", method = RequestMethod.POST)
-    public void disconnectDevice(@RequestBody DisconnectDeviceRequest request);
+    @PostMapping("/disconnectDevice")
+    void disconnectDevice(@RequestBody DisconnectDeviceRequest request);
 
     @SuppressMethodLogging
-    @RequestMapping(path = "/connectedDeviceIds", method = RequestMethod.POST)
-    public GetConnectedDeviceIdsResponse getConnectedDeviceIds(@RequestBody GetConnectedDeviceIdsRequest request);
+    @PostMapping("/connectedDeviceIds")
+    GetConnectedDeviceIdsResponse getConnectedDeviceIds(@RequestBody GetConnectedDeviceIdsRequest request);
 
     @SuppressMethodLogging
-    @RequestMapping(path = "/find", method = RequestMethod.POST)
-    public FindDevicesResponse findDevices(@RequestBody FindDevicesRequest request);
+    @PostMapping("/find")
+    FindDevicesResponse findDevices(@RequestBody FindDevicesRequest request);
 
-    @RequestMapping(path = "/unpaired", method = RequestMethod.POST)
-    public GetUnpairedDevicesResponse getUnpairedDevices(@RequestBody GetUnpairedDevicesRequest request);
+    @PostMapping("/unpaired")
+    GetUnpairedDevicesResponse getUnpairedDevices(@RequestBody GetUnpairedDevicesRequest request);
 
-    @RequestMapping(path = "/paired", method = RequestMethod.POST)
-    public GetPairedDevicesResponse getPairedDevices(@RequestBody GetPairedDevicesRequest request);
+    @PostMapping("/paired")
+    GetPairedDevicesResponse getPairedDevices(@RequestBody GetPairedDevicesRequest request);
 
-    @RequestMapping(path = "/pair", method = RequestMethod.POST)
-    public PairDeviceResponse pairDevice(@RequestBody PairDeviceRequest request);
+    @PostMapping("/pair")
+    PairDeviceResponse pairDevice(@RequestBody PairDeviceRequest request);
 
-    @RequestMapping(path = "/unpair", method = RequestMethod.POST)
-    public UnpairDeviceResponse unpairDevice(@RequestBody UnpairDeviceRequest request);
+    @PostMapping("/unpair")
+    UnpairDeviceResponse unpairDevice(@RequestBody UnpairDeviceRequest request);
 
-    @RequestMapping(path = "/setAppId", method = RequestMethod.POST)
-    public SetAppIdResponse setAppId(@RequestBody SetAppIdRequest request);
+    @PostMapping("/setAppId")
+    SetAppIdResponse setAppId(@RequestBody SetAppIdRequest request);
+
+    @PutMapping("/setBrand")
+    SetBrandResponse setBrand(@RequestBody SetBrandRequest request);
 }

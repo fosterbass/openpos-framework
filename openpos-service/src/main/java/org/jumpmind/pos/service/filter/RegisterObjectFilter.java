@@ -1,6 +1,7 @@
 package org.jumpmind.pos.service.filter;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
@@ -17,9 +18,12 @@ public class RegisterObjectFilter {
     @Autowired
     OpenposHttpObjectFilter openposHttpObjectFilter;
 
+    @Value("${openpos.general.backwardCompatibility.enabled:true}")
+    boolean backwardCompatibilityEnabled;
+    
     @PostConstruct
     public void prioritizeCustomArgumentMethodHandlers() {
-        if (adapter != null) {
+        if (adapter != null && backwardCompatibilityEnabled) {
             List<HandlerMethodArgumentResolver> argumentResolvers = new ArrayList<>(adapter.getArgumentResolvers());
             argumentResolvers.add(0, openposHttpObjectFilter);
             adapter.setArgumentResolvers(argumentResolvers);

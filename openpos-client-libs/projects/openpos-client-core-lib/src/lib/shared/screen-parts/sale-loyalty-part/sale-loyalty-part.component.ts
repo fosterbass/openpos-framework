@@ -9,11 +9,11 @@ import { Component, Injector } from '@angular/core';
 import { ScreenPartComponent } from '../screen-part';
 import { Observable } from 'rxjs';
 import { MediaBreakpoints, OpenposMediaService } from '../../../core/media/openpos-media.service';
-import { LoyaltySignupService } from '../../../core/services/loyalty-signup.service';
 import { IActionItem } from '../../../core/actions/action-item.interface';
 import { CONFIGURATION } from '../../../configuration/configuration';
 import { Reward } from '../rewards-line-item/rewards-line-item.interface';
 import { SaleLoyaltyPartInterface } from './sale-loyalty-part.interface';
+import {LoyaltySalePartService} from '../../../core/services/loyalty-sale-part.service';
 
 @ScreenPart({
     name: 'SaleLoyalty'
@@ -36,12 +36,12 @@ export class SaleLoyaltyPartComponent extends ScreenPartComponent<SaleLoyaltyPar
     private loyaltyIconToken = '${icon}';
     public loyaltyBefore: string;
     public loyaltyAfter: string;
-    public isLoyaltySignupInProgressOnCustomerDisplay$: Observable<boolean>;
-    public loyaltySignupInProgressDetailsMessage$: Observable<string>;
+    public isLoyaltyOperationInProgressOnCustomerDisplay$: Observable<boolean>;
+    public loyaltyOperationInProgressDetailsMessage$: Observable<string>;
     public glowPulseRepeatTrigger = true;
     public gradientInnerGlowRepeatTrigger = true;
 
-    constructor(injector: Injector, media: OpenposMediaService, private loyaltySignupService: LoyaltySignupService) {
+    constructor(injector: Injector, media: OpenposMediaService, private loyaltySalePartService: LoyaltySalePartService) {
         super(injector);
         this.isMobile$ = media.observe(new Map([
             [MediaBreakpoints.MOBILE_PORTRAIT, true],
@@ -52,9 +52,9 @@ export class SaleLoyaltyPartComponent extends ScreenPartComponent<SaleLoyaltyPar
             [MediaBreakpoints.DESKTOP_LANDSCAPE, false]
         ]));
 
-        this.isLoyaltySignupInProgressOnCustomerDisplay$ = this.loyaltySignupService.isActiveOnCustomerDisplay();
-        this.loyaltySignupInProgressDetailsMessage$ = this.loyaltySignupService.getCustomerDisplayDetailsMessage();
-        this.loyaltySignupService.checkCustomerDisplayStatus();
+        this.isLoyaltyOperationInProgressOnCustomerDisplay$ = this.loyaltySalePartService.isActiveOnCustomerDisplay();
+        this.loyaltyOperationInProgressDetailsMessage$ = this.loyaltySalePartService.getCustomerDisplayDetailsMessage();
+        this.loyaltySalePartService.checkCustomerDisplayStatus();
     }
 
     screenDataUpdated() {
@@ -108,8 +108,7 @@ export class SaleLoyaltyPartComponent extends ScreenPartComponent<SaleLoyaltyPar
             && !!this.screenData.customer.id;
     }
 
-    public shouldShowLoyaltySignupInProgress(): boolean {
-        return !this.screenData.readOnly
-            && !!this.screenData.loyaltyCancelButton;
+    public shouldShowLoyaltyOperationInProgress(): boolean {
+        return !this.screenData.readOnly;
     }
 }

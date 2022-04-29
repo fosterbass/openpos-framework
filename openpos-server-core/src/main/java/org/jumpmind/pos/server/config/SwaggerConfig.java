@@ -1,43 +1,53 @@
 package org.jumpmind.pos.server.config;
 
+import static org.jumpmind.pos.util.RestApiSupport.REST_API_TOKEN_HEADER_NAME;
+
+import static io.swagger.v3.oas.models.security.SecurityScheme.In.HEADER;
+import static io.swagger.v3.oas.models.security.SecurityScheme.Type.APIKEY;
+
+import static java.util.Collections.singletonList;
+
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.ApiKey;
-import springfox.documentation.service.AuthorizationScope;
-import springfox.documentation.service.SecurityReference;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spi.service.contexts.SecurityContext;
-import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger.web.ApiKeyVehicle;
 
-import java.util.Collections;
+import java.util.List;
 
 @Configuration
 public class SwaggerConfig {
+    private static final String SECURITY_SCHEME_NAME = "APIToken";
 
     @Bean
-    public Docket api() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .securitySchemes(Collections.singletonList(apiTokenScheme()))
-                .securityContexts(Collections.singletonList(apiTokenContext()))
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("org.springframework").negate())
-                .paths(PathSelectors.any())
-                .build();
+    public OpenAPI api() {
+        return new OpenAPI()
+                .info(getInfo())
+                .schemaRequirement(SECURITY_SCHEME_NAME, getSecurityScheme())
+                .security(getSecurityRequirements());
     }
 
-    private ApiKey apiTokenScheme() {
-        return new ApiKey("APIToken", "X-API-Token", ApiKeyVehicle.HEADER.name());
+    private Info getInfo() {
+        return new Info()
+                .title("JumpMind Commerce API")
+                .version("4.0.0");
     }
 
-    private SecurityContext apiTokenContext() {
-        return SecurityContext.builder().securityReferences(Collections.singletonList(apiTokenReference())).build();
+    private List<SecurityRequirement> getSecurityRequirements() {
+        SecurityRequirement securityRequirement = new SecurityRequirement();
+        securityRequirement.addList(SECURITY_SCHEME_NAME);
+
+        return singletonList(securityRequirement);
     }
 
-    private SecurityReference apiTokenReference() {
-        AuthorizationScope[] authScopes = new AuthorizationScope[]{new AuthorizationScope("global", "accessEverything")};
-        return new SecurityReference("APIToken", authScopes);
+    private SecurityScheme getSecurityScheme() {
+        SecurityScheme securityScheme = new SecurityScheme();
+
+        securityScheme.type(APIKEY);
+        securityScheme.in(HEADER);
+        securityScheme.name(REST_API_TOKEN_HEADER_NAME);
+
+        return securityScheme;
     }
 }

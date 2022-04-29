@@ -31,7 +31,6 @@ tasks.withType(JavaCompile) {
 
 ext {
     jnaVersion = '4.1.0'
-    springfoxSwaggerVersion='2.9.2'
     javaposVersion='1.14.2'
     jacksonVersion='2.8.10'
     lombokVersion='1.18.20'
@@ -58,7 +57,7 @@ processResources {
 }
 
 
-repositories { 
+repositories {
     maven { url symmetricMavenUrl }
     mavenCentral()
     google()
@@ -114,7 +113,7 @@ eclipse {
                     arguments = '1.0-name-matches-false-false-node_modules'
                 }
             }
-        }        
+        }
     }
 }
 
@@ -174,20 +173,20 @@ task patchJar(type: Jar, dependsOn:classes) {
 
         if (!project.hasProperty("patchName")) {
             ext.patchName = 'patch.jar'
-        }   
+        }
         patchJar.archiveName = ext.patchName;
     }
 
     from(sourceSets.main.allSource) {
         for (sourceFileName in ext.patchSourceFiles) {
               include sourceFileName;
-        }        
+        }
     }
     from(sourceSets.main.output.classesDirs ) {
         for (className in ext.patchClassFiles) {
               include className;
         }
-    }        
+    }
 
     eachFile { file ->
         ext.fileFoundForPatch = true

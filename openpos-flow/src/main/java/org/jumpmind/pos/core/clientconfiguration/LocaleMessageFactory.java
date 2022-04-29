@@ -2,7 +2,6 @@ package org.jumpmind.pos.core.clientconfiguration;
 
 import java.util.Locale;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -15,8 +14,8 @@ public class LocaleMessageFactory {
     @Value("${openpos.ui.language.showIcons:true}")
     boolean showIcons;
 
-    @Autowired(required = false)
-    ILocaleProvider localeProvider;
+    @Value("${openpos.general.businessUnitLocale:en_US}")
+    String businessUnitLocale;
 
     public LocaleChangedMessage getMessage(Locale locale, Locale displayLocale) {
         LocaleChangedMessage message = new LocaleChangedMessage(locale, displayLocale);
@@ -26,12 +25,10 @@ public class LocaleMessageFactory {
     }
 
     public LocaleChangedMessage getMessage() {
-        LocaleChangedMessage message = null;
-        if (localeProvider != null) {
-            message = new LocaleChangedMessage(localeProvider.getLocale(), localeProvider.getLocale());
-        } else {
-            message = new LocaleChangedMessage();
-        }
+        LocaleChangedMessage message = new LocaleChangedMessage();
+        message.setLocale(businessUnitLocale);
+        message.setDisplayLocale(businessUnitLocale);
+
         message.setSupportedLocales(supportedLocales);
         message.setShowIcons(showIcons);
         return message;

@@ -20,13 +20,13 @@ import { PersonalizationComponent } from './personalization/personalization.comp
 import { ToastService } from './services/toast.service';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ElectronService, NgxElectronModule } from 'ngx-electron';
 import { CordovaPlatform } from './platforms/cordova.platform';
 import { NCRPaymentPlugin } from './platform-plugins/cordova-plugins/ncr-payment-plugin';
 import { SplashScreenComponent } from './components/splash-screen/splash-screen.component';
 import { LockScreenComponent } from './lock-screen/lock-screen.component';
 import locale_enCA from '@angular/common/locales/en-CA';
 import locale_frCA from '@angular/common/locales/fr-CA';
+import locale_esMX from '@angular/common/locales/es-MX';
 import { LocationService, PROVIDERS } from './services/location.service';
 import { LocationProviderDefault } from './location-providers/location-provider-default';
 import { CLIENTCONTEXT } from './client-context/client-context-provider.interface';
@@ -42,7 +42,6 @@ import { AudioConsolePlugin } from './audio/audio-console.plugin';
 import { ScanditCapacitorImageScanner } from './platform-plugins/barcode-scanners/scandit-capacitor/scandit-capacitor.service';
 import { IMAGE_SCANNERS, SCANNERS } from './platform-plugins/barcode-scanners/scanner';
 import { BarcodeScanner } from './platform-plugins/barcode-scanners/barcode-scanner.service';
-import { ClientExecutableService } from './services/client-executable.service';
 import { CapacitorIosPlatform } from './platforms/capacitor-ios.platform';
 import { CapacitorAndroidPlatform } from './platforms/capacitor-android.platform';
 import { AilaScannerCordovaPlugin } from './platform-plugins/barcode-scanners/aila-scanner-cordova/aila-scanner-cordova.plugin';
@@ -65,7 +64,6 @@ import { ZEROCONF_TOKEN } from './zeroconf/zeroconf';
 import { MDnsZeroconf } from './zeroconf/mdns-zeroconf';
 import { CapacitorZeroconf } from './zeroconf/capacitor-zeroconf';
 import { CapacitorService } from './services/capacitor.service';
-import { LoyaltySignupService } from './services/loyalty-signup.service';
 import { DebugImageScanner } from './platform-plugins/barcode-scanners/debug-image-scanner/debug-image-scanner.service';
 import { CommerceServerSinkModule } from './logging/commerce-server/commerce-server-sink.module';
 import { NewRelicSinkModule } from './logging/new-relic/new-relic-sink.module';
@@ -80,9 +78,12 @@ import { KeybindingService } from './keybindings/keybinding.service';
 import { KeybindingLockScreenService } from './keybindings/keybinding-lock-screen.service';
 import { ENTERPRISE_CONFIGS } from './platform-plugins/enterprise-config/enterprise-config.service';
 import { KeybindingDialogService } from './keybindings/keybinding-dialog.service';
+import { ZeroConfPersonalizationDialogComponent } from './startup/tasks/zeroconf/zero-conf-personalization-dialog.component';
+import { ElectronPlatform } from './platforms/electron.platform';
 
 registerLocaleData(locale_enCA, 'en-CA');
 registerLocaleData(locale_frCA, 'fr-CA');
+registerLocaleData(locale_esMX, 'es-MX');
 
 @NgModule({
     entryComponents: [
@@ -91,6 +92,7 @@ registerLocaleData(locale_frCA, 'fr-CA');
         DialogContentComponent,
         SplashScreenComponent,
         LockScreenComponent,
+        ZeroConfPersonalizationDialogComponent
     ],
     declarations: [
         OpenposAppComponent,
@@ -98,13 +100,13 @@ registerLocaleData(locale_frCA, 'fr-CA');
         ConfirmationDialogComponent,
         PersonalizationComponent,
         SplashScreenComponent,
-        LockScreenComponent
+        LockScreenComponent,
+        ZeroConfPersonalizationDialogComponent
     ],
     imports: [
         SharedModule,
         BrowserModule,
         BrowserAnimationsModule,
-        NgxElectronModule,
         ToastrModule.forRoot(),
         CommerceServerSinkModule,
         NewRelicSinkModule,
@@ -126,7 +128,7 @@ registerLocaleData(locale_frCA, 'fr-CA');
         MediaMatcher,
         StompRService,
         BarcodeScanner,
-        { provide: ZEROCONF_TOKEN, useClass: MDnsZeroconf, multi: true, deps: [ElectronService] },
+        { provide: ZEROCONF_TOKEN, useClass: MDnsZeroconf, multi: true, deps: [ElectronPlatform] },
         { provide: ZEROCONF_TOKEN, useClass: CapacitorZeroconf, multi: true, deps: [CapacitorService] },
         AilaScannerCordovaPlugin,
         ScanditScannerCordovaPlugin,
@@ -150,7 +152,7 @@ registerLocaleData(locale_frCA, 'fr-CA');
         { provide: PLUGINS, useExisting: ScanditScannerCordovaPlugin, multi: true },
         { provide: PLUGINS, useExisting: ScanditCapacitorImageScanner, multi: true },
         { provide: PLUGINS, useExisting: ZebraBluetoothPrinterCordovaPlugin, multi: true, deps: [CordovaService, SessionService] },
-        { provide: PLUGINS, useExisting: AirwatchCordovaPlugin, multi: true, deps: [CordovaService]},
+        { provide: PLUGINS, useExisting: AirwatchCordovaPlugin, multi: true, deps: [CordovaService] },
         { provide: PLUGINS, useExisting: ExitAppPlugin, multi: true, deps: [CordovaService, SessionService] },
         { provide: PLUGINS, useExisting: InfineaScannerCapacitorPlugin, multi: true },
         { provide: PLUGINS, useExisting: Dpp255CapacitorPlugin, multi: true },
@@ -158,6 +160,7 @@ registerLocaleData(locale_frCA, 'fr-CA');
         { provide: PLATFORMS, useExisting: CordovaPlatform, multi: true },
         { provide: PLATFORMS, useExisting: CapacitorIosPlatform, multi: true },
         { provide: PLATFORMS, useExisting: CapacitorAndroidPlatform, multi: true },
+        { provide: PLATFORMS, useExisting: ElectronPlatform, multi: true },
         { provide: STORAGE_CONTAINERS, useClass: CapacitorStorageService, multi: true },
         { provide: STORAGE_CONTAINERS, useClass: CordovaStorageService, multi: true },
         CapacitorPrinterPlugin,
@@ -166,7 +169,7 @@ registerLocaleData(locale_frCA, 'fr-CA');
         { provide: PRINTERS, useExisting: Dpp255CapacitorPlugin, multi: true},
         LocationService,
         { provide: PROVIDERS, useExisting: LocationProviderDefault, multi: true },
-        { provide: ENTERPRISE_CONFIGS, useExisting: AirwatchCordovaPlugin, multi: true, deps: [CordovaService]},
+        { provide: ENTERPRISE_CONFIGS, useExisting: AirwatchCordovaPlugin, multi: true, deps: [CordovaService] },
         TrainingOverlayService,
         ConfigurationService,
         HelpTextService,
@@ -177,8 +180,7 @@ registerLocaleData(locale_frCA, 'fr-CA');
         AudioInteractionService,
         AudioRepositoryService,
         { provide: PLUGINS, useExisting: AudioConsolePlugin, multi: true, deps: [AudioService] },
-        Storage,
-        LoyaltySignupService
+        Storage
     ]
 })
 export class CoreModule {
@@ -188,7 +190,6 @@ export class CoreModule {
         private injector: Injector,
         toastService: ToastService,
         uiDataService: UIDataMessageService,
-        clientExecutableService: ClientExecutableService,
         pushNotificationService: PushNotificationService,
         keybindingService: KeybindingService,
         keybindingDialogService: KeybindingDialogService,

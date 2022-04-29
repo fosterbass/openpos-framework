@@ -2,6 +2,10 @@ package org.jumpmind.pos.persist;
 
 public class Query<T> {
 
+    public static <P> Query<P> named(String name, Class<P> clazz) {
+        return new Query<P>().named(name).result(clazz);
+    }
+
     private String name;
     private Class<? extends T> resultClass;
     private boolean useAnd = true;

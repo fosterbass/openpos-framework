@@ -9,9 +9,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class PersonalizeMeResponse {
     private String deviceToken;
     private String deviceName;
@@ -20,6 +20,8 @@ public class PersonalizeMeResponse {
     private String deviceId;
     private String appId;
     private boolean sslEnabled = false;
+    private String pairedAppId;
+    private String pairedDeviceId;
     private List<ServerLocation> failoverAddresses;
     private Map<String, String> personalizationParams;
 

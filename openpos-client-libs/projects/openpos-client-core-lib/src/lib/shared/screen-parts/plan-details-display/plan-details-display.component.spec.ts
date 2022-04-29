@@ -3,12 +3,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { ActionService } from '../../../core/actions/action.service';
-import { ElectronService } from 'ngx-electron';
 import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provider.interface';
 import { TimeZoneContext } from '../../../core/client-context/time-zone-context';
 import { PlanDetailsDisplayComponent } from './plan-details-display.component';
 import { Plan } from '../../../screens-with-parts/membership/plan-interface';
-import { Subscription } from 'rxjs';
 import { ActionItem } from '../../../core/actions/action-item';
 import { SafeHtmlPipe } from '../../pipes/safe-html.pipe';
 import { MockComponent } from 'ng-mocks';
@@ -16,8 +14,6 @@ import { IconComponent } from '../../components/icon/icon.component';
 
 class MockActionService { }
 class MockMatDialog { }
-class MockElectronService { }
-class ClientContext { }
 
 describe('PlanDetailsDisplayComponent', () => {
     let component: PlanDetailsDisplayComponent;
@@ -34,8 +30,6 @@ describe('PlanDetailsDisplayComponent', () => {
             providers: [
                 { provide: MatDialog, useClass: MockMatDialog },
                 { provide: ActionService, useClass: MockActionService },
-                { provide: ElectronService, useClass: MockElectronService },
-                { provide: ClientContext, useValue: {} },
                 { provide: CLIENTCONTEXT, useClass: TimeZoneContext }
             ]
         }).compileComponents();
