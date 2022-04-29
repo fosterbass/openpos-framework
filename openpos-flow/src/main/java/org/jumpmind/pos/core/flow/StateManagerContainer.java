@@ -116,8 +116,9 @@ public class StateManagerContainer implements IStateManagerContainer, Applicatio
         IStateManager stateManager = stateManagersByDeviceId.get(deviceId);
         if (stateManager != null) {
             stateManager.getDeviceVariables().put("brandId", brand);
-            Map<String, String> properties = stateManager.getApplicationState().getScopeValue("personalizationProperties");
+            Map<String, String> properties = new HashMap<>(stateManager.getApplicationState().getScopeValue("personalizationProperties"));
             properties.put("brandId", brand);
+            stateManager.registerPersonalizationProperties(properties);
             stateManager.sendConfigurationChangedMessage();
             stateManager.reset();
         }
