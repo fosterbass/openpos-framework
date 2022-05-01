@@ -37,6 +37,7 @@
     }
 
     .rightside {
+        row-gap: 0em;
         justify-self: end;
         display:grid;
         grid-template:  "name icon" auto

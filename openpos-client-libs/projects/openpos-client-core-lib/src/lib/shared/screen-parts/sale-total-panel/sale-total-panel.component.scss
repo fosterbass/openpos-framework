@@ -46,6 +46,7 @@ $sale-total-icon-size: 36px;
         .sale-total-loyalty-button-icon {
             width: 100%;
             vertical-align: bottom;
+            margin-bottom: 2px;
         }
     }
 
@@ -107,6 +108,7 @@ $sale-total-icon-size: 36px;
 
         &.header {
             .button-wrapper {
+                margin-bottom: 8px;
                 .grid-container {
                     &.desktop-portrait,
                     &.tablet {
