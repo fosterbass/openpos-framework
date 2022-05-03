@@ -35,6 +35,7 @@ import org.jumpmind.pos.server.model.Action;
 import org.jumpmind.pos.server.service.IActionListener;
 import org.jumpmind.pos.server.service.IMessageService;
 import org.jumpmind.pos.util.DefaultObjectMapper;
+import org.jumpmind.pos.util.SuppressScreenLogging;
 import org.jumpmind.pos.util.web.MimeTypeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -446,12 +447,13 @@ public class ScreenService implements IScreenService, IActionListener {
         }
     }
 
-    protected void logScreenTransition(String deviceId, UIMessage screen) throws JsonProcessingException {
+    protected void logScreenTransition(String deviceId, UIMessage screen) {
+        String message = "Show screen on device \"{}\" ({})";
         if (loggerGraphical.isInfoEnabled()) {
-            logger.info("Show screen on device \"" + deviceId + "\" (" + screen.getClass().getName() + ")\n"
-                    + drawBox(screen.getId(), screen.getScreenType()));
-        } else {
-            logger.info("Show screen on device \"" + deviceId + "\"(\" + screen.getClass().getName() + \")\n");
+            message += "\n" + drawBox(screen.getId(), screen.getScreenType());
+        }
+        if (!screen.getClass().isAnnotationPresent(SuppressScreenLogging.class)) {
+            logger.info(message, deviceId, screen.getClass().getName());
         }
     }
 
