@@ -26,7 +26,7 @@ import org.springframework.core.env.MutablePropertySources;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(onlyExplicitlyIncluded = true)
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
 @TableDef(name = "device", description = "A device used to transaction commerce for a Business Unit",
         primaryKey = {"deviceId"})
 public class DeviceModel extends AbstractModel implements ITaggedModel, IDeviceAttributes {
@@ -44,7 +44,7 @@ public class DeviceModel extends AbstractModel implements ITaggedModel, IDeviceA
     @ToString.Include
     @EqualsAndHashCode.Include
     @ColumnDef
-    private String pairedDeviceId;
+    private String parentDeviceId;
 
     @ColumnDef(size = "10", description = "The locale under which this Device currently operates")
     String locale;

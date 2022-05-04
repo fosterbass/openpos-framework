@@ -1,111 +1,267 @@
 package org.jumpmind.pos.core.flow;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import org.jumpmind.pos.util.event.AppEvent;
+import org.jumpmind.pos.util.event.EventSource;
 import org.jumpmind.pos.util.event.OnEvent;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
+
+import java.util.ArrayList;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 public class EventBroadcasterTest {
-    final IStateManager stateManager = Mockito.mock(IStateManager.class);
+    final IStateManager stateManager = mock(IStateManager.class);
     EventBroadcaster eventBroadcaster;
 
     @Before
     public void setup() {
-        Mockito.when(stateManager.getAppId()).thenReturn("pos");
-        Mockito.when(stateManager.getDeviceId()).thenReturn("001");
+        when(stateManager.getDevice()).thenReturn(new Device("pos", "001"));
         eventBroadcaster = new EventBroadcaster(stateManager);
-        Target.withNoArgs = false;
-        Target.onAllEvents = null;
-        Target.onEventFromOthers = null;
-        Target.onEventFromPairedDevice = null;
     }
 
     @Test
-    public void testFromSelfPassingInObject() {
-        Target target = new Target();
-        AppEvent appEvent = new AppEvent("001", "pos");
-        eventBroadcaster.postEventToObject(target, appEvent);
-        assertEquals(appEvent, Target.onAllEvents);
-        assertNull(Target.onEventFromOthers);
-        assertNull(Target.onEventFromPairedDevice);
-        assertFalse(Target.withNoArgs);
+    public void eventRaisesFromSelf() {
+        final Target target = new Target();
+        final AppEvent event = new TestEvent("001", "pos");
+        boolean handled = eventBroadcaster.postEventToObject(Target.class, target, event);
+
+        assertTrue(handled);
+
+        TargetValues.builder()
+                .onSelfImplicitEvent(event)
+                .onSelfExplicitEvent(event)
+                .withNoArgs(true)
+                .build()
+                .assertMatch(target.result);
     }
 
     @Test
-    public void testFromOtherPassingInObject() {
-        Target target = new Target();
-        AppEvent appEvent = new AppEvent("001", "customerDisplay");
-        eventBroadcaster.postEventToObject(target, appEvent);
-        assertEquals(appEvent, Target.onAllEvents);
-        assertEquals(appEvent, Target.onEventFromOthers);
-        assertEquals(appEvent, Target.onEventFromPairedDevice);
-        assertTrue(Target.withNoArgs);
+    public void eventRaisesFromParent() {
+        // Device 005
+        //   |- Device 001
+        when(stateManager.getParentDevice()).thenReturn(new Device("pos", "005"));
+
+        final Target target = new Target();
+        final AppEvent event = new TestEvent("005", "pos");
+        boolean handled = eventBroadcaster.postEventToObject(Target.class, target, event);
+
+        assertTrue(handled);
+
+        TargetValues.builder()
+                .onParentEvent(event)
+                .build()
+                .assertMatch(target.result);
     }
 
     @Test
-    public void testFromSelfNotPassingInObject() {
-        AppEvent appEvent = new AppEvent("001", "pos");
-        eventBroadcaster.postEventToObject(Target.class, appEvent);
-        assertEquals(appEvent, Target.onAllEvents);
-        assertNull(Target.onEventFromOthers);
-        assertNull(Target.onEventFromPairedDevice);
-        assertFalse(Target.withNoArgs);
+    public void eventRaisesFromChild() {
+        // Device 001
+        //   |- Device 006
+        when(stateManager.getChildDevices()).thenReturn(new ArrayList<Device>() {{
+            add(new Device("customerdisplay", "006"));
+        }});
+
+        final Target target = new Target();
+        final AppEvent event = new TestEvent("006", "customerdisplay");
+        boolean handled = eventBroadcaster.postEventToObject(Target.class, target, event);
+
+        assertTrue(handled);
+
+        TargetValues.builder()
+                .onChildEvent(event)
+                .build()
+                .assertMatch(target.result);
     }
 
     @Test
-    public void testFromSelfToPairedDevice() {
-        Mockito.when(stateManager.getPairedDeviceId()).thenReturn("002");
+    public void eventsThatHandleMultipleSourcesShouldOnlyInvokeOnce() {
+        // Device 002
+        //   |- Device 001
+        //      |- Device 003
 
-        Target target = new Target();
-        AppEvent appEvent = new AppEvent("001", "pos", "002");
-        eventBroadcaster.postEventToObject(target, appEvent);
-        assertEquals(appEvent, Target.onAllEvents);
-        assertNull(Target.onEventFromOthers);
-        assertNull(Target.onEventFromPairedDevice);
-        assertFalse(Target.withNoArgs);
+        when(stateManager.getParentDevice()).thenReturn(new Device("pos", "002"));
+        when(stateManager.getChildDevices()).thenReturn(new ArrayList<Device>() {{
+            add(new Device("customerdisplay", "003"));
+        }});
+
+        final TargetMultipleSources target = new TargetMultipleSources();
+        final AppEvent event = new TestEvent("001", "pos");
+        boolean handled = eventBroadcaster.postEventToObject(TargetMultipleSources.class, target, event);
+
+        assertTrue(handled);
+        assertEquals(1, target.argInvocationCounter);
+        assertEquals(1, target.noArgsInvocationCounter);
     }
 
     @Test
-    public void testFromPairedDeviceToSelf() {
-        Mockito.when(stateManager.getDeviceId()).thenReturn("002");
+    public void subClassFilteringTest() {
+        final SubTypeTargets targets = new SubTypeTargets();
 
-        Target target = new Target();
-        AppEvent appEvent = new AppEvent("002", "customerdisplay", "001");
-        eventBroadcaster.postEventToObject(target, appEvent);
-        assertEquals(appEvent, Target.onAllEvents);
-        assertEquals(appEvent, Target.onEventFromOthers);
-        assertEquals(appEvent, Target.onEventFromPairedDevice);
-        assertTrue(Target.withNoArgs);
+        boolean handled = eventBroadcaster.postEventToObject(SubTypeTargets.class, targets, new TestSubEventTypeA("001", "pos"));
+
+        assertTrue(handled);
+        assertEquals(1, targets.straitBaseClassInvocations);
+        assertEquals(1, targets.baseClassArgOfTypeFiltering);
+        assertEquals(0, targets.subEventBArg);
+
+        handled = eventBroadcaster.postEventToObject(SubTypeTargets.class, targets, new TestSubEventTypeB("001", "pos"));
+
+        assertTrue(handled);
+        assertEquals(2, targets.straitBaseClassInvocations);
+        assertEquals(1, targets.baseClassArgOfTypeFiltering);
+        assertEquals(1, targets.subEventBArg);
+    }
+
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    static class TargetValues {
+        AppEvent onSelfImplicitEvent;
+        AppEvent onSelfExplicitEvent;
+        AppEvent onParentEvent;
+        AppEvent onChildEvent;
+        boolean withNoArgs;
+
+        public void assertMatch(TargetValues value) {
+            assertNullOrEqual(onSelfImplicitEvent, value.onSelfImplicitEvent);
+            assertNullOrEqual(onSelfExplicitEvent, value.onSelfExplicitEvent);
+            assertNullOrEqual(onParentEvent, value.onParentEvent);
+            assertNullOrEqual(onChildEvent, value.onChildEvent);
+            assertBool(withNoArgs, value.withNoArgs);
+        }
+
+        private void assertBool(boolean expected, boolean value) {
+            if (expected) {
+                assertTrue(value);
+            } else {
+                assertFalse(value);
+            }
+        }
+
+        private void assertNullOrEqual(Object expected, Object value) {
+            if (expected == null) {
+                assertNull(value);
+            } else {
+                assertEquals(expected, value);
+            }
+        }
     }
 
     static class Target {
+        TargetValues result = new TargetValues();
 
-        static AppEvent onAllEvents;
-        static AppEvent onEventFromOthers;
-        static AppEvent onEventFromPairedDevice;
-        static boolean withNoArgs;
-
-        @OnEvent(receiveEventsFromSelf = true)
-        public void onAllEvents(AppEvent event) {
-            this.onAllEvents = event;
+        @OnEvent
+        public void onImplicitSelfEvent(TestEvent event) {
+            result.onSelfImplicitEvent = event;
         }
 
-        @OnEvent(receiveEventsFromSelf = false)
-        public void onEventFromOthers(AppEvent event) {
-            this.onEventFromOthers = event;
+        @OnEvent(sources = { EventSource.SELF })
+        public void onExplicitSelfEvent(TestEvent event) {
+            result.onSelfExplicitEvent = event;
         }
 
-        @OnEvent(receiveEventsFromPairedDevice = true)
-        public void onEventFromPairedDevice(AppEvent event) {
-            this.onEventFromPairedDevice = event;
+        @OnEvent(sources = {
+                EventSource.PARENT
+        })
+        public void onEventFromParentEvent(TestEvent event) {
+            result.onParentEvent = event;
+        }
+
+        @OnEvent(sources = {
+                EventSource.PAIRED
+        })
+        public void onEventFromChild(TestEvent event) {
+            result.onChildEvent = event;
         }
 
         @OnEvent
         public void withNoArgs() {
-            withNoArgs = true;
+            result.withNoArgs = true;
+        }
+    }
+
+    static class TargetMultipleSources {
+        int argInvocationCounter = 0;
+        int noArgsInvocationCounter = 0;
+
+        @OnEvent(
+                sources = {
+                        EventSource.SELF,
+                        EventSource.PARENT,
+                        EventSource.PAIRED,
+
+                        // Repeat on purpose
+                        EventSource.SELF,
+                        EventSource.PARENT,
+                        EventSource.PAIRED
+                }
+        )
+        public void onArgEvent(AppEvent event) {
+            argInvocationCounter++;
+        }
+
+        @OnEvent(
+                sources = {
+                        EventSource.SELF,
+                        EventSource.PARENT,
+                        EventSource.PAIRED,
+
+                        // Repeat on purpose
+                        EventSource.SELF,
+                        EventSource.PARENT,
+                        EventSource.PAIRED
+                }
+        )
+        public void onNoArgEvent() {
+            noArgsInvocationCounter++;
+        }
+    }
+
+    static class TestEvent extends AppEvent {
+        public TestEvent(String deviceId, String appId) {
+            super(deviceId, appId);
+        }
+    }
+
+    static abstract class TestBaseEventType extends AppEvent {
+        public TestBaseEventType(String deviceId, String appId) {
+            super(deviceId, appId);
+        }
+    }
+    static class TestSubEventTypeA extends TestBaseEventType {
+        public TestSubEventTypeA(String deviceId, String appId) {
+            super(deviceId, appId);
+        }
+    }
+    static class TestSubEventTypeB extends TestBaseEventType {
+        public TestSubEventTypeB(String deviceId, String appId) {
+            super(deviceId, appId);
+        }
+    }
+
+    static class SubTypeTargets {
+        int straitBaseClassInvocations = 0;
+        int baseClassArgOfTypeFiltering = 0;
+        int subEventBArg = 0;
+
+        @OnEvent
+        public void onStraitBaseClass(TestBaseEventType baseClass) {
+            straitBaseClassInvocations += 1;
+        }
+
+        @OnEvent(ofTypes = TestSubEventTypeA.class)
+        public void onBaseClassArgOfTypeFiltering(TestBaseEventType baseClass) {
+            baseClassArgOfTypeFiltering += 1;
+        }
+
+        @OnEvent
+        public void onTestSubEventBArg(TestSubEventTypeB baseClass) {
+            subEventBArg += 1;
         }
     }
 }

@@ -53,61 +53,65 @@ public class DevicesRepository {
         return devSession.findByFields(DeviceModel.class, params, 1000);
     }
 
-    public List<DeviceModel> getUnpairedDevices(String businessUnitId) {
+    public List<DeviceModel> getOrphanedDevices(String businessUnitId) {
         return findDevices(businessUnitId)
                 .stream()
-                .filter(device -> StringUtils.isBlank(device.getPairedDeviceId()))
+                .filter(device -> StringUtils.isBlank(device.getParentDeviceId()))
                 .collect(Collectors.toList());
     }
 
-    public List<DeviceModel> getUnpairedDevicesByAppId(String businessUnitId, String appId) {
-        return getUnpairedDevices(businessUnitId).stream()
+    public List<DeviceModel> getOrphanedDevicesByAppId(String businessUnitId, String appId) {
+        return getOrphanedDevices(businessUnitId).stream()
+                .filter(device -> StringUtils.equals(device.getAppId(), appId))
+                .collect(Collectors.toList());
+    }
+
+    public List<DeviceModel> getAllChildDevices(String businessUnitId) {
+        return findDevices(businessUnitId)
+                .stream()
+                .filter(device -> StringUtils.isNotBlank(device.getParentDeviceId()))
+                .collect(Collectors.toList());
+    }
+
+    public List<DeviceModel> getAllChildDevicesByAppId(String businessUnitId, String appId) {
+        return getAllChildDevices(businessUnitId).stream()
                 .filter(device -> device.getAppId().equals(appId))
                 .collect(Collectors.toList());
     }
 
-    public List<DeviceModel> getPairedDevices(String businessUnitId) {
-        return findDevices(businessUnitId)
-                .stream()
-                .filter(device -> StringUtils.isNotBlank(device.getPairedDeviceId()))
-                .collect(Collectors.toList());
+    @Cacheable(value = CACHE_NAME, key = "'getChildrenOf' + #deviceId")
+    public List<DeviceModel> getChildrenOf(String deviceId) {
+
+        // ensure the device exists otherwise throw
+        getDevice(deviceId);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("parentDeviceId", deviceId);
+
+        return devSession.findByFields(DeviceModel.class, params, 1000);
     }
 
-    public List<DeviceModel> getPairedDevicesByAppId(String businessUnitId, String appId) {
-        return getPairedDevices(businessUnitId).stream()
-                .filter(device -> device.getAppId().equals(appId))
+    public List<DeviceModel> getChildrenOfByAppId(String deviceId, String appId) {
+        return getChildrenOf(deviceId).stream()
+                .filter(d -> StringUtils.equals(d.getAppId(), appId))
                 .collect(Collectors.toList());
     }
 
     @CacheEvict(value = CACHE_NAME, allEntries = true)
-    public void pairDevice(String deviceId, String pairedDeviceId) {
-        DeviceModel device = getDevice(deviceId);
-        DeviceModel pairedDevice = getDevice(pairedDeviceId);
+    public void pairDevice(String parentId, String childId) {
+        final DeviceModel parent = getDevice(parentId);
+        final DeviceModel child = getDevice(childId);
 
-        if (StringUtils.isNotBlank(device.getPairedDeviceId())) {
-            unpairDevice(deviceId, device.getPairedDeviceId());
-        }
-        if (StringUtils.isNotBlank(pairedDevice.getPairedDeviceId())) {
-            unpairDevice(pairedDeviceId, pairedDevice.getPairedDeviceId());
-        }
-
-        device.setPairedDeviceId(pairedDeviceId);
-        saveDevice(device);
-
-        pairedDevice.setPairedDeviceId(deviceId);
-        saveDevice(pairedDevice);
+        child.setParentDeviceId(parent.getDeviceId());
+        saveDevice(child);
     }
 
     @CacheEvict(value = CACHE_NAME, allEntries = true)
-    public void unpairDevice(String deviceId, String pairedDeviceId) {
+    public void unpairDevice(String deviceId) {
         DeviceModel device = getDevice(deviceId);
-        DeviceModel pairedDevice = getDevice(pairedDeviceId);
 
-        device.setPairedDeviceId(null);
+        device.setParentDeviceId(null);
         saveDevice(device);
-
-        pairedDevice.setPairedDeviceId(null);
-        saveDevice(pairedDevice);
     }
 
     @CacheEvict(value = CACHE_NAME, allEntries = true)

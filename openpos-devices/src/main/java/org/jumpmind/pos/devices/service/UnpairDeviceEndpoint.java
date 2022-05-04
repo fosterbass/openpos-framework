@@ -14,14 +14,10 @@ public class UnpairDeviceEndpoint {
     DevicesRepository devicesRepository;
 
     public UnpairDeviceResponse unpairDevice(UnpairDeviceRequest request) {
-        devicesRepository.unpairDevice(
-                request.getDeviceId(),
-                request.getPairedDeviceId()
-        );
+        devicesRepository.unpairDevice(request.getChild());
 
         return UnpairDeviceResponse.builder()
-                .device(devicesRepository.getDevice(request.getDeviceId()))
-                .unpairedDevice(devicesRepository.getDevice(request.getPairedDeviceId()))
+                .child(devicesRepository.getDevice(request.getChild()))
                 .build();
     }
 }

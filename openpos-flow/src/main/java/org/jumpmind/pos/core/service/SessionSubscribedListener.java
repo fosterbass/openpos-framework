@@ -1,15 +1,20 @@
 package org.jumpmind.pos.core.service;
 
-import static org.jumpmind.pos.util.AppUtils.setupLogging;
-
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jumpmind.pos.core.flow.IStateManager;
 import org.jumpmind.pos.core.flow.IStateManagerContainer;
+import org.jumpmind.pos.core.flow.ScopeType;
 import org.jumpmind.pos.core.ui.DialogProperties;
 import org.jumpmind.pos.core.ui.IconType;
 import org.jumpmind.pos.core.ui.message.DialogUIMessage;
 import org.jumpmind.pos.core.ui.messagepart.DialogHeaderPart;
 import org.jumpmind.pos.core.ui.messagepart.MessagePartConstants;
 import org.jumpmind.pos.devices.model.DeviceModel;
+import org.jumpmind.pos.devices.service.IDevicesService;
+import org.jumpmind.pos.devices.service.model.GetChildDevicesRequest;
+import org.jumpmind.pos.devices.service.model.GetDeviceRequest;
 import org.jumpmind.pos.server.config.MessageUtils;
 import org.jumpmind.pos.server.config.SessionSubscribedEvent;
 import org.jumpmind.pos.server.service.IMessageService;
@@ -17,19 +22,15 @@ import org.jumpmind.pos.server.service.SessionConnectListener;
 import org.jumpmind.pos.util.Version;
 import org.jumpmind.pos.util.event.DeviceConnectedEvent;
 import org.jumpmind.pos.util.event.EventPublisher;
-
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import static org.jumpmind.pos.util.AppUtils.setupLogging;
 
 @Component
 @Slf4j
@@ -48,7 +49,11 @@ public class SessionSubscribedListener implements ApplicationListener<SessionSub
     private String incompatibleVersionMessage;
 
     @Autowired
-    private EventPublisher eventPublisher;
+    EventPublisher eventPublisher;
+
+    @Autowired
+    IDevicesService devicesService;
+
 
     @SuppressWarnings("unchecked")
     @Override
@@ -116,15 +121,48 @@ public class SessionSubscribedListener implements ApplicationListener<SessionSub
 
             stateManager.setDeviceVariables(deviceVariables);
             stateManager.setConnected(sessionAuthTracker.isSessionAuthenticated(sessionId));
-            stateManager.getApplicationState().getScope().setDeviceScope("device", sessionAuthTracker.getDeviceModel(sessionId));
+
+            final DeviceModel myDevice = sessionAuthTracker.getDeviceModel(sessionId);
+
+            stateManager.getApplicationState().getScope().setDeviceScope("device", myDevice);
             stateManager.getApplicationState().getScope().setDeviceScope("powerStatus", sessionAuthTracker.getPowerStatus(sessionId));
+
+            if (StringUtils.isNotBlank(myDevice.getParentDeviceId())) {
+                try {
+                    final DeviceModel parentDevice = devicesService.getDevice(
+                            GetDeviceRequest.builder().deviceId(myDevice.getParentDeviceId()).build()
+                    ).getDeviceModel();
+
+                    if (parentDevice != null) {
+                        stateManager.getApplicationState().getScope().setDeviceScope("parentDevice", parentDevice);
+                    }
+                } catch (Exception ex) {
+                    log.error("parent device was indicated by the connecting device '{}' but an unknown error occurred while attempting to locate the device; device pairing will be incomplete and non-functional...", myDevice.getDeviceId(), ex);
+                }
+            }
+
+            try {
+                final List<DeviceModel> children = devicesService.getChildDevices(GetChildDevicesRequest.builder().parentDeviceId(myDevice.getDeviceId()).build())
+                        .getChildren();
+
+                if (CollectionUtils.isNotEmpty(children)) {
+                    List<DeviceModel> childDevices = stateManager.getApplicationState().getScopeValue(ScopeType.Device, "childDevices");
+                    if (childDevices == null) {
+                        childDevices = new ArrayList<>();
+                    }
+
+                    childDevices.addAll(children);
+                    stateManager.getApplicationState().getScope().setDeviceScope("childDevices", childDevices);
+                }
+            } catch (Exception ex) {
+                log.error("failed to determine if device '{}' has any assigned children; device pairing will be incomplete and non-functional...", myDevice.getDeviceId(), ex);
+            }
 
             if (!created) {
                 stateManager.refreshScreen();
             }
 
-            eventPublisher.publish(new DeviceConnectedEvent(deviceId, appId, stateManager.getPairedDeviceId(),
-                    (List<Version>) queryParams.get("deviceVersions")));
+            eventPublisher.publish(new DeviceConnectedEvent(deviceId, appId, (List<Version>) queryParams.get("deviceVersions")));
 
             SubscribedSessionMetric.inc(deviceId);
         } catch (Exception ex) {

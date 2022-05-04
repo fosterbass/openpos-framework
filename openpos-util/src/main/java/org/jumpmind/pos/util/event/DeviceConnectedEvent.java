@@ -20,8 +20,8 @@ public class DeviceConnectedEvent extends AppEvent {
     @SuppressWarnings("unused")
     private DeviceConnectedEvent() {}
     
-    public DeviceConnectedEvent(String deviceId, String appId, String pairedDeviceId, List<Version> deviceVersions) {
-        super(deviceId, appId, pairedDeviceId);
+    public DeviceConnectedEvent(String deviceId, String appId, List<Version> deviceVersions) {
+        super(deviceId, appId);
         this.deviceVersions = deviceVersions;
     }
 }

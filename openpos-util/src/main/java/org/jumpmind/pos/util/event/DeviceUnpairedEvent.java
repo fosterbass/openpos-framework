@@ -8,7 +8,7 @@ import lombok.ToString;
 public class DeviceUnpairedEvent extends AppEvent {
     private static final long serialVersionUID = 1L;
 
-    public DeviceUnpairedEvent(String deviceId, String appId, String pairedDeviceId) {
-        super(deviceId, appId, pairedDeviceId);
+    public DeviceUnpairedEvent(String deviceId, String appId) {
+        super(deviceId, appId);
     }
 }

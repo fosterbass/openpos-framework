@@ -25,13 +25,13 @@ public class ErrorEvent extends AppEvent {
         this.errorMessage = errorMessage;
     }
 
-    public ErrorEvent(String deviceId, String appId, String pairedDeviceId, String errorMessage) {
-        super(deviceId, appId, pairedDeviceId);
+    public ErrorEvent(String deviceId, String appId, String errorMessage) {
+        super(deviceId, appId);
         this.errorMessage = errorMessage;
     }
 
-    public ErrorEvent(String deviceId, String appId, String pairedDeviceId, Throwable throwable) {
-        super(deviceId, appId, pairedDeviceId);
+    public ErrorEvent(String deviceId, String appId, Throwable throwable) {
+        super(deviceId, appId);
         this.throwable = throwable;
     }
 }

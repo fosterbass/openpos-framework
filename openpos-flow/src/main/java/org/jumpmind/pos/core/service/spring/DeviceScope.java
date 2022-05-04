@@ -64,7 +64,7 @@ public class DeviceScope implements Scope {
     
     @Override
     public String getConversationId() {
-        return getStateManager().getDeviceId();
+        return getStateManager().getDevice().getDeviceId();
     }
     
     public static boolean isDeviceScope(String beanName) {

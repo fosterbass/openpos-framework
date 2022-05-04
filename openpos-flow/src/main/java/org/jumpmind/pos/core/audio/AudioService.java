@@ -37,15 +37,15 @@ public class AudioService implements IAudioService {
     @Override
     public void play(AudioRequest request) {
         if (!enableAudio) {
-            log.debug("Audio is disabled on device '{}', so the sound '{}' will not be played", stateManager.getDeviceId(), request.getSound());
+            log.debug("Audio is disabled on device '{}', so the sound '{}' will not be played", stateManager.getDevice().getDeviceId(), request.getSound());
             return;
         }
 
         String audioKey = AudioUtil.getKey(request.getSound());
-        String url = contentProviderService.resolveContent(stateManager.getDeviceId(), audioKey);
+        String url = contentProviderService.resolveContent(stateManager.getDevice().getDeviceId(), audioKey);
 
         if (StringUtils.isBlank(url)) {
-            log.warn("Unable to find sound '{}' for device '{}'", request.getSound(), stateManager.getDeviceId());
+            log.warn("Unable to find sound '{}' for device '{}'", request.getSound(), stateManager.getDevice().getDeviceId());
             return;
         }
 
@@ -54,7 +54,7 @@ public class AudioService implements IAudioService {
         AudioMessage message = new AudioMessage(requestCopy);
 
 
-        log.info(String.format("Sending sound '%s' to be played on device '%s'", url, stateManager.getDeviceId()), message);
-        messageService.sendMessage(stateManager.getDeviceId(), new AudioMessage(requestCopy));
+        log.info(String.format("Sending sound '%s' to be played on device '%s'", url, stateManager.getDevice().getDeviceId()), message);
+        messageService.sendMessage(stateManager.getDevice().getDeviceId(), new AudioMessage(requestCopy));
     }
 }

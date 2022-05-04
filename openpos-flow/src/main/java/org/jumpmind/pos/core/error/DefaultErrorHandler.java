@@ -29,13 +29,13 @@ public class DefaultErrorHandler implements IErrorHandler {
 
     @Override
     public void handleError(IStateManager stateManager, Throwable throwable) {
-        Message message = incidentService.createIncident(throwable, new IncidentContext(stateManager.getDeviceId()));
+        Message message = incidentService.createIncident(throwable, new IncidentContext(stateManager.getDevice().getDeviceId()));
         if (message instanceof UIMessage) {
             stateManager.showScreen((UIMessage) message);
         } else if (message instanceof Toast) {
             stateManager.showToast((Toast) message);
         } else {
-            messageService.sendMessage(stateManager.getDeviceId(), message);
+            messageService.sendMessage(stateManager.getDevice().getDeviceId(), message);
         }
 
         ApplicationState applicationState = stateManager.getApplicationState();
@@ -45,8 +45,6 @@ public class DefaultErrorHandler implements IErrorHandler {
             audioConfig.getSystemErrorSounds().forEach(audioService::play);
         }
 
-        eventPublisher.publish(new ErrorEvent(
-                stateManager.getAppId(), stateManager.getDeviceId(), stateManager.getPairedDeviceId(), throwable
-        ));
+        eventPublisher.publish(new ErrorEvent(stateManager.getDevice().getAppId(), stateManager.getDevice().getDeviceId(), throwable));
     }
 }

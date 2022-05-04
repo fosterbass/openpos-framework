@@ -5,11 +5,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Builder
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetUnpairedDevicesRequest {
+public class GetOrphanedDevicesRequest {
     private String businessUnitId;
     private String appId;
 }

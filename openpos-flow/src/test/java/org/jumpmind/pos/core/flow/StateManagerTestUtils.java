@@ -57,7 +57,7 @@ public class StateManagerTestUtils {
 
         if (flowConfig != null) {
             stateManager.setInitialFlowConfig(flowConfig);
-            stateManager.init("pos", "100-1");
+            stateManager.init(new Device("pos", "100-1"));
             Thread.sleep(500);
         }
         

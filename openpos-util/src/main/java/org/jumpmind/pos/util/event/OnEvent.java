@@ -25,32 +25,59 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Used to annotate {@link AppEvent} method handlers.
+ *
+ * <p>
+ * Only handler methods with 0 or 1 argument are supported. If the handler has 1 argument, then the argument's type must
+ * be {@link AppEvent} or a derivation of it. Choosing to use a derivation of {@link AppEvent} as an argument will
+ * implicitly filter events to any type that the event instance may be assigned to. You may also use {@link OnEvent#ofTypes()}
+ * to filter accepted types further. Zero argument handlers are invoked when any event raised unless filtered using
+ * {@link OnEvent#ofTypes()}.
+ *
+ * <pre>
+ * {@code
+ * @OnEvent
+ * public void onAnyEvent(AppEvent event) {
+ *     // Any event from oneself
+ * }
+ * }
+ * </pre>
+ *
+ * <pre>
+ * {@code
+ * @OnEvent(sources = { EventSource.PAIRED })
+ * public void onChildConnected(DeviceConnectedEvent event) {
+ *     // Only the `DeviceConnectedEvent` raised from a child device
+ * }
+ * }
+ * </pre>
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface OnEvent {
     /**
-     * Only applies if the event type is NOT AppEvent OR it IS an AppEvent (or subclass) and the
-     * device ID of the event is the same as the device ID of the current StateManager.
-     * In that case, setting this value to {@code true} will allow the event to be processed regardless of
-     * the app ID value of the event.
+     * A list of source types that should be handled.
+     *
+     * <p>
+     * By default, this is events are only received from one's own scope ({@link EventSource#SELF}), however you might
+     * want to listen for events from attached devices ({@link EventSource#PAIRED}) or the device that your device is
+     * attached to ({@link EventSource#PARENT}). This is useful in application scenarios like having `pos` with a child
+     * `customerdisplay` app.
+     *
+     * @return An array of all event sources that are accepted by the handler.
      */
-    boolean receiveEventsFromSelf() default false;
+    EventSource[] sources() default { EventSource.SELF };
 
     /**
-     * Only applies if the event type is AppEvent (or subclass) and the device ID of the current StateManager
-     * is the same as the paired device ID of the event. In that case, setting this value to {@code true}
-     * will allow the event to be processed regardless of the app ID value of the event.
+     * A list of all types accepted by the event handler.
+     *
+     * <p>
+     * Filtering is implicitly done by the handler's argument type. In some scenarios, like deciding to use a base event
+     * to catch multiple similar events, you may want to filter only certain events that implement the base type. If
+     * left unspecified no filtering is applied.
+     *
+     * @return A list of all types to filter on.
      */
-    boolean receiveEventsFromPairedDevice() default false;
-
-    /**
-     * If this is set, then all event types will be received.  Ignored if {@link #ofTypes()} identifies specific
-     * Event types that are to be handled.
-     */
-    boolean receiveAllEvents() default false;
-
-    /**
-     * Use this to specify specific event types that should be handled.  This has the highest precedence of all.
-     */
-    Class<? extends Event>[] ofTypes() default {};
+    Class<? extends AppEvent>[] ofTypes() default {};
 }

@@ -40,8 +40,8 @@ public class PersonalizeEndpoint {
         String authToken = request.getDeviceToken();
         final String deviceId = request.getDeviceId();
         final String appId = request.getAppId();
-        final String pairedAppId = request.getPairedAppId();
-        final String pairedDeviceId = request.getPairedDeviceId();
+        final String parentAppId = request.getParentAppId();
+        final String parentDeviceId = request.getParentDeviceId();
 
         DeviceModel deviceModel;
 
@@ -88,12 +88,14 @@ public class PersonalizeEndpoint {
         }
 
         // ensure the paired device actually exists before trying to pair with it
-        if (StringUtils.isNotBlank(pairedAppId) && StringUtils.isNotBlank(pairedDeviceId)) {
-            DeviceModel pairedDeviceModel = devicesRepository.getDevice(pairedDeviceId);
+        DeviceModel parentDeviceModel = null;
+        if (StringUtils.isNotBlank(parentAppId) && StringUtils.isNotBlank(parentDeviceId)) {
+            parentDeviceModel = devicesRepository.getDevice(parentDeviceId);
 
-            if (pairedDeviceModel == null) {
-                pairedDeviceModel = DeviceModel.builder()
-                        .deviceId(pairedDeviceId)
+            if (parentDeviceModel == null) {
+                parentDeviceModel = DeviceModel.builder()
+                        .deviceId(parentDeviceId)
+                        .appId(parentAppId)
                         .deviceParamModels(
                                 request.getPersonalizationParameters() != null
                                         ? request.getPersonalizationParameters().keySet().stream().map(key -> new DeviceParamModel(key, request.getPersonalizationParameters().get(key))).collect(Collectors.toList())
@@ -102,15 +104,13 @@ public class PersonalizeEndpoint {
                         .build();
             }
 
-            pairedDeviceModel.setAppId(pairedAppId);
-
-            deviceUpdater.updateDevice(pairedDeviceModel);
+            deviceUpdater.updateDevice(parentDeviceModel);
         }
 
         deviceUpdater.updateDevice(deviceModel);
 
-        if (deviceModel.getPairedDeviceId() == null && pairedDeviceId != null) {
-            devicesRepository.pairDevice(deviceModel.getDeviceId(), request.getPairedDeviceId());
+        if (parentDeviceModel != null) {
+            devicesRepository.pairDevice(parentDeviceModel.getDeviceId(), deviceModel.getDeviceId());
             deviceModel = devicesRepository.getDevice(deviceModel.getDeviceId());
         }
 

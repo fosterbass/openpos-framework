@@ -115,7 +115,7 @@ public class DevToolsActionListener implements IActionListener {
         } else if (action.getName().contains("::Reset")) {
             if (action.getName().contains("::Device")) {
                 stateManagerContainer.getAllStateManagers().stream().
-                    filter(stateMgr -> stateMgr.getDeviceId().equals(deviceId)).
+                    filter(stateMgr -> stateMgr.getDevice().getDeviceId().equals(deviceId)).
                     forEach(stateMgr -> stateMgr.reset()
                 );
             }
@@ -175,7 +175,7 @@ public class DevToolsActionListener implements IActionListener {
             deviceModel = DeviceModel.builder().
                     deviceId(simulatorDeviceId).
                     appId(simAppId).
-                    pairedDeviceId(deviceId).
+                    parentDeviceId(deviceId).
                     build();
             devicesRepository.saveDevice(deviceModel);
             authToken = UUID.randomUUID().toString();

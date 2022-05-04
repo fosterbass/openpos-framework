@@ -10,6 +10,8 @@ import org.jumpmind.pos.core.flow.IStateManagerContainer;
 import org.jumpmind.pos.core.flow.Scope;
 import org.jumpmind.pos.core.ui.message.DialogUIMessage;
 import org.jumpmind.pos.devices.model.DeviceModel;
+import org.jumpmind.pos.devices.service.IDevicesService;
+import org.jumpmind.pos.devices.service.model.GetChildDevicesResponse;
 import org.jumpmind.pos.server.config.SessionSubscribedEvent;
 import org.jumpmind.pos.server.service.IMessageService;
 import org.jumpmind.pos.server.service.SessionConnectListener;
@@ -23,10 +25,7 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SessionSubscribedListenerTest {
 
@@ -38,6 +37,9 @@ public class SessionSubscribedListenerTest {
 
     @Mock
     private SessionConnectListener sessionAuthTracker;
+
+    @Mock
+    private IDevicesService devicesService;
 
     @Mock
     private EventPublisher eventPublisher;
@@ -156,6 +158,12 @@ public class SessionSubscribedListenerTest {
     public void onApplicationEventRetrieveStateManagerAndUpdate() {
         Mockito.when(sessionAuthTracker.isSessionAuthenticated(Mockito.any())).thenReturn(true);
         Mockito.when(sessionAuthTracker.isSessionCompatible(Mockito.any())).thenReturn(true);
+        Mockito.when(sessionAuthTracker.getDeviceModel(Mockito.any())).thenReturn(DeviceModel.builder()
+                        .appId("pos")
+                        .deviceId("11111-111")
+                        .build()
+        );
+        Mockito.when(devicesService.getChildDevices(Mockito.any())).thenReturn(new GetChildDevicesResponse());
 
         IStateManager stateManager = makeMockStateManager();
         Mockito.when(stateManagerContainer.retrieve(Mockito.anyString(), Mockito.anyBoolean())).thenReturn(stateManager);

@@ -35,8 +35,8 @@ public class DeviceHeartbeatAgent {
     @Scheduled(fixedDelayString = "${openpos.general.deviceHeartbeatDelayMs:30000}")
     public void heartbeat() {
         stateManagerContainer.getAllStateManagers().forEach(stateManager -> {
-            if (stateManager.getAppId() != null) {
-                eventPublisher.publish(new DeviceHeartbeatEvent(stateManager.getDeviceId(), stateManager.getAppId()));
+            if (stateManager.getDevice().getAppId() != null) {
+                eventPublisher.publish(new DeviceHeartbeatEvent(stateManager.getDevice().getDeviceId(), stateManager.getDevice().getAppId()));
             }
         });
     }

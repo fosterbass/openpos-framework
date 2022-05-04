@@ -8,7 +8,7 @@ import lombok.ToString;
 public class DeviceDisplayModeToggledEvent extends AppEvent {
     private static final long serialVersionUID = 1L;
 
-    public DeviceDisplayModeToggledEvent(String deviceId, String appId, String pairedDeviceId) {
-        super(deviceId, appId, pairedDeviceId);
+    public DeviceDisplayModeToggledEvent(String deviceId, String appId) {
+        super(deviceId, appId);
     }
 }

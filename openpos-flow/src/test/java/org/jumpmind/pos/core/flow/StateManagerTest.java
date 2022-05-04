@@ -237,7 +237,7 @@ public class StateManagerTest {
     }
 
     private void stateManagerInit() {
-        stateManager.init("pos", "100-1");
+        stateManager.init(new Device("pos", "100-1"));
         try {
             Thread.sleep(100);
             while (stateManager.getCurrentState() == null) {

@@ -70,7 +70,7 @@ public class BeforeActionStateLifeCycleServiceIT {
 
     @Test
     public void testSingleBeforeActionMethod() {
-        stateManager.init("pos", "100-1");
+        stateManager.init(new Device("pos", "100-1"));
         StateManagerTestUtils.doAction(stateManager, "TestSingleBeforeActionMethod");
 
         StateWithBeforeActionMethod testState = (StateWithBeforeActionMethod) stateManager.getCurrentState();
@@ -83,7 +83,7 @@ public class BeforeActionStateLifeCycleServiceIT {
 
     @Test(expected=FlowException.class)
     public void testSingleBeforeActionMethodThatThrowsException() throws Throwable {
-        stateManager.init("pos", "100-1");
+        stateManager.init(new Device("pos", "100-1"));
         StateManagerTestUtils.doAction(stateManager, "TestSingleBeforeActionMethodThatThrowsException");
         StateWithBeforeActionMethodThatThrowsException testState = (StateWithBeforeActionMethodThatThrowsException) stateManager.getCurrentState();
         assertFalse(testState.beforeActionInvoked);
@@ -113,7 +113,7 @@ public class BeforeActionStateLifeCycleServiceIT {
     
     @Test
     public void testMultipleBeforeActionMethods() {
-        stateManager.init("pos", "100-1");
+        stateManager.init(new Device("pos", "100-1"));
         StateManagerTestUtils.doAction(stateManager, "TestMultipleBeforeActionMethods");
         StateWithMultipleBeforeActionMethods testState = (StateWithMultipleBeforeActionMethods) stateManager.getCurrentState();
         assertFalse(testState.beforeAction_AInvoked);
@@ -130,7 +130,7 @@ public class BeforeActionStateLifeCycleServiceIT {
     
     @Test
     public void testMultipleBeforeActionMethodsAndFailOnExceptionIsFalse() {
-        stateManager.init("pos", "100-1");
+        stateManager.init(new Device("pos", "100-1"));
         StateManagerTestUtils.doAction(stateManager, "TestMultipleBeforeActionMethodsAndFailOnExceptionIsFalse");
         StateWithMultipleBeforeActionAndFailOnExceptionIsFalse testState = (StateWithMultipleBeforeActionAndFailOnExceptionIsFalse) stateManager.getCurrentState();
         assertFalse(testState.beforeAction_AInvoked);
@@ -150,7 +150,7 @@ public class BeforeActionStateLifeCycleServiceIT {
 
     @Test
     public void testMultipleBeforeActionMethodsAndFailOnExceptionIsTrue() {
-        stateManager.init("pos", "100-1");
+        stateManager.init(new Device("pos", "100-1"));
         StateManagerTestUtils.doAction(stateManager, "TestMultipleBeforeActionMethodsAndFailOnExceptionIsTrue");
         StateWithMultipleBeforeActionAndFailOnExceptionIsTrue testState = (StateWithMultipleBeforeActionAndFailOnExceptionIsTrue) stateManager.getCurrentState();
         assertFalse(testState.beforeAction_AInvoked);
