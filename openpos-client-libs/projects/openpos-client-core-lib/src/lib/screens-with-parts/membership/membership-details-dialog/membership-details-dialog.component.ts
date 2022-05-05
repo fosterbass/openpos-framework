@@ -1,4 +1,4 @@
-import { Component, Injector } from '@angular/core';
+import { AfterContentChecked, ChangeDetectorRef, Component, Injector } from '@angular/core';
 import { MembershipDetailsDialogInterface } from './membership-details-dialog.interface';
 import { DialogComponent } from '../../../shared/decorators/dialog-component.decorator';
 import { PosScreenDirective } from '../../../screens-with-parts/pos-screen/pos-screen.component';
@@ -7,6 +7,7 @@ import { MediaBreakpoints, OpenposMediaService } from '../../../core/media/openp
 import { IActionItem } from '../../../core/actions/action-item.interface';
 import { CONFIGURATION } from '../../../configuration/configuration';
 import { ActionService } from '../../../core/actions/action.service';
+import { SubscriptionAccount } from '../subscription-account-interface';
 
 @DialogComponent({
   name: 'MembershipDetailsDialog'
@@ -16,14 +17,21 @@ import { ActionService } from '../../../core/actions/action.service';
   templateUrl: './membership-details-dialog.component.html',
   styleUrls: ['./membership-details-dialog.component.scss']
 })
-export class MembershipDetailsDialogComponent extends PosScreenDirective<MembershipDetailsDialogInterface> {
+export class MembershipDetailsDialogComponent extends PosScreenDirective<MembershipDetailsDialogInterface> implements AfterContentChecked {
 
   isMobile: Observable<boolean>;
 
+  selectedTab: SubscriptionAccount;
+
   constructor(public actionService: ActionService, injector: Injector,
-              private media: OpenposMediaService) {
+              private media: OpenposMediaService,
+              private changeDetection: ChangeDetectorRef) {
     super(injector);
     this.initIsMobile();
+  }
+
+  ngAfterContentChecked() {
+    this.changeDetection.detectChanges();
   }
 
   initIsMobile(): void {
@@ -41,6 +49,16 @@ export class MembershipDetailsDialogComponent extends PosScreenDirective<Members
 
   }
 
+  public updateSelectedTab(val: string): void {
+    if (val) {
+      const tabs = this.screen.subscriptionAccounts.filter(t => t.customerProgramId === val);
+      if (tabs && tabs.length > 0) {
+        this.selectedTab = tabs[0];
+      }
+    } else {
+      this.selectedTab = undefined;
+    }
+  }
   public keybindsEnabled(menuItem: IActionItem): boolean {
     return CONFIGURATION.enableKeybinds && !!menuItem.keybind && menuItem.keybind !== 'Enter';
   }

@@ -4,6 +4,7 @@ import lombok.Data;
 import org.jumpmind.pos.core.ui.ActionItem;
 import org.jumpmind.pos.core.ui.AssignKeyBindings;
 import org.jumpmind.pos.core.ui.UIMessage;
+import org.jumpmind.pos.core.ui.data.Tab;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,18 +27,12 @@ public class CustomerDetailsUIMessage extends UIMessage {
 
     private Boolean membershipEnabled;
     private Boolean membershipPointsEnabled;
-    private Boolean rewardTabEnabled;
-    private Boolean rewardHistoryTabEnabled;
-    private Boolean itemHistoryEnabled;
 
     private String appliedLabel;
     private String membershipLabel;
     private String contactLabel;
     private String noPromotionsLabel;
-    private String rewardsLabel;
     private String expiresLabel;
-    private String rewardHistoryIcon;
-    private String rewardHistoryLabel;
     private String expiredLabel;
     private String loyaltyProgramNameLabel;
     private String pointsLabel;
@@ -60,10 +55,9 @@ public class CustomerDetailsUIMessage extends UIMessage {
     private String backIcon;
     private String birthDateIcon;
     private String memberTierLabel;
-    private String itemHistoryLabel;
-    private String itemHistoryIcon;
     private String itemHistoryFilterLabel;
     private String plccAccountDetailsLabel;
+    private List<Tab> tabs;
 
     private UICustomerItemHistoryFilter itemHistoryFilter;
 

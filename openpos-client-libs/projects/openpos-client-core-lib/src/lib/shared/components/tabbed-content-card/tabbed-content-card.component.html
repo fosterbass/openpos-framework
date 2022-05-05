@@ -1,0 +1,10 @@
+<div class="tab-headers">
+    <button *ngFor="let tab of tabs" mat-flat-button class="tab-header" (click)="tabChanged(tab.tabId)"
+        [ngClass]="isSelected(tab.tabId) ? 'selected-tab' : 'non-selected-tab'" responsive-class>
+        <app-icon *ngIf="showIcons && tab.icon" [iconClass]="'sm'" [iconName]="tab.icon"></app-icon>
+        <span>{{tab.label}}</span>
+    </button>
+</div>
+<app-content-card>
+    <ng-container [ngTemplateOutlet]="selectedTabTemplate"></ng-container>
+</app-content-card>

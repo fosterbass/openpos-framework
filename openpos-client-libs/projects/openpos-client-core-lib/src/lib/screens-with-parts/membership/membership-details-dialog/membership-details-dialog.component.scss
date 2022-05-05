@@ -4,6 +4,8 @@
   
 
   .tabs {
+    display: flex;
+    flex-direction: column;
     margin-top: 8px;
     height: 53vmin;
     mat-tab-group, mat-card {

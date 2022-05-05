@@ -24,10 +24,10 @@ import { DualActionDialogHeaderComponent } from '../../shared/screen-parts/dual-
 import { MembershipPointsDisplayComponent } from '../../shared/screen-parts/membership-points-display/membership-points-display.component';
 import { SecondaryButtonComponent } from '../../shared/components/secondary-button/secondary-button.component';
 import { PrimaryButtonComponent } from '../../shared/components/primary-button/primary-button.component';
-import { MatTab, MatTabGroup } from '@angular/material/tabs';
 import { MembershipDisplayComponent } from '../../shared/screen-parts/membership-display/membership-display.component';
 import { ActionItemKeyMappingDirective } from '../../shared/directives/action-item-key-mapping.directive';
 import { KeybindingZoneService } from '../../core/keybindings/keybinding-zone.service';
+import { TabbedContentCardComponent } from '../../shared/components/tabbed-content-card/tabbed-content-card.component';
 
 class MockActionService { }
 class MockMatDialog { }
@@ -36,6 +36,7 @@ describe('CustomerDetailsDialog', () => {
   let component: CustomerDetailsDialogComponent;
   let fixture: ComponentFixture<CustomerDetailsDialogComponent>;
   let customer;
+  let tabs;
   class MockOpenposMediaServiceMobileFalse {
     observe(): Observable<boolean> {
       return of(false);
@@ -60,6 +61,11 @@ describe('CustomerDetailsDialog', () => {
         postalCode: '11111'
       }
     };
+    tabs = [
+      {tabId: 'rewards', icon: undefined, label: 'Rewards (1)'},
+      {tabId: 'rewardsHistory', icon: undefined, label: 'Reward History'},
+      {tabId: 'itemHistory', icon: undefined, label: 'Purchase History'},
+    ];
   });
 
   describe('shared', () => {
@@ -81,9 +87,8 @@ describe('CustomerDetailsDialog', () => {
           MockComponent(MembershipDisplayComponent),
           MockComponent(SecondaryButtonComponent),
           MockComponent(PrimaryButtonComponent),
-          MockComponent(MatTab),
+          MockComponent(TabbedContentCardComponent),
           MockComponent(MatDialogActions),
-          MockComponent(MatTabGroup),
           ActionItemKeyMappingDirective
         ],
         providers: [
@@ -98,8 +103,7 @@ describe('CustomerDetailsDialog', () => {
       component = fixture.componentInstance;
       component.screen = {
         customer,
-        rewardTabEnabled: true,
-        rewardHistoryTabEnabled: true
+        tabs
       } as CustomerDetailsDialogInterface;
       fixture.detectChanges();
     });
@@ -124,26 +128,6 @@ describe('CustomerDetailsDialog', () => {
             [MediaBreakpoints.DESKTOP_PORTRAIT, false],
             [MediaBreakpoints.DESKTOP_LANDSCAPE, false]
           ]));
-        });
-      });
-      describe('getRewardsLabel', () => {
-        beforeEach(() => {
-          component.screen.rewardsLabel = 'Rewards';
-        });
-
-        it('returns "Rewards" when the rewards list is undefined', () => {
-          component.screen.customer.numberOfActiveRewards = undefined;
-          expect(component.getRewardsLabel()).toBe('Rewards');
-        });
-
-        it('returns "Rewards (0)" when the rewards list is empty', () => {
-          component.screen.customer.numberOfActiveRewards = 0;
-          expect(component.getRewardsLabel()).toBe('Rewards (0)');
-        });
-
-        it('returns "Rewards (#)" when the rewards list has items', () => {
-          component.screen.customer.numberOfActiveRewards = 1;
-          expect(component.getRewardsLabel()).toBe('Rewards (1)');
         });
       });
     });
@@ -260,8 +244,8 @@ describe('CustomerDetailsDialog', () => {
       });
       describe('tabs', () => {
         it('displays the tabs section', () => {
-          const tabsElement = fixture.debugElement.query(By.css('.tabs'));
-          expect(tabsElement.nativeElement).toBeDefined();
+          const tabsElement = fixture.nativeElement.querySelector('#tabbedContent');
+          expect(tabsElement).toBeDefined();
         });
       });
       describe('actions', () => {
@@ -457,9 +441,8 @@ describe('CustomerDetailsDialog', () => {
           MockComponent(MembershipDisplayComponent),
           MockComponent(SecondaryButtonComponent),
           MockComponent(PrimaryButtonComponent),
-          MockComponent(MatTab),
+          MockComponent(TabbedContentCardComponent),
           MockComponent(MatDialogActions),
-          MockComponent(MatTabGroup)
         ],
         providers: [
           { provide: ActionService, useClass: MockActionService },
@@ -472,8 +455,7 @@ describe('CustomerDetailsDialog', () => {
       component = fixture.componentInstance;
       component.screen = {
         customer,
-        rewardTabEnabled: true,
-        rewardHistoryTabEnabled: true
+        tabs
       } as CustomerDetailsDialogInterface;
       fixture.detectChanges();
     });
@@ -510,21 +492,18 @@ describe('CustomerDetailsDialog', () => {
           validateExist(fixture, '.paged-nav-list');
         });
 
-        it('has non-required Rewards and Rewards History sections of selectable content', () => {
-          component.screen.rewardTabEnabled = false;
-          component.screen.rewardHistoryTabEnabled = false;
+        it('has no tabs', () => {
+          component.screen.tabs = undefined;
           fixture.detectChanges();
           const navListItems = fixture.debugElement.queryAll(By.css('.paged-nav-list-item'));
           expect(navListItems.length).toEqual(1);
           validateExist(fixture, '.paged-nav-list');
         });
 
-        it('has three sections of selectable content', () => {
-          component.screen.rewardTabEnabled = true;
-          component.screen.rewardHistoryTabEnabled = true;
+        it('has four sections of selectable content', () => {
           fixture.detectChanges();
           const navListItems = fixture.debugElement.queryAll(By.css('.paged-nav-list-item'));
-          expect(navListItems.length).toEqual(3);
+          expect(navListItems.length).toEqual(4);
           validateExist(fixture, '.paged-nav-list');
         });
       });
@@ -550,9 +529,8 @@ describe('CustomerDetailsDialog', () => {
           MockComponent(MembershipDisplayComponent),
           MockComponent(SecondaryButtonComponent),
           MockComponent(PrimaryButtonComponent),
-          MockComponent(MatTab),
           MockComponent(MatDialogActions),
-          MockComponent(MatTabGroup)
+          MockComponent(TabbedContentCardComponent)
         ],
         providers: [
           { provide: ActionService, useClass: MockActionService },
@@ -565,8 +543,7 @@ describe('CustomerDetailsDialog', () => {
       component = fixture.componentInstance;
       component.screen = {
         customer,
-        rewardTabEnabled: true,
-        rewardHistoryTabEnabled: true
+        tabs
       } as CustomerDetailsDialogInterface;
       fixture.detectChanges();
     });
@@ -577,30 +554,23 @@ describe('CustomerDetailsDialog', () => {
         });
       });
       describe('tabs', () => {
-        it('does not has the mobile class', () => {
-          const tabsElement = fixture.debugElement.query(By.css('.tabs'));
-          expect(tabsElement.nativeElement.classList).not.toContain('mobile');
+        it('does not hav the mobile class', () => {
+          const tabsElement = fixture.nativeElement.querySelector('#tabbedContent');
+          expect(tabsElement.classList).not.toContain('mobile');
         });
 
-        it('does not shows the tab section when both rewardTabEnabled and rewardHistoryTab are false', () => {
-          component.screen.rewardTabEnabled = false;
-          component.screen.rewardHistoryTabEnabled = false;
+        it('does not shows the tab section when no tabs', () => {
+          component.screen.tabs = undefined;
           fixture.detectChanges();
-          validateDoesNotExist(fixture, '.tabs');
+          const tabsElement = fixture.nativeElement.querySelector('#tabbedContent');
+          expect(tabsElement).toBeNull();
         });
 
-        it('it shows when rewardTabEnabled is true', () => {
-          component.screen.rewardTabEnabled = true;
-          component.screen.rewardHistoryTabEnabled = false;
+        it('it shows when tabs exist', () => {
+          component.screen.tabs = tabs;
           fixture.detectChanges();
-          validateExist(fixture, '.tabs');
-        });
-
-        it('it shows when rewardHistoryTabEnabled is true', () => {
-          component.screen.rewardTabEnabled = false;
-          component.screen.rewardHistoryTabEnabled = true;
-          fixture.detectChanges();
-          validateExist(fixture, '.tabs');
+          const tabsElement = fixture.nativeElement.querySelector('#tabbedContent');
+          expect(tabsElement).toBeDefined();
         });
       });
     });

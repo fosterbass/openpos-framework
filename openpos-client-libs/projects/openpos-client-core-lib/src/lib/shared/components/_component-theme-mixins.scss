@@ -31,6 +31,7 @@
 @import './item-card/item-card-component-theme';
 @import './expansion-panel/expansion-panel-theme';
 @import './dynamic-form-field/dynamic-form-field-theme';
+@import './tabbed-content-card/tabbed-content-card-theme';
 
 @mixin openpos-component-theme-mixins($theme) {
     @include pager-theme($theme);
@@ -66,4 +67,5 @@
     @include item-card-component-theme($theme);
     @include expansion-panel-theme($theme);
     @include dynamic-form-field-theme($theme);
+    @include tabbed-content-card-theme($theme);
 }

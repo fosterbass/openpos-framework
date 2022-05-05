@@ -6,7 +6,7 @@ import { PhonePipe } from '../../../shared/pipes/phone.pipe';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { CLIENTCONTEXT } from '../../../core/client-context/client-context-provider.interface';
 import { TimeZoneContext } from '../../../core/client-context/time-zone-context';
-import { Observable, of, Subscription } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { MediaBreakpoints, OpenposMediaService } from '../../../core/media/openpos-media.service';
 import { MembershipDetailsDialogComponent } from './membership-details-dialog.component';
 import { ActionItem } from '../../../core/actions/action-item';
@@ -17,45 +17,29 @@ import { SubscriptionAccount } from '../subscription-account-interface';
 import { EnrollmentItem } from '../enrollment-item-interface';
 import { Plan } from '../plan-interface';
 import { MockComponent } from 'ng-mocks';
-import { MatTab, MatTabGroup } from '@angular/material/tabs';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { ContentCardComponent } from '../../../shared/components/content-card/content-card.component';
 import { DialogHeaderComponent } from '../../../shared/screen-parts/dialog-header/dialog-header.component';
 import { PrimaryButtonComponent } from '../../../shared/components/primary-button/primary-button.component';
 import { SecondaryButtonComponent } from '../../../shared/components/secondary-button/secondary-button.component';
 import { EnrollmentLineItemComponent } from '../../../shared/screen-parts/enrollment-line-item/enrollment-line-item.component';
-import { MatCard } from '@angular/material/card';
 import { ProgramPlanDetailsComponent } from '../../../shared/screen-parts/program-plan-details/program-plan-details.component';
+import { TabbedContentCardComponent } from '../../../shared/components/tabbed-content-card/tabbed-content-card.component';
+import { ITab } from '../../../shared/components/tabbed-content-card/tab.interface';
 
 class MockActionService { }
 class MockMatDialog { }
-class MockElectronService { }
 
 describe('LinkedCustomerMembershipState', () => {
   let component: MembershipDetailsDialogComponent;
   let fixture: ComponentFixture<MembershipDetailsDialogComponent>;
-  let customer;
   let subscriptionAccount: SubscriptionAccount;
+  let tabs: ITab[];
   class MockOpenposMediaServiceMobileFalse {
     observe(): Observable<boolean> {
       return of(false);
     }
   }
-
-  beforeEach(() => {
-    customer = {
-      name: 'Ige Wana',
-      email: 'IgeWana@gmail.com',
-      phoneNumber: '1118798322',
-      loyaltyNumber: 's321111111',
-      address: {
-        line1: '123 Lizard Lane',
-        city: 'Columbus',
-        state: 'OH',
-        postalCode: '11111'
-      }
-    };
-  });
 
   describe('shared', () => {
     beforeEach(() => {
@@ -63,6 +47,7 @@ describe('LinkedCustomerMembershipState', () => {
         imports: [HttpClientTestingModule],
         declarations: [
           MembershipDetailsDialogComponent,
+          TabbedContentCardComponent,
           PhonePipe,
           MockComponent(IconComponent),
           MockComponent(ContentCardComponent),
@@ -71,9 +56,6 @@ describe('LinkedCustomerMembershipState', () => {
           MockComponent(SecondaryButtonComponent),
           MockComponent(EnrollmentLineItemComponent),
           MockComponent(ProgramPlanDetailsComponent),
-          MockComponent(MatTabGroup),
-          MockComponent(MatTab),
-          MockComponent(MatCard)
         ],
         providers: [
           { provide: ActionService, useClass: MockActionService },
@@ -84,7 +66,7 @@ describe('LinkedCustomerMembershipState', () => {
       }).compileComponents();
       fixture = TestBed.createComponent(MembershipDetailsDialogComponent);
       component = fixture.componentInstance;
-      component.screen = { } as MembershipDetailsDialogInterface;
+      component.screen = {} as MembershipDetailsDialogInterface;
       fixture.detectChanges();
     });
 
@@ -158,8 +140,7 @@ describe('LinkedCustomerMembershipState', () => {
         const enrollmentItem: EnrollmentItem = {} as EnrollmentItem;
         const plan: Plan = {} as Plan;
         subscriptionAccount = {
-          iconImageUrl: 'iconImageUrl',
-          iconText: 'iconText',
+          customerProgramId: 'programId',
           enrollmentItems: [enrollmentItem],
           listTitle: 'listTitle',
           plans: [plan],
@@ -171,16 +152,23 @@ describe('LinkedCustomerMembershipState', () => {
         } as SubscriptionAccount;
         subscriptionAccounts.push(subscriptionAccount);
         component.screen.subscriptionAccounts = subscriptionAccounts;
+        tabs = [
+          {tabId: 'programId', label: 'label', icon: 'icon'}
+        ];
+        component.screen.tabs = tabs;
         fixture.detectChanges();
       });
 
       describe('tab functionality', () => {
         it('should display tabs', () => {
           validateExist(fixture, '.tabs');
+          const tabsElement = fixture.nativeElement.querySelector('#tabbedContent');
+          expect(tabsElement).toBeDefined();
+          expect(tabsElement).not.toBeNull();
         });
 
         it('should display subscriptionAccountListTitle', () => {
-          validateText(fixture, '.tabs .tab-title', subscriptionAccount.listTitle);
+          validateText(fixture, '.tab-title', subscriptionAccount.listTitle);
         });
 
         it('should display app-enrollment-line-items', () => {
@@ -195,7 +183,7 @@ describe('LinkedCustomerMembershipState', () => {
         });
 
         it('should display have sign-up', () => {
-          validateExist(fixture, '.tabs .sign-up');
+          validateExist(fixture, '.sign-up');
         });
       });
     });
