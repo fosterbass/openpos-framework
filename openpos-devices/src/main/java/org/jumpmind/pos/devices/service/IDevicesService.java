@@ -45,10 +45,10 @@ public interface IDevicesService {
     @PostMapping("/find")
     FindDevicesResponse findDevices(@RequestBody FindDevicesRequest request);
 
-    @RequestMapping(path = "/orphaned", method = RequestMethod.POST)
+    @PostMapping("/orphaned")
     GetOrphanedDevicesResponse getOrphanedDevices(@RequestBody GetOrphanedDevicesRequest request);
 
-    @RequestMapping(path = "/children", method = RequestMethod.POST)
+    @PostMapping("/children")
     GetChildDevicesResponse getChildDevices(@RequestBody GetChildDevicesRequest request);
 
     @PostMapping("/pair")

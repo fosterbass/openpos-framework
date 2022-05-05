@@ -90,9 +90,11 @@ public class PersonalizeEndpoint {
         // ensure the paired device actually exists before trying to pair with it
         DeviceModel parentDeviceModel = null;
         if (StringUtils.isNotBlank(parentAppId) && StringUtils.isNotBlank(parentDeviceId)) {
-            parentDeviceModel = devicesRepository.getDevice(parentDeviceId);
+            try {
+                parentDeviceModel = devicesRepository.getDevice(parentDeviceId);
+            } catch (DeviceNotFoundException ex) {
+                log.warn("attempt to personalize with parent device but parent device '{}:{}' not found; creating...", parentAppId, parentDeviceId);
 
-            if (parentDeviceModel == null) {
                 parentDeviceModel = DeviceModel.builder()
                         .deviceId(parentDeviceId)
                         .appId(parentAppId)
