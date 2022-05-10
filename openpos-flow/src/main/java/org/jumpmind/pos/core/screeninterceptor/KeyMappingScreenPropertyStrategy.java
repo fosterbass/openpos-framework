@@ -4,9 +4,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.jumpmind.pos.core.flow.IStateManager;
 import org.jumpmind.pos.core.flow.In;
 import org.jumpmind.pos.core.flow.ScopeType;
+import org.jumpmind.pos.core.service.ClientLocaleService;
 import org.jumpmind.pos.core.service.IKeyMappingService;
+import org.jumpmind.pos.core.service.LocaleType;
 import org.jumpmind.pos.core.ui.ActionItem;
 import org.jumpmind.pos.core.ui.UIMessage;
+import org.jumpmind.pos.util.clientcontext.ClientContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -19,10 +22,10 @@ import java.util.Map;
 @Scope(proxyMode = org.springframework.context.annotation.ScopedProxyMode.TARGET_CLASS, value = "device")
 public class KeyMappingScreenPropertyStrategy implements IMessagePropertyStrategy<UIMessage> {
     @Autowired(required = false)
-    IKeyMappingService keyMappingService;
+    private IKeyMappingService keyMappingService;
 
-    @In(scope = ScopeType.Device)
-    private IStateManager stateManager;
+    @Autowired
+    private ClientContext clientContext;
 
     @Override
     public Object doStrategy(
@@ -37,7 +40,8 @@ public class KeyMappingScreenPropertyStrategy implements IMessagePropertyStrateg
                 String keyMapping = keyMappingService.getKeyMapping(screen, item.getAction(), screenContext);
                 if (!StringUtils.isEmpty(keyMapping)) {
                     item.setKeybind(keyMapping);
-                    String keyMappingDisplayName = keyMappingService.getDisplayName(screen.getId(), keyMapping);
+                    String keyMappingDisplayName = keyMappingService.getDisplayName(screen.getId(), keyMapping,
+                            clientContext.get(ClientContext.DISPLAY_LOCALE));
                     item.setKeybindDisplayName(keyMappingDisplayName);
                 }
             }

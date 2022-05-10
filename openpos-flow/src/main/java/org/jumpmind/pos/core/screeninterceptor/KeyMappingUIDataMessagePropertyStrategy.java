@@ -4,7 +4,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.jumpmind.pos.core.flow.IStateManager;
 import org.jumpmind.pos.core.flow.In;
 import org.jumpmind.pos.core.flow.ScopeType;
+import org.jumpmind.pos.core.service.ClientLocaleService;
 import org.jumpmind.pos.core.service.IKeyMappingService;
+import org.jumpmind.pos.core.service.LocaleType;
 import org.jumpmind.pos.core.ui.ActionItem;
 import org.jumpmind.pos.core.ui.UIDataMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +25,7 @@ public class KeyMappingUIDataMessagePropertyStrategy implements IMessageProperty
     IKeyMappingService keyMappingService;
 
     @In(scope = ScopeType.Device)
-    private IStateManager stateManager;
+    private ClientLocaleService clientLocaleService;
 
     @Override
     public Object doStrategy(
@@ -38,7 +40,8 @@ public class KeyMappingUIDataMessagePropertyStrategy implements IMessageProperty
                 String keyMapping = keyMappingService.getKeyMapping(message, item.getAction());
                 if (!StringUtils.isEmpty(keyMapping)) {
                     item.setKeybind(keyMapping);
-                    String keyMappingDisplayName = keyMappingService.getDisplayName(message.getDataType(), keyMapping);
+                    String keyMappingDisplayName = keyMappingService.getDisplayName(message.getDataType(), keyMapping,
+                            clientLocaleService.getLocale(LocaleType.DISPLAY).toString());
                     item.setKeybindDisplayName(keyMappingDisplayName);
                 }
             }

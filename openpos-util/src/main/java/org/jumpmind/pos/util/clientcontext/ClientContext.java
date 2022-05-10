@@ -13,9 +13,15 @@ import java.util.Set;
 
 @Component
 public class ClientContext {
+    public static final String USERNAME = "userName";
     public static final String BUSINESS_UNIT_ID = "businessUnitId";
     public static final String TIMEZONE_OFFSET = "timezoneOffset";
     public static final String CURRENCY_ID = "currencyId";
+    public static final String LOCALE = "locale";
+    public static final String DISPLAY_LOCALE = "displayLocale";
+    public static final String DEVICE_ID = "deviceId";
+    public static final String APP_ID = "appId";
+    public static final String DEVICE_MODE = "deviceMode";
 
     private ThreadLocal<Map<String, String>> propertiesMap = new ThreadLocal<>();
     final Logger log = LoggerFactory.getLogger(getClass());
@@ -29,6 +35,9 @@ public class ClientContext {
 
     @Value("${openpos.deviceMode:'not set'}")
     String deviceMode;
+
+    @Value("${openpos.general.businessUnitLocale:en_US}")
+    String defaultBusinessUnitLocale;
 
     public void put(String name, String value) {
         if (propertiesMap.get() == null) {
@@ -46,21 +55,22 @@ public class ClientContext {
         Map<String, String> props = propertiesMap.get();
 
         if (props == null || !props.containsKey(name)) {
-            if ("deviceId".equalsIgnoreCase(name)) {
+            if (DEVICE_ID.equalsIgnoreCase(name)) {
                 return installationId;
             } else if (BUSINESS_UNIT_ID.equalsIgnoreCase(name)) {
                 return businessUnitId;
-            } else if ("appId".equalsIgnoreCase(name)) {
+            } else if (APP_ID.equalsIgnoreCase(name)) {
                 return "server";
-            } else if ("deviceMode".equalsIgnoreCase(name)) {
+            } else if (DEVICE_MODE.equalsIgnoreCase(name)) {
                 return deviceMode;
             } else if (TIMEZONE_OFFSET.equalsIgnoreCase(name)) {
                 return AppUtils.getTimezoneOffset();
+            } else if (LOCALE.equalsIgnoreCase(name) || DISPLAY_LOCALE.equalsIgnoreCase(name)) {
+                return defaultBusinessUnitLocale;
             }
             log.debug("ClientContext property '{}' not found in ClientContext map.", name);
             return null;
         }
-
         return props.get(name);
     }
 

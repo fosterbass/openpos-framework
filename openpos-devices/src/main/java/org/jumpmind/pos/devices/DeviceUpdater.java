@@ -54,10 +54,6 @@ public class DeviceUpdater implements ApplicationListener<DeviceConnectedEvent> 
     synchronized public void updateDevice(DeviceModel deviceModel) {
         deviceModel.setTimezoneOffset(clientContext.get(ClientContext.TIMEZONE_OFFSET));
         deviceModel.setInstallationId(installationId);
-        // TODO check properties also before using default
-        if(StringUtils.isBlank(deviceModel.getLocale())) {
-            deviceModel.setLocale(Locale.getDefault().toString());
-        }
         deviceModel.setLastUpdateTime(new Date());
         deviceModel.setLastUpdateBy("personalization");
         deviceModel.updateTags((AbstractEnvironment) env);

@@ -5,6 +5,7 @@ export const LOCALE_CONSTANTS = {
         'en-ca': '$',
         'fr-us': '$',
         'fr-ca': '$',
+        'es-mx': '$',
         default: '$'
     },
     currencyCode: {
@@ -12,6 +13,7 @@ export const LOCALE_CONSTANTS = {
         'fr-us': 'USD',
         'en-ca': 'CAD',
         'fr-ca': 'CAD',
+        'es-mx': 'MXN',
         default: 'USD'
     },
     displayName: {
@@ -19,6 +21,7 @@ export const LOCALE_CONSTANTS = {
         'fr-us': 'French',
         'en-ca': 'English',
         'fr-ca': 'French',
+        'es-mx': 'Spanish',
         default: 'English'
     },
     localeIcon: {
@@ -26,6 +29,7 @@ export const LOCALE_CONSTANTS = {
         'fr-us': 'France',
         'en-ca': 'Canada',
         'fr-ca': 'France',
+        'es-mx': 'Mexico',
         default: 'UnitedStates'
     }
 };

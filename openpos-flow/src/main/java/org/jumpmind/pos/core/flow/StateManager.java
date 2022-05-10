@@ -27,8 +27,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.jumpmind.pos.core.clientconfiguration.ClientConfigChangedMessage;
 import org.jumpmind.pos.core.clientconfiguration.IClientConfigSelector;
-import org.jumpmind.pos.core.clientconfiguration.LocaleChangedMessage;
-import org.jumpmind.pos.core.clientconfiguration.LocaleMessageFactory;
 import org.jumpmind.pos.core.error.IErrorHandler;
 import org.jumpmind.pos.core.event.DeviceResetEvent;
 import org.jumpmind.pos.core.flow.config.*;
@@ -53,8 +51,6 @@ import org.jumpmind.pos.util.event.Event;
 import org.jumpmind.pos.util.event.EventPublisher;
 import org.jumpmind.pos.util.model.PrintMessage;
 import org.jumpmind.pos.util.startup.DeviceStartupTaskConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -113,9 +109,6 @@ public class StateManager implements IStateManager {
 
     @Autowired
     StateLifecycle stateLifecycle;
-
-    @Autowired
-    LocaleMessageFactory localeMessageFactory;
 
     @Autowired
     ActionHandlerHelper helper;
@@ -1261,11 +1254,7 @@ public class StateManager implements IStateManager {
             updatedProperties.put("appId", applicationState.getAppId());
             registerPersonalizationProperties(updatedProperties);
         }
-        if(StringUtils.isNotEmpty(localeMessageFactory.getMessage().getLocale())) {
-            Map<String,String> updatedProperties = new HashMap<>(properties);
-            updatedProperties.put("locale", localeMessageFactory.getMessage().getLocale());
-            registerPersonalizationProperties(updatedProperties);
-        }
+
         List<String> additionalTags = applicationState.getScopeValue("additionalTagsForConfiguration");
 
         try {
@@ -1279,10 +1268,6 @@ public class StateManager implements IStateManager {
             ClientConfigChangedMessage versionConfiguration = new ClientConfigChangedMessage("versions");
             versionConfiguration.put("versions", Versions.getVersions());
             messageService.sendMessage(deviceId, versionConfiguration);
-
-            // Send supported locales
-            LocaleChangedMessage localeMessage = localeMessageFactory.getMessage();
-            messageService.sendMessage(deviceId, localeMessage);
 
         } catch (NoSuchBeanDefinitionException e) {
             log.info("An {} is not configured. Will not be sending client configuration to the client",

@@ -46,9 +46,6 @@ public class DeviceModel extends AbstractModel implements ITaggedModel, IDeviceA
     @ColumnDef
     private String parentDeviceId;
 
-    @ColumnDef(size = "10", description = "The locale under which this Device currently operates")
-    String locale;
-
     @ColumnDef(description = "The timezone offset under which this Device currently operates")
     @Builder.Default
     String timezoneOffset = AppUtils.getTimezoneOffset();

@@ -6,16 +6,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.jumpmind.pos.core.flow.FlowException;
-import org.jumpmind.pos.core.flow.IStateManager;
-import org.jumpmind.pos.core.flow.ScopeType;
-import org.jumpmind.pos.core.flow.StateManagerContainer;
+import lombok.extern.slf4j.Slf4j;
+import org.jumpmind.pos.core.flow.*;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class DeviceScope implements Scope {
     
     private ConfigurableListableBeanFactory factory;
@@ -31,10 +30,10 @@ public class DeviceScope implements Scope {
     
     @Override
     public Object get(String name, ObjectFactory<?> objectFactory) {
-        
         IStateManager stateManager = getStateManager();
-        
-        if (!stateManager.getApplicationState().getScope().getDeviceScope().containsKey(name)) {
+        Map<String, ScopeValue> deviceScope = stateManager.getApplicationState().getScope().getDeviceScope();
+        if (!deviceScope.containsKey(name) ||
+                deviceScope.get(name).getValue() == null) {
             deviceScopedBeanNames.add(name);
             Object bean = objectFactory.getObject();
             stateManager.getApplicationState().getScope().setScopeValue(ScopeType.Device, name, bean);
