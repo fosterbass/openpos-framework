@@ -1,6 +1,7 @@
 package org.jumpmind.pos.core.service;
 
 import jpos.events.DataEvent;
+import lombok.extern.slf4j.Slf4j;
 import org.jumpmind.pos.core.flow.IStateManager;
 import org.jumpmind.pos.core.flow.IStateManagerContainer;
 import org.jumpmind.pos.core.flow.ScopeValue;
@@ -32,11 +33,10 @@ import java.io.IOException;
 import java.util.*;
 
 @Component
+@Slf4j
 public class DevToolsActionListener implements IActionListener {
 
     private static final String SAVE_PATH = "./savepoints";
-
-    final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     IStateManagerContainer stateManagerFactory;
@@ -141,7 +141,7 @@ public class DevToolsActionListener implements IActionListener {
         try {
             return AudioLicenseUtil.getLicenses();
         } catch (IOException e) {
-            logger.warn("Unable to load audio licenses", e);
+            log.warn("Unable to load audio licenses", e);
         }
 
         return null;
@@ -173,20 +173,17 @@ public class DevToolsActionListener implements IActionListener {
         }
         if (deviceModel == null) {
             deviceModel = DeviceModel.builder().
-                    deviceId(simulatorDeviceId).
-                    appId(simAppId).
-                    parentDeviceId(deviceId).
-                    build();
-            devicesRepository.saveDevice(deviceModel);
+                    deviceId(simulatorDeviceId).build();
+        }
+
+        deviceModel.setAppId(simAppId);
+        deviceModel.setParentDeviceId(deviceId);
+        devicesRepository.saveDevice(deviceModel);
+        try {
+            authToken = devicesRepository.getDeviceAuth(simulatorDeviceId);
+        } catch (DeviceNotFoundException ex) {
             authToken = UUID.randomUUID().toString();
             devicesRepository.saveDeviceAuth(simulatorDeviceId, authToken);
-        } else {
-            try {
-                authToken = devicesRepository.getDeviceAuth(simulatorDeviceId);
-            } catch (DeviceNotFoundException ex) {
-                authToken = UUID.randomUUID().toString();
-                devicesRepository.saveDeviceAuth(simulatorDeviceId, authToken);
-            }
         }
         simulatorMap.put("simAuthToken", authToken);
         simulatorMap.put("simPort", simPort);
@@ -282,12 +279,12 @@ public class DevToolsActionListener implements IActionListener {
                     saveFiles.add(child.getName().replaceAll(".json", ""));
                     i++;
                 }
-                logger.info("Loaded " + i + " save files from " + dir);
+                log.info("Loaded " + i + " save files from " + dir);
             } else {
-                logger.warn("No save files found in save directory.");
+                log.warn("No save files found in save directory.");
             }
         } catch (Exception ex) {
-            logger.warn("Cannot load save files from " + SAVE_PATH);
+            log.warn("Cannot load save files from " + SAVE_PATH);
         }
 
         message.put("saveFiles", saveFiles);
@@ -303,7 +300,7 @@ public class DevToolsActionListener implements IActionListener {
             scopes.put("ConfigScope", buildConfigScope(sm.getApplicationState().getCurrentContext().getFlowConfig().getConfigScope()));
             message.put("scopes", scopes);
         } catch (Exception ex) {
-            logger.warn("Error loading in Developer Tool application scopes. Deleting local storage may fix this.", ex);
+            log.warn("Error loading in Developer Tool application scopes. Deleting local storage may fix this.", ex);
         }
     }
 
