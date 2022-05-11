@@ -32,4 +32,5 @@ export interface ItemDetailInterface extends IAbstractScreen {
 
     detailSections: string[];
     eligibleMessage: string;
+    contentURL: string;
 }

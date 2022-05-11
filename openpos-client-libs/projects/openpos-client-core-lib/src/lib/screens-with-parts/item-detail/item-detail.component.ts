@@ -11,6 +11,8 @@ import { BasicProductOptionPartComponent } from './option-components/basic-produ
 import { SwatchProductOptionPartComponent } from './option-components/swatch-product-option-part/swatch-product-option-part.component';
 import { ProductOptionInterface } from './product-option.interface';
 import { OPTION_NAME } from './item-detail-option';
+import { DomSanitizer, SafeHtml, SafeResourceUrl } from '@angular/platform-browser';
+
 
 @ScreenComponent({
     name: 'ItemDetail'
@@ -30,7 +32,12 @@ export class ItemDetailComponent extends PosScreenDirective<ItemDetailInterface>
     buddyStoresOnline$: Observable<boolean>;
     inventoryMessage$: Observable<string>;
 
-    constructor(@Optional() private injector: Injector, media: OpenposMediaService, private dataMessageService: UIDataMessageService) {
+    safeContentURL: SafeResourceUrl;
+
+    constructor(@Optional() private injector: Injector, 
+        private domSanitizer: DomSanitizer,
+        media: OpenposMediaService, 
+        private dataMessageService: UIDataMessageService) {
         super(injector);
         this.isMobile = media.observe(new Map([
             [MediaBreakpoints.MOBILE_PORTRAIT, true],
@@ -70,6 +77,10 @@ export class ItemDetailComponent extends PosScreenDirective<ItemDetailInterface>
         this.inventoryMessage$ = this.dataMessageService.getData$(this.screen.inventoryMessageProviderKey)
             .pipe(map(value => value != null ? value[0] : null));
         this.screen.imageUrls = [].concat(this.screen.imageUrls);
+
+        console.log(screen['contentURL']);
+
+        this.safeContentURL = this.domSanitizer.bypassSecurityTrustResourceUrl(this.screen.contentURL);
     }
 
     getComponentFromOptionType(productOption: ProductOptionInterface) {

@@ -110,7 +110,7 @@ export class HomeComponent extends PosScreenDirective<HomeInterface> {
   colors = ['#282560', '#0657A1','#1C9DD5', '#37AC48', '#FAD225', '#f9a842', '#E83253'];
 
   public getButtonColor(index: number) : string {
-    return "#005891";
+    return "#2c3038";
 //     return this.colors[index % this.colors.length];
   }
 }

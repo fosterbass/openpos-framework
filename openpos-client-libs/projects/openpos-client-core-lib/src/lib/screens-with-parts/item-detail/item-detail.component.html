@@ -1,115 +1,117 @@
 <app-bacon-strip>
-<section class="item-details">
-    <mat-card responsive-class class="padding-none page-gutter">
-        <div responsive-class class="padding-none page-gutter page-element margin-bottom" [ngClass]="{'item-card': !(isMobile | async)}">
-            <h1 class="name" responsive-class>{{screen.itemName}}</h1>
-            <app-carousel class="carousel" [imgUrls]="screen.imageUrls" [altImageUrl]="screen.alternateImageUrl" altImageText="Image Not Found">
-            </app-carousel>
+    <div class="pdp-outer">
+        <div class="pdp-ecomm-fuse-container">
+        <iframe [src]="safeContentURL" class="pdp-ecomm-fuse-frame">
 
-            <div class="inv-cost">
-                <app-currency-text class="item-price" [amountText]="screen.price"></app-currency-text>
-                <span *ngIf="inventoryMessage$">{{inventoryMessage$ | async}}</span>
-            </div>
-
-            <ul class="properties">
-                <li *ngFor="let prop of screen.itemProperties">
-                    <app-display-property [property]="prop" alignmentType="jagged"></app-display-property>
-                </li>
-            </ul>
-
-            <div class="options">
-                <ng-container *ngFor="let component of optionComponents | keyvalue">
-                    <ng-container *ngComponentOutlet="component.value; injector: component.key"></ng-container>
-                </ng-container>
-            </div>
-
-            <div class="summary-instructions">
-                <hr>
-                <app-instructions class="option-instructions" *ngIf="screen.itemOptionInstructions" [instructions]="screen.itemOptionInstructions"></app-instructions>
-                <div responsive-class class="summary" *ngIf="screen.summary">
-                    <div class="detail-section" *ngFor="let section of screen.detailSections" [innerHtml]="section | markdownFormatter"></div>
-                </div>
-            </div>
-
-            <div class="actions-and-notify">
-                <div class="notify">
-                    <h1>{{screen.eligibleMessage}}</h1>
-                </div>
-                <ng-container *ngFor="let button of screen.actions; let first = first;">
-                    <app-secondary-button *ngIf="!first" [ngClass]="button.additionalStyle" (buttonClick)="doAction(button)">
-                        <app-icon *ngIf="button.icon" [iconName]="button.icon"></app-icon>
-                        <span>{{button.title}}</span>
-                    </app-secondary-button>
-                </ng-container>
-                <ng-container *ngFor="let button of screen.actions; let first = first;">
-                    <app-primary-button *ngIf="first" [ngClass]="button.additionalStyle" [disabled]="!button.enabled" (buttonClick)="doAction(button)">
-                        <app-icon *ngIf="button.icon" [iconName]="button.icon"></app-icon>
-                        <span>{{button.title}}</span>
-                    </app-primary-button>
-                </ng-container>
-            </div>
+        </iframe>
         </div>
+        <section class="item-details">
+            <mat-card responsive-class class="padding-none page-gutter">
+                <div responsive-class class="padding-none page-gutter page-element margin-bottom" [ngClass]="{'item-card': !(isMobile | async)}">
+                    
+        
+                    <div class="inv-cost">
+                        <app-currency-text class="item-price" [amountText]="screen.price"></app-currency-text>
+                        <span *ngIf="inventoryMessage$">{{inventoryMessage$ | async}}</span>
+                    </div>
+        
+                    <ul class="properties">
+                        <li *ngFor="let prop of screen.itemProperties">
+                            <app-display-property [property]="prop" alignmentType="jagged"></app-display-property>
+                        </li>
+                    </ul>
+        
+                    <div class="options">
+                        <ng-container *ngFor="let component of optionComponents | keyvalue">
+                            <ng-container *ngComponentOutlet="component.value; injector: component.key"></ng-container>
+                        </ng-container>
+                    </div>
 
-    </mat-card>
-
-    <div class="inv-prom-container" responsive-class>
-        <mat-card *ngIf="screen.buddyStoreProviderKey && buddyStores$" responsive-class class="buddy-store page-gutter padding-none">
-            <div responsive-class class="page-gutter page-element margin-bottom">
-                <h3 responsive-class class="icon-heading">
-                    {{screen.buddyStoreTitle}}
-                    <app-icon *ngIf="screen.buddyStoreIcon" [iconName]="screen.buddyStoreIcon"></app-icon>
-                </h3>
-
-                <p *ngIf="!(buddyStoresOnline$ | async) || (buddyStores$ | async).length == 0; else buddyStoreTable" class="muted-color">
-                    {{(buddyStoresOnline$ | async) ?  screen.noBuddyStoresMessage : screen.buddyStoreOfflineTitle}}
-                </p>
-
-                <ng-template #buddyStoreTable>
-                    <table *ngIf="buddyStoresOnline$ | async" class="item-details-table buddy-stores" aria-label="Availability at nearby stores">                    
-                        <tbody>
-                            <tr class="table-header">
-                                <th scope="col">Store Name</th>
-                                <th scope="col">Inventory Count</th>
-                            </tr>
-                            <tr *ngFor="let store of buddyStores$ | async">
-                                <td>{{store.storeName}}</td>
-                                <td class="buddy-store-inventory-count">{{store.storeCount}}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </ng-template>
+                    <div class="name" responsive-class>{{screen.itemName}}</div>
+        
+                    <div class="actions-and-notify">
+                        <div class="notify">
+                            <h1>{{screen.eligibleMessage}}</h1>
+                        </div>
+                        <ng-container *ngFor="let button of screen.actions; let first = first;">
+                            <app-secondary-button *ngIf="!first" [ngClass]="button.additionalStyle" (buttonClick)="doAction(button)">
+                                <app-icon *ngIf="button.icon" [iconName]="button.icon"></app-icon>
+                                <span>{{button.title}}</span>
+                            </app-secondary-button>
+                        </ng-container>
+                        <ng-container *ngFor="let button of screen.actions; let first = first;">
+                            <app-primary-button *ngIf="first" [ngClass]="button.additionalStyle" [disabled]="!button.enabled" (buttonClick)="doAction(button)">
+                                <app-icon *ngIf="button.icon" [iconName]="button.icon"></app-icon>
+                                <span>{{button.title}}</span>
+                            </app-primary-button>
+                        </ng-container>
+                    </div>
+                </div>
+        
+            </mat-card>
+        
+            <div class="inv-prom-container" responsive-class>
+                <mat-card *ngIf="screen.buddyStoreProviderKey && buddyStores$" responsive-class class="buddy-store page-gutter padding-none">
+                    <div responsive-class class="page-gutter page-element margin-bottom">
+                        <h3 responsive-class class="icon-heading">
+                            {{screen.buddyStoreTitle}}
+                            <app-icon *ngIf="screen.buddyStoreIcon" [iconName]="screen.buddyStoreIcon"></app-icon>
+                        </h3>
+        
+                        <p *ngIf="!(buddyStoresOnline$ | async) || (buddyStores$ | async).length == 0; else buddyStoreTable" class="muted-color">
+                            {{(buddyStoresOnline$ | async) ?  screen.noBuddyStoresMessage : screen.buddyStoreOfflineTitle}}
+                        </p>
+        
+                        <ng-template #buddyStoreTable>
+                            <table *ngIf="buddyStoresOnline$ | async" class="item-details-table buddy-stores" aria-label="Availability at nearby stores">                    
+                                <tbody>
+                                    <tr class="table-header">
+                                        <th scope="col">Store Name</th>
+                                        <th scope="col">Inventory Count</th>
+                                    </tr>
+                                    <tr *ngFor="let store of buddyStores$ | async">
+                                        <td>{{store.storeName}}</td>
+                                        <td class="buddy-store-inventory-count">{{store.storeCount}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </ng-template>
+                    </div>
+                </mat-card>
+        
+                <mat-card responsive-class *ngIf="screen.promotions" class="page-gutter padding-none" [ngClass]="{'promotions': !(isMobile | async)}">
+                    <div responsive-class class="page-gutter page-element margin-bottom">
+                        <h3 responsive-class class="icon-heading">
+                            {{screen.promotions && screen.promotions.length > 0 ? screen.itemPromotionsTitle : screen.itemNoPromotionsTitle}}
+                            <app-icon *ngIf="screen.itemPromotionsIcon" [iconName]="screen.itemPromotionsIcon"></app-icon>
+                        </h3>
+        
+                        <app-instructions *ngIf="screen.promotions && screen.promotions.length > 1"  [instructions]="screen.promotionStackingDisclaimer"
+                                        [instructionsSize]="'text-md'"></app-instructions>
+        
+                        <table class="item-details-table promotions" aria-label="Applicable promotions">                    
+                            <tbody>
+                                <tr>
+                                    <th class="promotion-icon" scope="col"></th>
+                                    <th class="promotion-text" scope="col">{{screen.itemValueDisplay.label}}</th>
+                                    <th class="promotion-text" scope="col">{{screen.itemValueDisplay.value}}</th>
+                                </tr>
+                                <tr *ngFor="let promo of screen.promotions">
+                                    <td class="promotion-icon">
+                                        <app-icon [iconName]="promo.icon" color="primary" class="promotion-icon" iconClass="md"></app-icon>
+                                    </td>
+                                    <td class="promotion-text">{{promo.promotionName}}</td>
+                                    <td class="promotion-text">{{promo.promotionPrice}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </mat-card>
             </div>
-        </mat-card>
+            <app-scan-part></app-scan-part>
+        </section>
+        
 
-        <mat-card responsive-class *ngIf="screen.promotions" class="page-gutter padding-none" [ngClass]="{'promotions': !(isMobile | async)}">
-            <div responsive-class class="page-gutter page-element margin-bottom">
-                <h3 responsive-class class="icon-heading">
-                    {{screen.promotions && screen.promotions.length > 0 ? screen.itemPromotionsTitle : screen.itemNoPromotionsTitle}}
-                    <app-icon *ngIf="screen.itemPromotionsIcon" [iconName]="screen.itemPromotionsIcon"></app-icon>
-                </h3>
-
-                <app-instructions *ngIf="screen.promotions && screen.promotions.length > 1"  [instructions]="screen.promotionStackingDisclaimer"
-                                [instructionsSize]="'text-md'"></app-instructions>
-
-                <table class="item-details-table promotions" aria-label="Applicable promotions">                    
-                    <tbody>
-                        <tr>
-                            <th class="promotion-icon" scope="col"></th>
-                            <th scope="col">{{screen.itemValueDisplay.label}}</th>
-                            <th scope="col">{{screen.itemValueDisplay.value}}</th>
-                        </tr>
-                        <tr *ngFor="let promo of screen.promotions">
-                            <td class="promotion-icon">
-                                <app-icon [iconName]="promo.icon" color="primary" class="promotion-icon" iconClass="md"></app-icon>
-                            </td>
-                            <td>{{promo.promotionName}}</td>
-                            <td>{{promo.promotionPrice}}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </mat-card>
     </div>
-    <app-scan-part></app-scan-part>
-</section>
+
 </app-bacon-strip>
