@@ -1,0 +1,23 @@
+@mixin bread-crumbs-theme($theme) {
+    $border: map-get(map-get($theme, foreground), border);
+    $background: map-get(map-get($theme, background), card);
+
+    .bread-crumb-button {
+        background-color: $background;
+        border-color: $border;
+        border-style: solid;
+    }
+
+    .bread-crumb-button.right-button::after {
+        border-color: transparent $background;
+    }
+    .bread-crumb-button.right-button::before {
+        border-color: transparent $border;
+    }
+    .bread-crumb-button::after {
+        border-color: $background transparent;
+    }
+    .bread-crumb-button::before {
+        border-color: $border transparent;
+    }
+}

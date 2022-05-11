@@ -1,0 +1,6 @@
+<span *ngFor="let crumb of crumbs; first as isFirst; last as isLast;">
+    <button id="breadCrumb_{{crumb.action}}" class="bread-crumb-button" [ngClass]="{ 'left-button': isFirst, 'right-button': isLast }"
+        (click)="doAction(crumb)">
+        {{crumb.title}}
+    </button>
+</span>
