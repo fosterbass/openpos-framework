@@ -40,8 +40,7 @@ public class KeyMappingScreenPropertyStrategy implements IMessagePropertyStrateg
                 String keyMapping = keyMappingService.getKeyMapping(screen, item.getAction(), screenContext);
                 if (!StringUtils.isEmpty(keyMapping)) {
                     item.setKeybind(keyMapping);
-                    String keyMappingDisplayName = keyMappingService.getDisplayName(screen.getId(), keyMapping,
-                            clientContext.get(ClientContext.DISPLAY_LOCALE));
+                    String keyMappingDisplayName = keyMappingService.getDisplayName(clientContext.get(ClientContext.DISPLAY_LOCALE), screen.getId(), keyMapping);
                     item.setKeybindDisplayName(keyMappingDisplayName);
                 }
             }
