@@ -23,7 +23,7 @@ public class DownloadEndpoint {
     @Autowired
     SoftwareProvider softwareProvider;
 
-    void download(
+    public void download(
             String packageName,
             String version,
             HttpServletRequest request,

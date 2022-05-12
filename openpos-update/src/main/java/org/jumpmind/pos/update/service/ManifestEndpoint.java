@@ -41,7 +41,7 @@ public class ManifestEndpoint {
     @Autowired
     SoftwareProvider softwareProvider;
 
-    void manifest(String businessUnitId, String packageName, HttpServletResponse response) throws IOException {
+    public void manifest(String businessUnitId, String packageName, HttpServletResponse response) throws IOException {
         Version version = getExpectedVersion(packageName, businessUnitId);
 
         if (version == null) {
@@ -104,7 +104,7 @@ public class ManifestEndpoint {
 
     private Configuration buildConfiguration(String packageName, Version version, Path fromZip) throws IOException {
         Configuration.Builder configBuilder = Configuration.builder()
-                .baseUri(installUrl + "/update/download/" + packageName + "/" + version.getVersionString() +"/")
+                .baseUri(installUrl + "/update/download/" + packageName + "/" + version.getVersionString() + "/")
                 .basePath(installBasePath)
 
                 // todo: this only works for commerce apps

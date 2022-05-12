@@ -44,11 +44,13 @@ public abstract class WrapperService {
 
     private static final String APPLICATION_NAME = "application";
 
-    public static WrapperService getInstance() {
-        if (SystemUtils.IS_OS_WINDOWS) {
-            instance = new WindowsService();
-        } else {
-            instance = new UnixService();
+    public synchronized static WrapperService getInstance() {
+        if (instance == null) {
+            if (SystemUtils.IS_OS_WINDOWS) {
+                instance = new WindowsService();
+            } else {
+                instance = new UnixService();
+            }
         }
 
         return instance;
@@ -57,6 +59,8 @@ public abstract class WrapperService {
     public void loadConfig(String applHomeDir, String configFile, String jarFile) throws IOException {
         config = new WrapperConfig(applHomeDir, configFile, jarFile);
         setWorkingDirectory(config.getWorkingDirectory().getAbsolutePath());
+
+        initLogging();
     }
 
     public void start() {
@@ -112,6 +116,9 @@ public abstract class WrapperService {
     }
 
     public void init() {
+        initLogging();
+
+        logger.info("initializing from service entrypoint");
         tryAutoUpdate();
 
         execJava(false);
@@ -124,7 +131,7 @@ public abstract class WrapperService {
         execJava(true);
     }
 
-    protected void execJava(boolean isConsole) {
+    protected void initLogging() {
         try {
             LogManager.getLogManager().reset();
 
@@ -146,7 +153,10 @@ public abstract class WrapperService {
         } catch (IOException e) {
             throw new WrapperException(Constants.RC_FAIL_WRITE_LOG_FILE, 0, "Cannot open log file " + config.getLogFile(), e);
         }
+    }
 
+
+    protected void execJava(boolean isConsole) {
         try {
             int pid = getCurrentPid();
             writePidToFile(pid, config.getWrapperPidFile());
@@ -350,7 +360,7 @@ public abstract class WrapperService {
     }
 
     private void tryUpdateInstallCleanup() {
-        logger.info("about tro try cleanup");
+        logger.info("about to try cleanup");
 
         final File lockFile = config.getInstallLockFile();
         if (lockFile.exists()) {
@@ -544,8 +554,6 @@ public abstract class WrapperService {
     }
 
     private void doUpdateInstall(File updateFile) {
-        logger.info("installing pending update...");
-
         tryUpdateInstallCleanup();
 
         final File jarFile = new File(WrapperService.class.getProtectionDomain()
@@ -633,7 +641,7 @@ public abstract class WrapperService {
             return;
         }
 
-        final String endpoint = StringUtils.stripEnd(server, "/") + "/update/manifest/" +  packageName + "/" + businessUnitId;
+        final String endpoint = StringUtils.stripEnd(server, "/") + "/update/manifest/" +  businessUnitId + "/" + packageName;
         final URL url;
 
         try {
