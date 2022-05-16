@@ -471,6 +471,7 @@ public class DBSession {
         if (queryTemplates.containsQueryTemplate(databaseSchema.getDeviceMode(), query.getName())) {
             queryTemplate = queryTemplates.getQueryTemplate(databaseSchema.getDeviceMode(), query.getName()).copy();
         } else {
+            log.warn("Query with name {} not found.",query.getName());
             queryTemplate.setName(query.getName());
         }
 
