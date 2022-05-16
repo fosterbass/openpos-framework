@@ -124,6 +124,7 @@ import { SaleTotalPanelComponent } from './screen-parts/sale-total-panel/sale-to
 import { ResponsiveClassDirective } from './directives/responsive-class.directive';
 import { BaconDrawerComponent } from './screen-parts/bacon-strip/bacon-drawer/bacon-drawer.component';
 import { CarouselComponent } from './components/carousel/carousel.component';
+import { ImageCarouselComponent } from './components/image-carousel/image-carousel.component';
 import { MobileTotalsPartComponent } from './screen-parts/mobile-totals-part/mobile-totals-part.component';
 import { MobileLoyaltyPartComponent } from './screen-parts/mobile-loyalty-part/mobile-loyalty-part.component';
 import { MobileEmployeePartComponent } from './screen-parts/mobile-employee-part/mobile-employee-part.component';
@@ -303,6 +304,7 @@ const components = [
     RoundedInputComponent,
     MobileFooterComponent,
     CarouselComponent,
+    ImageCarouselComponent,
     MobileItemComponent,
     InfiniteScrollComponent,
     ImageComponent,

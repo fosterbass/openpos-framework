@@ -1,0 +1,3 @@
+@mixin image-carousel-theme($theme){
+    $app-primary: mat-color(map-get($theme, primary));
+}

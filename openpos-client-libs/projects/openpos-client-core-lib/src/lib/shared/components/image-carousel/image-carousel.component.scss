@@ -1,0 +1,27 @@
+:host {
+    display: flex;
+    flex-direction: row;
+    max-height: 300px;
+}
+
+.thumbnails {
+    display: flex;
+    flex-direction: column;
+
+    overflow-y: auto;
+
+    img {
+        cursor: pointer;
+
+        height: auto;
+        width: 64px;
+    }
+}
+
+img.main {
+    object-fit: contain;
+    object-position: top;
+
+    max-width: 300px;
+    max-height: 300px;
+}

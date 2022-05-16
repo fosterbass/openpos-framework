@@ -1,0 +1,9 @@
+<div class="thumbnails" *ngIf="displayImageUrls.length > 1">
+    <img *ngFor="let thumbnailUrl of displayImageUrls; let i = index"
+        (error)="onThumbnailError(i)"
+        (click)="selectImage(i)"
+        [src]="thumbnailUrl | imageUrl"
+        [alt]="altImageText">
+</div>
+
+<img class="main" [src]="(selectedImageUrl || altImageUrl) | imageUrl" [alt]="altImageText" (error)="onSelectedImageError()">

@@ -1,3 +1,7 @@
-@mixin carousel-theme($theme){
+@mixin carousel-theme($theme) {
     $app-primary: mat-color(map-get($theme, primary));
+
+    .dot.active {
+        background-color: $app-primary;
+    }
 }
