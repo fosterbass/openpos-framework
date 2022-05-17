@@ -1,5 +1,7 @@
 @import "../../../styles/mixins/typography";
 .program-plan-details{
+    display: inline-block;
+
     .plans {
       display: flex;
       justify-content: center;
