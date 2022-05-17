@@ -1,3 +1,5 @@
+@import "../../../styles/mixins/typography";
+
 :host:first-of-type {
   mat-button-toggle-group {
     margin-bottom:15px;  
@@ -23,6 +25,10 @@ textarea {
 
 :host::ng-deep .mat-form-field{
   font-size: 18px;
+}
+
+.mat-hint {
+  @extend %text-xs;
 }
 
 .poptart {
