@@ -1,5 +1,10 @@
 @import "../../../styles/mixins/typography";
 
+$loyalty-signup-icon: 72px;
+$loyalty-signup-icon-tablet: 56px;
+$loyalty-signup-column-gap: 8px;
+$linked-customer-column-gap: 5px;
+$sale-total-icon-size: 36px;
 
 :host {
     display: grid;

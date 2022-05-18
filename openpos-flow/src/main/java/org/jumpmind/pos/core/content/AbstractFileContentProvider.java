@@ -49,18 +49,8 @@ public abstract class AbstractFileContentProvider implements IContentProvider {
 
     static Map<String, ContentIndex> deviceContent = new HashMap<>();
 
-    @Autowired
-    ClientLocaleService clientLocaleService;
-
 //    @Cacheable(value = CACHE_NAME, key = "{#deviceId, #key, #baseContentPath}")
     public String getMostSpecificContent(String deviceId, String key, String baseContentPath) {
-        personalizationProperties = new HashMap<>(personalizationProperties);
-        if (clientLocaleService.getDisplayLocale() != null) {
-            personalizationProperties.put("locale", clientLocaleService.getDisplayLocale().toString());
-        } else if (clientLocaleService.getLocale() != null) {
-            personalizationProperties.put("locale", clientLocaleService.getLocale().toString());
-        }
-
 
         List<String> possibleContentDirs = getAllPossibleContentDirPermutations(key);
         possibleContentDirs.addAll(0, buildI18nLocations(possibleContentDirs));
