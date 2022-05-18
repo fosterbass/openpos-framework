@@ -1,4 +1,4 @@
-<h3>{{screenData.optionName}}</h3>
+<h3 class="option-name">{{screenData.optionName}}</h3>
 <div *ngIf="useImageSwatch; else imageSwatchBackup">
     <div class="swatch-container">
         <div class="swatch" *ngFor="let swatch of screenData.swatches" 
@@ -6,7 +6,7 @@
              [class.disabled]="swatch.disabled"
              [class.selected]="swatch.id==screenData.selectedOption">
             <div class="swatch-wrapper">
-                <img class="swatch-img"
+                <img class="swatch-img" alt="swatch image"
                      (error)="onImageLoadFailed()"
                      [src]="swatch.imageUrl">
             </div>

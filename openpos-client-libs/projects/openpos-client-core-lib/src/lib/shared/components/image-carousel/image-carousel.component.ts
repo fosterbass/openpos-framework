@@ -30,6 +30,9 @@ export class ImageCarouselComponent {
     @Input()
     altImageText?: string;
 
+    @Input()
+    verticalThumbprints = true;
+
     displayImageUrls: string[];
     selectedImageUrl?: string;
 

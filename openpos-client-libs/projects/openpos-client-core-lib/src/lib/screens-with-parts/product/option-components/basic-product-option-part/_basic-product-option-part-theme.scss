@@ -1,0 +1,10 @@
+@mixin basic-product-option-part-theme($theme) {
+    $disabled: map-get(map-get($theme, foreground), disabled);
+
+    app-basic-product-options-part {
+        .option-name {
+            color: $disabled;
+        }
+    }
+
+}

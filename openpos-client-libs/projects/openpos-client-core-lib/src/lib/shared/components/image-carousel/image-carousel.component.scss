@@ -1,22 +1,36 @@
-:host {
+@import "../../../styles/variables/spacing";
+
+.vertical-thumbprint-container {
     display: flex;
     flex-direction: row;
     max-height: 300px;
 }
 
-.thumbnails {
+.horizontal-thumbprint-container {
     display: flex;
     flex-direction: column;
+    row-gap: $med-space;
+}
 
+.thumbnails {
+    display: flex;
     overflow-y: auto;
 
     img {
         cursor: pointer;
+        height: 64px;
+    }
 
+}
+
+.vertical {
+    flex-direction: column;
+    img {
         height: auto;
         width: 64px;
     }
 }
+
 
 img.main {
     object-fit: contain;

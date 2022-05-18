@@ -1,9 +1,24 @@
-<div class="thumbnails" *ngIf="displayImageUrls.length > 1">
-    <img *ngFor="let thumbnailUrl of displayImageUrls; let i = index"
-        (error)="onThumbnailError(i)"
-        (click)="selectImage(i)"
-        [src]="thumbnailUrl | imageUrl"
-        [alt]="altImageText">
+<div *ngIf="verticalThumbprints" class="vertical-thumbprint-container">
+    <div class="thumbnails vertical" *ngIf="displayImageUrls.length > 1">
+        <img *ngFor="let thumbnailUrl of displayImageUrls; let i = index"
+            (error)="onThumbnailError(i)"
+            (click)="selectImage(i)"
+            [src]="thumbnailUrl | imageUrl"
+            [alt]="altImageText">
+    </div>
+    <img class="main" [src]="(selectedImageUrl || altImageUrl) | imageUrl" [alt]="altImageText" (error)="onSelectedImageError()">
 </div>
 
-<img class="main" [src]="(selectedImageUrl || altImageUrl) | imageUrl" [alt]="altImageText" (error)="onSelectedImageError()">
+<div *ngIf="!verticalThumbprints" class="horizontal-thumbprint-container">
+    <img class="main" [src]="(selectedImageUrl || altImageUrl) | imageUrl" [alt]="altImageText" (error)="onSelectedImageError()">
+    <app-carousel class="thumbnails" *ngIf="displayImageUrls.length > 1"
+        [navigationArrowsSize]="'sm'" [itemsPerSlide]="3" [showIndicators]="false">
+        <ng-template #carouselItem *ngFor="let thumbnailUrl of displayImageUrls; let i = index">
+            <img
+            (error)="onThumbnailError(i)"
+            (click)="selectImage(i)"
+            [src]="thumbnailUrl | imageUrl"
+            [alt]="altImageText">
+        </ng-template>
+    </app-carousel>
+</div>

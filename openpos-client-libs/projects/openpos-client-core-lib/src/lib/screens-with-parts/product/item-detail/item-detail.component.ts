@@ -1,16 +1,17 @@
 import { map } from 'rxjs/operators';
-import { UIDataMessageService } from '../../core/ui-data-message/ui-data-message.service';
-import { BuddyStoreInterface } from './buddy-store.interface';
+import { UIDataMessageService } from '../../../core/ui-data-message/ui-data-message.service';
+import { BuddyStoreInterface } from '../buddy-store.interface';
 import { ItemDetailInterface } from './item-detail.interface';
-import { ScreenComponent } from '../../shared/decorators/screen-component.decorator';
+import { ScreenComponent } from '../../../shared/decorators/screen-component.decorator';
 import { Component, Injector, Optional } from '@angular/core';
-import { PosScreenDirective } from '../pos-screen/pos-screen.component';
-import { MediaBreakpoints, OpenposMediaService } from '../../core/media/openpos-media.service';
+import { PosScreenDirective } from '../../pos-screen/pos-screen.component';
+import { MediaBreakpoints, OpenposMediaService } from '../../../core/media/openpos-media.service';
 import { Observable } from 'rxjs';
-import { BasicProductOptionPartComponent } from './option-components/basic-product-option-part/basic-product-option-part';
-import { SwatchProductOptionPartComponent } from './option-components/swatch-product-option-part/swatch-product-option-part.component';
-import { ProductOptionInterface } from './product-option.interface';
-import { OPTION_NAME } from './item-detail-option';
+import { BasicProductOptionPartComponent } from '../option-components/basic-product-option-part/basic-product-option-part';
+import { SwatchProductOptionPartComponent } from '../option-components/swatch-product-option-part/swatch-product-option-part.component';
+import { ProductOptionInterface } from '../product-option.interface';
+import { OPTION_NAME } from '../item-detail-option';
+import { IInventoryDetail } from '../inventory-detail.interface';
 
 @ScreenComponent({
     name: 'ItemDetail'
@@ -28,7 +29,7 @@ export class ItemDetailComponent extends PosScreenDirective<ItemDetailInterface>
 
     buddyStores$: Observable<BuddyStoreInterface[]>;
     buddyStoresOnline$: Observable<boolean>;
-    inventoryMessage$: Observable<string>;
+    inventoryMessage$: Observable<IInventoryDetail>;
 
     constructor(@Optional() private injector: Injector, media: OpenposMediaService, private dataMessageService: UIDataMessageService) {
         super(injector);
