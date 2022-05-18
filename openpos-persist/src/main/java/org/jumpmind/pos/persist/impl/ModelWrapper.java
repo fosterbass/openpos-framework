@@ -226,6 +226,9 @@ public class ModelWrapper {
             throw new PersistException("Money field " + fieldName + " cannot be loaded because crossReference= " + getXrefName(fieldName)
             + " does not have a value. Model: " + model);
         }
+        if (modelCurrencyCode.equals("*")) {
+            modelCurrencyCode = "USD"; // ???
+        }
         CurrencyUnit currency = CurrencyUnit.of(modelCurrencyCode);
 
         BigDecimal decimalValue;
@@ -293,7 +296,8 @@ public class ModelWrapper {
                         xRefField.set(model, isoCurrencyCode);
                     } catch(Exception ex) {
                     }
-                } else if (!StringUtils.equals(isoCurrencyCode, modelCurrencyCode)) {
+                } else if (!StringUtils.equals(isoCurrencyCode, modelCurrencyCode) && ! modelCurrencyCode.equals("*")) {
+                    if (modelCurrencyCode.equals("*"))
                      if (decimal.compareTo(BigDecimal.ZERO) == 0) { // zero is zero in any currency.
                         isoCurrencyCode = modelCurrencyCode;
                      } else {
