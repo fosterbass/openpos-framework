@@ -21,8 +21,10 @@
 
         .customer-display-sale-items-outer {
             padding-right: 16px;
-            display: grid;
+            // display: grid;
             overflow-y: auto;
+            min-height: 675px;
+            max-height: 675px;
             
             .customer-display-list-background {
                 overflow-y: auto;
@@ -48,4 +50,66 @@
             overflow-y: auto;
         }
     }
+}
+
+.recommendations-conainer {
+    height: 300px;
+    position: fixed;
+    bottom: 0;
+    width: 770px;
+    margin-bottom: 44px;
+}
+
+.recommendation-item {
+    text-align: center;
+    // min-width: 180px;
+    padding: 12px;
+}
+
+.item-image {
+    height: 160px;
+}
+
+.recommendations-title {
+    color: white;
+    font-weight: 600;
+    font-size: 1.5em;
+    padding-top: 16px;
+    padding-left: 16px;
+
+}
+
+.recommendations-outer-rect {
+    // background-image: url("http://localhost:6140/recommendations-demo/recommendation-background.png");
+    background-position: center; 
+    background-repeat: no-repeat;
+    background-color: #A5D5E9;
+    background-size: cover;     
+    border-radius: 8px;
+    padding-bottom: 12px;
+}
+
+.recommendations-inner-rect {
+    display: flex;
+    background-color: white;
+    border-radius: 8px;
+    margin-left: 12px;
+    margin-right: 12px;
+    margin-top: 36px;
+}
+
+.item-title {
+    color: #0256A2;
+    font-size: 0.9em;   
+    padding-bottom: 4px;
+}
+
+.item-details-button {
+    border-radius: 8px;
+    background-color: #E62144;
+    padding: 4px;
+    color: white;
+    max-width: 80px;
+    margin-left: auto;
+    margin-right: auto;    
 }

@@ -2,7 +2,7 @@ import { IFormatter } from './formatter.interface';
 import { DatePipe } from '@angular/common';
 
 export class DateTimeCAFormatter implements IFormatter {
-    static DATETIME_FORMAT = 'dd/MM/yyyy hh:mm:ss a';
+    static DATETIME_FORMAT = 'dd/MM/yyyy HH:mm:ss';
 
     private datePipe: DatePipe;
 

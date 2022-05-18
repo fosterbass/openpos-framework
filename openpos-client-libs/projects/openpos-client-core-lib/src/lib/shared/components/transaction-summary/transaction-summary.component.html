@@ -36,7 +36,7 @@
         <div>
             <div class="summary-field" responsive-class>
                 <span class="summary-field-label"  *ngIf="transactionSummary.labels">{{transactionSummary.labels.transactionDate}}</span>
-                <span class="summary-field-value">{{transactionDate | date:'M/d/yyy h:mm a'}}</span>
+                <span class="summary-field-value">{{transactionDate | date:'d/M/yyy HH:mm'}}</span>
             </div>
             <div class="summary-field" responsive-class>
                 <span class="summary-field-label" *ngIf="transactionSummary.labels">{{transactionSummary.labels.username}}</span>
@@ -85,7 +85,7 @@
     </div>
     <div class="summary-details" responsive-class>
         <div class="summary-trans-properties">
-            <div class="emphasize-detail">{{transactionSummary.transactionDate | date:'M/d/yyy h:mm a'}}</div>
+            <div class="emphasize-detail">{{transactionSummary.transactionDate | date:'M/d/yyy HH:mm'}}</div>
             <div>Customer <span class="emphasize-detail">{{transactionSummary.customerName}}</span></div>
             <div>{{transactionSummary.itemsFormatted}}</div>
             <div>Device <span class="emphasize-detail">{{transactionSummary.deviceId}}</span></div>

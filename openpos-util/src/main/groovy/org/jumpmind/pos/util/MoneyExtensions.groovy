@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component
 @Component
 class MoneyExtensions implements InitializingBean {
 
+    private static String defaultCurrency = System.getProperty("openpos.defaultCurrency", "USD");
+
     @SuppressWarnings('MethodName')
     static Money $(BigDecimal amount, String currencyCode) {
         CurrencyUnit usd = CurrencyUnit.of(currencyCode)

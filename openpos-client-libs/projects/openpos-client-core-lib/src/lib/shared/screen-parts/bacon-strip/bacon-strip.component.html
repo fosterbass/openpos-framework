@@ -1,8 +1,12 @@
-<div class="container mat-elevation-z5" responsive-class [class.container-search-is-expanded]="searchExpanded">
-    <div class="leftside" [class.expanded]="searchExpanded">
+<div class="container mat-elevation-z5" responsive-class>
+    <div class="leftside" [class.expanded]="searchExpanded" [class.container-search-is-expanded]="searchExpanded">
+        <!-- this button is a workaround to hide the initial focus shading on the upper left icon -->
+        <button cdkFocusInitial mat-icon-button type='text' class="hidden-focus-button"></button>
+
         <app-icon-button *ngIf="iconButtonName" [iconName]="iconButtonName"
                          [title]="screenData.headerText"
-                         [iconClass]="'md'" (buttonClick)="buttonClick()">
+                         [iconClass]="'md'" (buttonClick)="buttonClick()"
+                         style="zoom:0.9;">
         </app-icon-button>
         <app-icon-button *ngIf="helpTextService.isAvailable() | async" iconName="help"
             (buttonClick)="helpTextService.toggle()"></app-icon-button>
@@ -20,7 +24,8 @@
                           [iconName]="screenData.operatorIcon"
                           iconClass="md"
                           [menuItems]="screenData.operatorMenu"
-                          (menuItemClick)="doAction($event)">
+                          (menuItemClick)="doAction($event)"
+                          style="zoom:0.8;">
         </app-kebab-button>
         <app-icon class="bacon-strip-icon"
                   *ngIf="!screenData.operatorMenu"

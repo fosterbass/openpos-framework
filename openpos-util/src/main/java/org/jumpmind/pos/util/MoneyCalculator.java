@@ -10,6 +10,8 @@ import java.math.RoundingMode;
 public class MoneyCalculator {
     private final CurrencyUnit currency;
 
+    public static CurrencyUnit defaultCurrency = CurrencyUnit.of(System.getProperty("openpos.defaultCurrency", "USD"));
+
     public MoneyCalculator(String isoCurrencyCode) {
         this.currency = CurrencyUnit.of(isoCurrencyCode);
     }
@@ -31,7 +33,8 @@ public class MoneyCalculator {
     }
 
     public static Money moneyUsd(double d) {
-        return money("USD", new BigDecimal(d), RoundingMode.HALF_UP);
+        throw new RuntimeException("NO USD");
+//        return money("USD", new BigDecimal(d), RoundingMode.HALF_UP);
     }
 
     public static Money money(String currencyId, double d) {

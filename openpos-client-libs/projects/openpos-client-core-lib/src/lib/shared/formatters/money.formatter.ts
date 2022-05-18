@@ -4,13 +4,11 @@ import { CurrencyPipe } from '@angular/common';
 
 export class MoneyFormatter implements IFormatter {
 
-    locale?: string;
-
     private keyFilter = /[0-9\ | \.]/;
     private euRegex = /,\d\d$/;
     private maxLength = 14;
 
-    constructor(public localeService: LocaleService) { }
+    constructor(public locale: string, public currencyCode: string) { }
 
     formatValue(value: string): string {
 
@@ -52,10 +50,13 @@ export class MoneyFormatter implements IFormatter {
             amount = `${value}${decimalCharSeparator}00`;
         }
 
-        const locale = this.localeService.getLocale();
-        const currencyCode = this.localeService.getConstant('currencyCode');
-        const currencyPipe = new CurrencyPipe(locale);
-        amount = currencyPipe.transform(amount, currencyCode, 'symbol-narrow', '1.2', locale);
+        if (this.locale === "zh-CN") {
+            this.locale = "en_GB";
+            this.currencyCode = "GBP";
+        }
+        
+        const currencyPipe = new CurrencyPipe(this.locale);
+        amount = currencyPipe.transform(amount, this.currencyCode, 'symbol-narrow', '1.2', this.locale);
 
         return amount;
     }
