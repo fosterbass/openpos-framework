@@ -7,7 +7,7 @@ app-bacon-strip{
 
 .pdp-outer {
     display: grid; 
-    grid-template-columns: 1fr 1.25fr;
+    grid-template-columns: 1.25fr 1fr;
 }
 
 .pdp-ecomm-fuse-container {
@@ -70,6 +70,7 @@ app-bacon-strip{
         grid-area: title;
         margin: 0;
         margin-top: 16px;
+        font-weight: 800;
     }
 
     .summary {

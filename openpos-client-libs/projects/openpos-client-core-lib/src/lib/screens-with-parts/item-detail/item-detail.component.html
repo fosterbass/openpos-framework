@@ -78,7 +78,7 @@
                     </div>
                 </mat-card>
         
-                <mat-card responsive-class *ngIf="screen.promotions" class="page-gutter padding-none" [ngClass]="{'promotions': !(isMobile | async)}" style="min-height:200px">
+                <mat-card responsive-class *ngIf="screen.promotions" class="page-gutter padding-none" [ngClass]="{'promotions': !(isMobile | async)}" style="min-height:100px">
                     <div responsive-class class="page-gutter page-element margin-bottom">
                         <h3 responsive-class class="icon-heading">
                             {{screen.promotions && screen.promotions.length > 0 ? screen.itemPromotionsTitle : screen.itemNoPromotionsTitle}}
