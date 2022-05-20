@@ -1,3 +1,19 @@
 @mixin image-carousel-theme($theme){
     $app-primary: mat-color(map-get($theme, primary));
+
+    app-image-carousel {
+        app-carousel {
+            &.tablet,
+            &.mobile {
+                img {
+                    height: 15 rem;
+                    object-fit: contain;
+                }
+                .item-container {
+                    justify-content: center;
+                    height: 15rem;
+                }
+            }
+        }
+    }
 }

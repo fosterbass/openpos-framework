@@ -2,7 +2,7 @@
     <div class="content-container" responsive-class>
         <div class="content" responsive-class>
             <app-image-carousel class="carousel" [imgUrls]="screen.imageUrls" [altImageUrl]="screen.alternateImageUrl"
-                altImageText="Image Not Found" responsive-class>
+                [verticalThumbprints]="false" altImageText="Image Not Found" responsive-class>
             </app-image-carousel>
             <div class="product" responsive-class>
                 <app-title [title]="screen.productName"></app-title>

@@ -10,17 +10,24 @@
     display: flex;
     flex-direction: column;
     row-gap: $med-space;
+    align-items: center;
 }
 
 .thumbnails {
     display: flex;
     overflow-y: auto;
+    overflow-x: hidden;
 
     img {
         cursor: pointer;
         height: 64px;
+        object-fit: contain;
     }
 
+}
+
+app-carousel {
+    width: 100%;
 }
 
 .vertical {
@@ -35,7 +42,7 @@
 img.main {
     object-fit: contain;
     object-position: top;
-
+    height: 300px;
     max-width: 300px;
     max-height: 300px;
 }

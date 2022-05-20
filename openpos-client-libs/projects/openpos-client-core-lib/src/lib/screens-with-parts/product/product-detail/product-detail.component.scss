@@ -14,16 +14,16 @@ app-bacon-strip{
         @extend %sub-element-container;
         @extend %page-gutter;
         @extend %page-footer;
-        display: grid;
-        grid-template-columns: 1fr 3fr;
+        display: flex;
 
         &.mobile,
         &.tablet-portrait {
-            display: flex;
             flex-direction: column;
         }
 
         .carousel {
+            min-width: 350px;
+            width: 350px;
             @extend %sub-element;
 
             &.mobile,
@@ -36,6 +36,7 @@ app-bacon-strip{
             display: flex;
             flex-direction: column;
             row-gap: $x-large-space;
+            width: 100%;
 
             .product-details {
                 display: flex;
@@ -184,23 +185,14 @@ app-bacon-strip{
             }
 
             .actions {
-                app-primary-button {
-                    float: right;
-                }
-                app-secondary-button {
-                    float: right;
-                    margin-right: $med-space;
-                }
-
+                display:flex;
+                flex-direction: row-reverse;
+                column-gap: $med-space;
 
                 &.mobile,
                 &.tablet-portrait {
-                    display: flex;
-                    flex-direction: column;
+                    flex-direction: column-reverse;
                     row-gap: $med-space;
-                    >* {
-                        margin: 0;
-                    }
                 }
             }
         }

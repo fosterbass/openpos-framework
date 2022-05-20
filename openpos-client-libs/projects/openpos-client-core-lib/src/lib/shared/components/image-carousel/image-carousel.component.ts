@@ -2,6 +2,8 @@ import {
     Component,
     Input,
 } from '@angular/core';
+import { Observable } from 'rxjs';
+import { MediaBreakpoints, OpenposMediaService } from '../../../core/media/openpos-media.service';
 
 @Component({
     selector: 'app-image-carousel',
@@ -37,6 +39,19 @@ export class ImageCarouselComponent {
     selectedImageUrl?: string;
 
     private _imgUrls = new Array<string>();
+
+    isMobile$: Observable<boolean>;
+
+    constructor(private mediaService: OpenposMediaService) {
+            this.isMobile$ = mediaService.observe(new Map([
+            [MediaBreakpoints.MOBILE_PORTRAIT, true],
+            [MediaBreakpoints.MOBILE_LANDSCAPE, true],
+            [MediaBreakpoints.TABLET_PORTRAIT, true],
+            [MediaBreakpoints.TABLET_LANDSCAPE, false],
+            [MediaBreakpoints.DESKTOP_PORTRAIT, false],
+            [MediaBreakpoints.DESKTOP_LANDSCAPE, false]
+        ]));
+    }
 
     selectImage(index: number) {
         if (this.displayImageUrls.length > 0) {
