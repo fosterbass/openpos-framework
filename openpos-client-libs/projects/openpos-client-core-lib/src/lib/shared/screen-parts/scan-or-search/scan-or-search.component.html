@@ -1,5 +1,13 @@
 <button cdkFocusInitial *ngIf="!focusInitial"  class="hidden"></button>
-<app-icon-square-button
+<button mat-button
+    fxFlexFill
+    class="scan-button"
+    style="margin-bottom: 0px;             border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;"
+    [color]="'primary-inverse'">
+    <app-icon iconName="barcode-simple" iconClass="material-icons" style="color:#c1c1c1;margin-top:-4px;margin-bottom: -7px;height: 40px;width: 32px;"></app-icon>
+</button>
+<!-- <app-icon-square-button
     class="scan-button"
     ngClass.xs="scan-button-xs"
     [iconClass]="(isMobile$ | async) ? null: 'material-icons mat-32'"
@@ -7,13 +15,14 @@
     [color]="'primary-inverse'"
     (buttonClick)="onScannerButtonClicked()"
     [actionItem]="screenData.keyedAction"
-    (actionClick)="onEnter($event)"
-></app-icon-square-button>
+    (actionClick)="onEnter($event)" 
+></app-icon-square-button> -->
 <input #input matInput
        tabindex="-1"
        responsive-class
        class="scan-input"
        ngClass.xs="scan-input-xs"
+       style="height: 32px"
        [keyboardLayout]="keyboardLayout"
        (keydown.enter)="onEnter($event)"
        (focus)="onFocus($event)"

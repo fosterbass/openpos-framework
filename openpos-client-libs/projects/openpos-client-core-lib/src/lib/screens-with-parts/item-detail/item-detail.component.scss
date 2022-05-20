@@ -205,9 +205,10 @@ td.promotion-icon {
 }
 
 .inv-prom-container {
-    display: flex;
+    display: grid;
 
-    flex: 1;
+    grid-template-rows: 1fr 1fr;
+
     align-items: stretch;
 
     mat-card {
@@ -226,13 +227,14 @@ td.promotion-icon {
 
 .inv-prom-container.desktop, .inv-prom-container.tablet-landscape {
     flex-direction: row;
+    
 
     mat-card {
         margin-top: 0px;
     }
 
     * + * {
-        margin-left: 0px;
+        // margin-left: 0px;
     }
 }
 

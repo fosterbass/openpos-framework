@@ -6,7 +6,7 @@
         <app-icon-button *ngIf="iconButtonName" [iconName]="iconButtonName"
                          [title]="screenData.headerText"
                          [iconClass]="'md'" (buttonClick)="buttonClick()"
-                         style="zoom:0.9;">
+                         style="zoom:0.8;">
         </app-icon-button>
         <app-icon-button *ngIf="helpTextService.isAvailable() | async" iconName="help"
             (click)="helpTextService.toggle()"></app-icon-button>
@@ -25,7 +25,7 @@
                           iconClass="md"
                           [menuItems]="screenData.operatorMenu"
                           (menuItemClick)="doAction($event)"
-                          style="zoom:0.8;">
+                          style="zoom:0.6;">
         </app-kebab-button>
         <app-icon class="bacon-strip-icon"
                   *ngIf="!screenData.operatorMenu"

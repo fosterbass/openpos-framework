@@ -2,7 +2,6 @@
     <div class="pdp-outer">
         <div class="pdp-ecomm-fuse-container">
         <iframe [src]="safeContentURL" class="pdp-ecomm-fuse-frame">
-
         </iframe>
         </div>
         <section class="item-details">
@@ -51,7 +50,7 @@
             </mat-card>
         
             <div class="inv-prom-container" responsive-class>
-                <mat-card *ngIf="screen.buddyStoreProviderKey && buddyStores$" responsive-class class="buddy-store page-gutter padding-none">
+                <mat-card *ngIf="screen.buddyStoreProviderKey && buddyStores$" responsive-class class="buddy-store page-gutter padding-none" style="min-height:200px" >
                     <div responsive-class class="page-gutter page-element margin-bottom">
                         <h3 responsive-class class="icon-heading">
                             {{screen.buddyStoreTitle}}
@@ -63,7 +62,7 @@
                         </p>
         
                         <ng-template #buddyStoreTable>
-                            <table *ngIf="buddyStoresOnline$ | async" class="item-details-table buddy-stores" aria-label="Availability at nearby stores">                    
+                            <table *ngIf="buddyStoresOnline$ | async" class="item-details-table buddy-stores" aria-label="Availability at nearby stores" style="font-size:0.9rem">                    
                                 <tbody>
                                     <tr class="table-header">
                                         <th scope="col">Store Name</th>
@@ -79,7 +78,7 @@
                     </div>
                 </mat-card>
         
-                <mat-card responsive-class *ngIf="screen.promotions" class="page-gutter padding-none" [ngClass]="{'promotions': !(isMobile | async)}">
+                <mat-card responsive-class *ngIf="screen.promotions" class="page-gutter padding-none" [ngClass]="{'promotions': !(isMobile | async)}" style="min-height:200px">
                     <div responsive-class class="page-gutter page-element margin-bottom">
                         <h3 responsive-class class="icon-heading">
                             {{screen.promotions && screen.promotions.length > 0 ? screen.itemPromotionsTitle : screen.itemNoPromotionsTitle}}
@@ -89,7 +88,7 @@
                         <app-instructions *ngIf="screen.promotions && screen.promotions.length > 1"  [instructions]="screen.promotionStackingDisclaimer"
                                         [instructionsSize]="'text-md'"></app-instructions>
         
-                        <table class="item-details-table promotions" aria-label="Applicable promotions">                    
+                        <table class="item-details-table promotions" aria-label="Applicable promotions" >                    
                             <tbody>
                                 <tr>
                                     <th class="promotion-icon" scope="col"></th>

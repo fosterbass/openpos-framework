@@ -77,7 +77,7 @@ export class StatusBarComponent {
             dn = value.selectedDevice.displayName;
           }
 
-          l += ' | ' + value.displayName + ' ' + dn;
+          // l += ' | ' + value.displayName + ' ' + dn;
         });
 
         return l;
