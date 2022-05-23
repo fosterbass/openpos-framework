@@ -1,5 +1,6 @@
 package org.jumpmind.pos.print;
 
+import jpos.JposConst;
 import jpos.JposException;
 import jpos.POSPrinterConst;
 import jpos.services.EventCallbacks;
@@ -19,6 +20,8 @@ public class LogPOSPrinter extends AbstractPOSPrinter {
     private StringBuilder buff = new StringBuilder(128);
 
     private static int cashDrawerOpened;
+
+    private static int failMod = 0;
 
     @Override
     public void printImage(String name, InputStream image) {
@@ -40,8 +43,7 @@ public class LogPOSPrinter extends AbstractPOSPrinter {
     }
 
     @Override
-    public void init(Map<String, Object> settings, IPrinterStatusReporter printerStatusReporter) {
-        printerStatusReporter.reportStatus(Status.Online, "LogPOSPrinter Ok.");
+    public void init(Map<String, Object> settings) {
     }
 
     @Override
@@ -959,6 +961,9 @@ public class LogPOSPrinter extends AbstractPOSPrinter {
     public void cutPaper(int percentage) throws JposException {
         log.info("\n" + buff.toString());
         buff.setLength(0);
+        if (failMod++%3==0) {
+            throw new JposException(JposConst.JPOS_E_FAILURE);
+        }
     }
 
     @Override
