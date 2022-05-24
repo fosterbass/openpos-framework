@@ -45,6 +45,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import static org.jumpmind.pos.util.BoxLogging.drawBox;
+
 @Slf4j
 @Hidden
 @CrossOrigin
@@ -415,106 +417,14 @@ public class ScreenService implements IScreenService, IActionListener {
 
     protected void logScreenTransition(String deviceId, UIMessage screen) {
         String message = "Show screen on device \"{}\" ({})";
-        if (loggerGraphical.isInfoEnabled()) {
+        if (log.isInfoEnabled()) {
             message += "\n" + drawBox(screen.getId(), screen.getScreenType());
         }
         if (!screen.getClass().isAnnotationPresent(SuppressScreenLogging.class)) {
-            logger.info(message, deviceId, screen.getClass().getName());
+            log.info(message, deviceId, screen.getClass().getName());
         }
     }
 
-    protected String drawBox(String name, String typeName) {
-        String displayName = name != null ? name : null;
-        String displayTypeName = "";
 
-        if (!StringUtils.isEmpty(displayName)) {
-            displayTypeName = typeName != null ? typeName : "screen";
-            displayTypeName = "[" + displayTypeName + "]";
-        } else {
-            displayName = typeName != null ? typeName : "screen";
-            displayName = "[" + displayName + "]";
-        }
-
-        int boxWidth = Math.max(Math.max(displayName.length() + 2, 50), displayTypeName.length() + 4);
-        final int LINE_COUNT = 8;
-        StringBuilder buff = new StringBuilder(256);
-        for (int i = 0; i < LINE_COUNT; i++) {
-            switch (i) {
-                case 0:
-                    buff.append(drawTop1(boxWidth + 2));
-                    break;
-                case 1:
-                    buff.append(drawTop2(boxWidth));
-                    break;
-                case 3:
-                    buff.append(drawTitleLine(boxWidth, displayName));
-                    break;
-                case 4:
-                    buff.append(drawTypeLine(boxWidth, displayTypeName));
-                    break;
-                case 5:
-                    buff.append(drawBottom1(boxWidth));
-                    break;
-                case 6:
-                    buff.append(drawBottom2(boxWidth + 2));
-                    break;
-            }
-        }
-        return buff.toString();
-    }
-
-    protected String drawTop1(int boxWidth) {
-        StringBuilder buff = new StringBuilder();
-        buff.append(UPPER_LEFT_CORNER).append(StringUtils.repeat(HORIZONTAL_LINE, boxWidth - 2)).append(UPPER_RIGHT_CORNER);
-        buff.append("\r\n");
-        return buff.toString();
-    }
-
-    protected String drawTop2(int boxWidth) {
-        StringBuilder buff = new StringBuilder();
-        buff.append(VERITCAL_LINE + " " + UPPER_LEFT_CORNER).append(StringUtils.repeat(HORIZONTAL_LINE, boxWidth - 4))
-                .append(UPPER_RIGHT_CORNER + " " + VERITCAL_LINE);
-        buff.append("\r\n");
-        return buff.toString();
-    }
-
-    protected String drawFillerLine(int boxWidth) {
-        StringBuilder buff = new StringBuilder();
-        buff.append(VERITCAL_LINE + " " + VERITCAL_LINE).append(StringUtils.repeat(' ', boxWidth - 4))
-                .append(VERITCAL_LINE + " " + VERITCAL_LINE);
-        buff.append("\r\n");
-        return buff.toString();
-    }
-
-    protected String drawTitleLine(int boxWidth, String name) {
-        StringBuilder buff = new StringBuilder();
-        buff.append(VERITCAL_LINE + " " + VERITCAL_LINE).append(StringUtils.center(name, boxWidth - 4))
-                .append(VERITCAL_LINE + " " + VERITCAL_LINE);
-        buff.append("\r\n");
-        return buff.toString();
-    }
-
-    protected String drawTypeLine(int boxWidth, String typeName) {
-        StringBuilder buff = new StringBuilder();
-        buff.append(VERITCAL_LINE + " " + VERITCAL_LINE).append(StringUtils.center(typeName, boxWidth - 4))
-                .append(VERITCAL_LINE + " " + VERITCAL_LINE);
-        buff.append("\r\n");
-        return buff.toString();
-    }
-
-    protected String drawBottom1(int boxWidth) {
-        StringBuilder buff = new StringBuilder();
-        buff.append(VERITCAL_LINE + " " + LOWER_LEFT_CORNER).append(StringUtils.repeat(HORIZONTAL_LINE, boxWidth - 4))
-                .append(LOWER_RIGHT_CORNER + " " + VERITCAL_LINE);
-        buff.append("\r\n");
-        return buff.toString();
-    }
-
-    protected String drawBottom2(int boxWidth) {
-        StringBuilder buff = new StringBuilder();
-        buff.append(LOWER_LEFT_CORNER).append(StringUtils.repeat(HORIZONTAL_LINE, boxWidth - 2)).append(LOWER_RIGHT_CORNER);
-        buff.append("\r\n");
-        return buff.toString();
-    }
 
 }
