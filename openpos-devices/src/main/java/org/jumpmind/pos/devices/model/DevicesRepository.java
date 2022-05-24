@@ -163,7 +163,7 @@ public class DevicesRepository {
         DeviceAuthModel authModel = devSession.findFirstByFields(DeviceAuthModel.class, params, 1);
 
         if (authModel == null) {
-            throw new DeviceNotFoundException();
+            throw new DeviceNotFoundException(String.format("Device not found for token starting with %s", StringUtils.left(auth, 7)));
         }
 
         params = new HashMap<>();
