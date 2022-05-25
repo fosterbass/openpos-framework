@@ -21,8 +21,6 @@ public class LogPOSPrinter extends AbstractPOSPrinter {
 
     private static int cashDrawerOpened;
 
-    private static int failMod = 0;
-
     @Override
     public void printImage(String name, InputStream image) {
     }
@@ -961,9 +959,6 @@ public class LogPOSPrinter extends AbstractPOSPrinter {
     public void cutPaper(int percentage) throws JposException {
         log.info("\n" + buff.toString());
         buff.setLength(0);
-        if (failMod++%3==0) {
-            throw new JposException(JposConst.JPOS_E_FAILURE);
-        }
     }
 
     @Override
