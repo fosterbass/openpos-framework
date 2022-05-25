@@ -8,6 +8,7 @@ import lombok.Data;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.jumpmind.db.model.Column;
+import org.jumpmind.db.model.IIndex;
 import org.jumpmind.db.model.Table;
 import org.jumpmind.pos.persist.PersistException;
 import org.jumpmind.pos.persist.model.AugmenterConfig;
@@ -87,7 +88,10 @@ public class ModelClassMetaData {
     public void setShadowTable(String shadowPrefix, String modulePrefix)  {
         Table shadowTable = table.copy();
         shadowTable.setName((shadowPrefix + "_" + modulePrefix + "_" + table.getName()).toUpperCase());
-
+        IIndex[] indexes = shadowTable.getIndices();
+        for (IIndex index : indexes) {
+            index.setName((shadowPrefix + "_" + modulePrefix + "_" + index.getName()).toUpperCase());
+        }
         this.shadowTable = shadowTable;
         this.shadowPrefix = shadowPrefix;
         this.modulePrefix = modulePrefix;
