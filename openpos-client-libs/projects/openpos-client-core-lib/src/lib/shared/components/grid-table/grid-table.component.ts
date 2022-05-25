@@ -15,6 +15,9 @@ export class GridTableComponent implements OnInit {
     @Input()
     rows = [];
 
+    @Input()
+    shadeAlternating = false;
+
     outerStyle: object;
 
     constructor(public actionService: ActionService) {
