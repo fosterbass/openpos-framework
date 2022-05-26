@@ -23,8 +23,14 @@
     grid-column-gap: 3px;
 }
 
+.table-container {
+    overflow:auto;
+    height: 65vh;
+}
+
 table {
     width: 100%;
+    overflow:auto;
     border-collapse: collapse;
 
     th {
