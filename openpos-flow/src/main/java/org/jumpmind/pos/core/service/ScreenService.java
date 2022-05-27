@@ -415,16 +415,4 @@ public class ScreenService implements IScreenService, IActionListener {
         }
     }
 
-    protected void logScreenTransition(String deviceId, UIMessage screen) {
-        String message = "Show screen on device \"{}\" ({})";
-        if (log.isInfoEnabled()) {
-            message += "\n" + drawBox(screen.getId(), screen.getScreenType());
-        }
-        if (!screen.getClass().isAnnotationPresent(SuppressScreenLogging.class)) {
-            log.info(message, deviceId, screen.getClass().getName());
-        }
-    }
-
-
-
 }
