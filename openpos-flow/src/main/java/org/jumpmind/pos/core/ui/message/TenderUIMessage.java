@@ -22,6 +22,7 @@ public class TenderUIMessage extends UIMessage implements IHasForm {
     private Total amountDue;
     private List<Tender> amounts;
     private OptionsListPart optionsList;
+    private int totalOptionsShownBeforeOverflow;
     private String imageUrl;
     private ActionItem roundUpButton;
     private boolean roundUpAvailable;
@@ -43,6 +44,10 @@ public class TenderUIMessage extends UIMessage implements IHasForm {
     public String getTitle() {
         return title;
     }
+
+    public int getTotalOptionsShownBeforeOverflow() { return totalOptionsShownBeforeOverflow; }
+
+    public void setTotalOptionsShownBeforeOverflow(int value) { this.totalOptionsShownBeforeOverflow = value; }
 
     public void setTitle(String title) {
         this.title = title;
