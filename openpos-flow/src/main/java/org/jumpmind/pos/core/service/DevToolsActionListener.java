@@ -210,12 +210,18 @@ public class DevToolsActionListener implements IActionListener {
             customerDisplayDevice = DeviceModel.builder().
                     deviceId(customerDisplayDeviceId).
                     appId(customerDisplayAppId).
+                    parentDeviceId(deviceId).
                     deviceParamModels(deviceParams).
                     build();
             devicesRepository.saveDevice(customerDisplayDevice);
             authToken = UUID.randomUUID().toString();
             devicesRepository.saveDeviceAuth(customerDisplayDeviceId, authToken);
         } else {
+            if (!deviceId.equals(customerDisplayDevice.getParentDeviceId())) {
+                customerDisplayDevice.setParentDeviceId(deviceId);
+                devicesRepository.saveDevice(customerDisplayDevice);
+            }
+
             try {
                 authToken = devicesRepository.getDeviceAuth(customerDisplayDeviceId);
             } catch (DeviceNotFoundException ex) {
