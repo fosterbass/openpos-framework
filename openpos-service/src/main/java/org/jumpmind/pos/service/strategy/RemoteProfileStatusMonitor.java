@@ -75,24 +75,25 @@ public class RemoteProfileStatusMonitor implements IStatusReporter {
     }
 
     public void setStatus(String profileId, Status status, String message) {
-        if (StringUtils.isBlank(message)) {
-            message = "";
-        }
-
-        this.statuses.compute(profileId, (profId, stat) -> {
-            if (stat == null) {
-                return new RemoteProfileStatusInfo(profId, Status.Online, "");
-            } else {
-                Status prevStatus = stat.getStatus();
-                stat.setStatus(status);
-                if (status != Status.Online && status != prevStatus) {
-                    log.warn("Status of profile '{}' has now changed from {} to {}", profileId, prevStatus, status);
-                }
-
-                return stat;
-            }
-        });
-        reportStatus(message);
+        return;
+//        if (StringUtils.isBlank(message)) {
+//            message = "";
+//        }
+//
+//        this.statuses.compute(profileId, (profId, stat) -> {
+//            if (stat == null) {
+//                return new RemoteProfileStatusInfo(profId, Status.Online, "");
+//            } else {
+//                Status prevStatus = stat.getStatus();
+//                stat.setStatus(status);
+//                if (status != Status.Online && status != prevStatus) {
+//                    log.warn("Status of profile '{}' has now changed from {} to {}", profileId, prevStatus, status);
+//                }
+//
+//                return stat;
+//            }
+//        });
+//        reportStatus(message);
     }
 
     protected String makePingUrl(String baseUrl) {
