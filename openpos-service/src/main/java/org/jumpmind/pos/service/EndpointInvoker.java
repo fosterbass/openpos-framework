@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -57,7 +58,7 @@ public class EndpointInvoker {
     private static final String UNKNOWN = "UNKNOWN";
     private static final int MAX_SUMMARY_WIDTH = 127;
 
-    private final Map<String, Boolean> endpointEnabledCache = new HashMap<>();
+    private final Map<String, Boolean> endpointEnabledCache = new ConcurrentHashMap<>();
 
     @Autowired
     @Qualifier("ctxSession")
