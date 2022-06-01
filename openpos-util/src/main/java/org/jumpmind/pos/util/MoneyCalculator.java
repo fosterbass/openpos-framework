@@ -14,6 +14,10 @@ public class MoneyCalculator {
         this.currency = CurrencyUnit.of(isoCurrencyCode);
     }
 
+    public static Money zeroDefault() {
+        return Money.zero(defaultCurrency);
+    }
+
     public BigDecimal zero() {
         return Money.zero(currency).getAmount();
     }
