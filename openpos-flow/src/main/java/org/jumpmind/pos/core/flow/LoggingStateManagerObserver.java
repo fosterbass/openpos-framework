@@ -6,6 +6,7 @@ import org.jumpmind.pos.core.ui.UIMessage;
 import org.jumpmind.pos.core.util.LogFormatter;
 import org.jumpmind.pos.server.model.Action;
 import org.jumpmind.pos.util.BoxLogging;
+import org.jumpmind.pos.util.SuppressScreenLogging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,7 +73,8 @@ public class LoggingStateManagerObserver implements IStateManagerObserver {
 
     @Override
     public void onScreen(ApplicationState applicationState, UIMessage screen) {
-        if (screenLogger.isInfoEnabled()) {
+        if (screenLogger.isInfoEnabled() &&
+           !screen.getClass().isAnnotationPresent(SuppressScreenLogging.class)) {
             screenLogger.info(new StringBuilder().append("Show screen on device \"").
                     append(applicationState.getDeviceId()).append("\" (").
                     append(screen.getClass().getName()).append(")").append(getScreenSequence(screen)).append("\n").

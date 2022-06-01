@@ -2,10 +2,7 @@ package org.jumpmind.pos.core.service;
 
 import jpos.events.DataEvent;
 import lombok.extern.slf4j.Slf4j;
-import org.jumpmind.pos.core.flow.IStateManager;
-import org.jumpmind.pos.core.flow.IStateManagerContainer;
-import org.jumpmind.pos.core.flow.ScopeValue;
-import org.jumpmind.pos.core.flow.StateManagerContainer;
+import org.jumpmind.pos.core.flow.*;
 import org.jumpmind.pos.core.flow.config.FlowConfig;
 import org.jumpmind.pos.core.flow.config.StateConfig;
 import org.jumpmind.pos.core.javapos.SimulatedScannerService;
@@ -210,12 +207,18 @@ public class DevToolsActionListener implements IActionListener {
             customerDisplayDevice = DeviceModel.builder().
                     deviceId(customerDisplayDeviceId).
                     appId(customerDisplayAppId).
+                    parentDeviceId(deviceId).
                     deviceParamModels(deviceParams).
                     build();
             devicesRepository.saveDevice(customerDisplayDevice);
             authToken = UUID.randomUUID().toString();
             devicesRepository.saveDeviceAuth(customerDisplayDeviceId, authToken);
         } else {
+            if (!deviceId.equals(customerDisplayDevice.getParentDeviceId())) {
+                customerDisplayDevice.setParentDeviceId(deviceId);
+                devicesRepository.saveDevice(customerDisplayDevice);
+            }
+
             try {
                 authToken = devicesRepository.getDeviceAuth(customerDisplayDeviceId);
             } catch (DeviceNotFoundException ex) {
@@ -293,11 +296,19 @@ public class DevToolsActionListener implements IActionListener {
     private void setScopes(IStateManager sm, Message message) {
         try {
             Map<String, List<ScopeField>> scopes = new HashMap<>();
-            scopes.put("ConversationScope", buildScope(sm.getApplicationState().getScope().getConversationScope()));
-            scopes.put("DeviceScope", buildScope(sm.getApplicationState().getScope().getDeviceScope()));
-            scopes.put("SessionScope", buildScope(sm.getApplicationState().getScope().getSessionScope()));
-            scopes.put("FlowScope", buildScope(sm.getApplicationState().getCurrentContext().getFlowScope()));
-            scopes.put("ConfigScope", buildConfigScope(sm.getApplicationState().getCurrentContext().getFlowConfig().getConfigScope()));
+            Scope scope = sm.getApplicationState().getScope();
+            if (scope != null) {
+                scopes.put("ConversationScope", buildScope(scope.getConversationScope()));
+                scopes.put("DeviceScope", buildScope(scope.getDeviceScope()));
+                scopes.put("SessionScope", buildScope(scope.getSessionScope()));
+            }
+            StateContext stateContext = sm.getApplicationState().getCurrentContext();
+            if (stateContext != null) {
+                scopes.put("FlowScope", buildScope(stateContext.getFlowScope()));
+                if (stateContext.getFlowConfig() != null) {
+                    scopes.put("ConfigScope", buildConfigScope(stateContext.getFlowConfig().getConfigScope()));
+                }
+            }
             message.put("scopes", scopes);
         } catch (Exception ex) {
             log.warn("Error loading in Developer Tool application scopes. Deleting local storage may fix this.", ex);
