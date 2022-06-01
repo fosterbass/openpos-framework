@@ -38,4 +38,5 @@ export interface CustomerInformationComponentInterface {
     loyaltyNumberIcon: string;
     locationIcon: string;
     birthDateIcon: string;
+    addressLines: string[];
 }

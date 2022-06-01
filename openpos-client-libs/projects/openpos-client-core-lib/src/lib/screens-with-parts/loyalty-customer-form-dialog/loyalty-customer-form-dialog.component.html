@@ -105,11 +105,8 @@
                                 <app-dynamic-form-field class="line2" *ngIf="line2Field" [formGroup]="screen.formGroup" [formField]="line2Field"
                                                         (changed)="onFieldChanged($event)"></app-dynamic-form-field>
                                 <div class="cityStateZip">
-                                    <app-dynamic-form-field class="city" *ngIf="cityField" [formGroup]="screen.formGroup" [formField]="cityField"
-                                                            (changed)="onFieldChanged($event)"></app-dynamic-form-field>
-                                    <app-dynamic-form-field class="state" *ngIf="stateField" [formGroup]="screen.formGroup" [formField]="stateField"
-                                                            (changed)="onFieldChanged($event)"></app-dynamic-form-field>
-                                    <app-dynamic-form-field class="postalCode" *ngIf="postalCodeField" [formGroup]="screen.formGroup" [formField]="postalCodeField"
+                                    <app-dynamic-form-field *ngFor="let field of getDisplayOrderSortedCityStateZipElements()"
+                                                            class="{{field.id}}" [formGroup]="screen.formGroup" [formField]="field"
                                                             (changed)="onFieldChanged($event)"></app-dynamic-form-field>
                                 </div>
                                 <app-dynamic-form-field class="country" *ngIf="countryField" [formGroup]="screen.formGroup" [formField]="countryField"

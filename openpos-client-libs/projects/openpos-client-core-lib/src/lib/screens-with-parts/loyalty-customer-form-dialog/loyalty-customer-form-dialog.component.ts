@@ -81,6 +81,11 @@ export class LoyaltyCustomerFormDialogComponent extends PosScreenDirective<Loyal
         return !!(this.line1Field || this.line2Field || this.cityField || this.stateField || this.postalCodeField || this.countryField);
     }
 
+    getDisplayOrderSortedCityStateZipElements(): IFormElement[] {
+        const fields: IFormElement[] = [ this.cityField, this.stateField, this.postalCodeField ];
+        fields.sort((f1, f2) => Number(f1.displayOrder) - Number(f2.displayOrder));
+        return fields;
+    }
 
     onWedgeScanFieldChanged(formElement: IFormElement): void {
         let loyaltyNumber = this.screen.formGroup.value[this.loyaltyNumberField.id];
