@@ -31,15 +31,27 @@ public class DeviceScope implements Scope {
     @Override
     public Object get(String name, ObjectFactory<?> objectFactory) {
         IStateManager stateManager = getStateManager();
-        Map<String, ScopeValue> deviceScope = stateManager.getApplicationState().getScope().getDeviceScope();
-        if (!deviceScope.containsKey(name) ||
-                deviceScope.get(name).getValue() == null) {
-            deviceScopedBeanNames.add(name);
-            Object bean = objectFactory.getObject();
-            stateManager.getApplicationState().getScope().setScopeValue(ScopeType.Device, name, bean);
+        if (!containsDeviceBean(stateManager, name)) {
+            synchronized (this) {
+                if (!containsDeviceBean(stateManager, name)) {
+                    deviceScopedBeanNames.add(name);
+                    Object bean = objectFactory.getObject();
+                    stateManager.getApplicationState().getScope().setScopeValue(ScopeType.Device, name, bean);
+                }
+            }
         }
         
         return stateManager.getApplicationState().getScopeValue(ScopeType.Device, name);
+    }
+
+    protected boolean containsDeviceBean(IStateManager stateManager, String name) {
+        Map<String, ScopeValue> deviceScope = stateManager.getApplicationState().getScope().getDeviceScope();
+        if (!deviceScope.containsKey(name) ||
+                deviceScope.get(name).getValue() == null) {
+            return false;
+        } else {
+            return true;
+        }
     }
     
     @Override
