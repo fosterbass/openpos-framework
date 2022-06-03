@@ -1,9 +1,7 @@
 package org.jumpmind.pos.core.error;
 
 import org.jumpmind.pos.core.flow.IStateManager;
-import org.jumpmind.pos.core.flow.In;
 import org.jumpmind.pos.core.flow.OnGlobalAction;
-import org.jumpmind.pos.core.flow.ScopeType;
 import org.jumpmind.pos.server.model.Action;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -12,7 +10,7 @@ public class GlobalErrorActionHandler {
     @Autowired
     IErrorHandler errorHandler;
 
-    @In(scope = ScopeType.Device)
+    @Autowired
     IStateManager stateManager;
 
     @OnGlobalAction

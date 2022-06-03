@@ -1,6 +1,7 @@
 package org.jumpmind.pos.core.screeninterceptor;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jumpmind.pos.core.flow.IStateManager;
 import org.jumpmind.pos.core.flow.In;
 import org.jumpmind.pos.core.flow.ScopeType;
 import org.jumpmind.pos.core.service.ClientLocaleService;
@@ -23,7 +24,7 @@ public class KeyMappingUIDataMessagePropertyStrategy implements IMessageProperty
     @Autowired(required = false)
     IKeyMappingService keyMappingService;
 
-    @Autowired
+    @In(scope = ScopeType.Device)
     private ClientLocaleService clientLocaleService;
 
     @Override

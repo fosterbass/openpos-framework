@@ -13,7 +13,7 @@ public class LocaleSelectedGlobalActionHandler {
     @In(scope = ScopeType.Device)
     IStateManager stateManager;
 
-    @Autowired
+    @In(scope = ScopeType.Device, autoCreate = true)
     ClientLocaleService clientLocaleService;
 
     @OnGlobalAction

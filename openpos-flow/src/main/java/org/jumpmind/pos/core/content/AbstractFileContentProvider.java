@@ -8,7 +8,6 @@ import org.jumpmind.pos.core.flow.InOut;
 import org.jumpmind.pos.core.flow.ScopeType;
 import org.jumpmind.pos.core.service.ClientLocaleService;
 import org.jumpmind.pos.core.service.LocaleType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Scope;
@@ -21,6 +20,7 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Scope("device")
 @Slf4j
 public abstract class AbstractFileContentProvider implements IContentProvider {
 
@@ -44,7 +44,7 @@ public abstract class AbstractFileContentProvider implements IContentProvider {
     @In(scope = ScopeType.Device, required = false)
     Map<String, String> personalizationProperties;
 
-    @Autowired
+    @InOut(scope = ScopeType.Device, autoCreate = true)
     ClientLocaleService clientLocaleService;
 
     static Map<String, ContentIndex> deviceContent = new HashMap<>();
