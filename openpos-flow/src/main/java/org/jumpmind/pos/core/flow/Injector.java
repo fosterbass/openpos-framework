@@ -31,7 +31,7 @@ public class Injector {
 
     public void performInjections(Object target, Scope scope, StateContext currentContext) {
         performInjectionsImpl(target, scope, currentContext, AUTOWIRE);
-        performPostContruct(target);
+        performPostConstruct(target);
     }
 
     public void performInjectionsOnSpringBean(Object target, Scope scope, StateContext currentContext) {
@@ -205,7 +205,7 @@ public class Injector {
         return value;
     }
 
-    protected void performPostContruct(Object target) {
+    protected void performPostConstruct(Object target) {
         Method[] methods = target != null ? target.getClass().getDeclaredMethods() : new Method[0];
         for (Method method : methods) {
             PostConstruct postConstructAnnotation = method.getAnnotation(PostConstruct.class);
