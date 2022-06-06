@@ -1,5 +1,6 @@
 @import './pager/pager-theme';
 @import './pop-tart/pop-tart-theme';
+@import './icon/icon-theme';
 @import './icon-button/icon-button-theme';
 @import './icon-fab-button/icon-fab-button-theme';
 @import './kebab-button/kebab-button-theme';
@@ -17,6 +18,7 @@
 @import './rounded-input/rounded-input-theme';
 @import './mobile-footer/mobile-footer-theme';
 @import './carousel/carousel-theme';
+@import './image-carousel/image-carousel-theme';
 @import './help-text-page-wrapper/help-text-page-wrapper-theme';
 @import './instructions/instructions-theme';
 @import './primary-button/primary-button-theme';
@@ -37,6 +39,7 @@
 @mixin openpos-component-theme-mixins($theme) {
     @include pager-theme($theme);
     @include pop-tart-theme($theme);
+    @include icon-theme($theme);
     @include icon-button-theme($theme);
     @include icon-fab-button-theme($theme);
     @include kebab-button-theme($theme);
@@ -54,6 +57,7 @@
     @include rounded-input-theme($theme);
     @include mobile-footer-theme($theme);
     @include carousel-theme($theme);
+    @include image-carousel-theme($theme);
     @include help-text-page-wrapper-theme($theme);
     @include instructions-theme($theme);
     @include primary-button-theme($theme);

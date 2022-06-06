@@ -383,6 +383,7 @@ export * from './lib/shared/components/task-check-box/task-check-box.component';
 export * from './lib/shared/components/task-list/task-list.component';
 export * from './lib/shared/components/mobile-footer/mobile-footer.component';
 export * from './lib/shared/components/carousel/carousel.component';
+export * from './lib/shared/components/image-carousel/image-carousel.component';
 export * from './lib/shared/components/mobile-item/mobile-item.component';
 export * from './lib/shared/components/infinite-scroll/infinite-scroll.component';
 export * from './lib/shared/components/image/image.component';

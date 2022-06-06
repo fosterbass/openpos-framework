@@ -3,8 +3,8 @@
     <mat-card responsive-class class="padding-none page-gutter">
         <div responsive-class class="padding-none page-gutter page-element margin-bottom" [ngClass]="{'item-card': !(isMobile | async)}">
             <h1 class="name" responsive-class>{{screen.itemName}}</h1>
-            <app-carousel class="carousel" [imgUrls]="screen.imageUrls" [altImageUrl]="screen.alternateImageUrl" altImageText="Image Not Found">
-            </app-carousel>
+            <app-image-carousel class="carousel" [imgUrls]="screen.imageUrls" [altImageUrl]="screen.alternateImageUrl" altImageText="Image Not Found">
+            </app-image-carousel>
 
             <div class="inv-cost">
                 <app-currency-text class="item-price" [amountText]="screen.price"></app-currency-text>

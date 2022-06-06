@@ -1,6 +1,10 @@
 import {
     Component,
-    Input,
+    ContentChildren,
+    QueryList,
+    TemplateRef,
+    AfterContentInit,
+    Input
 } from '@angular/core';
 
 @Component({
@@ -8,57 +12,67 @@ import {
     templateUrl: './carousel.component.html',
     styleUrls: ['./carousel.component.scss']
 })
-export class CarouselComponent {
-    @Input()
-    get imgUrls(): string[] {
-        return this._imgUrls;
-    }
+export class CarouselComponent implements AfterContentInit {
+    @Input() navigationArrowsSize = 'lg';
+    @Input() carouselItemClass = '';
+    @Input() showIndicators = true;
+    @Input() wrapNavigationToFront = true;
+    @Input() wrapNavigationToBack = true;
+    @Input() itemsPerSlide = 1;
 
-    set imgUrls(value: string[]) {
-        if (!value) {
-            value = new Array<string>();
+    @ContentChildren('carouselItem') items: QueryList<TemplateRef<any>>;
+    sections: TemplateRef<any>[][];
+    currentSection: TemplateRef<any>[];
+    index = 0;
+
+    ngAfterContentInit(): void {
+        this.sections = [];
+        for (let i = 0; i < this.items.length; i += this.itemsPerSlide) {
+            const chunk = this.items.toArray().slice(i, i + this.itemsPerSlide);
+            this.sections.push(chunk);
         }
-
-        this.displayImageUrls = this._imgUrls = value;
-
-        this.selectImage(0);
+        this.currentSection = this.sections[this.index];
     }
 
-    @Input()
-    altImageUrl?: string;
-
-    @Input()
-    altImageText?: string;
-
-    displayImageUrls: string[];
-    selectedImageUrl?: string;
-
-    private _imgUrls = new Array<string>();
-
-    selectImage(index: number) {
-        if (this.displayImageUrls.length > 0) {
-            index = Math.max(0, Math.min(index, this.displayImageUrls.length - 1));
-            this.selectedImageUrl = this.displayImageUrls[index];
-        } else {
-            this.selectedImageUrl = undefined;
+    moveForward(): void {
+        this.index++;
+        if (this.index >= this.sections.length) {
+            this.index = 0;
         }
+        this.currentSection = this.sections[this.index];
     }
 
-    onThumbnailError(index: number) {
-        const url = this.displayImageUrls[index];
+    moveBackward(): void {
+        this.index--;
+        if (this.index < 0) {
+            this.index = this.sections.length - 1;
+        }
+        this.currentSection = this.sections[this.index];
+    }
 
-        this.displayImageUrls.splice(index, 1);
+    forwardEnabled(): boolean {
+        return (this.wrapNavigationToFront || this.index < this.sections.length - 1) && this.sections.length > 1;
+    }
 
-        if (this.selectedImageUrl === url) {
-            if (this.displayImageUrls.length > 0) {
-                this.selectedImageUrl = this.displayImageUrls[0];
-            } else {
-                this.selectedImageUrl = undefined;
+    backwardEnabled(): boolean {
+        return (this.wrapNavigationToBack || this.index > 0) && this.sections.length > 1;
+    }
+
+    isDotActive(dotIndex: number): boolean {
+        return dotIndex === this.index;
+    }
+
+    getCarouselColumnSize(): number {
+        return this.forwardEnabled() || this.backwardEnabled() ? 10 : 12;
+    }
+
+    getItemColumnSize(): number {
+        let biggestSection = 0;
+        for (const section of this.sections) {
+            if (section.length > biggestSection) {
+                biggestSection = section.length;
             }
         }
-    }
-
-    onSelectedImageError() {
-        this.selectedImageUrl = undefined;
+        return Math.trunc(12 / biggestSection);
     }
 }
