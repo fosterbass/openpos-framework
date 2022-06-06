@@ -32,6 +32,7 @@
 @import './expansion-panel/expansion-panel-theme';
 @import './dynamic-form-field/dynamic-form-field-theme';
 @import './tabbed-content-card/tabbed-content-card-theme';
+@import './bread-crumbs/bread-crumbs-theme';
 
 @mixin openpos-component-theme-mixins($theme) {
     @include pager-theme($theme);
@@ -68,4 +69,5 @@
     @include expansion-panel-theme($theme);
     @include dynamic-form-field-theme($theme);
     @include tabbed-content-card-theme($theme);
+    @include bread-crumbs-theme($theme);
 }
