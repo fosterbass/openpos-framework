@@ -1,39 +1,34 @@
 <div class="membership-details-dialog">
     <app-dialog-header></app-dialog-header>
     <div class="tabs" [ngClass]="{'tabs': true, 'mobile': (isMobile | async)}" responsive-class>
-        <mat-tab-group mat-align-tabs="start" animationDuration="0ms">
-            <mat-tab *ngFor="let tab of screen.subscriptionAccounts">
-                <ng-template mat-tab-label>
-                    <app-icon *ngIf="tab.iconImageUrl" [iconName]="tab.iconImageUrl"
-                        [iconClass]="'material-icons' + ((isMobile | async) ? ' mat-64' : '')"></app-icon>
-                    {{tab.iconText}}
-                </ng-template>
-                <mat-card>
-                        <div *ngIf="tab.listTitle && (tab.enrollmentItems?.length != 0)" class="tab-title text-md">
-                            {{tab.listTitle}}
-                        </div>
-                        <div *ngIf="tab.enrollmentItems?.length > 0">
-                            <div *ngFor="let row of tab.enrollmentItems">
-                                <app-enrollment-line-item [enrollment]="row"></app-enrollment-line-item>
-                            </div>
-                        </div>
-                        <app-program-plan-details *ngIf="!tab.enrollmentItems || tab.enrollmentItems.length == 0"
-                            [programCopy]="tab.copy" [plans]="tab.plans"></app-program-plan-details>
-                </mat-card>
-                <div class="button-wrapper">
-                    <app-primary-button responsive-class class="sign-up"
-                        *ngIf="tab.signupActionItem && tab.enrollmentItems && tab.enrollmentItems.length > 0"
-                        [disabled]="!tab.signupActionItem.enabled"
-                        (actionClick)="doAction(tab.signupActionItem)" (click)="doAction(tab.signupActionItem)">
-                        <app-icon *ngIf="tab.signupActionItem.icon" [iconName]="tab.signupActionItem.icon"
-                            [iconClass]="'material-icons' + ((isMobile | async) ? ' mat-64' : '')"></app-icon>
-                        <span>{{tab.signupActionItem.title}}</span>
-                        <span *ngIf="keybindsEnabled(tab.signupActionItem)" class="muted-color keybinding">
-                            {{tab.signupActionItem.keybindDisplayName}}
-                        </span>
-                    </app-primary-button>
-                </div>
-            </mat-tab>
-        </mat-tab-group>
+        <app-tabbed-content-card id="tabbedContent" *ngIf="screen.tabs" [tabs]="screen.tabs"
+            [selectedTabTemplate]="tabContent" (tabChange)="updateSelectedTab($event)" responsive-class>
+        </app-tabbed-content-card>
+        <div class="button-wrapper">
+            <app-primary-button responsive-class class="sign-up" *ngIf="selectedTab && selectedTab.signupActionItem 
+                && selectedTab.enrollmentItems && selectedTab.enrollmentItems.length > 0"
+                [disabled]="!selectedTab.signupActionItem.enabled"
+                (actionClick)="doAction(selectedTab.signupActionItem)" (click)="doAction(selectedTab.signupActionItem)">
+                <app-icon *ngIf="selectedTab.signupActionItem.icon" [iconName]="selectedTab.signupActionItem.icon"
+                    [iconClass]="'material-icons' + ((isMobile | async) ? ' mat-64' : '')"></app-icon>
+                <span>{{selectedTab.signupActionItem.title}}</span>
+                <span *ngIf="keybindsEnabled(selectedTab.signupActionItem)" class="muted-color keybinding">
+                    {{selectedTab.signupActionItem.keybind}}
+                </span>
+            </app-primary-button>
+        </div>
     </div>
 </div>
+
+<ng-template #tabContent>
+    <div *ngIf="selectedTab.listTitle && (selectedTab.enrollmentItems?.length != 0)" class="tab-title text-md">
+        {{selectedTab.listTitle}}
+    </div>
+    <div *ngIf="selectedTab.enrollmentItems?.length > 0">
+        <div *ngFor="let row of selectedTab.enrollmentItems">
+            <app-enrollment-line-item [enrollment]="row"></app-enrollment-line-item>
+        </div>
+    </div>
+    <app-program-plan-details *ngIf="!selectedTab.enrollmentItems || selectedTab.enrollmentItems.length == 0"
+        [programCopy]="selectedTab.copy" [plans]="selectedTab.plans"></app-program-plan-details>
+</ng-template>

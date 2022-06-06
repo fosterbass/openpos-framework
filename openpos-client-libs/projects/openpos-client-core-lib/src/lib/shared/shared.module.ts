@@ -188,6 +188,7 @@ import { SafeHtmlPipe } from './pipes/safe-html.pipe';
 import { ExpansionPanelComponent } from './components/expansion-panel/expansion-panel.component';
 import { PromptFormPartCardComponent } from './screen-parts/prompt-form-part-card/prompt-form-part-card.component';
 import { SaleLoyaltyPartComponent } from './screen-parts/sale-loyalty-part/sale-loyalty-part.component';
+import { TabbedContentCardComponent } from './components/tabbed-content-card/tabbed-content-card.component';
 
 const screenParts = [
     TenderPartComponent,
@@ -320,7 +321,8 @@ const components = [
     DisplayCustomerLookupComponent,
     WatermarkComponent,
     StandbyComponent,
-    ExpansionPanelComponent
+    ExpansionPanelComponent,
+    TabbedContentCardComponent
 ];
 
 const directives = [

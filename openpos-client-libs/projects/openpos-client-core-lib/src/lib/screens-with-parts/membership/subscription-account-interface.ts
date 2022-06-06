@@ -3,8 +3,7 @@ import { Plan } from './plan-interface';
 import { EnrollmentItem } from './enrollment-item-interface';
 
 export class SubscriptionAccount {
-    iconImageUrl: string;
-    iconText: string;
+    customerProgramId: string;
     copy: string;
     enrollmentItems: EnrollmentItem[];
     listTitle: string;

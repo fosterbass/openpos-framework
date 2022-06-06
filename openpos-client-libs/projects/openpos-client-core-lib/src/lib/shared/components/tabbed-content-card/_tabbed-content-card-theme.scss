@@ -1,0 +1,30 @@
+@mixin tabbed-content-card-theme($theme) {
+    $app-primary: mat-color(map-get($theme, primary));
+    $disabled: map-get(map-get($theme, foreground), disabled);
+    $hover: map-get(map-get($theme, background), hover);
+
+    app-tabbed-content-card {
+
+        .non-selected-tab {
+            color: $disabled;
+            border-radius: 0px;
+
+            &:hover {
+                background-color: $hover;
+            }
+        }
+
+        .selected-tab {
+            border-bottom: .25rem;
+            border-bottom-style: solid;
+            border-color: $app-primary;
+            border-radius: 0px;
+            color: $app-primary;
+        }
+
+        .mat-flat-button {
+            background-color: inherit;
+        }
+    }
+
+}
