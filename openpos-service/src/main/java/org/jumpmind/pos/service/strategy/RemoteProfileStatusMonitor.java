@@ -4,10 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.jumpmind.pos.util.status.IStatusManager;
-import org.jumpmind.pos.util.status.IStatusReporter;
-import org.jumpmind.pos.util.status.Status;
-import org.jumpmind.pos.util.status.StatusReport;
+import org.jumpmind.pos.util.clientcontext.ClientContext;
+import org.jumpmind.pos.util.status.*;
 import org.jumpmind.pos.util.web.ConfiguredRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -22,15 +20,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 @Slf4j
-public class RemoteProfileStatusMonitor implements IStatusReporter {
+public class RemoteProfileStatusMonitor extends AbstractStatusReporter {
     public static final String STATUS_NAME = "NETWORK.REMOTE";
     public static final String STATUS_ICON = "cloud";
 
     private Map<String, RemoteProfileStatusInfo> statuses = new ConcurrentHashMap<>();
-
-    private IStatusManager statusManager;
-
-    private StatusReport lastStatus;
 
     private RestTemplate template;
 
@@ -41,12 +35,13 @@ public class RemoteProfileStatusMonitor implements IStatusReporter {
     }
 
     @Override
-    public StatusReport getStatus(IStatusManager statusManager, String deviceId) {
-        this.statusManager = statusManager;
-        if (lastStatus == null) {
-            this.lastStatus = new StatusReport(STATUS_NAME, STATUS_ICON, Status.Unknown, "");
-        }
-        return lastStatus;
+    protected String getIdForLastStatus() {
+        return clientContext.get(ClientContext.DEVICE_ID);
+    }
+
+    @Override
+    protected StatusReport getUnknownStatusReport() {
+        return new StatusReport(STATUS_NAME, STATUS_ICON, Status.Unknown, "");
     }
 
     public boolean isOffline(String profileId) {
@@ -111,10 +106,7 @@ public class RemoteProfileStatusMonitor implements IStatusReporter {
             }
         }
 
-        this.lastStatus = new StatusReport(STATUS_NAME, STATUS_ICON, lowestCommonDenominatorStatus, message);
-        if (this.statusManager != null) {
-            this.statusManager.reportStatus(lastStatus);
-        }
+        this.recordAndPublishStatus(new StatusReport(STATUS_NAME, STATUS_ICON, lowestCommonDenominatorStatus, message));
     }
 
     @Scheduled(fixedDelayString = "${openpos.services.remoteServerOfflineCheckDelayMs:10000}")
