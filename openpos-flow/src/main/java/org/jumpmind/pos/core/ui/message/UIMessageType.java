@@ -25,6 +25,7 @@ public final class UIMessageType {
     public static final String E_WALLET_PAYMENT_DIALOG = "EWalletPaymentDialog";
     public static final String DYNAMIC_FORM = "DynamicForm";
     public static final String ITEM_DETAIL = "ItemDetail";
+    public static final String PRODUCT_DETAIL = "ProductDetail";
     public static final String TENDER = "Tender";
     public static final String NO_OP = "NoOp";
     public static final String AUTO_COMPLETE_ADDRESS = "AutoCompleteAddress";

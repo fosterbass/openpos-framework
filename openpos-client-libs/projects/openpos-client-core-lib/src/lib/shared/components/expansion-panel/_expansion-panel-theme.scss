@@ -1,9 +1,9 @@
 @mixin expansion-panel-theme($theme){
-  $app-accent: mat-color(map-get($theme, accent));
+  $app-primary: mat-color(map-get($theme, primary));
   $background: map-get($theme, background);
 
   .expansion-header {
-    border-left: .75em solid $app-accent;
+    border-left: .75em solid $app-primary;
     padding-left: 0;
 
     &:hover {

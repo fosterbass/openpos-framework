@@ -1,18 +1,22 @@
-<div class="grid-table-outer" [ngStyle]="outerStyle">
-    <div class="text-sm grid-table-header" *ngFor="let columnHeader of columnHeaders">
-        {{columnHeader}}
-    </div>
-    <ng-container *ngFor="let row of rows">
-        <div class="grid-table-cell" *ngFor="let cell of row.columns">
-            <div class="grid-table-line" *ngFor="let line of cell">
-                <span *ngIf="!isAction(line)">{{line}}</span>
-                <button *ngIf="isAction(line)" mat-button (click)="doAction(line)">
-                    <div class="button">
-                        <app-icon *ngIf="line.icon" [iconName]="line.icon"></app-icon>
-                        <span [ngClass]="{'muted-color': ! line.enabled}">{{line.title}}</span>
-                    </div>
-                </button>
-            </div>
-        </div>
-    </ng-container>
-</div>
+<table [ngClass]="{'shade-alternating': shadeAlternating}" aria-describedby="dynamic grid table">
+    <tbody [ngStyle]="outerStyle">
+        <tr>
+            <th class="text-sm grid-table-header" *ngFor="let columnHeader of columnHeaders" scope="col">
+                {{columnHeader}}
+            </th>
+        </tr>
+        <tr *ngFor="let row of rows">
+            <td class="grid-table-cell" *ngFor="let cell of row.columns">
+                <div class="grid-table-line" *ngFor="let line of cell">
+                    <span *ngIf="!isAction(line)">{{line}}</span>
+                    <button *ngIf="isAction(line)" mat-button (click)="doAction(line)">
+                        <div class="button">
+                            <app-icon *ngIf="line.icon" [iconName]="line.icon"></app-icon>
+                            <span [ngClass]="{'muted-color': ! line.enabled}">{{line.title}}</span>
+                        </div>
+                    </button>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>

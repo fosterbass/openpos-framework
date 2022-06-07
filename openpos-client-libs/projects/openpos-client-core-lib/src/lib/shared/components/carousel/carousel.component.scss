@@ -1,17 +1,35 @@
 .row {
     margin: 0;
     height: 100%;
+    width: 100%;
 }
 .center-arrow {
     display: flex;
     justify-content: center;
     margin: auto;
+    padding: 0;
 }
-.item {
+.item-container {
+    display:flex;
     overflow: hidden;
-    // This can be overridden with a div.item selector in the consumers theme file
+    // This can be overridden with a div.item-container selector in the consumers theme file
     height: 9rem;
 }
+
+.item {
+    align-self: center;
+}
+
+.col-sm-1 {
+    flex: 0 0 8.333333%;
+    max-width: 8.333333%;
+}
+
+.col-sm-10 {
+    flex: 0 0 83.333333%;
+    max-width: 83.333333%;
+}
+
 .carousel-nav-dots {
     margin-top: 5px;
     text-align: center;

@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { SharedModule } from '../shared/shared.module';
 import { AutoCompleteAddressDialogComponent } from './auto-complete-address/auto-complete-address-dialog.component';
-import { BasicProductOptionPartComponent } from './item-detail/option-components/basic-product-option-part/basic-product-option-part';
-import { SwatchProductOptionPartComponent } from './item-detail/option-components/swatch-product-option-part/swatch-product-option-part.component';
+import { BasicProductOptionPartComponent } from './product/option-components/basic-product-option-part/basic-product-option-part';
+import { SwatchProductOptionPartComponent } from './product/option-components/swatch-product-option-part/swatch-product-option-part.component';
 import { SelectionListScreenComponent } from './selection-list/selection-list-screen.component';
 import { SelectionListScreenDialogComponent } from './selection-list/selection-list-screen-dialog.component';
 import { GenericDialogComponent } from './dialog/generic-dialog.component';
@@ -22,7 +22,7 @@ import { DataTableComponent } from './data-table/data-table.component';
 import { DataTableDialogComponent } from './data-table/data-table-dialog.component';
 import { AutoCompleteAddressComponent } from './auto-complete-address/auto-complete-address.component';
 import { SaleComponent } from './sale/sale.component';
-import { ItemDetailComponent } from './item-detail/item-detail.component';
+import { ItemDetailComponent } from './product/item-detail/item-detail.component';
 import { TenderComponent } from './tender/tender.component';
 import { SignatureCaptureComponent } from './signature-capture/signature-capture.component';
 import { DynamicFormDialogComponent } from './dynamic-form-dialog/dynamic-form-dialog.component';
@@ -47,6 +47,7 @@ import { PromptWithInfoScanGiftCardScreenDialogComponent } from './prompt-with-i
 import { PromptInfoScanGiftCardScreenComponent } from './prompt-with-info-scan-gift-card/prompt-info-scan-gift-card-screen.component';
 import { Prompt2ScreenDialogComponent } from './prompt2/prompt2-screen-dialog.component';
 import { EWalletPaymentDialogComponent } from './e-wallet-payment-dialog/e-wallet-payment-dialog.component';
+import { ProductDetailComponent } from './product/product-detail/product-detail.component';
 
 const screens = [
     SelectionListScreenComponent,
@@ -62,6 +63,7 @@ const screens = [
     SaleComponent,
     MobileSaleOrdersSheetComponent,
     ItemDetailComponent,
+    ProductDetailComponent,
     TenderComponent,
     SignatureCaptureComponent,
     DynamicFormComponent,

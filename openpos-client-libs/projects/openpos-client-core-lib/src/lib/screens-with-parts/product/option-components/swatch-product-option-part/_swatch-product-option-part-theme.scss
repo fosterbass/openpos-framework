@@ -2,6 +2,7 @@
 
   $foreground: map-get($theme, foreground);
 
+  $disabled: map-get(map-get($theme, foreground), disabled);
 
   app-swatch-product-options-part{
     caption{
@@ -12,6 +13,10 @@
       &.selected{
         border-color: mat-color(map-get($theme, selected));
       }
+    }
+
+    .option-name {
+      color: $disabled;
     }
   }
 }

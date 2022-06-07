@@ -1,7 +1,7 @@
-import { IActionItem } from '../../core/actions/action-item.interface';
-import { IAbstractScreen } from '../../core/interfaces/abstract-screen.interface';
-import { DisplayProperty } from '../../shared/components/display-property/display-property.interface';
-import { ProductOptionInterface } from './product-option.interface';
+import { IActionItem } from '../../../core/actions/action-item.interface';
+import { IAbstractScreen } from '../../../core/interfaces/abstract-screen.interface';
+import { DisplayProperty } from '../../../shared/components/display-property/display-property.interface';
+import { ProductOptionInterface } from '../product-option.interface';
 import { IPromotionInterface } from './promotion.interface';
 
 export interface ItemDetailInterface extends IAbstractScreen {

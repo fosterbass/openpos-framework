@@ -1,4 +1,4 @@
-import {IAbstractScreen} from '../../core/interfaces/abstract-screen.interface';
+import {IAbstractScreen} from '../../../core/interfaces/abstract-screen.interface';
 
 export interface IPromotionInterface extends IAbstractScreen {
     icon: string;
