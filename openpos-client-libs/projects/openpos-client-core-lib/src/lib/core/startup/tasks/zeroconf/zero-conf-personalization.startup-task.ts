@@ -139,8 +139,21 @@ export class ZeroConfPersonalizationStartupTask extends AutoPersonalizationStart
 
         backOffTime = 1000;
 
+        // A shim for < 4.0 to >= 4.0 endpoints. A problem occurrs when the DNS has static entries
+        // with the old TXT record information and causes the application to fail to personalize
+        // with an (unexplained) CORS error when it tries to redirect to the new endpoint.
+        //
+        // Its not easy to just update the TXT record itself as it either requires a bunch of
+        // managment to ensure that only the correct stores have the record during the slow
+        // rollout. It is very easy to change it organization wide however. So once the
+        // appropraite version rolls out to every store, then this is no longer needed.
+        let txtPath: string = service.txtRecord.path;
+        if (!txtPath.startsWith('rest/')) {
+            txtPath = 'rest/' + txtPath;
+        }
+
         // generate the url where personalization parameters will be discovered.
-        const endpoint = `${service.ipv4Addresses[0]}:${service.port}/${service.txtRecord.path}`;
+        const endpoint = `${service.ipv4Addresses[0]}:${service.port}/${txtPath}`;
 
         function booleanParameter(value?: boolean | string): boolean {
             if (typeof value === 'string') {
