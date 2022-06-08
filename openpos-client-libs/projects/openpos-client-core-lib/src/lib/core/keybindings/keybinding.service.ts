@@ -195,7 +195,7 @@ export class KeybindingService implements OnDestroy {
             payload: null
         };
         this.needActionPayload$.next(keybindingAction);
-        event.actionPayload = keybindingAction.payload;
+        keybindingAction.payload = event.actionPayload ? event.actionPayload : event.action.defaultPayload;
 
         // Provide an opportunity to cancel the action
         const pendingAction: KeybindingPendingAction = {
