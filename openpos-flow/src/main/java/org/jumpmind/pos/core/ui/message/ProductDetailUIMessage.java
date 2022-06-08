@@ -20,6 +20,7 @@ public class ProductDetailUIMessage extends UIMessage {
     private String price;
     private String availabilityLabel;
     private String availabilityType;
+    private String orderAvailabilityLabel;
     private List<String> imageUrls;
     private String alternateImageUrl;
     private List<ProductOptionComponent> productOptionsComponents;

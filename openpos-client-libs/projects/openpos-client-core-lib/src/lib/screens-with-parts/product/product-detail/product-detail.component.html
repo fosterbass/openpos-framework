@@ -7,9 +7,13 @@
             <div class="product" responsive-class>
                 <app-title [title]="screen.productName"></app-title>
                 <div class="product-details" responsive-class>
-                    <section class="price-and-availability">
+                    <section class="price-and-availability" 
+                        [ngClass]="{'align-center': screen.orderAvailabilityLabel, 'align-baseline': !screen.orderAvailabilityLabel}">
                         <app-currency-text class="item-price" [amountText]="screen.price" responsive-class></app-currency-text>
-                        <span class="availability" [ngClass]="getAvailabilityStyle()" responsive-class>{{screen.availabilityLabel}}</span>
+                        <div class="availability-section">
+                            <span class="availability" [ngClass]="getAvailabilityStyle()" responsive-class>{{screen.availabilityLabel}}</span>
+                            <span *ngIf="screen.orderAvailabilityLabel" class="not-available">{{screen.orderAvailabilityLabel}}</span>
+                        </div>
                     </section>
                     <section class="identifiers">
                         <app-display-property *ngFor="let prop of screen.productIdentifiers" responsive-class 

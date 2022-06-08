@@ -14,6 +14,7 @@ export interface ProductDetailInterface extends IAbstractScreen {
     price: string;
     availabilityLabel: string;
     availabilityType: AvailabilityType;
+    orderAvailabilityLabel: string;
     imageUrls: string[];
     alternateImageUrl: string;
     productOptionsComponents: ProductOptionInterface[];
