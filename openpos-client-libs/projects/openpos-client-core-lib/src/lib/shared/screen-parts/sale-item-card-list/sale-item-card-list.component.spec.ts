@@ -194,8 +194,7 @@ describe('SaleItemCardListComponent', () => {
         it('should should remove previous keybindings and add new ones when sell items change', () => {
             const takeGregsMoney = {
                 keybind: 'F12',
-                action: 'TakeEveryBitOfGregsMoney!!!!',
-                payload: 'Test'
+                action: 'TakeEveryBitOfGregsMoney!!!!'
             };
 
             mockSessionService.dispatchMessage(
