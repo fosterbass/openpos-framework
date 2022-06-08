@@ -29,4 +29,5 @@ export interface SaleLoyaltyPartInterface extends IAbstractScreen {
     loyaltyIcon: string;
     loyaltyRewards: Reward[];
     noPromotionsLabel: string;
+    alertMessage: string;
 }

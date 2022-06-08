@@ -124,7 +124,8 @@ $sale-total-icon-size: 36px;
                     "Icon              Name              LoyaltyIcon"
                     ".                 MembershipDetails MembershipDetails"
                     "Memberships       Memberships       Memberships"
-                    "MembershipRewards MembershipRewards MembershipRewards"; 
+                    "MembershipRewards MembershipRewards MembershipRewards"
+                    "AlertMessage      AlertMessage      AlertMessage";
 
                 &.tablet,
                 &.mobile {
@@ -250,6 +251,11 @@ $sale-total-icon-size: 36px;
                             }
                         }
                     }
+                }
+                .alert-message {
+                    grid-area: AlertMessage;
+                    line-height: normal;
+                    white-space: normal;
                 }
             }
         }
