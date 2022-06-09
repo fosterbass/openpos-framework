@@ -1,14 +1,10 @@
+import { IInventoryDetail } from '../inventory-detail.interface';
+
 export interface IProductInventory {
     inventoryTitle: string;
     icon: string;
-    onHandLabel: string;
-    onHandCount: number;
-    reservedLabel: string;
-    reservedCount: number;
-    damagedLabel: string;
-    damagedCount: number;
+    businessUnitInventoryDetails: IInventoryDetail[];
     noBuddyStoresMessage: string;
     buddyStoreOfflineMessage: string;
-    inventoryMessageProviderKey: string;
     buddyStoreProviderKey: string;
 }

@@ -53,7 +53,8 @@ export class SwatchProductOptionPartComponent extends ScreenPartComponent<Swatch
 
     selectOption(swatchId: string) {
         console.log('selected', swatchId);
-        this.doAction(this.screenData.selectOptionAction, swatchId);
+        const data = {optionId: this.screenData.optionId, value: swatchId};
+        this.doAction(this.screenData.selectOptionAction, data);
     }
 
     onImageLoadFailed() {
