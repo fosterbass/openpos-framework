@@ -96,7 +96,7 @@
                         <tr>
                             <th class="promotion-icon" scope="col"></th>
                             <th scope="col">{{screen.itemValueDisplay.label}}</th>
-                            <th scope="col">{{screen.itemValueDisplay.value}}</th>
+                            <th scope="col">{{screen.itemValueDisplay.value | number: '1.2-5'}}</th>
                         </tr>
                         <tr *ngFor="let promo of screen.promotions">
                             <td class="promotion-icon">
