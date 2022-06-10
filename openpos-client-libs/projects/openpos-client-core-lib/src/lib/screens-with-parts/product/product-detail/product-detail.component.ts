@@ -33,7 +33,6 @@ export class ProductDetailComponent extends PosScreenDirective<ProductDetailInte
     buddyStoreInventory$: Observable<IDataTableRow[]>;
     buddyStores$: Observable<BuddyStoreInterface[]>;
     buddyStoresOnline$: Observable<boolean>;
-    inventoryDetails$: Observable<IInventoryDetail[]>;
 
 
     @ViewChild('info') infoTemplate: TemplateRef<any>;
@@ -81,7 +80,6 @@ export class ProductDetailComponent extends PosScreenDirective<ProductDetailInte
                 stores.map(s => ({columns: [[s.storeName], [s.storeCount]]}))));
             this.buddyStoresOnline$ = this.buddyStores$
                 .pipe(map(stores => stores != undefined));
-            this.inventoryDetails$ = this.dataMessageService.getData$(this.screen.productInventory.inventoryMessageProviderKey);
         }
 
         this.screen.imageUrls = [].concat(this.screen.imageUrls);

@@ -50,7 +50,6 @@ app-bacon-strip{
                 .price-and-availability {
                     display: flex;
                     column-gap: $med-space;
-                    align-items: baseline;
         
                     &.mobile,
                     &.tablet-portrait {
@@ -61,9 +60,22 @@ app-bacon-strip{
                         @extend %text-xl;
                     }
             
-                    .availability {
-                        @extend %text-md;
+                    .availability-section {
+                        display:flex;
+                        flex-direction: column;
+
+                        .availability {
+                            @extend %text-md;
+                        }
                     }
+                }
+
+                .align-center {
+                    align-items: center;
+                }
+
+                .align-baseline {
+                    align-items: baseline;
                 }
         
                 .identifiers {

@@ -7,9 +7,13 @@
             <div class="product" responsive-class>
                 <app-title [title]="screen.productName"></app-title>
                 <div class="product-details" responsive-class>
-                    <section class="price-and-availability">
+                    <section class="price-and-availability" 
+                        [ngClass]="{'align-center': screen.orderAvailabilityLabel, 'align-baseline': !screen.orderAvailabilityLabel}">
                         <app-currency-text class="item-price" [amountText]="screen.price" responsive-class></app-currency-text>
-                        <span class="availability" [ngClass]="getAvailabilityStyle()" responsive-class>{{screen.availabilityLabel}}</span>
+                        <div class="availability-section">
+                            <span class="availability" [ngClass]="getAvailabilityStyle()" responsive-class>{{screen.availabilityLabel}}</span>
+                            <span *ngIf="screen.orderAvailabilityLabel" class="not-available">{{screen.orderAvailabilityLabel}}</span>
+                        </div>
                     </section>
                     <section class="identifiers">
                         <app-display-property *ngFor="let prop of screen.productIdentifiers" responsive-class 
@@ -78,8 +82,8 @@
                     <app-icon *ngIf="screen.productInventory.icon" [iconName]="screen.productInventory.icon"></app-icon>
                     {{screen.productInventory.inventoryTitle}}
                 </h3>
-                <div class="inventory-counts">
-                    <div *ngFor="let detail of inventoryDetails$ | async" class="count">
+                <div *ngIf="screen.productInventory.businessUnitInventoryDetails" class="inventory-counts">
+                    <div *ngFor="let detail of screen.productInventory.businessUnitInventoryDetails" class="count">
                         <span *ngIf="detail.count" class="count-value" responsive-class>{{detail.count}}</span>
                         <span *ngIf="!detail.count" class="count-message" responsive-class>{{detail.message}}</span>
                         <span class="count-label" responsive-class>{{detail.label}}</span>

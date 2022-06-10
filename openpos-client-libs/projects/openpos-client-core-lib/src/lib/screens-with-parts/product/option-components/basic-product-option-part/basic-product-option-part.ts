@@ -26,7 +26,9 @@ export class BasicProductOptionPartComponent extends ScreenPartComponent<BasicPr
     }
 
     optionSelected(selectChange: MatSelectChange) {
-        this.doAction(this.screenData.selectOptionAction, selectChange.value);
+        const data = {optionId: this.screenData.optionId, value: selectChange.value};
+        this.doAction(this.screenData.selectOptionAction, data);
+
     }
 
 }
