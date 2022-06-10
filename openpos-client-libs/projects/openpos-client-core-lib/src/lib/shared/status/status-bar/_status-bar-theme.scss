@@ -10,7 +10,7 @@
   $background: map-get($theme, background );
 
   app-status-bar{
-    background-color: #263746; 
+    background-color: #2a2a2a; 
     color: map-get($foreground, inverse-secondary-text);
 
     .status-icons{

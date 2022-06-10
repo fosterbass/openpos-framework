@@ -73,7 +73,7 @@
                 </div>
                 <div class="icon">
                     <app-icon [iconName]="screenData.profileIcon"
-                              [iconClass]="(isMobile$ | async) ? null: 'material-icons mat-36'" style="color: #263746 !important;"></app-icon>
+                              [iconClass]="(isMobile$ | async) ? null: 'material-icons mat-36'" ></app-icon>
                 </div>
                 <div class="loyalty-icon" responsive-class>
                     <img *ngIf="screenData.loyaltyButton.icon" [src]="screenData.loyaltyButton.icon | imageUrl"

@@ -16,7 +16,7 @@ $sale-total-icon-size: 36px;
         font-size: $sale-total-icon-size;
     }
     .loyalty-arrow {
-        color: #263746 !important;
+        color: white !important;
         vertical-align: top;
     }
     .link-customer {
@@ -141,7 +141,6 @@ $sale-total-icon-size: 36px;
                     margin-top: 8px;
 
                     .customer-name {
-                        color: #263746 !important;
                         @extend %text-md;
                         line-height: 1.25em;
                         text-overflow: ellipsis;
