@@ -15,6 +15,7 @@ import { ITabContent } from '../../../shared/components/tabbed-content-card/tab-
 import { IDataTableRow } from '../../../shared/components/grid-table/data-table-row.interface';
 import { IInventoryDetail } from '../inventory-detail.interface';
 import { AvailabilityType } from './availability-type.enum';
+import { ITab } from '../../../shared/components/tabbed-content-card/tab.interface';
 
 @ScreenComponent({
     name: 'ProductDetail'
@@ -41,6 +42,7 @@ export class ProductDetailComponent extends PosScreenDirective<ProductDetailInte
     public selectedTabValue: string;
     public selectedTabContent: ITabContent;
     columns: string[];
+    tabs: ITab[];
 
     constructor(@Optional() private injector: Injector, media: OpenposMediaService,
                 private dataMessageService: UIDataMessageService,
@@ -83,6 +85,7 @@ export class ProductDetailComponent extends PosScreenDirective<ProductDetailInte
         }
 
         this.screen.imageUrls = [].concat(this.screen.imageUrls);
+        this.tabs = [...this.screen.tabs];
     }
 
     getComponentFromOptionType(productOption: ProductOptionInterface) {

@@ -25,12 +25,12 @@
                         <ng-container *ngComponentOutlet="component.value; injector: component.key" responsive-class></ng-container>
                     </ng-container>
                 </section>
-                <app-tabbed-content-card id="tabbedContent" *ngIf="!(isMobile | async) && screen.tabs" [tabs]="screen.tabs" 
+                <app-tabbed-content-card id="tabbedContent" *ngIf="!(isMobile | async) && tabs" [tabs]="tabs" 
                     [selectedTabTemplate]="getSelectedTabTemplate()" 
                     (tabChange)="updateSelectedTab($event)" responsive-class>
                 </app-tabbed-content-card>
-                <div *ngIf="(isMobile | async) && screen.tabs" class="product-expansion-panels" responsive-class>
-                    <div *ngFor="let tab of screen.tabs" class="product-expansion-panel">
+                <div *ngIf="(isMobile | async) && tabs" class="product-expansion-panels" responsive-class>
+                    <div *ngFor="let tab of tabs" class="product-expansion-panel">
                         <app-expansion-panel>
                             <ng-container header>
                                 <span class="product-expansion-panel-header" responsive-class>{{tab.label}}</span>
