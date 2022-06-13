@@ -10,8 +10,10 @@ export class PersonalizationTokenService {
     static readonly APP_ID_TOKEN = '${appId}';
     static readonly DEVICE_ID_TOKEN = '${deviceId}';
 
-    constructor(private discoveryService: DiscoveryService, private personalizationService: PersonalizationService) {
-    }
+    constructor(
+        private discoveryService: DiscoveryService,
+        private personalizationService: PersonalizationService
+    ) {}
 
     public replaceTokens(value: string): string {
         if (!value) {

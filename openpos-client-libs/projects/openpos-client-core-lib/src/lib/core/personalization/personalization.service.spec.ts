@@ -1,8 +1,7 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { PersonalizationConfigResponse } from './personalization-config-response.interface';
-import { PersonalizationParameter } from './personalization-parameter.interface';
-import { PersonalizationResponse } from './personalization-response.interface';
+import { PersonalizationConfig, PersonalizationParameter } from './personalization-config';
+import { PersonalizationResponse } from './personalization-request';
 import { PersonalizationService } from './personalization.service';
 
 describe('PersonalizationService', () => {
@@ -115,7 +114,12 @@ describe('PersonalizationService', () => {
             const params = new Map<string, string>();
             params.set('deviceType', 'register');
 
-            personalizationService.personalize('server', '6140', '22222-222', 'pos', params, false).subscribe(result => {
+            personalizationService.personalize({
+                serverConnection: { host: 'server', port: 6140, secured: false },
+                deviceId: '22222-222',
+                appId: 'pos',
+                params
+            }).subscribe(result => {
                 expect(result).toBe('Personalization successful');
                 expect(personalizationService.getAppId$().getValue()).toBe('pos');
                 expect(personalizationService.getDeviceId$().getValue()).toBe('22222-222');
@@ -195,20 +199,17 @@ describe('PersonalizationService', () => {
             cleanup();
             setup();
 
-            personalizationService.requestPersonalizationConfig('server', '6140', false).subscribe(result => {
-                expect(result.devicePattern).toBe('pattern');
-            });
+            personalizationService.requestPersonalizationConfig('server', '6140', false).subscribe();
 
             const req = httpMock.expectOne('http://server:6140/rest/devices/personalizationConfig');
 
             expect(req.request.method).toBe('GET');
 
             const resp = {
-                devicePattern: 'pattern',
                 parameters: [
                     { label: 'Device Type', property: 'deviceType', defaultValue: 'default' } as PersonalizationParameter,
                 ]
-            } as PersonalizationConfigResponse;
+            } as PersonalizationConfig;
 
             req.flush(resp);
 
@@ -218,20 +219,17 @@ describe('PersonalizationService', () => {
             cleanup();
             setup();
 
-            personalizationService.requestPersonalizationConfig('server', '6140', true).subscribe(result => {
-                expect(result.devicePattern).toBe('pattern');
-            });
+            personalizationService.requestPersonalizationConfig('server', '6140', true).subscribe();
 
             const req = httpMock.expectOne('https://server:6140/rest/devices/personalizationConfig');
 
             expect(req.request.method).toBe('GET');
 
             const resp = {
-                devicePattern: 'pattern',
                 parameters: [
                     { label: 'Device Type', property: 'deviceType', defaultValue: 'default' } as PersonalizationParameter,
                 ]
-            } as PersonalizationConfigResponse;
+            } as PersonalizationConfig;
 
             req.flush(resp);
 

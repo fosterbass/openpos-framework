@@ -1,0 +1,42 @@
+
+<h1 mat-dialog-title *ngIf="!!serverInitStatus">Server Initializing</h1>
+
+<div *ngIf="!!serverInitStatus; else connectSpin" mat-dialog-content>
+    <ul class="status-list">
+        <li class="flex f-row ai-center" *ngFor="let p of serverInitStatus.providers">
+            <div class="m4" [ngSwitch]="p.currentState">
+                <mat-icon *ngSwitchCase="'READY'" class="green">check_circle</mat-icon>
+                <mat-spinner *ngSwitchCase="'NOT_READY'" [diameter]="40"></mat-spinner>
+                <mat-icon *ngSwitchDefault class="red">error</mat-icon>
+            </div>
+
+            <div class="flex f-row">
+                <div class="header">{{ p.name }}</div>
+                <div class="message muted" [ngSwitch]="p.currentState">
+                    <ng-template [ngSwitchCase]="'READY'">
+                        {{ 'Ready' }}
+                    </ng-template>
+                    <ng-template [ngSwitchCase]="'NOT_READY'">
+                        {{ p.message || 'Initializing' }}
+                    </ng-template>
+                    <ng-template ngSwitchDefault>
+                        {{ p.message || 'Error' }}
+                    </ng-template>
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>
+
+<ng-template #connectSpin>
+    <div mat-dialog-content class="flex jc-center ai-center">
+        <div class="server-connecting">
+            <mat-spinner [diameter]="180"></mat-spinner>
+            <p>Connecting to Server...</p>
+        </div>
+    </div>
+</ng-template>
+
+<mat-dialog-actions>
+    <button *ngIf="canCancel" mat-button (click)="onCancel()">Cancel</button>
+</mat-dialog-actions>

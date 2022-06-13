@@ -1,0 +1,70 @@
+
+:host {
+    padding: 8px;
+}
+
+div[mat-dialog-content] {
+    margin: 8px;
+    padding: 0px;
+}
+
+.server-connecting {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 16px;
+}
+
+ul.status-list {
+    list-style: none;
+
+    mat-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 40px;
+
+        &.green {
+            color: green;
+        }
+
+        &.red {
+            color: red;
+        }
+    }
+
+    mat-icon.good {
+        color: green
+    }
+    
+    .header {
+        font-size: 1.2em;
+    }
+
+    .message {
+        font-size: 0.8em;
+    }
+}
+
+.flex {
+    display: flex;
+
+    &.f-row {
+        flex-direction: row;
+    }
+
+    &.f-col {
+        flex-direction: column;
+    }
+
+    &.jc-center {
+        justify-content: center;
+    }
+
+    &.ai-center {
+        align-items: center;
+    }
+}
+
+.m4 {
+    margin: 4px;
+}

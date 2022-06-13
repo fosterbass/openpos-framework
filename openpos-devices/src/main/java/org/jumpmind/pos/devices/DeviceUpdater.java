@@ -57,13 +57,10 @@ public class DeviceUpdater implements ApplicationListener<DeviceConnectedEvent> 
         deviceModel.setLastUpdateTime(new Date());
         deviceModel.setLastUpdateBy("personalization");
         deviceModel.updateTags((AbstractEnvironment) env);
+
         String configuredBusinessUnitId = deviceBusinessUnitIdStrategy.getBusinessUnitId(deviceModel);
         if (deviceModel.getBusinessUnitId() == null || deviceModel.getBusinessUnitId().equals(configuredBusinessUnitId)) {
             deviceModel.setBusinessUnitId(configuredBusinessUnitId);
-        } else {
-            throw new DeviceNotAuthorizedException(
-                    format("The configured device has a different business unit %s than the current configured business unit %s",
-                            deviceModel.getBusinessUnitId(), configuredBusinessUnitId));
         }
 
         if (this.tagProviders != null && tagProviders.size() > 0) {

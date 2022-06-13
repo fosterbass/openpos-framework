@@ -1,0 +1,65 @@
+<mat-vertical-stepper *ngIf="config | async as c; else configSpin" linear="true">
+    <mat-step [stepControl]="businessUnitSelectionGroup">
+        <ng-template matStepLabel>Choose a Business Unit</ng-template>
+
+        <form class="flex f-col ai-start" [formGroup]="businessUnitSelectionGroup">
+            <mat-form-field class="stretch" appearance="fill">
+                <mat-label>Business Unit</mat-label>
+                <select matNativeControl formControlName="businessUnit">
+                    <option *ngFor="let bu of c.availableBusinessUnits" [value]="bu.id">{{ bu.id }} <span *ngIf="bu.name">- {{ bu.name }}</span> <span *ngIf="bu.locationHint">- {{ bu.locationHint }}</span></option>
+                </select>
+                <mat-hint *ngIf="selectedBusinessUnitId.invalid" align="start">
+                    <strong>{{ createErrorHint(selectedDeviceId) }}</strong>
+                </mat-hint>
+            </mat-form-field>
+
+            <div class="button-group">
+                <button type="submit" mat-button matStepperNext color="primary">Next</button>
+            </div>
+        </form>
+    </mat-step>
+
+
+    <mat-step [stepControl]="existingDeviceSelectionGroup">
+        <ng-template matStepLabel>Choose a Device</ng-template>
+
+        <form class="flex f-col ai-start" [formGroup]="existingDeviceSelectionGroup" (ngSubmit)="onDeviceSelectionFormSubmitted(c)">
+            <div class="flex f-row stretch">
+                <mat-form-field class="grow-1" appearance="fill">
+                    <mat-label>Device</mat-label>
+                    <select matNativeControl formControlName="device">
+                        <option *ngFor="let d of getDevicesForBusinessUnit(c, selectedBusinessUnitId?.value)" [value]="d.deviceId">
+                            {{ d.deviceId }} ({{ d.appId }}) <span *ngIf="d.connected">(connected)</span>
+                        </option>
+                    </select>
+                    <mat-hint *ngIf="selectedDeviceId.invalid" align="start">
+                        <strong>{{ createErrorHint(selectedDeviceId) }}</strong>
+                    </mat-hint>
+                </mat-form-field>
+
+
+                <button *ngIf="selectedDeviceId?.value" mat-icon-button class="mt-06" type="button"
+                        (click)="onEditDevice(c, selectedBusinessUnitId?.value, selectedDeviceId?.value)">
+                    <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button class="mt-06" type="button"
+                        (click)="onCreateNewDevice(c, selectedBusinessUnitId?.value)">
+                    <mat-icon>library_add</mat-icon>
+                </button>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" mat-button matStepperNext color="primary">Connect</button>
+            </div>
+        </form>
+    </mat-step>
+</mat-vertical-stepper>
+
+<ng-template #configSpin>
+    <div class="flex jc-center ai-center ma-16px">
+        <div class="flex f-col jc-center ai-center">
+            <mat-spinner [diameter]="180"></mat-spinner>
+            <p>Retreiving Personalization Configuration...</p>
+        </div>
+    </div>
+</ng-template>

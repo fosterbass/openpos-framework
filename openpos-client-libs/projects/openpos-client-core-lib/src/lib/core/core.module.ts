@@ -16,7 +16,6 @@ import { StompRService } from '@stomp/ng2-stompjs';
 import { DialogContentComponent } from './components/dialog-content/dialog-content.component';
 import { TrainingOverlayService } from './services/training-overlay.service';
 import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
-import { PersonalizationComponent } from './personalization/personalization.component';
 import { ToastService } from './services/toast.service';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -80,6 +79,7 @@ import { ENTERPRISE_CONFIGS } from './platform-plugins/enterprise-config/enterpr
 import { KeybindingDialogService } from './keybindings/keybinding-dialog.service';
 import { ZeroConfPersonalizationDialogComponent } from './startup/tasks/zeroconf/zero-conf-personalization-dialog.component';
 import { ElectronPlatform } from './platforms/electron.platform';
+import { PersonalizationDialogsModule } from './personalization/dialogs/personalization-dialogs.module';
 
 registerLocaleData(locale_enCA, 'en-CA');
 registerLocaleData(locale_frCA, 'fr-CA');
@@ -88,7 +88,6 @@ registerLocaleData(locale_esMX, 'es-MX');
 @NgModule({
     entryComponents: [
         ConfirmationDialogComponent,
-        PersonalizationComponent,
         DialogContentComponent,
         SplashScreenComponent,
         LockScreenComponent,
@@ -98,7 +97,6 @@ registerLocaleData(locale_esMX, 'es-MX');
         OpenposAppComponent,
         DialogContentComponent,
         ConfirmationDialogComponent,
-        PersonalizationComponent,
         SplashScreenComponent,
         LockScreenComponent,
         ZeroConfPersonalizationDialogComponent
@@ -111,7 +109,8 @@ registerLocaleData(locale_esMX, 'es-MX');
         CommerceServerSinkModule,
         NewRelicSinkModule,
         ConfigProvidersModule,
-        PowerModule
+        PowerModule,
+        PersonalizationDialogsModule
     ],
     exports: [
         BrowserModule,

@@ -38,6 +38,7 @@ public class PersonalizeEndpoint {
 
     public PersonalizationResponse personalize(@RequestBody PersonalizationRequest request) {
         String authToken = request.getDeviceToken();
+        final String businessUnitId = request.getBusinessUnitId();
         final String deviceId = request.getDeviceId();
         final String appId = request.getAppId();
         final String parentAppId = request.getParentAppId();
@@ -73,6 +74,7 @@ public class PersonalizeEndpoint {
             }
 
             deviceModel = new DeviceModel();
+            deviceModel.setBusinessUnitId(businessUnitId);
             deviceModel.setAppId(appId);
             deviceModel.setDeviceId(deviceId);
 

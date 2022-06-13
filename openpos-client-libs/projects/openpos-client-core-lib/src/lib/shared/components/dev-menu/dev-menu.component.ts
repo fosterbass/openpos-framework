@@ -8,7 +8,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { CONFIGURATION } from '../../../configuration/configuration';
 import { PersonalizationService } from '../../../core/personalization/personalization.service';
-import { PersonalizationComponent } from '../../../core/personalization/personalization.component';
 import { FileViewerComponent } from '../file-viewer/file-viewer.component';
 import { IMessageHandler } from '../../../core/interfaces/message-handler.interface';
 import { IOldPlugin } from '../../../core/oldplugins/oldplugin.interface';
@@ -502,16 +501,12 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
 
     public onPersonalize() {
         this.devMenuPanel.close();
+
         this.personalization.dePersonalize();
         this.session.unsubscribe();
 
-        const d = this.dialog.open(PersonalizationComponent, {
-            disableClose: true,
-            hasBackdrop: false,
-            panelClass: 'openpos-default-theme'
-        });
-        d.afterOpened().subscribe(() => this.session.cancelLoading());
-        d.afterClosed().subscribe(() => this.personalization.refreshApp());
+        // this will just take us through the personalization steps already, so let it?
+        this.onDevRefreshView();
     }
 
     public onDevClearLocalStorage() {

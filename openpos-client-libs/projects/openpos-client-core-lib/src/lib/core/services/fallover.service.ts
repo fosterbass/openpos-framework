@@ -75,25 +75,32 @@ export class FailoverService {
 
             if (!!failoverLocation.token) {
                 console.log(`Failing over to ${failoverLocation.address}:${failoverLocation.port}`);
-                this.personalization.personalizeWithToken(
-                    failoverLocation.address,
-                    failoverLocation.port,
-                    failoverLocation.token,
-                    this.personalization.getSslEnabled$().getValue()
-                ).subscribe(result => {
+                this.personalization.personalize({
+                    serverConnection: {
+                        host: failoverLocation.address,
+                        port: +failoverLocation.port,
+                        secured: this.personalization.getSslEnabled$().getValue()
+                    },
+                    authToken: failoverLocation.token,
+                    deviceId: this.personalization.getDeviceId$().getValue(),
+                    appId: this.personalization.getAppId$().getValue(),
+                    params: this.personalization.getPersonalizationProperties$().getValue(),
+                }).subscribe(result => {
                     console.log(result);
                     this.personalization.refreshApp();
                 });
             } else {
                 console.log(`Failing over to ${failoverLocation.address}:${failoverLocation.port} DeviceId ${this.personalization.getDeviceId$().getValue()}`);
-                this.personalization.personalize(
-                    failoverLocation.address,
-                    failoverLocation.port,
-                    this.personalization.getDeviceId$().getValue(),
-                    this.personalization.getAppId$().getValue(),
-                    this.personalization.getPersonalizationProperties$().getValue(),
-                    this.personalization.getSslEnabled$().getValue()
-                ).subscribe(result => {
+                this.personalization.personalize({
+                    serverConnection: {
+                        host: failoverLocation.address,
+                        port: +failoverLocation.port,
+                        secured: this.personalization.getSslEnabled$().getValue()
+                    },
+                    deviceId: this.personalization.getDeviceId$().getValue(),
+                    appId: this.personalization.getAppId$().getValue(),
+                    params: this.personalization.getPersonalizationProperties$().getValue()
+                }).subscribe(result => {
                     console.log(result);
                     this.personalization.refreshApp();
                 });
@@ -118,14 +125,16 @@ export class FailoverService {
                 });
             } else {
                 console.log(`Restoring to primary server ${location.address}:${location.port}`);
-                this.personalization.personalize(
-                    location.address,
-                    location.port,
-                    this.personalization.getDeviceId$().getValue(),
-                    this.personalization.getAppId$().getValue(),
-                    this.personalization.getPersonalizationProperties$().getValue(),
-                    this.personalization.getSslEnabled$().getValue()
-                ).subscribe(result => {
+                this.personalization.personalize({
+                    serverConnection: {
+                        host: location.address,
+                        port: +location.port,
+                        secured: this.personalization.getSslEnabled$().getValue()
+                    },
+                    deviceId: this.personalization.getDeviceId$().getValue(),
+                    appId: this.personalization.getAppId$().getValue(),
+                    params: this.personalization.getPersonalizationProperties$().getValue()
+                }).subscribe(result => {
                     console.log(result);
                     this.personalization.refreshApp();
                 });

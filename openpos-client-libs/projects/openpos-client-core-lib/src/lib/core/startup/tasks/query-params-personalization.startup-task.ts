@@ -43,14 +43,13 @@ export class QueryParamsPersonalization implements StartupTask {
         }
 
         if (deviceId && serverName) {
-            await this._personalization.personalize(
-                serverName,
-                serverPort,
+            await this._personalization.personalize({
+                serverConnection: { host: serverName, port: serverPort, secured: sslEnabled },
                 deviceId,
                 appId,
-                personalizationProperties,
-                sslEnabled
-            ).pipe(last()).toPromise();
+                params: personalizationProperties
+            }).toPromise();
+
             return;
         }
 

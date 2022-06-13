@@ -9,6 +9,7 @@ import { ConfigurationService } from '../../../services/configuration.service';
 import { Zeroconf, ZeroconfService } from '../../../zeroconf/zeroconf';
 import { AutoPersonalizationStartupTask } from '../auto-personalization.startup-task';
 import { ZeroConfPersonalizationDialogComponent } from './zero-conf-personalization-dialog.component';
+import { openServerConnectingDialog } from '../personalize-utils';
 
 class ZeroConfPersonalizationConfig extends ConfigChangedMessage {
     enabled?: boolean;
@@ -168,6 +169,14 @@ export class ZeroConfPersonalizationStartupTask extends AutoPersonalizationStart
         // if the secured flag is on, then used https. Value is a string.
         const useHttps = booleanParameter(service.txtRecord.secured);
 
+        // wait for the server to be ready before trying to get personalization params.
+        await openServerConnectingDialog(this._dialog, {
+            host: service.ipv4Addresses[0],
+            port: service.port,
+            secure: useHttps,
+            canCancel: false
+        });
+
         let info: AutoPersonalizationParametersResponse;
 
         while (keepTrying) {
@@ -185,6 +194,14 @@ export class ZeroConfPersonalizationStartupTask extends AutoPersonalizationStart
         backOffTime = 1000;
 
         currentStep.next(2);
+
+        // wait for the server to be ready before trying to personalize with it
+        await openServerConnectingDialog(this._dialog, {
+            host: info.serverAddress,
+            port: +info.serverPort,
+            secure: info.sslEnabled,
+            canCancel: false
+        });
 
         while (keepTrying) {
             try {

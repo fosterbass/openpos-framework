@@ -16,8 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Slf4j
 public class InitSymDSStep implements ITransitionStep {
 
+    // todo: we can probably get rid of this entire state since it can't be reliably be enforced; client will do it.
+
     @Autowired(required = false)
-    protected SymClient symClient;
+    protected SymDSInitStatusProvider initStatusProvider;
 
     @Autowired(required = false)
     ISymmetricEngine symmetricEngine;
@@ -41,7 +43,7 @@ public class InitSymDSStep implements ITransitionStep {
 
     @ActionHandler
     boolean onCheckAgain() {
-        if (symClient != null && !symClient.isInitialLoadFinished()) {
+        if (initStatusProvider != null && initStatusProvider.getCurrentStatus().isNotReady()) {
             showStatus();
             return true;
         } else {
@@ -63,7 +65,7 @@ public class InitSymDSStep implements ITransitionStep {
                 do {
                     AppUtils.sleep(5000);
                     stateManager.doAction("CheckAgain");
-                } while (!symClient.isInitialLoadFinished());
+                } while (initStatusProvider.getCurrentStatus().isNotReady());
                 return null;
             }, res -> {
             }, err -> {

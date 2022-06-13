@@ -1,0 +1,40 @@
+
+.flex {
+    display: flex;
+
+    &.f-row {
+        flex-direction: row;
+    }
+
+    &.f-col {
+        flex-direction: column;
+    }
+
+    &.ai-start {
+        align-items: flex-start;
+    }
+
+    &.ai-center {
+        align-items: center;
+    }
+
+    &.jc-center {
+        justify-content: center;
+    }
+
+    > .stretch {
+        align-self: stretch;
+    }
+
+    > .grow-1 {
+        flex-grow: 1;
+    }
+}
+
+.ma-16px {
+    margin: 16px;
+}
+
+.mt-06 {
+    margin-top: 0.6em;
+}
