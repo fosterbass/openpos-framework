@@ -2,7 +2,8 @@
     <app-dialog-header></app-dialog-header>
     <div class="dialog-body" responsive-class>
         <mat-dialog-content>
-            <img _ngcontent-cwy-c38="" [src]="screen.qrCodeUrl" alt="qr code">
+   
+            <img _ngcontent-cwy-c38="" src="http://localhost:6140/qr-phone.png" alt="qr code">
             <!-- <app-image style="height: 300px;" class="ewalletQrCode" *ngIf="screen.qrCodeUrl" [imageUrl]="screen.qrCodeUrl" [altText]="'qr code'"></app-image> -->
             <div [innerHTML]="screen.message | markdownFormatter"></div>
         </mat-dialog-content>
