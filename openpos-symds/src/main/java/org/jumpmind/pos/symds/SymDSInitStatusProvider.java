@@ -15,7 +15,7 @@ public class SymDSInitStatusProvider implements IModuleStatusProvider {
     @Autowired
     private Environment env;
 
-    @Autowired
+    @Autowired(required = false)
     private ISymmetricEngine symmetricEngine;
 
     @Override
@@ -25,6 +25,10 @@ public class SymDSInitStatusProvider implements IModuleStatusProvider {
 
     @Override
     public ModuleInitStatus getCurrentStatus() {
+        if (symmetricEngine == null) {
+            return ModuleInitStatus.ready();
+        }
+
         INodeService nodeService = symmetricEngine.getNodeService();
 
         boolean waitForInitEnabled =
