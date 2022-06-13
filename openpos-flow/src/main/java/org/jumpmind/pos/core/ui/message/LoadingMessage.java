@@ -12,7 +12,9 @@ public class LoadingMessage extends Message {
 
     public LoadingMessage() {
         setType(MessageType.Loading);
-        this.title = "key:common:label.loading";
+        // Cannot set a label here because only UIMessages are
+        // sent through the i18nScreenPropertyStrategy
+        // this.title = "key:common:label.loading";
     }
 
     public LoadingMessage(String title) {
