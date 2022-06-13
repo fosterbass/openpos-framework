@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, TemplateRef } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, TemplateRef } from '@angular/core';
 import { ITab } from './tab.interface';
 
 @Component({
@@ -6,7 +6,7 @@ import { ITab } from './tab.interface';
     templateUrl: './tabbed-content-card.component.html',
     styleUrls: ['./tabbed-content-card.component.scss']
 })
-export class TabbedContentCardComponent implements OnInit {
+export class TabbedContentCardComponent implements OnChanges, OnInit {
 
     @Input() tabs: ITab[];
 
@@ -19,6 +19,16 @@ export class TabbedContentCardComponent implements OnInit {
     selectedTabId: string;
 
     ngOnInit(): void {
+        this.resetSelectedTab();
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.tabs != undefined) {
+            this.resetSelectedTab();
+        }
+    }
+
+    resetSelectedTab(): void {
         if (this.tabs?.length > 0) {
             this.selectedTabId = this.tabs[0].tabId;
             this.tabChange.emit(this.selectedTabId);
