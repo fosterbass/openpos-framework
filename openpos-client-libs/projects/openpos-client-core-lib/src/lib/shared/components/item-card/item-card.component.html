@@ -85,7 +85,7 @@
             <div class="pending-promo-title">{{item.pendingPromoTitle}}</div>
             <ul class="pending-promo-list">
                 <li class="pending-promo-list-item" *ngFor="let pendingPromo of item.pendingPromoLabels">
-                    <app-icon [iconName]="item.pendingPromoIcon"></app-icon>
+                    <app-icon [iconName]="item.pendingPromoIcon" style="color:grey"></app-icon>
                     <span>{{pendingPromo}}</span>
                 </li>
             </ul>

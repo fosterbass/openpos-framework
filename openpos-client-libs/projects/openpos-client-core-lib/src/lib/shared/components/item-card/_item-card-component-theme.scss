@@ -5,7 +5,8 @@
   
   app-item-card{
     .pending-promos{
-      border: dashed $border 2px;
+      border-radius: 5px;
+      border: dashed $border 1px;
       background-color: $background;
       .pending-promo-title{
         color: map-get(map-get($theme, foreground), secondary-text);
