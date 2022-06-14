@@ -20,7 +20,7 @@ export class Logger {
     constructor(private electron: ElectronService) {
         if (this.electron.isElectronApp) {
             console.log('configuring electron logging');
-            this.electronLogger = this.electron.remote.require('electron-log');
+        /*    this.electronLogger = this.electron.remote.require('electron-log');
             // this.electronLogger.transports.rendererConsole.level = 'silly';
             // electronLogger.transports.file.level = false;
             const fileTransport = this.electronLogger.transports.file;
@@ -37,13 +37,13 @@ export class Logger {
             this.electronLogger.transports.console.level = false;
             this.electron.ipcRenderer.on('errorInWindow', function(event, data) {
                 this.electronLogger.error(data);
-            });
+            });*/
         }
     }
 
     public debug(message: any, ...args: any[]): void {
         if (this.electron.isElectronApp) {
-            this.electronLogger.debug(message);
+     //       this.electronLogger.debug(message);
         } else {
             this.log(LogLevel.DEBUG, message, args);
         }
@@ -51,7 +51,7 @@ export class Logger {
 
     public info(message: any, ...args: any[]): void {
         if (this.electron.isElectronApp) {
-            this.electronLogger.info(message);
+     //       this.electronLogger.info(message);
         } else {
             this.log(LogLevel.INFO, message, args);
         }
@@ -59,7 +59,7 @@ export class Logger {
 
     public warn(message: any, ...args: any[]): void {
         if (this.electron.isElectronApp) {
-            this.electronLogger.warn(message);
+    //        this.electronLogger.warn(message);
         } else {
             this.log(LogLevel.WARN, message, args);
         }
@@ -67,7 +67,7 @@ export class Logger {
 
     public error(message: any, ...args: any[]): void {
         if (this.electron.isElectronApp) {
-            this.electronLogger.error(message);
+    //        this.electronLogger.error(message);
         } else {
             this.log(LogLevel.ERROR, message, args);
         }
