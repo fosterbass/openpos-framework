@@ -1,6 +1,4 @@
-plugins {
-    id "com.github.node-gradle.node" version "3.0.1"
-}
+apply plugin: 'com.github.node-gradle.node'
 apply from: '../openpos-gradle/src/main/resources/java.gradle'
 
 repositories {

@@ -1,0 +1,77 @@
+pipeline {
+    agent { label 'commerce' }
+    environment {
+        MAVEN_JM_PW = credentials('mavenJumpMindPassword')
+    }
+
+    options {
+        timeout(time: 1, unit: 'HOURS')   // timeout on whole pipeline job
+    }
+
+    stages {
+        stage('Clean') {
+            steps {
+                script {
+                    def author = sh (script: 'git log -1 --pretty=%cn ${GIT_COMMIT}', returnStdout: true).trim()
+                    env.BUILD_DESCRIPTION = env.BRANCH_NAME.startsWith("master") || env.BRANCH_NAME.startsWith("releases") ?
+                       "${env.BRANCH_NAME} by ${author} on ${env.NODE_NAME}" :
+                       "${env.JOB_NAME} for ${env.CHANGE_BRANCH} by ${author} on ${env.NODE_NAME}"
+                    currentBuild.description = "${env.BUILD_DESCRIPTION}"
+                }
+                dir('openpos-assemble') {sh """./gradlew \
+                  -PdownloadNode=true \
+                   clean"""}
+            }
+        }
+        stage('Build & Test') {
+            steps {
+                echo 'gitBranch=${BRANCH_NAME}'
+                dir('openpos-assemble') {sh """./gradlew \
+                  -PdownloadNode=true \
+                  -PignoreFailures=true \
+                  -PbuildNumber=${BUILD_NUMBER} \
+                  -PbuildName="${JOB_NAME}" \
+                  -PgitBranch="${BRANCH_NAME}" \
+                  -PgitHash=${GIT_COMMIT} \
+                   build -x :openpos-client-libs:test"""}
+            }
+        }
+        stage('Deploy') {
+            when { branch pattern: "master|releases.*", comparator: "REGEXP"}
+            steps {
+                dir('openpos-assemble') {sh """./gradlew \
+                  -PdownloadNode=true \
+                  -PdeployUser=${MAVEN_JM_USER} \
+                  -PdeployPassword=${MAVEN_JM_PW} \
+                  -PdeploySftpUrl=${MAVEN_JM_URL} \
+                   -x build deploy"""}
+            }
+        }
+    }
+
+    post {
+        success {
+            slackSend (color: '#00FF00',
+                       tokenCredentialId: 'slackToken',
+                       channel: 'jenkins',
+                       message: "SUCCESS: ${env.BUILD_DESCRIPTION} ${env.BUILD_URL}")
+            script {
+                if (env.BRANCH_NAME.startsWith("master") || env.BRANCH_NAME.startsWith("releases")) {
+                    build job: "commerce/${env.BRANCH_NAME.replace('/','%2F')}", wait: false
+                }
+            }
+        }
+        unstable {
+            slackSend (color: '#FFA500',
+                       tokenCredentialId: 'slackToken',
+                       channel: 'jenkins',
+                       message: "UNSTABLE: ${env.BUILD_DESCRIPTION} ${env.BUILD_URL}")
+        }
+        failure {
+            slackSend (color: '#FF0000',
+                       tokenCredentialId: 'slackToken',
+                       channel: 'jenkins',
+                       message: "FAILURE: ${env.BUILD_DESCRIPTION} ${env.BUILD_URL}")
+        }
+    }
+}

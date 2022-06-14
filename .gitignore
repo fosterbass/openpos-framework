@@ -89,3 +89,5 @@ openpos-client-libs/.DS_Store
 openpos-client-libs/.DS_Store
 openpos-hazelcast/openpos-hazelcast.iml
 openpos-hazelcast/openpos-hazelcast.iml
+openpos-update/openpos-update.iml
+openpos-test/openpos-test.iml
