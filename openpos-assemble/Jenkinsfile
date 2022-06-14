@@ -43,8 +43,8 @@ pipeline {
                   -PdownloadNode=true \
                   -PdeployUser=${MAVEN_JM_USER} \
                   -PdeployPassword=${MAVEN_JM_PW} \
-                  -PdeploySftpUrl=${MAVEN_JM_URL} \
-                   -x build deploy"""}
+                  -PdeployUploadUrl=${MAVEN_JM_URL} \
+                   test deploy generateSourceArtifact"""}
             }
         }
     }

@@ -6,6 +6,7 @@ apply plugin: 'eclipse'
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'maven'
+apply plugin: 'maven-publish'
 
 def removeSnapshot = { v ->
     if (v.endsWith('-SNAPSHOT')) {
@@ -161,7 +162,7 @@ configurations {
 }
 
 dependencies {
-    deployerJars group: 'org.apache.maven.wagon', name: 'wagon-ssh', version: '3.3.2'
+    deployerJars "org.apache.maven.wagon:wagon-ssh:2.2"
     dependencies {
           compile group: 'org.yaml', name: 'snakeyaml', version: snakeYamlVersion
           compileOnly("org.projectlombok:lombok:${lombokVersion}")
@@ -178,10 +179,12 @@ artifacts {
 }
 
 uploadArchives {
-    repositories.mavenDeployer {
-        configuration = configurations.deployerJars
-        repository(url: deployUploadUrl) {
-            authentication(userName: deployUser, password: deployPassword)
+    repositories {
+        mavenDeployer {
+            configuration = configurations.deployerJars
+            repository(url: deployUploadUrl) {
+                authentication(userName: deployUser, password: deployPassword)
+            }
         }
     }
 }
