@@ -44,7 +44,7 @@ pipeline {
                   -PdeployUser=${MAVEN_JM_USER} \
                   -PdeployPassword=${MAVEN_JM_PW} \
                   -PdeployUploadUrl=${MAVEN_JM_URL} \
-                   test deploy generateSourceArtifact"""}
+                   deploy -x :openpos-client-libs:test"""}
             }
         }
     }
