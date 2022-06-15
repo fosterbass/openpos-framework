@@ -12,6 +12,7 @@ export interface SaleLoyaltyPartInterface extends IAbstractScreen {
     noMembershipsFoundLabel: string;
     membershipEnabled: boolean;
     memberships: Membership[];
+    showCustomerDataWhenMissingId: boolean;
     customerMissingInfoEnabled: boolean;
     customerMissingInfo: boolean;
     customerMissingInfoIcon: string;
