@@ -197,7 +197,7 @@ publishing {
     }
     repositories {
         maven {
-            url "$PdeployUploadUrl"
+            url "$deployUploadUrl"
             credentials {
                 username PdeployUser
                 password PdeployPassword
