@@ -16,6 +16,7 @@ public class LoyaltySaleUIMessage extends TransactionUIMessage {
     private String loyaltyIcon;
     private String profileIcon;
 
+    private boolean showCustomerDataWhenMissingId;
     private boolean customerMissingInfoEnabled;
     private boolean customerMissingInfo;
     private String customerMissingInfoIcon;
