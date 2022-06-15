@@ -189,10 +189,27 @@ uploadArchives {
     }
 }
 
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url "$PdeployUploadUrl"
+            credentials {
+                username PdeployUser
+                password PdeployPassword
+            }
+        }
+    }
+}
+
 task deploy {
     description 'Shortcut for Maven users'
     if (!gitBranch.equals('merge')) {
-        dependsOn tasks.uploadArchives
+        dependsOn tasks.publish
     }
 }
 
