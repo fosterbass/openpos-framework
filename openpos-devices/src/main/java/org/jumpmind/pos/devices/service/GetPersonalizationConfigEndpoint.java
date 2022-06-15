@@ -10,6 +10,7 @@ import org.jumpmind.pos.devices.model.DevicesRepository;
 import org.jumpmind.pos.devices.service.model.PersonalizationConfigDevice;
 import org.jumpmind.pos.devices.service.model.PersonalizationConfigResponse;
 import org.jumpmind.pos.devices.service.model.PersonalizationParameters;
+import org.jumpmind.pos.devices.service.strategy.AcceptedPersonalizationBusinessUnit;
 import org.jumpmind.pos.service.Endpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +50,9 @@ public class GetPersonalizationConfigEndpoint {
     @Autowired(required = false)
     IBusinessUnitProvider businessUnitProvider;
 
+    @Autowired
+    AcceptedPersonalizationBusinessUnit configuredBusinessUnits;
+
     public PersonalizationConfigResponse getPersonalizationConfig() {
         logger.debug("personalization config requested");
 
@@ -56,8 +60,10 @@ public class GetPersonalizationConfigEndpoint {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT, "No personalization configuration, use default", null);
         }
 
+        final Set<String> allowedBusinessUnits = configuredBusinessUnits.getAllowedBusinessUnits();
+
         List<BusinessUnitInfo> availableBusinessUnits = businessUnitProvider != null
-                ? businessUnitProvider.getBusinessUnits()
+                ? businessUnitProvider.getBusinessUnits().stream().filter(bu -> allowedBusinessUnits.contains(bu.getId())).collect(Collectors.toList())
                 : null;
 
         // coerce any null value into a empty list.
@@ -71,6 +77,7 @@ public class GetPersonalizationConfigEndpoint {
                 .stream()
                 .filter(ds -> StringUtils.isNotBlank(ds.getBusinessUnitId()))
                 .filter(ds -> loadedAppIds.contains(ds.getAppId()))
+                .filter(ds -> allowedBusinessUnits.contains(ds.getBusinessUnitId()))
                 .map(ds -> {
                     String authToken = null;
 

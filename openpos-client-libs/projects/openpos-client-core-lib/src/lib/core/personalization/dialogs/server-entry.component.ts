@@ -20,6 +20,15 @@ export class ServerEntryComponent {
         private _dialogRef: MatDialogRef<ServerEntryComponent, ServerEntryData>,
         @Inject(MAT_DIALOG_DATA) @Optional() data: ServerEntryData
     ) {
+        const secured = window.location.protocol?.toLowerCase() === 'https';
+        let defaultPort = window.location.port;
+
+        if (!defaultPort || defaultPort.trim() === '') {
+            defaultPort = secured
+                ? '443'
+                : '80';
+        }
+
         this.formGroup = new FormGroup({
             host: new FormControl(
                 data?.host ?? window.location.hostname,
@@ -27,11 +36,11 @@ export class ServerEntryComponent {
             ),
 
             port: new FormControl(
-                data?.port ?? window.location.port,
+                data?.port ?? defaultPort,
                 [Validators.required, Validators.pattern(/^\d+$/),  Validators.min(1), Validators.max(65535)]
             ),
 
-            secure: new FormControl(false)
+            secure: new FormControl(secured)
         });
     }
 

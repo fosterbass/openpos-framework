@@ -3,10 +3,9 @@ package org.jumpmind.pos.devices;
 import static java.lang.String.format;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.jumpmind.pos.devices.model.DeviceModel;
 import org.jumpmind.pos.devices.model.DevicesRepository;
-import org.jumpmind.pos.devices.service.strategy.IDeviceBusinessUnitIdStrategy;
+import org.jumpmind.pos.devices.service.strategy.IAcceptedPersonalizationBusinessUnitStrategy;
 import org.jumpmind.pos.persist.ITagProvider;
 import org.jumpmind.pos.util.clientcontext.ClientContext;
 import org.jumpmind.pos.util.event.DeviceConnectedEvent;
@@ -33,9 +32,6 @@ public class DeviceUpdater implements ApplicationListener<DeviceConnectedEvent> 
     @Autowired
     DevicesRepository devicesRepository;
 
-    @Resource(name = "${openpos.personalization.deviceBusinessUnitIdStrategy:GetBusinessUnitIdFromConfigStrategy}")
-    protected IDeviceBusinessUnitIdStrategy deviceBusinessUnitIdStrategy;
-
     @Value("${openpos.installationId:'not set'}")
     String installationId;
 
@@ -57,11 +53,6 @@ public class DeviceUpdater implements ApplicationListener<DeviceConnectedEvent> 
         deviceModel.setLastUpdateTime(new Date());
         deviceModel.setLastUpdateBy("personalization");
         deviceModel.updateTags((AbstractEnvironment) env);
-
-        String configuredBusinessUnitId = deviceBusinessUnitIdStrategy.getBusinessUnitId(deviceModel);
-        if (deviceModel.getBusinessUnitId() == null || deviceModel.getBusinessUnitId().equals(configuredBusinessUnitId)) {
-            deviceModel.setBusinessUnitId(configuredBusinessUnitId);
-        }
 
         if (this.tagProviders != null && tagProviders.size() > 0) {
             MutablePropertySources propSrcs = ((AbstractEnvironment) env).getPropertySources();

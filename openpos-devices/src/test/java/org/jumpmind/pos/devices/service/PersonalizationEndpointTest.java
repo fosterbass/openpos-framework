@@ -2,7 +2,9 @@ package org.jumpmind.pos.devices.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections4.map.HashedMap;
+import org.jumpmind.pos.devices.TestBusinessUnitProvider;
 import org.jumpmind.pos.devices.TestDevicesConfig;
+import org.jumpmind.pos.devices.extensibility.BusinessUnitInfo;
 import org.jumpmind.pos.devices.service.model.GetDeviceResponse;
 import org.jumpmind.pos.devices.service.model.PersonalizationRequest;
 import org.jumpmind.pos.devices.service.model.PersonalizationResponse;
@@ -18,15 +20,16 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest()
-@ActiveProfiles("test")
+@ActiveProfiles({"test", "test-business-unit-provider"})
 @AutoConfigureMockMvc
 @ContextConfiguration(classes = {TestDevicesConfig.class})
 public class PersonalizationEndpointTest {
@@ -36,13 +39,17 @@ public class PersonalizationEndpointTest {
     @Autowired
     private MockMvc mvc;
 
+    @Autowired
+    private TestBusinessUnitProvider businessUnitProvider;
+
     @Test
     public void personalizationRequestForNewDeviceShouldReturnNewAuthToken() throws Exception {
         String result = mvc.perform(
                 new MockPostRequestBuilder("/devices/personalize")
                         .content(
                                 PersonalizationRequest.builder()
-                                        .deviceId("00100-002")
+                                        .businessUnitId("09999")
+                                        .deviceId("09999-012")
                                         .appId("pos")
                                         .build()
                         )
@@ -80,7 +87,8 @@ public class PersonalizationEndpointTest {
                 new MockPostRequestBuilder("/devices/personalize")
                         .content(
                                 PersonalizationRequest.builder()
-                                        .deviceId("00145-002")
+                                        .businessUnitId("09999")
+                                        .deviceId("09999-001")
                                         .appId("pos")
                                         .deviceToken("123456789")
                                         .build()
@@ -93,15 +101,23 @@ public class PersonalizationEndpointTest {
         PersonalizationResponse response = mapper.readValue(result, PersonalizationResponse.class);
         assertNotNull(response.getAuthToken());
         assertNotNull(response.getDeviceModel());
+        assertEquals("123456789", response.getAuthToken());
     }
 
     @Test
     public void personalizationRequestForExistingDeviceWithSameAppIdShouldSucceedIfAuthTokenIsNull() throws Exception {
+        businessUnitProvider.setKnownBusinessUnits(new ArrayList<>(Collections.singletonList(
+                BusinessUnitInfo.builder()
+                        .id("09999")
+                        .build()
+        )));
+
         String result = mvc.perform(
                         new MockPostRequestBuilder("/devices/personalize")
                                 .content(
                                         PersonalizationRequest.builder()
-                                                .deviceId("11111-111")
+                                                .businessUnitId("09999")
+                                                .deviceId("09999-111")
                                                 .appId("server")
                                                 .build()
                                 )
@@ -141,8 +157,8 @@ public class PersonalizationEndpointTest {
                 new MockPostRequestBuilder("/devices/personalize")
                         .content(
                                 PersonalizationRequest.builder()
-                                        .deviceId("00145-005")
-                                        .deviceToken("123456789")
+                                        .businessUnitId("09999")
+                                        .deviceId("09999-005")
                                         .appId("pos")
                                         .personalizationParameters(params)
                                         .build()
@@ -150,7 +166,7 @@ public class PersonalizationEndpointTest {
                         .build()
         ).andDo(result -> {
             String response = mvc.perform(
-                    new MockGetRequestBuilder("/devices/myDevice").deviceId("00145-005").appId("pos").build()
+                    new MockGetRequestBuilder("/devices/myDevice").deviceId("09999-005").appId("pos").build()
             ).andReturn().getResponse().getContentAsString();
 
             assertTrue(mapper.readValue(response, GetDeviceResponse.class)

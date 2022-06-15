@@ -67,7 +67,15 @@ export class PersonalizationEntryComponent implements OnInit {
             retryWhen(errors => errors.pipe(
                 mergeMap(() => timer(5000))
             )),
-            tap(c => this.tappedConfig = c)
+            tap(c => {
+                if (c.availableBusinessUnits.length === 1) {
+                    this.businessUnitSelectionGroup.setValue({
+                        businessUnit: c.availableBusinessUnits[0].id
+                    });
+                }
+
+                this.tappedConfig = c;
+            }),
         );
     }
 
