@@ -4,6 +4,7 @@ apply plugin: 'eclipse'
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'maven'
+apply plugin: 'maven-publish'
 
 def removeSnapshot = { v ->
     if (v.endsWith('-SNAPSHOT')) {
@@ -154,6 +155,23 @@ artifacts {
     testArtifacts testJar
 }
 
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url "$deployUploadUrl"
+            credentials {
+                username deployUser
+                password deployPassword
+            }
+        }
+    }
+}
+
 uploadArchives {
     repositories.mavenDeployer {
         configuration = configurations.deployerJars
@@ -166,7 +184,7 @@ uploadArchives {
 task deploy {
     description 'Shortcut for Maven users'
     if (!gitBranch.equals('merge')) {
-        dependsOn tasks.uploadArchives
+        dependsOn tasks.publish
     }
 }
 
