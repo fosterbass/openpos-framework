@@ -1,4 +1,7 @@
-apply plugin: "com.moowork.node"
+plugins {
+    id "com.github.node-gradle.node"
+}
+apply from: '../openpos-gradle/src/main/resources/java.gradle'
 
 repositories {
     mavenCentral()
@@ -16,9 +19,6 @@ node {
     version = '10.5.0'
     npmVersion = '6.1.0'
     download = downloadNode.toBoolean()
-    if (project.hasProperty('nodeDistUrl')) {
-      distBaseUrl = nodeDistUrl
-    }
     println """
       **************************************************************************************************
         Using native node & npm? ${!download}.  Set downloadNode to true in gradle.properties 
@@ -40,7 +40,7 @@ task npm_install(type: NpmTask){
 task ng_test(type: NpmTask){
     dependsOn npm_install
     args = [
-            'run', 
+            'run',
             'test'
     ]
     inputs.files fileTree('projects/openpos-client-core-lib')
@@ -56,39 +56,31 @@ task ng_build(type: NpmTask){
     outputs.dir file('dist/openpos-client-core-lib')
 }
 
-task processResources {}
 
-task test {
-    dependsOn ng_test
-}
-
-task build {
-    dependsOn ng_build
-}
-
-task clean {
+task ng_clean {
     delete ng_build.outputs
     delete npm_install.outputs
 }
 
+
 task npm_pack(type: NpmTask){
-    dependsOn build
+    dependsOn ng_build
     workingDir =  file('dist/openpos-client-core-lib')
     args = [
             'pack'
     ]
 }
 
-task deploy {
+task ng_deploy {
     dependsOn npm_pack
     doLast {
         if (!gitBranch.equals('merge')) {
             ant.taskdef(name: 'scp', classname: 'org.apache.tools.ant.taskdefs.optional.ssh.Scp', classpath: configurations.sshAntTask.asPath)
             def toDir = "$deployUser:$deployPassword@maven.jumpmind.com:~/www/npm"
 
-            fileTree('dist/openpos-client-core-lib').visit { FileVisitDetails details -> 
+            fileTree('dist/openpos-client-core-lib').visit { FileVisitDetails details ->
                 if (details.file.path.endsWith('tgz')) {
-                    ant.scp(todir: toDir, port: 2222, trust: 'true', verbose: 'true', localFile: details.file.path)          
+                    ant.scp(todir: toDir, port: 2222, trust: 'true', verbose: 'true', localFile: details.file.path)
                     def snapshotFile = 'dist/openpos-client-core-lib/jumpmind-openpos-client-core-lib-snapshot.tgz'
                     ant.copy(file: details.file.path, tofile: snapshotFile)
                     ant.scp(todir: toDir, port: 2222, trust: 'true', verbose: 'true', localFile: snapshotFile)
@@ -99,3 +91,11 @@ task deploy {
         }
     }
 }
+
+deploy.dependsOn ng_deploy
+if (!hasProperty('skipClient')) {
+    test.dependsOn ng_test
+    build.dependsOn ng_build
+}
+
+clean.dependsOn ng_clean
