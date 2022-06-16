@@ -31,7 +31,7 @@ export class PersonalizationEntryComponent implements OnInit {
     constructor(
         private http: HttpClient,
         private dialog: MatDialog,
-        private ref: MatDialogRef<BusinessUnitDevice>,
+        private ref: MatDialogRef<PersonalizationEntryComponent, BusinessUnitDevice>,
         @Inject(MAT_DIALOG_DATA) private serverData: ServerEntryData
     ) {}
 
@@ -68,13 +68,19 @@ export class PersonalizationEntryComponent implements OnInit {
                 mergeMap(() => timer(5000))
             )),
             tap(c => {
-                if (c.availableBusinessUnits.length === 1) {
+                if (c.availableBusinessUnits && c.availableBusinessUnits.length === 1) {
                     this.businessUnitSelectionGroup.setValue({
                         businessUnit: c.availableBusinessUnits[0].id
                     });
                 }
 
                 this.tappedConfig = c;
+
+                if (c.autoPersonalizationToken) {
+                    this.ref.close({
+                        authToken: c.autoPersonalizationToken
+                    });
+                }
             }),
         );
     }

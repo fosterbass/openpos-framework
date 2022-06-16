@@ -5,6 +5,7 @@ export interface PersonalizationConfig {
     storeDevices: { [key: string]: BusinessUnitDevice[] };
     parameters: PersonalizationParameter[];
     loadedAppIds: string[];
+    autoPersonalizationToken?: string;
 }
 
 export interface BusinessUnit {
@@ -14,11 +15,11 @@ export interface BusinessUnit {
 }
 
 export interface BusinessUnitDevice {
-    businessUnitId: string;
-    deviceId: string;
-    appId: string;
+    businessUnitId?: string;
+    deviceId?: string;
+    appId?: string;
     authToken?: string;
-    personalizationParamValues: { [key: string]: string };
+    personalizationParamValues?: { [key: string]: string };
     connected?: boolean;
 }
 

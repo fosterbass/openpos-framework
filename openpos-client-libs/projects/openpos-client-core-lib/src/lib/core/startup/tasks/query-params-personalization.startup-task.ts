@@ -23,31 +23,36 @@ export class QueryParamsPersonalization implements StartupTask {
         const serverName = queryParams.serverName;
         const deviceToken = queryParams.deviceToken;
         const pairedDeviceId = queryParams.pairedDeviceId;
+        const businessUnitId = queryParams.businessUnitId;
         let serverPort = queryParams.serverPort;
         let sslEnabled = queryParams.sslEnabled === 'true';
 
         const personalizationProperties = new Map<string, string>(
             Object.keys(queryParams)
-                .filter(ok => !['deviceId', 'deviceToken', 'serverName', 'serverPort', 'sslEnabled'].includes(ok))
+                .filter(ok => ![
+                    'deviceId',
+                    'deviceToken',
+                    'serverName',
+                    'serverPort',
+                    'sslEnabled',
+                    'businessUnitId',
+                    'pairedDeviceId'
+                ].includes(ok))
                 .map(ok => [ok, queryParams[ok]])
         );
 
         serverPort = serverPort ?? 6140;
         sslEnabled = sslEnabled ?? false;
 
-        if (deviceToken && serverName) {
-            await this._personalization.personalizeWithToken(serverName, serverPort, deviceToken, sslEnabled, pairedDeviceId)
-                .pipe(last())
-                .toPromise();
-            return;
-        }
-
-        if (deviceId && serverName) {
+        if (deviceToken || (businessUnitId && deviceId && serverName)) {
             await this._personalization.personalize({
-                serverConnection: { host: serverName, port: serverPort, secured: sslEnabled },
+                serverConnection: { host: serverName, port: +serverPort, secured: sslEnabled },
+                businessUnitId,
                 deviceId,
                 appId,
-                params: personalizationProperties
+                authToken: deviceToken,
+                params: personalizationProperties,
+                pairedDevice: pairedDeviceId
             }).toPromise();
 
             return;

@@ -47,6 +47,7 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
 
     savePoints: string[];
 
+    simBusinessUnitId: string;
     simAuthToken: string;
     simPort: string;
     simUrl: string;
@@ -268,6 +269,7 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
 
         if (message.simulator) {
             console.info('Pulling sim auth token...');
+            this.simBusinessUnitId = message.simulator.simBusinessUnitId;
             this.simAuthToken = message.simulator.simAuthToken;
             this.simPort = message.simulator.simPort;
             this.simUrl = message.simulator.simUrl;
@@ -526,7 +528,8 @@ export class DevMenuComponent implements OnInit, IMessageHandler<any> {
         const url = this.simUrl ? this.simUrl : window.location.hostname;
         const sim = protocol + '://' + url + ':'
             + displayPort + '/#/?serverName=' + serverName + '&serverPort=' + serverPort
-            + '&deviceToken=' + this.simAuthToken + '&sslEnabled=' + sslEnabled;
+            + '&deviceToken=' + this.simAuthToken + '&sslEnabled=' + sslEnabled
+            + '&businessUnitId=' + this.simBusinessUnitId;
         window.open(sim);
     }
 

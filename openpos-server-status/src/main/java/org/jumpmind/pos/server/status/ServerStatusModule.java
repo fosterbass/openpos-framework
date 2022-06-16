@@ -8,12 +8,13 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Collections;
 import java.util.List;
 
 @Configuration("ServerStatusModule")
 public class ServerStatusModule extends AbstractServiceFactory {
 
-    @Autowired
+    @Autowired(required = false)
     List<IModuleStatusProvider> initProviders;
 
     @Bean
@@ -23,9 +24,12 @@ public class ServerStatusModule extends AbstractServiceFactory {
 
     @Bean
     public FilterRegistrationBean<RejectUntilInitComplete> initServerLoadedFilter() {
+        if (initProviders == null) {
+            initProviders = Collections.emptyList();
+        }
+
         final FilterRegistrationBean<RejectUntilInitComplete> registration = new FilterRegistrationBean<>();
         registration.setFilter(new RejectUntilInitComplete(initProviders));
-
         registration.addUrlPatterns("*");
 
         return registration;

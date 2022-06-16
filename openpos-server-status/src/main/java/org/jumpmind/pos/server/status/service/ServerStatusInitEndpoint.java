@@ -11,10 +11,14 @@ import java.util.stream.Collectors;
 
 @Endpoint(path = "/status/init")
 public class ServerStatusInitEndpoint {
-    @Autowired
+    @Autowired(required = false)
     public List<IModuleStatusProvider> initProviders;
 
     public ServerInitStatusResponse init() {
+        if (initProviders == null || initProviders.isEmpty()) {
+            return ServerInitStatusResponse.builder().build();
+        }
+
         return ServerInitStatusResponse.builder()
                 .providers(
                         initProviders.stream()

@@ -38,7 +38,7 @@ export class ManualPersonalizeStartupTask implements StartupTask {
         const device = await this.openPersonalizationDialog(serverEntryData);
 
         let params: Map<string, string>;
-        if (!params) {
+        if (device.personalizationParamValues) {
             params = new Map<string, string>(
                 Object.keys(device.personalizationParamValues)
                     .map((key) => [key, device.personalizationParamValues[key]])

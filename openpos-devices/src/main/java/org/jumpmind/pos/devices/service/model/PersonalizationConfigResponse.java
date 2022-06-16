@@ -22,4 +22,5 @@ public class PersonalizationConfigResponse {
     private Map<String, List<PersonalizationConfigDevice>> storeDevices = new HashMap<>();
     private List<PersonalizationParameter> parameters = new ArrayList<>();
     private List<String> loadedAppIds;
+    private String autoPersonalizationToken;
 }

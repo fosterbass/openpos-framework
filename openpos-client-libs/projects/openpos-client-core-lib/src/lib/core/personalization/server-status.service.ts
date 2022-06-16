@@ -19,7 +19,10 @@ export class ServerStatusService {
                 retryWhen(errors => errors.pipe(delay(5000)))
             )),
             distinct(),
-            map(data => new ServerInitStatus(data.providers.map(p => new ServerInitStatusProvider(p.name, p.currentState, p.message)))),
+            map(data => new ServerInitStatus(!!data.providers
+                ?  data.providers.map(p => new ServerInitStatusProvider(p.name, p.currentState, p.message))
+                : [])
+            ),
             takeWhile(s => !s.isReady, true),
         );
     }

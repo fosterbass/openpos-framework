@@ -20,7 +20,7 @@ export class ServerEntryComponent {
         private _dialogRef: MatDialogRef<ServerEntryComponent, ServerEntryData>,
         @Inject(MAT_DIALOG_DATA) @Optional() data: ServerEntryData
     ) {
-        const secured = window.location.protocol?.toLowerCase() === 'https';
+        const secured = window.location.protocol?.toLowerCase() === 'https:';
         let defaultPort = window.location.port;
 
         if (!defaultPort || defaultPort.trim() === '') {
