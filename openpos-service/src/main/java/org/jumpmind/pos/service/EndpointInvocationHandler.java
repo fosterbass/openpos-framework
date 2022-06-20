@@ -1,5 +1,6 @@
 package org.jumpmind.pos.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jumpmind.pos.service.strategy.IInvocationStrategy;
 import org.jumpmind.pos.util.clientcontext.ClientContext;
 
@@ -63,11 +64,19 @@ public class EndpointInvocationHandler implements InvocationHandler {
         final String path = getPathToEndpoint(service, serviceMethod);
         final String deviceMode = clientContext.get("deviceMode");
         final String implementation = (IMPLEMENTATION_TRAINING.equalsIgnoreCase(deviceMode)) ? IMPLEMENTATION_TRAINING : IMPLEMENTATION_DEFAULT;
-        final Object endpointObj = endpointManager.getEndpointObject(implementation, path);
-
         final ServiceSpecificConfig serviceConfig = getSpecificConfig(service, serviceMethod);
+
+        Object endpointObj = endpointManager.getEndpointObject(implementation, path);
+
         EndpointSpecificConfig endpointConfig = null;
         String endpointImplementation = null;
+
+        if (serviceConfig != null && StringUtils.isNotBlank(serviceConfig.getImplementation()) && service != null) {
+            if (!serviceConfig.getImplementation().equalsIgnoreCase(endpointManager.getCurrentServiceImplementation(service))) {
+                endpointManager.buildEndpointMappingsForService(service, serviceConfig.getImplementation());
+                endpointObj = endpointManager.getEndpointObject(implementation, path);
+            }
+        }
 
         if (endpointObj != null) {
             EndpointOverride override = endpointObj.getClass().getAnnotation(EndpointOverride.class);

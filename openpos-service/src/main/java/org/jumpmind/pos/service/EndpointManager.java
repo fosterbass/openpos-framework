@@ -1,5 +1,6 @@
 package org.jumpmind.pos.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jumpmind.pos.util.ClassUtils;
 
 import lombok.RequiredArgsConstructor;
@@ -46,14 +47,21 @@ public class EndpointManager {
 
     private Map<String, Object> endPointsByPath;
     private Map<String, Object> trainingEndPointsByPath;
+    private Map<String, String> serviceImplementationMap = new HashMap<>();
+
+    public void buildEndpointMappingsForService(Object service) {
+        buildEndpointMappingsForService(service, null);
+    }
 
     /**
      * Derives and stores all path-to-endpoint mappings for the specified service.  A "service" in this context is any interface or class bearing a
      * {@link @RestController} annotation.
      *
-     * @param service the
+     * @param service the service to map endpoints to.
+     *
+     * @param implementationOverride an optional service implementation to override the implementation specified in the configuration
      */
-    public void buildEndpointMappingsForService(Object service) {
+    public void buildEndpointMappingsForService(Object service, String implementationOverride) {
         final Collection<Object> endpointOverrides = applicationContext.getBeansWithAnnotation(EndpointOverride.class).values();
         final Collection<Object> endpointsObjects = applicationContext.getBeansWithAnnotation(Endpoints.class).values();
         Collection<Object> endpointObjects = applicationContext.getBeansWithAnnotation(Endpoint.class).values();
@@ -68,7 +76,7 @@ public class EndpointManager {
             RestController controller = serviceInterface.getAnnotation(RestController.class);
 
             if (controller != null) {
-                buildEndpointMappingsForController(service, serviceInterface, endpointOverrides, endpointObjects, controller);
+                buildEndpointMappingsForController(service, serviceInterface, endpointOverrides, endpointObjects, controller, implementationOverride);
             }
         }
     }
@@ -87,7 +95,7 @@ public class EndpointManager {
             endPointsByPath = new HashMap<>();
             trainingEndPointsByPath = new HashMap<>();
 
-            applicationContext.getBeansWithAnnotation(RestController.class).values().forEach(this::buildEndpointMappingsForService);
+            applicationContext.getBeansWithAnnotation(RestController.class).values().forEach(m -> buildEndpointMappingsForService(m, null));
         }
     }
 
@@ -96,11 +104,12 @@ public class EndpointManager {
             Class<?> serviceInterface,
             Collection<Object> endpointOverrides,
             Collection<Object> endpointObjects,
-            RestController controller) {
+            RestController controller,
+            String implementationOverride) {
 
         final String serviceName = controller.value();
         final String serviceTypeName = serviceInterface.getSimpleName();
-        final String implementation = getServiceImplementation(serviceName);
+        final String implementation = StringUtils.isNotBlank(implementationOverride) ? implementationOverride : getServiceImplementation(serviceName);
 
         if ((implementation != null) && !implementation.equals(IMPLEMENTATION_DEFAULT)) {
             log.info("Loading endpoints for the '{}' implementation of {} ({})", implementation, serviceTypeName, serviceName);
@@ -109,12 +118,26 @@ public class EndpointManager {
             log.debug("Loading endpoints for the '{}' implementation of {} ({})", implementation, serviceTypeName, serviceName);
         }
 
+
+        serviceImplementationMap.put(serviceName, implementation);
+
         // For each endpoint, see if there is an override or special Training Mode version.
         // Build out lists for both regular operations and Training Mode.
 
         for (Method serviceMethod : serviceInterface.getMethods()) {
             buildEndpointMappingsForMethod(service, serviceMethod, serviceTypeName, endpointOverrides, endpointObjects, implementation);
         }
+    }
+
+    public String getCurrentServiceImplementation(Object service) {
+        for (Class<?> serviceInterface : service.getClass().getInterfaces()) {
+            RestController controller = serviceInterface.getAnnotation(RestController.class);
+
+            if (controller != null) {
+                return serviceImplementationMap.get(controller.value());
+            }
+        }
+        return null;
     }
 
     private void buildEndpointMappingsForMethod(
