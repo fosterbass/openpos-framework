@@ -199,11 +199,13 @@ public class DevToolsActionListener implements IActionListener {
         Map<String, String> customDeviceMap = new HashMap<>();
         DeviceModel customerDisplayDevice = null;
         String authToken;
+        String businessUnitId = null;
         String customerDisplayDeviceId = deviceId + "-customerdisplay";
         List<DeviceParamModel> deviceParams = null;
         try {
             DeviceModel currentDevice = devicesRepository.getDevice(deviceId);
             if (currentDevice != null) {
+                businessUnitId = currentDevice.getBusinessUnitId();
                 deviceParams = currentDevice.getDeviceParamModels();
             }
             customerDisplayDevice = devicesRepository.getDevice(customerDisplayDeviceId);
@@ -213,6 +215,7 @@ public class DevToolsActionListener implements IActionListener {
             customerDisplayDevice = DeviceModel.builder().
                     deviceId(customerDisplayDeviceId).
                     appId(customerDisplayAppId).
+                    businessUnitId(businessUnitId).
                     parentDeviceId(deviceId).
                     deviceParamModels(deviceParams).
                     build();
