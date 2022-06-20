@@ -47,3 +47,11 @@ task bootRunRetailer(type: org.springframework.boot.gradle.tasks.run.BootRun) {
     }
 
 }
+
+publishing {
+  publications {
+    apiPublication(MavenPublication) {
+      artifact apiJar
+    }
+  }
+}
