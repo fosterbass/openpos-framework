@@ -26,9 +26,6 @@ public class ToshibaMobilePrinter extends EscpPOSPrinter {
             getPeripheralConnection().getOut().write('\n');
             return 0;
         } catch (Exception ex) {
-            if (printerStatusReporter != null) {
-                printerStatusReporter.reportStatus(Status.Error, ex.getMessage());
-            }
             throw new PrintException("readPrinterStatus() failed ", ex);
         }
     }

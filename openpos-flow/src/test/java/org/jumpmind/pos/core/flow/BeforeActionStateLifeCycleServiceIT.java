@@ -1,22 +1,10 @@
 package org.jumpmind.pos.core.flow;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
-
-import org.jumpmind.pos.core.clientconfiguration.LocaleMessageFactory;
 import org.jumpmind.pos.core.error.IErrorHandler;
-import org.jumpmind.pos.core.flow.TestStates.HomeState;
-import org.jumpmind.pos.core.flow.TestStates.StateWithBeforeActionMethod;
-import org.jumpmind.pos.core.flow.TestStates.StateWithBeforeActionMethodThatThrowsException;
-import org.jumpmind.pos.core.flow.TestStates.StateWithMultipleBeforeActionAndFailOnExceptionIsFalse;
-import org.jumpmind.pos.core.flow.TestStates.StateWithMultipleBeforeActionAndFailOnExceptionIsTrue;
-import org.jumpmind.pos.core.flow.TestStates.StateWithMultipleBeforeActionMethods;
-
+import org.jumpmind.pos.core.flow.TestStates.*;
 import org.jumpmind.pos.core.flow.config.FlowBuilder;
 import org.jumpmind.pos.core.flow.config.FlowConfig;
 import org.jumpmind.pos.server.service.IMessageService;
-import org.jumpmind.pos.util.model.Message;
 import org.jumpmind.pos.util.startup.DeviceStartupTaskConfig;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,6 +15,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+
+import static org.junit.Assert.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BeforeActionStateLifeCycleServiceIT {
@@ -56,21 +46,13 @@ public class BeforeActionStateLifeCycleServiceIT {
 
         stateManager = StateManagerTestUtils.buildStateManager(injector, null);
         
-        LocaleMessageFactory localeMessageFactory = new LocaleMessageFactory();
-        TestUtil.setField(localeMessageFactory, "supportedLocales", new String[] {"en_US"});
-        TestUtil.setField(stateManager, "localeMessageFactory", localeMessageFactory);
-        
-//        ActionHandlerImpl actionHandler = new ActionHandlerImpl();
-//        actionHandler.setActionHandlerHelper(new ActionHandlerHelper());
-//
-//        actionHandler.setBeforeActionService(new BeforeActionStateLifecycleService());
         stateManager.setInitialFlowConfig(config);
         TestUtil.setField(stateManager, "injector", injector);
     }
 
     @Test
     public void testSingleBeforeActionMethod() {
-        stateManager.init("pos", "100-1");
+        stateManager.init(new Device("pos", "100-1"));
         StateManagerTestUtils.doAction(stateManager, "TestSingleBeforeActionMethod");
 
         StateWithBeforeActionMethod testState = (StateWithBeforeActionMethod) stateManager.getCurrentState();
@@ -83,7 +65,7 @@ public class BeforeActionStateLifeCycleServiceIT {
 
     @Test(expected=FlowException.class)
     public void testSingleBeforeActionMethodThatThrowsException() throws Throwable {
-        stateManager.init("pos", "100-1");
+        stateManager.init(new Device("pos", "100-1"));
         StateManagerTestUtils.doAction(stateManager, "TestSingleBeforeActionMethodThatThrowsException");
         StateWithBeforeActionMethodThatThrowsException testState = (StateWithBeforeActionMethodThatThrowsException) stateManager.getCurrentState();
         assertFalse(testState.beforeActionInvoked);
@@ -113,7 +95,7 @@ public class BeforeActionStateLifeCycleServiceIT {
     
     @Test
     public void testMultipleBeforeActionMethods() {
-        stateManager.init("pos", "100-1");
+        stateManager.init(new Device("pos", "100-1"));
         StateManagerTestUtils.doAction(stateManager, "TestMultipleBeforeActionMethods");
         StateWithMultipleBeforeActionMethods testState = (StateWithMultipleBeforeActionMethods) stateManager.getCurrentState();
         assertFalse(testState.beforeAction_AInvoked);
@@ -130,7 +112,7 @@ public class BeforeActionStateLifeCycleServiceIT {
     
     @Test
     public void testMultipleBeforeActionMethodsAndFailOnExceptionIsFalse() {
-        stateManager.init("pos", "100-1");
+        stateManager.init(new Device("pos", "100-1"));
         StateManagerTestUtils.doAction(stateManager, "TestMultipleBeforeActionMethodsAndFailOnExceptionIsFalse");
         StateWithMultipleBeforeActionAndFailOnExceptionIsFalse testState = (StateWithMultipleBeforeActionAndFailOnExceptionIsFalse) stateManager.getCurrentState();
         assertFalse(testState.beforeAction_AInvoked);
@@ -150,7 +132,7 @@ public class BeforeActionStateLifeCycleServiceIT {
 
     @Test
     public void testMultipleBeforeActionMethodsAndFailOnExceptionIsTrue() {
-        stateManager.init("pos", "100-1");
+        stateManager.init(new Device("pos", "100-1"));
         StateManagerTestUtils.doAction(stateManager, "TestMultipleBeforeActionMethodsAndFailOnExceptionIsTrue");
         StateWithMultipleBeforeActionAndFailOnExceptionIsTrue testState = (StateWithMultipleBeforeActionAndFailOnExceptionIsTrue) stateManager.getCurrentState();
         assertFalse(testState.beforeAction_AInvoked);

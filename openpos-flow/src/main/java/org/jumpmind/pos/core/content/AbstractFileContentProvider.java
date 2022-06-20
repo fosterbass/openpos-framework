@@ -4,7 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.jumpmind.pos.core.flow.IStateManager;
 import org.jumpmind.pos.core.flow.In;
+import org.jumpmind.pos.core.flow.InOut;
 import org.jumpmind.pos.core.flow.ScopeType;
+import org.jumpmind.pos.core.service.ClientLocaleService;
+import org.jumpmind.pos.core.service.LocaleType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Scope;
@@ -41,13 +44,16 @@ public abstract class AbstractFileContentProvider implements IContentProvider {
     @In(scope = ScopeType.Device, required = false)
     Map<String, String> personalizationProperties;
 
+    @InOut(scope = ScopeType.Device, autoCreate = true)
+    ClientLocaleService clientLocaleService;
+
     static Map<String, ContentIndex> deviceContent = new HashMap<>();
 
     @Cacheable(value = CACHE_NAME, key = "{#deviceId, #key, #baseContentPath}")
     public String getMostSpecificContent(String deviceId, String key, String baseContentPath) {
 
         List<String> possibleContentDirs = getAllPossibleContentDirPermutations(key);
-
+        possibleContentDirs.addAll(0, buildI18nLocations(possibleContentDirs));
         List<String> contentPaths = getMostSpecificContentPaths(baseContentPath, possibleContentDirs);
 
         String mostSpecific = null;
@@ -60,6 +66,11 @@ public abstract class AbstractFileContentProvider implements IContentProvider {
         }
 
         return mostSpecific;
+    }
+
+    protected List<String> buildI18nLocations(List<String> possibleContentDirs) {
+        return possibleContentDirs.stream().map(s-> s + "/" + clientLocaleService.getLocale(LocaleType.DISPLAY).toString()).
+                collect(Collectors.toList());
     }
 
     protected List<String> getMostSpecificContentPaths(String baseContentPath, List<String> possibleContentDirs) {
@@ -112,7 +123,8 @@ public abstract class AbstractFileContentProvider implements IContentProvider {
                 for(int x = 1; x < s.length(); x++) {
                     // Find each index of '/' character and add everything up to that slash
                     if(s.charAt(x) == '/') {
-                        additions.add(s.substring(0,x));
+                        String value = s.substring(0,x);
+                        additions.add(value);
                     }
                 }
             });
@@ -136,7 +148,9 @@ public abstract class AbstractFileContentProvider implements IContentProvider {
                     sb.append("/").append(personalizationProperties.get(property));
                 }
             }
-            if(!values.contains(sb.toString())) values.add(sb.toString());
+            if(!values.contains(sb.toString())) {
+                values.add(sb.toString());
+            }
             return;
         }
 

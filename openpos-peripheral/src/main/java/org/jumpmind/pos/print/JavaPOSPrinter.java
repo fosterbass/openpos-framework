@@ -30,9 +30,8 @@ public class JavaPOSPrinter extends AbstractPOSPrinter implements IOpenposPrinte
     Map<String, File> images = new HashMap<>();
 
     @Override
-    public void init(Map<String, Object> settings, IPrinterStatusReporter printerStatusReporter) {
+    public void init(Map<String, Object> settings) {
         try {
-            this.printerStatusReporter = printerStatusReporter;
             this.settings = settings;
             this.refreshPrinterCommandsFromSettings();
         } catch (Exception ex) {

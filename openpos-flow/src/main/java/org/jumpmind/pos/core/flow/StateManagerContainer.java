@@ -96,7 +96,7 @@ public class StateManagerContainer implements IStateManagerContainer, Applicatio
             stateManager.setErrorHandler(errorHandler);
             stateManager.setInitialFlowConfig(flowConfigProvider.getConfig(appId, deviceId));
             stateManagersByDeviceId.put(deviceId, stateManager);
-            stateManager.init(appId, deviceId);
+            stateManager.init(new Device(appId, deviceId));
         }
         return stateManager;
     }
@@ -116,8 +116,9 @@ public class StateManagerContainer implements IStateManagerContainer, Applicatio
         IStateManager stateManager = stateManagersByDeviceId.get(deviceId);
         if (stateManager != null) {
             stateManager.getDeviceVariables().put("brandId", brand);
-            Map<String, String> properties = stateManager.getApplicationState().getScopeValue("personalizationProperties");
+            Map<String, String> properties = new HashMap<>(stateManager.getApplicationState().getScopeValue("personalizationProperties"));
             properties.put("brandId", brand);
+            stateManager.registerPersonalizationProperties(properties);
             stateManager.sendConfigurationChangedMessage();
             stateManager.reset();
         }
@@ -183,7 +184,14 @@ public class StateManagerContainer implements IStateManagerContainer, Applicatio
     public void setCurrentStateManager(IStateManager stateManager) {
         currentStateManager.set(stateManager);
         if (stateManager != null && stateManager.getDeviceVariables() != null) {
-            setupLogging(stateManager.getDeviceId());
+            Device device = stateManager.getDevice();
+
+            if (device != null) {
+                setupLogging(stateManager.getDevice().getDeviceId());
+            } else {
+                setupLogging("unknown");
+            }
+
             for (String property : stateManager.getDeviceVariables().keySet()) {
                 clientContext.put(property, stateManager.getDeviceVariables().get(property));
             }
@@ -192,12 +200,13 @@ public class StateManagerContainer implements IStateManagerContainer, Applicatio
                 clientContext.put("deviceMode", stateManager.getApplicationState().getDeviceMode());
             }
 
-            if (isNotBlank(stateManager.getDeviceId())) {
-                clientContext.put("deviceId", stateManager.getDeviceId());
+            if (stateManager.getDevice() != null && isNotBlank(stateManager.getDevice().getDeviceId())) {
+                clientContext.put("deviceId", stateManager.getDevice().getDeviceId());
             }
-            if (isNotBlank(stateManager.getAppId())) {
-                clientContext.put("appId", stateManager.getAppId());
+            if (stateManager.getDevice() != null && isNotBlank(stateManager.getDevice().getAppId())) {
+                clientContext.put("appId", stateManager.getDevice().getAppId());
             }
+
             setClientContextVersions();
             if (clientContextUpdaters != null) {
                 for (IClientContextUpdater clientContextUpdater : clientContextUpdaters) {

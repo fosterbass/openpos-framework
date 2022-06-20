@@ -25,11 +25,13 @@ public class StateManagerContainerTest {
 
         Mockito.when(applicationContext.getBean(StateManager.class)).thenReturn(stateManager);
         Mockito.when(applicationContext.getBeanNamesForType(ITransitionStep.class)).thenReturn(new String[0]);
+
+
         TestUtil.setField(container, "applicationContext", applicationContext);
         TestUtil.setField(container, "flowConfigProvider", flowConfigProvider);
         TestUtil.setField(container, "clientContext", clientContext);
         
-        for (int i = 0; i < 50; i++) {            
+        for (int i = 0; i < 50; i++) {
             container.create("pos", "0000-"+i, null, null);
         }
     }
@@ -39,7 +41,7 @@ public class StateManagerContainerTest {
     public void testConcurrentAccess() {
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 50; j++) {
-                container.create("pos", "0000-"+i, null, null);
+                container.create("pos", "0000-" + i, null, null);
                 container.retrieve("0000-"+j, true);
                 container.getAllStateManagers();
                 container.remove("0000-"+j);

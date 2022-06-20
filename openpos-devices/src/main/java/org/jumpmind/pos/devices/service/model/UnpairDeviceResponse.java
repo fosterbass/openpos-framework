@@ -11,6 +11,5 @@ import org.jumpmind.pos.devices.model.DeviceModel;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UnpairDeviceResponse {
-    private DeviceModel device;
-    private DeviceModel unpairedDevice;
+    private DeviceModel child;
 }

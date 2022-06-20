@@ -20,11 +20,12 @@
  */
 package org.jumpmind.pos.core.flow;
 
-import java.util.Collections;
-import java.util.HashMap;
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Slf4j
 public class Scope {
 
     private Map<String, ScopeValue> deviceScope = new ConcurrentHashMap<String, ScopeValue>();
@@ -83,6 +84,8 @@ public class Scope {
     }
 
     public void setDeviceScope(String name, Object value) {
+        log.debug("setting device scope value '{}' value = '{}'", name, value);
+
         setScope(deviceScope, name, value);
     }
 

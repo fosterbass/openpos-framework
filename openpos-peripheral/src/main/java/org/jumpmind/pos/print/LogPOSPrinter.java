@@ -1,5 +1,6 @@
 package org.jumpmind.pos.print;
 
+import jpos.JposConst;
 import jpos.JposException;
 import jpos.POSPrinterConst;
 import jpos.services.EventCallbacks;
@@ -40,8 +41,7 @@ public class LogPOSPrinter extends AbstractPOSPrinter {
     }
 
     @Override
-    public void init(Map<String, Object> settings, IPrinterStatusReporter printerStatusReporter) {
-        printerStatusReporter.reportStatus(Status.Online, "LogPOSPrinter Ok.");
+    public void init(Map<String, Object> settings) {
     }
 
     @Override

@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jumpmind.pos.core.flow.IStateManager;
 import org.jumpmind.pos.core.flow.IStateManagerContainer;
-import org.jumpmind.pos.core.flow.StateManager;
 import org.jumpmind.pos.devices.model.DeviceModel;
 import org.jumpmind.pos.devices.service.IDevicesService;
 import org.jumpmind.pos.devices.service.model.DisconnectDeviceRequest;
@@ -46,7 +45,7 @@ public class SessionDisconnectedListener implements ApplicationListener<SessionD
             if (deviceModel != null) {
                 devicesService.disconnectDevice(new DisconnectDeviceRequest(deviceModel.getDeviceId()));
                 try {
-                    eventPublisher.publish(new DeviceDisconnectedEvent(deviceModel.getDeviceId(), deviceModel.getAppId(), deviceModel.getPairedDeviceId()));
+                    eventPublisher.publish(new DeviceDisconnectedEvent(deviceModel.getDeviceId(), deviceModel.getAppId()));
                 } catch (Exception ex) {
                     log.warn("Error publishing DeviceDisconnectedEvent", ex);
                 }
@@ -59,6 +58,10 @@ public class SessionDisconnectedListener implements ApplicationListener<SessionD
                     if (stateManager != null) {
                         stateManager.setConnected(false);
                     }
+                }
+
+                if (StringUtils.isNotBlank(deviceModel.getParentDeviceId())) {
+                    stateManagerContainer.remove(deviceModel.getDeviceId());
                 }
 
                 SubscribedSessionMetric.dec(deviceModel.getDeviceId());

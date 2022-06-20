@@ -1,10 +1,5 @@
 package org.jumpmind.pos.core.flow;
 
-import static org.mockito.Mockito.*;
-
-import java.util.Arrays;
-
-import org.jumpmind.pos.core.clientconfiguration.LocaleMessageFactory;
 import org.jumpmind.pos.core.flow.config.FlowConfig;
 import org.jumpmind.pos.core.flow.config.TransitionStepConfig;
 import org.jumpmind.pos.core.flow.config.YamlConfigProvider;
@@ -14,6 +9,11 @@ import org.jumpmind.pos.util.clientcontext.ClientContext;
 import org.jumpmind.pos.util.model.Message;
 import org.jumpmind.pos.util.startup.DeviceStartupTaskConfig;
 import org.mockito.Mockito;
+
+import java.util.Arrays;
+
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doNothing;
 
 public class StateManagerTestUtils {
 
@@ -36,10 +36,6 @@ public class StateManagerTestUtils {
         DeviceStartupTaskConfig deviceStartupTaskConfig = Mockito.mock(DeviceStartupTaskConfig.class);
         TestUtil.setField(stateManager, "deviceStartupTaskConfig", deviceStartupTaskConfig);
 
-        LocaleMessageFactory localeMessageFactory = new LocaleMessageFactory();
-        TestUtil.setField(localeMessageFactory, "supportedLocales", new String[] {"en_US"});
-        TestUtil.setField(stateManager, "localeMessageFactory", localeMessageFactory);
-        
         ActionHandlerImpl actionHandler = new ActionHandlerImpl();
         TestUtil.setField(actionHandler, "beforeActionService" , new BeforeActionStateLifecycleService());
         TestUtil.setField(actionHandler, "helper" , new ActionHandlerHelper());
@@ -57,7 +53,7 @@ public class StateManagerTestUtils {
 
         if (flowConfig != null) {
             stateManager.setInitialFlowConfig(flowConfig);
-            stateManager.init("pos", "100-1");
+            stateManager.init(new Device("pos", "100-1"));
             Thread.sleep(500);
         }
         

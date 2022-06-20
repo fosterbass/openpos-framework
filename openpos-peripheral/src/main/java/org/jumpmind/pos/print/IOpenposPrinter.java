@@ -26,7 +26,7 @@ public interface IOpenposPrinter extends POSPrinterService19 {
 
     public int getPrintWidth();
 
-    public void init(Map<String,Object> settings, IPrinterStatusReporter printerStatusReporter);
+    public void init(Map<String,Object> settings);
 
     public String getPrinterName();
 

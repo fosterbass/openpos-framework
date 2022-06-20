@@ -27,8 +27,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.jumpmind.pos.core.clientconfiguration.ClientConfigChangedMessage;
 import org.jumpmind.pos.core.clientconfiguration.IClientConfigSelector;
-import org.jumpmind.pos.core.clientconfiguration.LocaleChangedMessage;
-import org.jumpmind.pos.core.clientconfiguration.LocaleMessageFactory;
 import org.jumpmind.pos.core.error.IErrorHandler;
 import org.jumpmind.pos.core.event.DeviceResetEvent;
 import org.jumpmind.pos.core.flow.config.*;
@@ -53,8 +51,6 @@ import org.jumpmind.pos.util.event.Event;
 import org.jumpmind.pos.util.event.EventPublisher;
 import org.jumpmind.pos.util.model.PrintMessage;
 import org.jumpmind.pos.util.startup.DeviceStartupTaskConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -113,9 +109,6 @@ public class StateManager implements IStateManager {
 
     @Autowired
     StateLifecycle stateLifecycle;
-
-    @Autowired
-    LocaleMessageFactory localeMessageFactory;
 
     @Autowired
     ActionHandlerHelper helper;
@@ -182,6 +175,13 @@ public class StateManager implements IStateManager {
         log.info("StateManager reset queued");
         this.actionQueue.clear();
 
+        if (initialScope == null) {
+            initialScope = new Scope();
+        }
+
+        initialScope.setDeviceScope("parentDevice", applicationState.getScopeValue(ScopeType.Device, "parentDevice"));
+        initialScope.setDeviceScope("childDevices", applicationState.getScopeValue(ScopeType.Device, "childDevices"));
+
         final Action resetAction = Action.builder()
                 .name(STATE_MANAGER_RESET_ACTION)
                 .data(initialScope)
@@ -208,14 +208,15 @@ public class StateManager implements IStateManager {
         return actionQueue.size();
     }
 
-    public void init(String appId, String nodeId) {
-        init(appId, nodeId, null);
+    @Override
+    public void init(Device device) {
+        init(device, null);
     }
 
-    public void init(String appId, String nodeId, Scope initialScope) {
+    public void init(Device device, Scope initialScope) {
         this.applicationState.reset(scheduledAnnotationBeanPostProcessor, initialScope);
-        this.applicationState.setAppId(appId);
-        this.applicationState.setDeviceId(nodeId);
+        this.applicationState.setAppId(device.getAppId());
+        this.applicationState.setDeviceId(device.getDeviceId());
         this.eventBroadcaster = new EventBroadcaster(this);
 
         applicationState.getScope().setDeviceScope("stateManager", this);
@@ -226,18 +227,18 @@ public class StateManager implements IStateManager {
             applicationState.setCurrentContext(new StateContext(initialFlowConfig, null, null));
             sendConfigurationChangedMessage();
 
-            deviceStartupTaskConfig.processDeviceStartupTasks(nodeId, appId);
+            deviceStartupTaskConfig.processDeviceStartupTasks(device.getDeviceId(), device.getAppId());
 
             sendStartupCompleteMessage();
 
             if (initialFlowConfig.getInitialState() == null ||
                     initialFlowConfig.getInitialState().getStateClass() == null) {
-               throw new IllegalStateException(format("The flow for %s:%s did not have an initial state configured", getDeviceId(), appId));
+               throw new IllegalStateException(format("The flow for %s did not have an initial state configured", getDevice()));
             }
 
             startActionLoop(StateManagerActionConstants.STARTUP_ACTION, initialFlowConfig.getInitialState());
         } else {
-            throw new IllegalStateException("Could not find a flow config for " + appId);
+            throw new IllegalStateException("Could not find a flow config for " + device.getAppId());
         }
 
     }
@@ -283,10 +284,9 @@ public class StateManager implements IStateManager {
                         actionContext.getAction().markProcessed();
                         runningFlag.set(false);
                         busyFlag.set(false);
-                        init(this.getAppId(), this.getDeviceId(), initialScope);
+                        init(getDevice(), initialScope);
                         log.info("StateManager reset");
-                        this.eventPublisher.publish(new DeviceResetEvent(getDeviceId(), getAppId()));
-                        sendDataClearMessage();
+                        this.eventPublisher.publish(new DeviceResetEvent(getDevice().getDeviceId(), getDevice().getAppId()));
                         break;
                     } else if (actionContext.getAction().getName().equals(STATE_MANAGER_STOP_ACTION)) {
                         actionContext.getAction().markProcessed();
@@ -609,7 +609,7 @@ public class StateManager implements IStateManager {
             return applicationState.getCurrentContext().getState();
         } else {
             throw new FlowException("applicationState.getCurrentContext() is null. This StateManager is likely misconfigured. " +
-                    "Check your appId and Spring profiles. (appId=\"" + this.getAppId() +
+                    "Check your appId and Spring profiles. (appId=\"" + getDevice().getAppId() +
                     "\") profiles=" + Arrays.toString(env.getActiveProfiles()));
         }
     }
@@ -808,16 +808,16 @@ public class StateManager implements IStateManager {
 
     protected void processEvent(Event event) {
         if (event instanceof AppEvent &&
-                getDeviceId().equals(((AppEvent) event).getDeviceId())) {
+                getDevice().getDeviceId().equals(((AppEvent) event).getDeviceId())) {
             lastInteractionTime.set(new Date());
         }
         if (initialFlowConfig == null) {
             throw new FlowException("initialFlowConfig is null. This StateManager is likely misconfigured. " +
-                    "Check your appId and Spring profiles. (appId=\"" + this.getAppId() +
+                    "Check your appId and Spring profiles. (appId=\"" + getDevice().getAppId() +
                     "\") profiles=" + Arrays.toString(env.getActiveProfiles()));
         }
 
-        List<Class> classes = initialFlowConfig.getEventHandlers();
+        List<Class<?>> classes = initialFlowConfig.getEventHandlers();
         classes.forEach(clazz -> eventBroadcaster.postEventToObject(clazz, event));
 
         applicationState.getScope().getDeviceScope().values().
@@ -1145,19 +1145,25 @@ public class StateManager implements IStateManager {
     }
 
     @Override
-    public String getDeviceId() {
-        return applicationState.getDeviceId();
+    public Device getDevice() {
+        return new Device(
+                applicationState.getAppId(),
+                applicationState.getDeviceId()
+        );
     }
 
     @Override
-    public String getPairedDeviceId() {
-        DeviceModel currentDevice = ((DeviceModel) applicationState.getScopeValue(ScopeType.Device, "device"));
-        return currentDevice != null ? currentDevice.getPairedDeviceId() : null;
+    public Device getParentDevice() {
+        DeviceModel parentDevice = applicationState.getScopeValue(ScopeType.Device, "parentDevice");
+        return parentDevice != null ? new Device(parentDevice.getAppId(), parentDevice.getDeviceId()) : null;
     }
 
     @Override
-    public String getAppId() {
-        return applicationState.getAppId();
+    public List<Device> getChildDevices() {
+        List<DeviceModel> children = applicationState.getScopeValue(ScopeType.Device, "childDevices");
+        return children != null
+                ? children.stream().map(c -> new Device(c.getAppId(), c.getDeviceId())).collect(Collectors.toList())
+                : Collections.emptyList();
     }
 
     @Override
@@ -1248,11 +1254,7 @@ public class StateManager implements IStateManager {
             updatedProperties.put("appId", applicationState.getAppId());
             registerPersonalizationProperties(updatedProperties);
         }
-        if(StringUtils.isNotEmpty(localeMessageFactory.getMessage().getLocale())) {
-            Map<String,String> updatedProperties = new HashMap<>(properties);
-            updatedProperties.put("locale", localeMessageFactory.getMessage().getLocale());
-            registerPersonalizationProperties(updatedProperties);
-        }
+
         List<String> additionalTags = applicationState.getScopeValue("additionalTagsForConfiguration");
 
         try {
@@ -1266,10 +1268,6 @@ public class StateManager implements IStateManager {
             ClientConfigChangedMessage versionConfiguration = new ClientConfigChangedMessage("versions");
             versionConfiguration.put("versions", Versions.getVersions());
             messageService.sendMessage(deviceId, versionConfiguration);
-
-            // Send supported locales
-            LocaleChangedMessage localeMessage = localeMessageFactory.getMessage();
-            messageService.sendMessage(deviceId, localeMessage);
 
         } catch (NoSuchBeanDefinitionException e) {
             log.info("An {} is not configured. Will not be sending client configuration to the client",

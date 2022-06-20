@@ -1,6 +1,7 @@
 @import "../../../styles/mixins/typography";
 
 .program-plan-selection-dialog {
+    height: 80vmin;
     .plans {
       display: grid;
       grid-template-columns: repeat(3, 1fr);

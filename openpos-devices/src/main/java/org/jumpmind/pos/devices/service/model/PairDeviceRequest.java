@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PairDeviceRequest {
-    private String deviceId;
-    private String pairedDeviceId;
+    private String parent;
+    private String child;
 }

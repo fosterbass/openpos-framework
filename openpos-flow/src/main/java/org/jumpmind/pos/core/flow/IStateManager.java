@@ -20,6 +20,7 @@
  */
 package org.jumpmind.pos.core.flow;
 
+import java.util.List;
 import java.util.Map;
 
 import org.jumpmind.pos.core.error.IErrorHandler;
@@ -37,10 +38,10 @@ public interface IStateManager {
 
     void stop();
 
-    public void init(String appId, String deviceId);
-    public String getDeviceId();
-    public String getPairedDeviceId();
-    public String getAppId();
+    public void init(Device device);
+    public Device getDevice();
+    public Device getParentDevice();
+    public List<Device> getChildDevices();
     public String getDeviceMode();
     public void setDeviceMode(String mode);
     public void doAction(String action);

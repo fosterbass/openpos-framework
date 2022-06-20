@@ -10,6 +10,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UnpairDeviceRequest {
-    private String deviceId;
-    private String pairedDeviceId;
+    private String child;
 }

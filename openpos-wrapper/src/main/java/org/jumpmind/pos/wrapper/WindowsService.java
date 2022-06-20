@@ -74,6 +74,8 @@ public class WindowsService extends WrapperService {
 
     @Override
     public void init() {
+        tryAutoUpdate();
+
         logger.log(Level.INFO, "Requesting service dispatch");
         WinsvcEx.SERVICE_TABLE_ENTRY entry = new WinsvcEx.SERVICE_TABLE_ENTRY(config.getName(), new ServiceMain());
         WinsvcEx.SERVICE_TABLE_ENTRY[] serviceTable = (WinsvcEx.SERVICE_TABLE_ENTRY[]) entry.toArray(2);

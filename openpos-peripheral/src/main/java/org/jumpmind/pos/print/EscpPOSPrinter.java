@@ -107,15 +107,8 @@ public class EscpPOSPrinter extends AbstractPOSPrinter implements IOpenposPrinte
                 }
                 writer.print(data);
                 writer.flush();
-                if (printerStatusReporter != null) {
-                    printerStatusReporter.reportStatus(Status.Online, "Ok.");
-                }
-
             }
         } catch (Exception ex) {
-            if (printerStatusReporter != null) {
-                printerStatusReporter.reportStatus(Status.Error, "Failed to print. ");
-            }
             if (ex instanceof PrintException) {
                 throw (PrintException) ex;
             } else {
@@ -269,8 +262,7 @@ public class EscpPOSPrinter extends AbstractPOSPrinter implements IOpenposPrinte
     }
 
     @Override
-    public void init(Map<String, Object> settings, IPrinterStatusReporter printerStatusReporter) {
-        this.printerStatusReporter = printerStatusReporter;
+    public void init(Map<String, Object> settings) {
         this.settings = settings;
         this.refreshConnectionFactoryFromSettings();
         this.refreshPrinterCommandsFromSettings();
@@ -284,9 +276,6 @@ public class EscpPOSPrinter extends AbstractPOSPrinter implements IOpenposPrinte
         try {
             this.connectionFactory = (IConnectionFactory) ClassUtils.loadClass((String) this.settings.get("connectionClass")).newInstance();
         } catch (Exception ex) {
-            if (printerStatusReporter != null) {
-                printerStatusReporter.reportStatus(Status.Offline, ex.getMessage());
-            }
             throw new PrintException("Failed to create the connection factory for " + getClass().getName(), ex);
         }
     }
@@ -317,9 +306,6 @@ public class EscpPOSPrinter extends AbstractPOSPrinter implements IOpenposPrinte
             log.info(printerName + " printer force returned status: 0");
             return 0;
         } catch (Exception ex) {
-            if (printerStatusReporter != null) {
-                printerStatusReporter.reportStatus(Status.Error, ex.getMessage());
-            }
             throw new PrintException("readPrinterStatus() failed ", ex);
         }
     }
@@ -387,10 +373,8 @@ public class EscpPOSPrinter extends AbstractPOSPrinter implements IOpenposPrinte
     public void beginSlipMode() {
         try {
             getPeripheralConnection().getOut().write(new byte[]{0x1B, 0x63, 0x30, 4}); // select slip
-//            getPeripheralConnection().getOut().write(new byte[] {0x1B, 0x66, 1, 2}); // wait for one minute for a slip, and start printing .2 seconds after slip detected.
             getPeripheralConnection().getOut().flush();
         } catch (Exception ex) {
-            printerStatusReporter.reportStatus(Status.Error, ex.getMessage());
             throw new PrintException("Failed to beginSlipMode", ex);
         }
     }
@@ -404,9 +388,6 @@ public class EscpPOSPrinter extends AbstractPOSPrinter implements IOpenposPrinte
             getPeripheralConnection().getOut().write(new byte[]{0x1B, 0x63, 0x30, 1}); // select receipt
             getPeripheralConnection().getOut().flush();
         } catch (Exception ex) {
-            if (printerStatusReporter != null) {
-                printerStatusReporter.reportStatus(Status.Error, ex.getMessage());
-            }
             throw new PrintException("Failed to endSlipMode", ex);
         }
     }

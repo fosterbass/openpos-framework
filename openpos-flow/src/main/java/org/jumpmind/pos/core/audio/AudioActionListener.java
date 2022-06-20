@@ -48,7 +48,7 @@ public class AudioActionListener implements IActionListener {
     public void onGetConfig(IStateManager stateManager) {
         AudioConfigMessage message = AudioUtil.getInteractionMessageFromConfig(stateManager, audioConfig);
         log.debug("Sending audio configuration", message);
-        this.messageService.sendMessage(stateManager.getDeviceId(), message);
+        this.messageService.sendMessage(stateManager.getDevice().getDeviceId(), message);
     }
 
     public void onPreload(IStateManager stateManager) {
@@ -62,7 +62,7 @@ public class AudioActionListener implements IActionListener {
         }
 
         AudioPreloadMessage message = AudioPreloadMessage.builder().urls(urls).build();
-        this.messageService.sendMessage(stateManager.getDeviceId(), message);
+        this.messageService.sendMessage(stateManager.getDevice().getDeviceId(), message);
     }
 
     public void onPlay(IStateManager stateManager, Action action) {

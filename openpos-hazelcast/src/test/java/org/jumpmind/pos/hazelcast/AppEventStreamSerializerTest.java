@@ -22,24 +22,6 @@ public class AppEventStreamSerializerTest {
     @Autowired
     Config hazelCastConfig;
 
-
-
-    @Test
-    public void testAppEventRoundTrip() {
-        AppEvent event = new AppEvent();
-        event.setRemote(true);
-        event.setAppId("pos");
-        event.setDeviceId("11111-111");
-
-        SerializationService ss = new DefaultSerializationServiceBuilder().setConfig(hazelCastConfig.getSerializationConfig()).build();
-        Data appEventData = ss.toData(event);
-        assertNotNull(appEventData);
-
-        SerializationService ss2 = new DefaultSerializationServiceBuilder().setConfig(hazelCastConfig.getSerializationConfig()).build();
-        Object appEventObj = ss2.toObject(appEventData);
-        assertEquals(event, appEventObj);
-    }
-
     @Test
     public void testAppEventSubclassRoundTrip() {
         AppEventSubclass event = new AppEventSubclass();

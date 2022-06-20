@@ -88,7 +88,7 @@ public class DevicesRepositoryTest {
     @Test
     public void testGetUnpairedDevices() {
         when(devSession.findByFields(any(), anyMap(), anyInt())).thenReturn(Collections.singletonList(getMockDevice()));
-        List<DeviceModel> devices = devicesRepository.getUnpairedDevices(mockBusinessUnitId);
+        List<DeviceModel> devices = devicesRepository.getOrphanedDevices(mockBusinessUnitId);
         assertEquals(mockDeviceId, devices.get(0).getDeviceId());
     }
 
@@ -96,14 +96,14 @@ public class DevicesRepositoryTest {
     public void testGetUnpairedDevicesNoResults() {
         DeviceModel mockDevice = getMockDevice(mockDeviceId, mockPairedDeviceId);
         when(devSession.findByFields(any(), anyMap(), anyInt())).thenReturn(Collections.singletonList(mockDevice));
-        List<DeviceModel> devices = devicesRepository.getUnpairedDevices(mockBusinessUnitId);
+        List<DeviceModel> devices = devicesRepository.getOrphanedDevices(mockBusinessUnitId);
         assertTrue(CollectionUtils.isEmpty(devices));
     }
 
     @Test
     public void testGetUnpairedDevicesByAppId() {
         when(devSession.findByFields(any(), anyMap(), anyInt())).thenReturn(Collections.singletonList(getMockDevice()));
-        List<DeviceModel> devices = devicesRepository.getUnpairedDevicesByAppId(mockBusinessUnitId, mockAppId);
+        List<DeviceModel> devices = devicesRepository.getOrphanedDevicesByAppId(mockBusinessUnitId, mockAppId);
         assertEquals(mockDeviceId, devices.get(0).getDeviceId());
         assertEquals(mockAppId, devices.get(0).getAppId());
     }
@@ -112,7 +112,7 @@ public class DevicesRepositoryTest {
     public void testGetUnpairedDevicesByAppIdNoResults() {
         DeviceModel mockDevice = getMockDevice(mockDeviceId, null, mockSecondaryAppId);
         when(devSession.findByFields(any(), anyMap(), anyInt())).thenReturn(Collections.singletonList(mockDevice));
-        List<DeviceModel> devices = devicesRepository.getUnpairedDevicesByAppId(mockBusinessUnitId, mockAppId);
+        List<DeviceModel> devices = devicesRepository.getOrphanedDevicesByAppId(mockBusinessUnitId, mockAppId);
         assertTrue(CollectionUtils.isEmpty(devices));
     }
 
@@ -120,15 +120,15 @@ public class DevicesRepositoryTest {
     public void testGetPairedDevices() {
         DeviceModel mockDevice = getMockDevice(mockDeviceId, mockPairedDeviceId);
         when(devSession.findByFields(any(), anyMap(), anyInt())).thenReturn(Collections.singletonList(mockDevice));
-        List<DeviceModel> devices = devicesRepository.getPairedDevices(mockBusinessUnitId);
+        List<DeviceModel> devices = devicesRepository.getAllChildDevices(mockBusinessUnitId);
         assertEquals(mockDeviceId, devices.get(0).getDeviceId());
-        assertEquals(mockPairedDeviceId, devices.get(0).getPairedDeviceId());
+        assertEquals(mockPairedDeviceId, devices.get(0).getParentDeviceId());
     }
 
     @Test
     public void testGetPairedDevicesNoResults() {
         when(devSession.findByFields(any(), anyMap(), anyInt())).thenReturn(Collections.singletonList(getMockDevice()));
-        List<DeviceModel> devices = devicesRepository.getPairedDevices(mockBusinessUnitId);
+        List<DeviceModel> devices = devicesRepository.getAllChildDevices(mockBusinessUnitId);
         assertTrue(CollectionUtils.isEmpty(devices));
     }
 
@@ -136,7 +136,7 @@ public class DevicesRepositoryTest {
     public void testGetPairedDevicesByAppId() {
         DeviceModel mockDevice = getMockDevice(mockDeviceId, mockPairedDeviceId);
         when(devSession.findByFields(any(), anyMap(), anyInt())).thenReturn(Collections.singletonList(mockDevice));
-        List<DeviceModel> devices = devicesRepository.getPairedDevicesByAppId(mockBusinessUnitId, mockAppId);
+        List<DeviceModel> devices = devicesRepository.getAllChildDevicesByAppId(mockBusinessUnitId, mockAppId);
         assertEquals(mockDeviceId, devices.get(0).getDeviceId());
         assertEquals(mockAppId, devices.get(0).getAppId());
     }
@@ -145,7 +145,7 @@ public class DevicesRepositoryTest {
     public void testGetPairedDevicesByAppIdNoResults() {
         DeviceModel mockDevice = getMockDevice(mockDeviceId, mockPairedDeviceId, mockSecondaryAppId);
         when(devSession.findByFields(any(), anyMap(), anyInt())).thenReturn(Collections.singletonList(mockDevice));
-        List<DeviceModel> devices = devicesRepository.getPairedDevicesByAppId(mockBusinessUnitId, mockAppId);
+        List<DeviceModel> devices = devicesRepository.getAllChildDevicesByAppId(mockBusinessUnitId, mockAppId);
         assertTrue(CollectionUtils.isEmpty(devices));
     }
 
@@ -155,39 +155,29 @@ public class DevicesRepositoryTest {
                 .thenReturn(getMockDevice())
                 .thenReturn(getMockDevice(mockPairedDeviceId));
         devicesRepository.pairDevice(mockDeviceId, mockPairedDeviceId);
-        verify(devSession).save(getMockDevice(mockDeviceId, mockPairedDeviceId));
         verify(devSession).save(getMockDevice(mockPairedDeviceId, mockDeviceId));
     }
 
     @Test
     public void testPairDeviceUnpairFirst() {
         String device3Id = "00100-003";
-        String device4Id = "00100-004";
 
         when(devSession.findByNaturalId(any(), (ModelId) any()))
-                .thenReturn(getMockDevice(mockDeviceId, device3Id))
-                .thenReturn(getMockDevice(mockPairedDeviceId, device4Id))
-                .thenReturn(getMockDevice(mockDeviceId, device3Id))
-                .thenReturn(getMockDevice(device3Id, mockDeviceId))
-                .thenReturn(getMockDevice(mockPairedDeviceId, device4Id))
-                .thenReturn(getMockDevice(device4Id, mockPairedDeviceId));
+                .thenReturn(getMockDevice(mockDeviceId))
+                .thenReturn(getMockDevice(mockPairedDeviceId, device3Id));
+
         devicesRepository.pairDevice(mockDeviceId, mockPairedDeviceId);
 
-        verify(devSession).save(getMockDevice());
-        verify(devSession).save(getMockDevice(device3Id));
-        verify(devSession).save(getMockDevice(mockPairedDeviceId));
-        verify(devSession).save(getMockDevice(device4Id));
-        verify(devSession).save(getMockDevice(mockDeviceId, mockPairedDeviceId));
         verify(devSession).save(getMockDevice(mockPairedDeviceId, mockDeviceId));
     }
 
     @Test
     public void testUnpairDevice() {
         when(devSession.findByNaturalId(any(), (ModelId) any()))
-                .thenReturn(getMockDevice(mockDeviceId, mockPairedDeviceId))
                 .thenReturn(getMockDevice(mockPairedDeviceId, mockDeviceId));
-        devicesRepository.unpairDevice(mockDeviceId, mockPairedDeviceId);
-        verify(devSession).save(getMockDevice());
+
+        devicesRepository.unpairDevice(mockPairedDeviceId);
+
         verify(devSession).save(getMockDevice(mockPairedDeviceId));
     }
 
@@ -346,16 +336,16 @@ public class DevicesRepositoryTest {
         return getMockDevice(deviceId, null);
     }
 
-    private DeviceModel getMockDevice(String deviceId, String pairedDeviceId) {
-        return getMockDevice(deviceId, pairedDeviceId, mockAppId);
+    private DeviceModel getMockDevice(String deviceId, String parentDeviceId) {
+        return getMockDevice(deviceId, parentDeviceId, mockAppId);
     }
 
-    private DeviceModel getMockDevice(String deviceId, String pairedDeviceId, String appId) {
+    private DeviceModel getMockDevice(String deviceId, String parentDeviceId, String appId) {
         DeviceModel mockDevice = DeviceModel.builder()
                 .deviceId(deviceId)
                 .businessUnitId(mockBusinessUnitId)
                 .appId(appId)
-                .pairedDeviceId(pairedDeviceId)
+                .parentDeviceId(parentDeviceId)
                 .description("Store 100 Register 1")
                 .build();
         mockDevice.setTagValue("REGION", "N_AMERICA");

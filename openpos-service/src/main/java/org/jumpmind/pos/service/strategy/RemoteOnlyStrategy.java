@@ -36,6 +36,7 @@ import java.util.UUID;
 import static org.jumpmind.pos.service.ServiceConfig.LOCAL_PROFILE;
 import static org.jumpmind.pos.service.util.EndpointUtils.getPathToEndpoint;
 import static org.jumpmind.pos.util.RestApiSupport.REST_API_TOKEN_HEADER_NAME;
+import static org.springframework.core.annotation.AnnotatedElementUtils.getMergedAnnotation;
 
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
@@ -239,12 +240,12 @@ public class RemoteOnlyStrategy implements IInvocationStrategy {
         int connectTimeoutInSecond = profileConfig.getConnectTimeout() > 0 ? profileConfig.getConnectTimeout() : httpTimeoutInSecond;
         ConfiguredRestTemplate template = new ConfiguredRestTemplate(httpTimeoutInSecond, connectTimeoutInSecond);
 
-        RequestMapping mapping = endpointInvocationContext.getMethod().getAnnotation(RequestMapping.class);
-        RequestMethod[] requestMethods = mapping.method();
+        final RequestMapping mapping = getMergedAnnotation(endpointInvocationContext.getMethod(), RequestMapping.class);
+        RequestMethod[] requestMethods = mapping != null ? mapping.method(): null;
 
         HttpHeaders headers = getHeaders(profileConfig, profileId);
 
-        if (requestMethods.length > 0) {
+        if (requestMethods != null && requestMethods.length > 0) {
             try {
                 Method method = endpointInvocationContext.getMethod();
                 Object[] args = endpointInvocationContext.getArguments();

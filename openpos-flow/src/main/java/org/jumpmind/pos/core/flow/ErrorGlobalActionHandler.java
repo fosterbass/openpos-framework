@@ -1,8 +1,9 @@
 package org.jumpmind.pos.core.flow;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jumpmind.pos.server.model.Action;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 public class ErrorGlobalActionHandler {
 
@@ -17,8 +18,12 @@ public class ErrorGlobalActionHandler {
     @OnGlobalAction
     public void onResetStateManager(Action action) {
         stateManager.reset();
-        if (StringUtils.isNotBlank(stateManager.getPairedDeviceId())) {
-            stateManagerContainer.resetStateManager(stateManager.getPairedDeviceId());
+
+        final List<Device> children = stateManager.getChildDevices();
+        if (children != null) {
+            for (final Device child: children) {
+                stateManagerContainer.resetStateManager(child.getDeviceId());
+            }
         }
     }
 }

@@ -45,11 +45,11 @@ public interface IDevicesService {
     @PostMapping("/find")
     FindDevicesResponse findDevices(@RequestBody FindDevicesRequest request);
 
-    @PostMapping("/unpaired")
-    GetUnpairedDevicesResponse getUnpairedDevices(@RequestBody GetUnpairedDevicesRequest request);
+    @PostMapping("/orphaned")
+    GetOrphanedDevicesResponse getOrphanedDevices(@RequestBody GetOrphanedDevicesRequest request);
 
-    @PostMapping("/paired")
-    GetPairedDevicesResponse getPairedDevices(@RequestBody GetPairedDevicesRequest request);
+    @PostMapping("/children")
+    GetChildDevicesResponse getChildDevices(@RequestBody GetChildDevicesRequest request);
 
     @PostMapping("/pair")
     PairDeviceResponse pairDevice(@RequestBody PairDeviceRequest request);

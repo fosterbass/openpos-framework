@@ -15,13 +15,13 @@ public class PairDeviceEndpoint {
 
     public PairDeviceResponse pairDevice(PairDeviceRequest request) {
         devicesRepository.pairDevice(
-                request.getDeviceId(),
-                request.getPairedDeviceId()
+                request.getParent(),
+                request.getChild()
         );
 
         return PairDeviceResponse.builder()
-                .device(devicesRepository.getDevice(request.getDeviceId()))
-                .pairedDevice(devicesRepository.getDevice(request.getPairedDeviceId()))
+                .parent(devicesRepository.getDevice(request.getParent()))
+                .child(devicesRepository.getDevice(request.getChild()))
                 .build();
     }
 }

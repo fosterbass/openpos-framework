@@ -33,15 +33,15 @@ public class FlowConfig {
     @JsonIgnore
     private StateConfig initialState;
     @JsonIgnore
-    private Map<Class<? extends Object>, StateConfig> stateConfigs = new HashMap<>();
+    private Map<Class<?>, StateConfig> stateConfigs = new HashMap<>();
     @JsonIgnore
     private Map<String, Object> configScope = new HashMap<>();
     @JsonIgnore
-    private Map<String, Class<? extends Object>> actionToStateMapping = new HashMap<>();
+    private Map<String, Class<?>> actionToStateMapping = new HashMap<>();
     @JsonIgnore
     private Map<String, SubFlowConfig> actionToSubStateMapping = new HashMap<>();
 
-    private List<Class> eventHandlers = new ArrayList<>();
+    private final List<Class<?>> eventHandlers = new ArrayList<>();
 
     public FlowConfig() {
 
@@ -56,7 +56,7 @@ public class FlowConfig {
         this.configScope = configScope;
     }
 
-    public List<Class> getEventHandlers() {
+    public List<Class<?>> getEventHandlers() {
         return eventHandlers;
     }
 
@@ -78,15 +78,15 @@ public class FlowConfig {
     }
 
     protected void autoConfigureTargetStates(StateConfig config) {
-        Collection<Class<? extends Object>> targetStateClasses =
+        Collection<Class<?>> targetStateClasses =
                 config.getActionToStateMapping().values();
 
-        for (Class<? extends Object> targetStateClass : targetStateClasses) {
+        for (Class<?> targetStateClass : targetStateClasses) {
             autoConfigureTargetState(targetStateClass);
         }
     }
 
-    protected void autoConfigureTargetState(Class<? extends Object> targetStateClass) {
+    protected void autoConfigureTargetState(Class<?> targetStateClass) {
         if (!stateConfigs.containsKey(targetStateClass)) {
             StateConfig stateConfig = new StateConfig();
             stateConfig.setStateName(FlowUtil.getStateName(targetStateClass));
@@ -113,7 +113,7 @@ public class FlowConfig {
         this.configScope = configScope;
     }
 
-    public void addGlobalTransitionOrActionHandler(String actionName, Class<? extends Object> destinationOrActionHandler) {
+    public void addGlobalTransitionOrActionHandler(String actionName, Class<?> destinationOrActionHandler) {
         actionToStateMapping.put(actionName, destinationOrActionHandler);
         autoConfigureTargetState(destinationOrActionHandler);
     }
@@ -123,19 +123,19 @@ public class FlowConfig {
         actionToSubStateMapping.put(string, subFlowConfig);
     }
 
-    public Map<Class<? extends Object>, StateConfig> getStateConfigs() {
+    public Map<Class<?>, StateConfig> getStateConfigs() {
         return stateConfigs;
     }
 
-    public void setStateConfigs(Map<Class<? extends Object>, StateConfig> stateConfigs) {
+    public void setStateConfigs(Map<Class<?>, StateConfig> stateConfigs) {
         this.stateConfigs = stateConfigs;
     }
 
-    public Map<String, Class<? extends Object>> getActionToStateMapping() {
+    public Map<String, Class<?>> getActionToStateMapping() {
         return actionToStateMapping;
     }
 
-    public void setActionToStateMapping(Map<String, Class<? extends Object>> actionToStateMapping) {
+    public void setActionToStateMapping(Map<String, Class<?>> actionToStateMapping) {
         this.actionToStateMapping = actionToStateMapping;
     }
 

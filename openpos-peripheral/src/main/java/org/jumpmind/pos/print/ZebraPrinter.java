@@ -216,8 +216,7 @@ public class ZebraPrinter extends AbstractPOSPrinter {
     }
 
     @Override
-    public void init(Map<String, Object> settings, IPrinterStatusReporter printerStatusReporter) {
-        this.printerStatusReporter = printerStatusReporter;
+    public void init(Map<String, Object> settings) {
         this.settings = settings;
         this.refreshConnectionFactoryFromSettings();
     }
@@ -226,9 +225,6 @@ public class ZebraPrinter extends AbstractPOSPrinter {
         try {
             this.connectionFactory = (IConnectionFactory) ClassUtils.loadClass((String) this.settings.get("connectionClass")).newInstance();
         } catch (Exception ex) {
-            if (printerStatusReporter != null) {
-                printerStatusReporter.reportStatus(Status.Offline, ex.getMessage());
-            }
             throw new PrintException("Failed to create the connection factory for " + getClass().getName(), ex);
         }
     }

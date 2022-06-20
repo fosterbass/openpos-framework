@@ -26,7 +26,7 @@ export class TimeZoneContext implements IClientContext {
             return 'Z';
         }
 
-        const absTimezoneOffsetHours = Math.abs(timezoneOffsetMinutes / 60);
+        const absTimezoneOffsetHours = Math.floor(Math.abs(timezoneOffsetMinutes / 60));
         const absTimezoneOffsetMinutes = Math.abs(timezoneOffsetMinutes % 60);
         let offsetHours = absTimezoneOffsetHours.toString(10);
         let offsetMinutes = absTimezoneOffsetMinutes.toString(10);

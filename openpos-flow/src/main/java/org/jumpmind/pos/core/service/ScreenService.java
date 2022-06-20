@@ -16,6 +16,7 @@ import org.jumpmind.pos.server.model.Action;
 import org.jumpmind.pos.server.service.IActionListener;
 import org.jumpmind.pos.server.service.IMessageService;
 import org.jumpmind.pos.util.DefaultObjectMapper;
+import org.jumpmind.pos.util.SuppressScreenLogging;
 import org.jumpmind.pos.util.web.MimeTypeUtil;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -43,6 +44,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
+import static org.jumpmind.pos.util.BoxLogging.drawBox;
 
 @Slf4j
 @Hidden
@@ -411,4 +414,5 @@ public class ScreenService implements IScreenService, IActionListener {
             throw new FlowException("Field to get value for field " + field + " from target " + target, ex);
         }
     }
+
 }
