@@ -191,6 +191,7 @@ import { PromptFormPartCardComponent } from './screen-parts/prompt-form-part-car
 import { SaleLoyaltyPartComponent } from './screen-parts/sale-loyalty-part/sale-loyalty-part.component';
 import { TabbedContentCardComponent } from './components/tabbed-content-card/tabbed-content-card.component';
 import { BreadCrumbsComponent } from './components/bread-crumbs/bread-crumbs.component';
+import { BottomSheetComponent } from './components/bottom-sheet/bottom-sheet.component';
 
 const screenParts = [
     TenderPartComponent,
@@ -326,7 +327,8 @@ const components = [
     StandbyComponent,
     ExpansionPanelComponent,
     TabbedContentCardComponent,
-    BreadCrumbsComponent
+    BreadCrumbsComponent,
+    BottomSheetComponent
 ];
 
 const directives = [

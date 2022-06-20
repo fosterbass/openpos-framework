@@ -4,14 +4,14 @@
             [iconClass]="navigationArrowsSize" (buttonClick)="moveBackward()" (swiperight)="moveBackward()">
         </app-icon-button>
     </div>
-    <div aria-label="Carousel Item Container" id="carouselContent" class="item-container col-sm-{{getCarouselColumnSize()}}" [ngClass]="[carouselItemClass]">
-        <span *ngFor="let section of sections">
+    <div aria-label="Carousel Item Container" id="carouselContent" class="item-container col-sm-{{getCarouselColumnSize()}}" [ngClass]="[carouselItemClass]" responsive-class>
+        <ng-container *ngFor="let section of sections">
             <div *ngIf="section == currentSection" class="row">
                 <div *ngFor=" let item of section; index as i" id="carouselItem{{i}}" class="item col-sm-{{getItemColumnSize()}}">
                     <ng-container *ngTemplateOutlet="item"></ng-container>
                 </div>
             </div>
-        </span>
+        </ng-container>
     </div>
     <div class="col-sm-1 center-arrow">
         <app-icon-button *ngIf="forwardEnabled()" [iconName]="'Forward'" id="carouselForwardButton"

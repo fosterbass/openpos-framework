@@ -4,7 +4,8 @@ import {
     QueryList,
     TemplateRef,
     AfterContentInit,
-    Input
+    Input,
+    OnChanges
 } from '@angular/core';
 
 @Component({
@@ -12,7 +13,7 @@ import {
     templateUrl: './carousel.component.html',
     styleUrls: ['./carousel.component.scss']
 })
-export class CarouselComponent implements AfterContentInit {
+export class CarouselComponent implements AfterContentInit, OnChanges {
     @Input() navigationArrowsSize = 'lg';
     @Input() carouselItemClass = '';
     @Input() showIndicators = true;
@@ -26,12 +27,25 @@ export class CarouselComponent implements AfterContentInit {
     index = 0;
 
     ngAfterContentInit(): void {
+        this.initCarousel();
+    }
+
+    ngOnChanges(): void {
+        this.initCarousel();
+    }
+
+    initCarousel(): void {
         this.sections = [];
-        for (let i = 0; i < this.items.length; i += this.itemsPerSlide) {
-            const chunk = this.items.toArray().slice(i, i + this.itemsPerSlide);
-            this.sections.push(chunk);
+        if (this.items) {
+            for (let i = 0; i < this.items.length; i += this.itemsPerSlide) {
+                const chunk = this.items.toArray().slice(i, i + this.itemsPerSlide);
+                this.sections.push(chunk);
+            }
+            if (this.index >= this.sections.length) {
+                this.index = 0;
+            }
+            this.currentSection = this.sections[this.index];
         }
-        this.currentSection = this.sections[this.index];
     }
 
     moveForward(): void {
