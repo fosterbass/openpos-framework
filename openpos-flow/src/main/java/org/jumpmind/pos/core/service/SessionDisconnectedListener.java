@@ -1,7 +1,6 @@
 package org.jumpmind.pos.core.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.jumpmind.pos.core.flow.IStateManager;
 import org.jumpmind.pos.core.flow.IStateManagerContainer;
 import org.jumpmind.pos.devices.model.DeviceModel;
@@ -50,14 +49,9 @@ public class SessionDisconnectedListener implements ApplicationListener<SessionD
                     log.warn("Error publishing DeviceDisconnectedEvent", ex);
                 }
 
-                // todo: comparison of the app id is temporary while we evaluate other solutions
-                if (StringUtils.equals(deviceModel.getAppId(), "customerdisplay")) {
-                    stateManagerContainer.remove(deviceModel.getDeviceId());
-                } else {
-                    IStateManager stateManager = stateManagerContainer.retrieve(deviceModel.getDeviceId(), false);
-                    if (stateManager != null) {
-                        stateManager.setConnected(false);
-                    }
+                IStateManager stateManager = stateManagerContainer.retrieve(deviceModel.getDeviceId(), false);
+                if (stateManager != null) {
+                    stateManager.setConnected(false);
                 }
 
                 if (StringUtils.isNotBlank(deviceModel.getParentDeviceId())) {
