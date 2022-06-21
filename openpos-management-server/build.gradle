@@ -46,6 +46,7 @@ bootJar {
     manifest {
         attributes 'Main-Class': 'org.springframework.boot.loader.PropertiesLauncher'
     }
+    archiveClassifier = 'app'
 }
 
 task bootRunRetailer(type: org.springframework.boot.gradle.tasks.run.BootRun) {
@@ -65,11 +66,11 @@ publishing {
           artifact sourcesJar {
               classifier 'sources'
           }
-          */
           artifact bootJar {
               version project.version
               classifier 'app'
           }
+          */
           artifact apiJar {
               version project.version
               classifier 'api'
