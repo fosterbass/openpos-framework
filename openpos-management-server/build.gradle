@@ -68,6 +68,7 @@ publishing {
           */
           artifact bootJar {
               version project.version
+              classifier 'app'
           }
           artifact apiJar {
               version project.version
