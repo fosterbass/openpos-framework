@@ -59,20 +59,25 @@ task bootRunRetailer(type: org.springframework.boot.gradle.tasks.run.BootRun) {
 
 publishing {
   publications {
-      /*
+
       mavenJava(MavenPublication){
+            /*
           artifact sourcesJar {
               classifier 'sources'
           }
-          artifact bootJar
+          */
+          artifact bootJar {
+              version project.version
+          }
           artifact apiJar {
+              version project.version
               classifier 'api'
           }
       }
-
-       */
+/*
      apiPublication(MavenPublication) {
         artifact apiJar
      }
+*/
   }
 }
