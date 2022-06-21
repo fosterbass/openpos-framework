@@ -30,7 +30,6 @@ test {
 
 task apiJar(type: Jar) {
     classifier = "api"
-//    archiveClassifier.set('api')
     from sourceSets.main.output
 }
 
