@@ -55,9 +55,7 @@ publishing {
           artifact sourcesJar {
               classifier 'sources'
           }
-          artifact bootJar {
-              classifier 'jar'
-          }
+          artifact bootJar
           artifact apiJar {
               classifier 'api'
           }
