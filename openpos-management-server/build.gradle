@@ -60,26 +60,16 @@ task bootRunRetailer(type: org.springframework.boot.gradle.tasks.run.BootRun) {
 
 publishing {
   publications {
-
       mavenJava(MavenPublication){
-            /*
+          /* Spring boot jar, with 'app' classifier is handled by spring boot gradle plugin */
+
           artifact sourcesJar {
               classifier 'sources'
           }
-          artifact bootJar {
-              version project.version
-              classifier 'app'
-          }
-          */
           artifact apiJar {
               version project.version
               classifier 'api'
           }
       }
-/*
-     apiPublication(MavenPublication) {
-        artifact apiJar
-     }
-*/
   }
 }
