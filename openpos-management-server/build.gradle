@@ -13,6 +13,14 @@ dependencies {
     compile("org.codehaus.groovy:groovy-jsr223:$groovyVersion")
     compile("org.codehaus.groovy:groovy-ant:$groovyVersion")
 }
+configurations {
+    [apiElements, runtimeElements].each {
+        it.outgoing.artifacts.removeIf {
+            it.buildDependencies.getDependencies(null).contains(jar)
+        }
+        it.outgoing.artifact(bootJar)
+    }
+}
 
 test {
     filter {
@@ -51,6 +59,7 @@ task bootRunRetailer(type: org.springframework.boot.gradle.tasks.run.BootRun) {
 
 publishing {
   publications {
+      /*
       mavenJava(MavenPublication){
           artifact sourcesJar {
               classifier 'sources'
@@ -60,12 +69,10 @@ publishing {
               classifier 'api'
           }
       }
-/*
-      apiPublication(MavenPublication) {
-        artifact sourcesJar
-        artifact bootJar
+
+       */
+     apiPublication(MavenPublication) {
         artifact apiJar
-    }
- */
+     }
   }
 }
