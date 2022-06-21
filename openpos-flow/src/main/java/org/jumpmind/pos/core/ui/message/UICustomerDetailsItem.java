@@ -34,4 +34,6 @@ public class UICustomerDetailsItem extends SelectableItem implements Serializabl
     private List<UIMembership> memberships = new ArrayList<>();
     private ActionItem membershipSignUpAction;
     private ActionItem enrolledMembershipAction;
+    private List<UILoyaltyReward> rewards = new ArrayList<>();
+    private List<UIRewardHistory> rewardHistory = new ArrayList<>();
 }
