@@ -50,10 +50,17 @@ task bootRunRetailer(type: org.springframework.boot.gradle.tasks.run.BootRun) {
 
 publishing {
   publications {
-    apiPublication(MavenPublication) {
+      mavenJava(MavenPublication){
+          artifact sourcesJar
+          artifact bootJar
+          artifact apiJar
+      }
+/*
+      apiPublication(MavenPublication) {
         artifact sourcesJar
         artifact bootJar
         artifact apiJar
     }
+ */
   }
 }
