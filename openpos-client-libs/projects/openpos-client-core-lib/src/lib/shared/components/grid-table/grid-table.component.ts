@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { IActionItem } from '../../../core/actions/action-item.interface';
 import { ActionService } from '../../../core/actions/action.service';
+import { IDataTableRow } from './data-table-row.interface';
 
 @Component({
     selector: 'app-grid-table',
@@ -13,7 +14,10 @@ export class GridTableComponent implements OnInit {
     columnHeaders = [];
 
     @Input()
-    rows = [];
+    rows: IDataTableRow[] = [];
+
+    @Input()
+    shadeAlternating = false;
 
     outerStyle: object;
 
@@ -22,7 +26,7 @@ export class GridTableComponent implements OnInit {
 
     ngOnInit(): void {
         const numberRows = this.rows.length;
-        const numberCols = this.columnHeaders.length;
+        const numberCols = this.columnHeaders.length > 0 ? this.columnHeaders.length : this.rows[0].columns.length;
 
         this.outerStyle = {
             'grid-template-rows':

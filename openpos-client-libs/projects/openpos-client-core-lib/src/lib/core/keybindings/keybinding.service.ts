@@ -192,7 +192,7 @@ export class KeybindingService implements OnDestroy {
         // Provide an opportunity to add a payload before executing the action
         const keybindingAction: KeybindingAction = {
             action: event.action,
-            payload: null
+            payload: event.action.defaultPayload ? event.action.defaultPayload : null
         };
         this.needActionPayload$.next(keybindingAction);
         event.actionPayload = keybindingAction.payload;

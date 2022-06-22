@@ -1,4 +1,4 @@
-import { Component, Injector } from '@angular/core';
+import { AfterContentChecked, ChangeDetectorRef, Component, Injector, TemplateRef, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { CustomerDetailsDialogInterface, CustomerItemHistoryFilter } from './customer-details-dialog.interface';
 import { Observable } from 'rxjs';
@@ -8,6 +8,7 @@ import { PosScreenDirective } from '../pos-screen/pos-screen.component';
 import { MediaBreakpoints, OpenposMediaService } from '../../core/media/openpos-media.service';
 import { IActionItem } from '../../core/actions/action-item.interface';
 import { CONFIGURATION } from '../../configuration/configuration';
+import { ITab } from '../../shared/components/tabbed-content-card/tab.interface';
 
 
 @DialogComponent({
@@ -18,31 +19,60 @@ import { CONFIGURATION } from '../../configuration/configuration';
   templateUrl: './customer-details-dialog.component.html',
   styleUrls: ['./customer-details-dialog.component.scss']
 })
-export class CustomerDetailsDialogComponent extends PosScreenDirective<CustomerDetailsDialogInterface> {
+export class CustomerDetailsDialogComponent extends PosScreenDirective<CustomerDetailsDialogInterface> implements AfterContentChecked{
 
   changedToRewardTab = true;
   changedToRewardHistoryTab = false;
   changedToItemHistoryTab = false;
-  pagedContent: string;
   isMobile: Observable<boolean>;
   readonly itemsHistoryFilterController = new ItemsHistoryFilterController(this);
 
+  @ViewChild('rewards') rewardsTemplate: TemplateRef<any>;
+  @ViewChild('rewardsHistory') rewardsHistoryTemplate: TemplateRef<any>;
+  @ViewChild('itemHistory') itemHistoryTemplate: TemplateRef<any>;
+
+  public selectedTabValue: string;
+  public selectedTab: ITab;
+
   constructor(
     injector: Injector,
-    private media: OpenposMediaService
+    private media: OpenposMediaService,
+    private changeDetection: ChangeDetectorRef
   ) {
     super(injector);
     this.initIsMobile();
   }
 
+  ngAfterContentChecked() {
+    this.changeDetection.detectChanges();
+  }
+
   buildScreen() {
-    if (this.screen.itemHistoryEnabled) {
+    if (this.screen.itemHistoryFilter) {
       this.itemsHistoryFilterController.build();
     }
   }
 
-  selectContent(content: string): void {
-    this.pagedContent = content;
+  public updateSelectedTab(val: string): void {
+    this.selectedTabValue = val;
+    if (val) {
+      const tabs = this.screen.tabs.filter(t => t.tabId === val);
+      if (tabs?.length > 0) {
+        this.selectedTab = tabs[0];
+      }
+    } else {
+      this.selectedTab = undefined;
+    }
+  }
+
+  public getSelectedTabTemplate(): TemplateRef<any> {
+    if (this.selectedTabValue === 'rewardsHistory') {
+      return this.rewardsHistoryTemplate;
+    } else if (this.selectedTabValue === 'itemHistory') {
+      return this.itemHistoryTemplate;
+    } else {
+      return this.rewardsTemplate;
+    }
   }
 
   initIsMobile(): void {
@@ -57,24 +87,19 @@ export class CustomerDetailsDialogComponent extends PosScreenDirective<CustomerD
   }
 
   onTabChanged(event: MatTabChangeEvent) {
-    if (event.tab.textLabel === this.getRewardsLabel()) {
+    if (this.selectedTabValue === 'rewards' && this.selectedTab && event.tab.textLabel === this.selectedTab.label) {
       this.changedToRewardTab = true;
       this.changedToRewardHistoryTab = false;
       this.changedToItemHistoryTab = false;
-    } else if (event.tab.textLabel === this.screen.rewardHistoryLabel) {
+    } else if (this.selectedTabValue === 'rewardsHistory' && this.selectedTab && event.tab.textLabel === this.selectedTab.label) {
       this.changedToRewardHistoryTab = true;
       this.changedToRewardTab = false;
       this.changedToItemHistoryTab = false;
-    } else if (event.tab.textLabel === this.screen.itemHistoryLabel) {
+    } else if (this.selectedTabValue === 'itemHistory' && this.selectedTab && event.tab.textLabel === this.selectedTab.label) {
       this.changedToItemHistoryTab = true;
       this.changedToRewardTab = false;
       this.changedToRewardHistoryTab = false;
     }
-  }
-
-  getRewardsLabel(): string {
-    return this.screen.rewardsLabel +
-    ((this.screen.customer.numberOfActiveRewards !== undefined) ? ' (' + this.screen.customer.numberOfActiveRewards + ')' : '');
   }
 
   hasRewards(): boolean {
@@ -90,15 +115,15 @@ export class CustomerDetailsDialogComponent extends PosScreenDirective<CustomerD
   }
 
   hasAnyDisplayableCustomerInformation(): boolean {
-      const customer = this.screen.customer;
-      return customer != null && (
-          !!customer.email ||
-          !!customer.phoneNumber ||
-          !!customer.loyaltyNumber ||
-          !!customer.address ||
-          !!customer.birthDate
-      );
-    }
+    const customer = this.screen.customer;
+    return customer != null && (
+      !!customer.email ||
+      !!customer.phoneNumber ||
+      !!customer.loyaltyNumber ||
+      !!customer.address ||
+      !!customer.birthDate
+    );
+  }
 }
 
 class ItemsHistoryFilterController {

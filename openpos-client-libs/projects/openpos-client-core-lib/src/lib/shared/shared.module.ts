@@ -124,6 +124,7 @@ import { SaleTotalPanelComponent } from './screen-parts/sale-total-panel/sale-to
 import { ResponsiveClassDirective } from './directives/responsive-class.directive';
 import { BaconDrawerComponent } from './screen-parts/bacon-strip/bacon-drawer/bacon-drawer.component';
 import { CarouselComponent } from './components/carousel/carousel.component';
+import { ImageCarouselComponent } from './components/image-carousel/image-carousel.component';
 import { MobileTotalsPartComponent } from './screen-parts/mobile-totals-part/mobile-totals-part.component';
 import { MobileLoyaltyPartComponent } from './screen-parts/mobile-loyalty-part/mobile-loyalty-part.component';
 import { MobileEmployeePartComponent } from './screen-parts/mobile-employee-part/mobile-employee-part.component';
@@ -188,6 +189,8 @@ import { SafeHtmlPipe } from './pipes/safe-html.pipe';
 import { ExpansionPanelComponent } from './components/expansion-panel/expansion-panel.component';
 import { PromptFormPartCardComponent } from './screen-parts/prompt-form-part-card/prompt-form-part-card.component';
 import { SaleLoyaltyPartComponent } from './screen-parts/sale-loyalty-part/sale-loyalty-part.component';
+import { TabbedContentCardComponent } from './components/tabbed-content-card/tabbed-content-card.component';
+import { BreadCrumbsComponent } from './components/bread-crumbs/bread-crumbs.component';
 
 const screenParts = [
     TenderPartComponent,
@@ -301,6 +304,7 @@ const components = [
     RoundedInputComponent,
     MobileFooterComponent,
     CarouselComponent,
+    ImageCarouselComponent,
     MobileItemComponent,
     InfiniteScrollComponent,
     ImageComponent,
@@ -320,7 +324,9 @@ const components = [
     DisplayCustomerLookupComponent,
     WatermarkComponent,
     StandbyComponent,
-    ExpansionPanelComponent
+    ExpansionPanelComponent,
+    TabbedContentCardComponent,
+    BreadCrumbsComponent
 ];
 
 const directives = [

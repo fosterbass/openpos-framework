@@ -1,0 +1,23 @@
+@import '../../../styles/variables/spacing';
+
+:host{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.tab-headers {
+    display: flex;
+    justify-content: space-between;
+
+    .tab-header {
+        width: 100%;
+        text-align: center;
+        text-transform: uppercase;
+        padding: $small-space;
+        &.mobile,
+        &.mobile-landscape{
+          padding: $small-space/$mobile-factor;
+        }
+    }
+}

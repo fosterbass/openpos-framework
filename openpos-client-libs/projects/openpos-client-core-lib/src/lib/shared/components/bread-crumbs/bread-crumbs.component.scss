@@ -1,0 +1,48 @@
+$height: 24px;
+$width: $height * 3;
+$border: 2px;
+$arrow: $height / 2;
+$slashWidth: $height / 3;
+
+.bread-crumb-button {
+    width: $width;
+    height: $height;
+    padding: 0;
+    box-sizing: content-box;
+    position: relative;
+    cursor: pointer;
+    border-width: $border 0;
+}
+.left-button {
+    border-width: $border 0 $border $border;
+}
+.bread-crumb-button::before {
+    content: "";
+    position: absolute;
+    width: $border;
+    height: 0;
+    left: $width - $slashWidth - $border;
+    top: 0;
+    border-style: solid;
+    border-width: 0 0 $height $slashWidth;
+}
+.bread-crumb-button::after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: $width - $slashWidth;
+    top: 0;
+    border-style: solid;
+    border-width: 0 0 $height $slashWidth;
+}
+.right-button::before {
+    width: 0;
+    left: $width;
+    top: -$border;
+    border-width: $arrow + $border 0 $arrow + $border $arrow + $border;
+}
+.right-button::after {
+    left: $width;
+    border-width: $arrow 0 $arrow $arrow;
+}

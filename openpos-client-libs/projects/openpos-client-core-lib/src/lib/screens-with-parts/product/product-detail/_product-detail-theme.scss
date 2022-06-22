@@ -1,0 +1,72 @@
+
+@mixin product-detail-theme($theme) {
+    $app-primary: mat-color(map-get($theme, primary));
+    $background: map-get($mat-grey, 300);
+    $card: map-get(map-get($theme, background), card);
+    $success-color: mat-color(map-get($theme, success));
+    $app-warn: mat-color(map-get($theme, warn));
+    $border: map-get(map-get($theme, foreground), border);
+
+    app-product-detail {
+        .content-container {
+            background-color: $card;
+        }
+
+        .count-value,
+        .item-price {
+            color: $app-primary;
+        }
+
+        .stock {
+            color: $success-color;
+        }
+
+        .not-available {
+            color: $app-warn;
+        }
+
+        .product-options {
+            app-basic-product-options-part,
+            app-swatch-product-options-part  {
+                width: 100%;
+                border: solid $border 2px;
+                padding: .25rem;
+            }
+
+            &.mobile,
+            &.tablet-portrait {
+                app-basic-product-options-part,
+                app-swatch-product-options-part  {
+                    width: unset;
+                    border: solid $border 1px;
+                    padding: .25rem;
+                }
+            }
+        }
+
+        .product-expansion-panel {
+
+            .product-expansion-panel-header{
+                color: $app-primary;
+            }
+
+            .expansion-header {
+                border-top: 1px solid $border;
+                border-right: 1px solid $border;
+            }
+
+            .expansion-body {
+                border: 1px solid $border;
+                border-top: none;
+            }
+        }
+
+
+        app-tabbed-content-card {
+            app-content-card {
+                height: 100%;
+            }
+        }
+    }
+
+}

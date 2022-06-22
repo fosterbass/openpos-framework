@@ -6,11 +6,11 @@
         .tab-title {
             border-bottom: 1px solid $divider;
         }
-        .mat-tab-body-wrapper{
-            border-width: 0px ;
-          }
-        mat-card {
-            border: 2px solid map-get($foreground, border);
-          }
+    }
+
+    app-membership-details-dialog{
+        app-content-card {
+            height:100%;
+        }
     }
 }

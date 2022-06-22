@@ -1,10 +1,13 @@
 @import "../../../styles/mixins/typography";
 .program-plan-details{
-    display: inline-block;
+  display: flex;
+  flex-direction: column;
+  height:100%;
 
     .plans {
       display: flex;
       justify-content: center;
+      height: 100%;
       .plan {
         padding-right: 2.5em;
         padding-left: 3em;

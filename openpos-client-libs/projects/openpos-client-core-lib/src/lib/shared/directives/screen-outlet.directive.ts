@@ -36,6 +36,7 @@ export class OpenposScreenOutletDirective implements OnInit, OnDestroy {
     public screenTypeName: string;
     private screenName: string;
     private screenId: string;
+    private screenSequenceNumber = 0;
 
     // public classes = '';
 
@@ -115,7 +116,7 @@ export class OpenposScreenOutletDirective implements OnInit, OnDestroy {
         }
     }
 
-    protected async updateScreen(screen: any) {
+    protected async updateScreen(screen: any): Promise<void> {
         console.log('Handling screen: ', screen);
         if (this.dialogService.isDialogOpen()) {
             console.log('Try closing open dialog');
@@ -127,58 +128,65 @@ export class OpenposScreenOutletDirective implements OnInit, OnDestroy {
         // Cancel the loading message
         this.session.cancelLoading();
 
-        let trap = false;
-        const original = document.activeElement as HTMLElement;
+        if (screen.sequenceNumber >= this.screenSequenceNumber) {
+            this.screenSequenceNumber = screen.sequenceNumber;
 
-        if (screen &&
-            (screen.refreshAlways
-                || screen.screenType !== this.screenTypeName
-                || screen.name !== this.screenName
-                || screen.id !== this.screenId)
-        ) {
-            this.logSwitchScreens(screen);
+            let trap = false;
+            const original = document.activeElement as HTMLElement;
 
-            this.screenName = screen.name;
-            this.screenId = screen.id;
-            this.screenTypeName = screen.screenType;
+            if (screen &&
+                (screen.refreshAlways
+                    || screen.screenType !== this.screenTypeName
+                    || screen.name !== this.screenName
+                    || screen.id !== this.screenId)
+            ) {
+                this.logSwitchScreens(screen);
 
-            this.viewContainerRef.clear();
-            if (!!this.componentRef) {
-                this.componentRef.destroy();
+                this.screenName = screen.name;
+                this.screenId = screen.id;
+                this.screenTypeName = screen.screenType;
+
+                this.viewContainerRef.clear();
+                if (!!this.componentRef) {
+                    this.componentRef.destroy();
+                }
+
+                this.focusService.destroy();
+                this.componentRef = null;
+
+                // Create our screen component
+                const componentFactory = this.screenService.resolveScreen(this.screenTypeName, this.currentTheme);
+                this.componentRef = this.screenCreator.createScreenComponent(componentFactory, this.viewContainerRef);
+
+                trap = true;
             }
 
-            this.focusService.destroy();
-            this.componentRef = null;
+            if (this.componentRef.instance.show) {
+                this.componentRef.instance.show(screen);
+            }
 
-            // Create our screen component
-            const componentFactory = this.screenService.resolveScreen(this.screenTypeName, this.currentTheme);
-            this.componentRef = this.screenCreator.createScreenComponent(componentFactory, this.viewContainerRef);
+            if (trap) {
+                // If this screen was just created, focus the first element
+                this.focusService.createInitialFocus(document.querySelector('app-openpos-root'));
+            } else {
+                // If this screen was updated, focus the previously focused element
+                setTimeout(() => {
+                    // Get an updated element in the case where the screen/form has been refreshed
+                    const updatedElement = document.getElementById(original.id);
+                    this.focusService.restoreFocus(updatedElement);
+                });
+            }
 
-            trap = true;
-        }
+            this.updateClazzes(this.personalizationClazzes, this.personalizationClazzes);
+            this.updateClazzes(this.themeClazzes, this.themeClazzes);
 
-        if (this.componentRef.instance.show) {
-            this.componentRef.instance.show(screen);
-        }
-
-        if (trap) {
-            // If this screen was just created, focus the first element
-            this.focusService.createInitialFocus(document.querySelector('app-openpos-root'));
+            // Output the componentRef and screen to the training-wrapper
+            this.componentEmitter.emit({ componentRef: this.componentRef, screen });
+            this.session.sendMessage(new LifeCycleMessage(LifeCycleEvents.ScreenUpdated, screen));
         } else {
-            // If this screen was updated, focus the previously focused element
-            setTimeout(() => {
-                // Get an updated element in the case where the screen/form has been refreshed
-                const updatedElement = document.getElementById(original.id);
-                this.focusService.restoreFocus(updatedElement);
-            });
+            console.log('Skip updating screen because the sequenceNumber of the current ' +
+                'screen is greater than the new screen parameter sequenceNumber.');
         }
-
-        this.updateClazzes(this.personalizationClazzes, this.personalizationClazzes);
-        this.updateClazzes(this.themeClazzes, this.themeClazzes);
-
-        // Output the componentRef and screen to the training-wrapper
-        this.componentEmitter.emit({ componentRef: this.componentRef, screen });
-        this.session.sendMessage(new LifeCycleMessage(LifeCycleEvents.ScreenUpdated, screen));
 
     }
 

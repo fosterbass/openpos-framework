@@ -1,8 +1,26 @@
-<div class="thumbnails" *ngIf="displayImageUrls.length > 1">
-    <img *ngFor="let thumbnailUrl of displayImageUrls; let i = index"
-        (error)="onThumbnailError(i)"
-        (click)="selectImage(i)"
-        [src]="thumbnailUrl | imageUrl">
+<div class="row">
+    <div class="col-sm-1 center-arrow">
+        <app-icon-button *ngIf="backwardEnabled()" [iconName]="'Back'" id="carouselBackButton"
+            [iconClass]="navigationArrowsSize" (buttonClick)="moveBackward()" (swiperight)="moveBackward()">
+        </app-icon-button>
+    </div>
+    <div aria-label="Carousel Item Container" id="carouselContent" class="item-container col-sm-{{getCarouselColumnSize()}}" [ngClass]="[carouselItemClass]">
+        <span *ngFor="let section of sections">
+            <div *ngIf="section == currentSection" class="row">
+                <div *ngFor=" let item of section; index as i" id="carouselItem{{i}}" class="item col-sm-{{getItemColumnSize()}}">
+                    <ng-container *ngTemplateOutlet="item"></ng-container>
+                </div>
+            </div>
+        </span>
+    </div>
+    <div class="col-sm-1 center-arrow">
+        <app-icon-button *ngIf="forwardEnabled()" [iconName]="'Forward'" id="carouselForwardButton"
+            [iconClass]="navigationArrowsSize" (buttonClick)="moveForward()" (swipeleft)="moveForward()">
+        </app-icon-button>
+    </div>
+    <div aria-label="Carousel Navigation Dots" *ngIf="showIndicators && sections.length > 1"
+        id="carouselDotsContainer" class="carousel-nav-dots col-sm-12">
+        <span aria-label="Carousel Dot" *ngFor="let section of sections; index as i"
+            id="carouselDot{{i}}" [ngClass]="isDotActive(i) ? 'dot active': 'dot'"></span>
+    </div>
 </div>
-
-<img class="main" [src]="(selectedImageUrl || altImageUrl) | imageUrl" [alt]="altImageText" (error)="onSelectedImageError()">

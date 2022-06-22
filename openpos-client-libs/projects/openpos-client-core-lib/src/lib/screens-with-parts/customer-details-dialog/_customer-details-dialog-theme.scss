@@ -11,6 +11,10 @@
             }
         }
 
+        .mat-form-field, .mat-form-field .mat-form-field-infix {
+            width: unset;
+        }
+        
         app-infinite-scroll {
             background: white;
         }
@@ -93,7 +97,6 @@
 
             .content {
                 overflow-y: inherit;
-                width: 100%;
             }
         }
 
