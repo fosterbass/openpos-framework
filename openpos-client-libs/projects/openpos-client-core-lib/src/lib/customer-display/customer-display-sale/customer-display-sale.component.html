@@ -9,7 +9,7 @@
                     <div class="recommendations-title">Recommended for you</div>
                     <div class="recommendations-inner-rect">
                         <div *ngFor="let item of screen.recommendationItems" class="recommendation-item">
-                            <img class="item-image" [src]="item.imageUrl">
+                            <img class="item-image" [src]="item.imageUrl | imageUrl">
                             <div class="item-title">{{item.itemDescription}}</div>
                             <div (click)="doAction('RecommendationTapped', item.itemId)" class="item-details-button">Details</div>
                         </div>
