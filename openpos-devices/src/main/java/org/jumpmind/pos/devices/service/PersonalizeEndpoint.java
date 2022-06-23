@@ -10,6 +10,8 @@ import org.jumpmind.pos.devices.model.DeviceParamModel;
 import org.jumpmind.pos.devices.model.DevicesRepository;
 import org.jumpmind.pos.devices.service.model.PersonalizationRequest;
 import org.jumpmind.pos.devices.service.model.PersonalizationResponse;
+import org.jumpmind.pos.devices.service.strategy.AcceptConfiguredBusinessUnitStrategy;
+import org.jumpmind.pos.devices.service.strategy.AcceptedPersonalizationBusinessUnit;
 import org.jumpmind.pos.service.Endpoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,8 +38,12 @@ public class PersonalizeEndpoint {
     @Autowired
     IDevicesService devicesService;
 
+    @Autowired
+    AcceptedPersonalizationBusinessUnit businessUnitStrategy;
+
     public PersonalizationResponse personalize(@RequestBody PersonalizationRequest request) {
         String authToken = request.getDeviceToken();
+        final String businessUnitId = request.getBusinessUnitId();
         final String deviceId = request.getDeviceId();
         final String appId = request.getAppId();
         final String parentAppId = request.getParentAppId();
@@ -72,13 +78,22 @@ public class PersonalizeEndpoint {
                 devicesRepository.saveDeviceAuth(deviceId, authToken);
             }
 
+            if (!businessUnitStrategy.getAllowedBusinessUnits().contains(businessUnitId)) {
+                throw new DeviceNotAuthorizedException("not-supported business unit");
+            }
+
             deviceModel = new DeviceModel();
+            deviceModel.setBusinessUnitId(businessUnitId);
             deviceModel.setAppId(appId);
             deviceModel.setDeviceId(deviceId);
 
             if (request.getPersonalizationParameters() != null) {
                 deviceModel.setDeviceParamModels(
-                        request.getPersonalizationParameters().keySet().stream().map(key -> new DeviceParamModel(key, request.getPersonalizationParameters().get(key))).collect(Collectors.toList())
+                        request.getPersonalizationParameters()
+                                .keySet()
+                                .stream()
+                                .map(key -> new DeviceParamModel(key, request.getPersonalizationParameters().get(key)))
+                                .collect(Collectors.toList())
                 );
             }
         } else if (isNotBlank(authToken)) {

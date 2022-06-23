@@ -98,14 +98,14 @@ export class SaleLoyaltyPartComponent extends ScreenPartComponent<SaleLoyaltyPar
     public shouldShowLookupCustomer(): boolean {
         return !this.screenData.readOnly
             && !!this.screenData.loyaltyButton
-            && (!this.screenData.customer || !this.screenData.customer.id);
+            && (!this.screenData.customer || !this.screenData.customer.id && !this.screenData.showCustomerDataWhenMissingId);
     }
 
     public shouldShowLinkedCustomer(): boolean {
         return !this.screenData.readOnly
             && !!this.screenData.loyaltyButton
             && !!this.screenData.customer
-            && !!this.screenData.customer.id;
+            && (!!this.screenData.customer.id || this.screenData.showCustomerDataWhenMissingId);
     }
 
     public shouldShowLoyaltyOperationInProgress(): boolean {

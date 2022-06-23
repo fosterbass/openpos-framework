@@ -1,0 +1,42 @@
+<h1 mat-dialog-title>
+    <ng-container *ngIf="readOnlyDeviceId; else createHeader">
+        Edit Device
+    </ng-container>
+    <ng-template #createHeader>
+        Create Device
+    </ng-template>
+</h1>
+
+<form class="pad-a-8" [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+<mat-dialog-content class="flex f-col">
+    <div class="flex f-row wrap">
+        <mat-form-field class="grow-1 margin-x-3" appearance="fill">
+            <mat-label>Device ID</mat-label>
+            <span matPrefix>{{ data.businessUnit }}-</span>
+            <input type="tel" matInput formControlName="deviceNumber" [readonly]="readOnlyDeviceId">
+            <mat-hint *ngIf="deviceNumber.invalid && (deviceNumber.dirty || deviceNumber.touched)" align="start">
+                <strong>{{ deviceNumberEntryHintDisplay() }}</strong>
+            </mat-hint>
+        </mat-form-field>
+        
+        <mat-form-field class="grow-1 margin-x-3" appearance="fill">
+            <mat-label>App ID</mat-label>
+            <select matNativeControl formControlName="appId">
+                <option *ngFor="let appId of data.config.loadedAppIds" [value]="appId">{{ appId }}</option>
+            </select>
+        </mat-form-field>
+    </div>
+
+    <div formGroupName="additionalParams" class="flex f-row wrap">
+        <mat-form-field *ngFor="let param of data.config.parameters" class="grow-1 margin-x-3" appearance="fill">
+            <mat-label>{{ param.label }}</mat-label>
+            <input matInput [formControlName]="param.property">
+        </mat-form-field>
+    </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button type="button" (click)="onCancel()">Cancel</button>
+    <button mat-button color="primary" type="submit">Save</button>
+</mat-dialog-actions>
+</form>

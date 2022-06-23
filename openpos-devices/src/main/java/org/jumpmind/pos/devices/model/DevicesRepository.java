@@ -29,7 +29,7 @@ public class DevicesRepository {
     @Autowired
     VirtualDeviceRepository virtualDeviceRepository;
 
-    Query<DeviceStatusModel> connectedDevicesQuery = new Query<DeviceStatusModel>().named("connectedDevices").result(DeviceStatusModel.class);
+    final Query<DeviceStatusModel> connectedDevicesQuery = Query.named("connectedDevices", DeviceStatusModel.class);
 
     @Cacheable(value = CACHE_NAME, key = "'getDevice' + #deviceId")
     public DeviceModel getDevice(String deviceId) {
@@ -44,6 +44,14 @@ public class DevicesRepository {
             }
             throw new DeviceNotFoundException("No device found for deviceId=" + deviceId);
         }
+    }
+
+    @Cacheable(value = CACHE_NAME, key = "'findDevices'")
+    public List<DeviceModel> findDevices() {
+        return devSession.findAll(DeviceModel.class, 10000)
+                .stream()
+                .peek(d -> d.setDeviceParamModels(getDeviceParams(d.getDeviceId())))
+                .collect(Collectors.toList());
     }
 
     @Cacheable(value = CACHE_NAME, key = "'findDevices' + #businessUnitId")
@@ -160,13 +168,24 @@ public class DevicesRepository {
                 .collect(Collectors.toList());
     }
 
+    public Set<String> getConnectedDeviceIds() {
+        return getConnectedDeviceIds(null, null);
+    }
+
     public Set<String> getConnectedDeviceIds(String businessUnitId, String installationId) {
         Map<String, Object> statusParams = new HashMap<>();
-        statusParams.put("businessUnitId", businessUnitId);
-        statusParams.put("installationId", installationId);
+
+        if (StringUtils.isNotBlank(businessUnitId)) {
+            statusParams.put("businessUnitId", businessUnitId);
+        }
+
+        if (StringUtils.isNotBlank(installationId)) {
+            statusParams.put("installationId", installationId);
+        }
+
         statusParams.put("deviceStatus", DeviceStatusConstants.CONNECTED);
-        List<DeviceStatusModel> deviceStatuses =
-                devSession.query(connectedDevicesQuery, statusParams, 10000);
+
+        List<DeviceStatusModel> deviceStatuses = devSession.query(connectedDevicesQuery, statusParams, 10000);
         return deviceStatuses.stream().map(DeviceStatusModel::getDeviceId).collect(Collectors.toSet());
     }
 

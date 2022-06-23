@@ -12,6 +12,7 @@ export interface SaleLoyaltyPartInterface extends IAbstractScreen {
     noMembershipsFoundLabel: string;
     membershipEnabled: boolean;
     memberships: Membership[];
+    showCustomerDataWhenMissingId: boolean;
     customerMissingInfoEnabled: boolean;
     customerMissingInfo: boolean;
     customerMissingInfoIcon: string;
@@ -29,4 +30,5 @@ export interface SaleLoyaltyPartInterface extends IAbstractScreen {
     loyaltyIcon: string;
     loyaltyRewards: Reward[];
     noPromotionsLabel: string;
+    alertMessage: string;
 }

@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @SpringBootTest()
-@ActiveProfiles("test")
+@ActiveProfiles({"test", "test-business-unit-provider"})
 @AutoConfigureMockMvc
 @ContextConfiguration(classes = { TestDevicesConfig.class })
 public class GetMyDeviceEndpointTest {

@@ -63,7 +63,7 @@ public class DevToolsActionListenerTest {
         devToolsActionListener.actionOccurred(mockDeviceId, new Action("fakeAction"));
         DeviceModel customerDisplay = getDevice(mockDeviceId + "-customerdisplay");
         customerDisplay.setAppId("customerdisplay");
-        verify(devicesRepository, times(3)).getDevice(anyString());
+        verify(devicesRepository, times(4)).getDevice(anyString());
         verify(devicesRepository).getDeviceAuth(anyString());
         verify(devicesRepository).saveDevice(customerDisplay);
         verify(devicesRepository).saveDeviceAuth(anyString(), anyString());

@@ -161,9 +161,12 @@ public class DevToolsActionListener implements IActionListener {
 
     private void setSimAuthCode(String deviceId, Message message) {
         Map<String, String> simulatorMap = new HashMap<>();
+        DeviceModel parentDevice = devicesRepository.getDevice(deviceId);
         DeviceModel deviceModel = null;
         String authToken = null;
         String simulatorDeviceId = deviceId + "-sim";
+        String simBusinessUnitId = parentDevice.getBusinessUnitId();
+
         try {
             deviceModel = devicesRepository.getDevice(simulatorDeviceId);
         } catch (DeviceNotFoundException ex) {
@@ -175,6 +178,8 @@ public class DevToolsActionListener implements IActionListener {
 
         deviceModel.setAppId(simAppId);
         deviceModel.setParentDeviceId(deviceId);
+        deviceModel.setBusinessUnitId(simBusinessUnitId);
+
         devicesRepository.saveDevice(deviceModel);
         try {
             authToken = devicesRepository.getDeviceAuth(simulatorDeviceId);
@@ -186,6 +191,7 @@ public class DevToolsActionListener implements IActionListener {
         simulatorMap.put("simPort", simPort);
         simulatorMap.put("simUrl", simUrl);
         simulatorMap.put("simProtocol", simProtocol);
+        simulatorMap.put("simBusinessUnitId", simBusinessUnitId);
         message.put("simulator", simulatorMap);
     }
 
@@ -193,11 +199,13 @@ public class DevToolsActionListener implements IActionListener {
         Map<String, String> customDeviceMap = new HashMap<>();
         DeviceModel customerDisplayDevice = null;
         String authToken;
+        String businessUnitId = null;
         String customerDisplayDeviceId = deviceId + "-customerdisplay";
         List<DeviceParamModel> deviceParams = null;
         try {
             DeviceModel currentDevice = devicesRepository.getDevice(deviceId);
             if (currentDevice != null) {
+                businessUnitId = currentDevice.getBusinessUnitId();
                 deviceParams = currentDevice.getDeviceParamModels();
             }
             customerDisplayDevice = devicesRepository.getDevice(customerDisplayDeviceId);
@@ -207,6 +215,7 @@ public class DevToolsActionListener implements IActionListener {
             customerDisplayDevice = DeviceModel.builder().
                     deviceId(customerDisplayDeviceId).
                     appId(customerDisplayAppId).
+                    businessUnitId(businessUnitId).
                     parentDeviceId(deviceId).
                     deviceParamModels(deviceParams).
                     build();

@@ -10,7 +10,7 @@
         <mat-form-field responsive-class style="width:100%" [ngSwitch]="formField.inputType">
             <app-icon *ngIf="formField.iconName" matPrefix iconName="{{formField.iconName}}" iconClass="material-icons md"></app-icon>
             <mat-hint *ngIf="formField.hintText">{{formField.hintText}}</mat-hint>
-            <input *ngSwitchDefault matInput cdkFocusInitial id="{{formField.id}}" [formControlName]="formField.id" [formControl]="control" [placeholder]="getPlaceholderText(formField)"
+            <input *ngSwitchDefault matInput cdkFocusInitial [errorStateMatcher]="errorMatcher" id="{{formField.id}}" [formControlName]="formField.id" [formControl]="control" [placeholder]="getPlaceholderText(formField)"
                 [formatterName]="formField.inputType" [required]="isRequired()" (change)="onFormElementChanged(formField)" (paste)="onPaste($event)"
                 [attr.minlength]="formField.minLength" [attr.maxlength]="formField.maxLength" [attr.pattern]="formField.pattern" [readonly]="formField.disabled" [attr.tabindex]="formField.tabindex"
                 [keyboardLayout]="keyboardLayout" [attr.type]="isNumericField() ? 'tel' : 'text'"

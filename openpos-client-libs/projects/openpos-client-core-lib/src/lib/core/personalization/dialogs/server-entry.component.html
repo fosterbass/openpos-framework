@@ -1,0 +1,23 @@
+<div class="m4">
+<h1 mat-dialog-title>Connect to Server</h1>
+<form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+<div class="inputs-container" mat-dialog-content>
+    <div class="flex-inline">
+        <mat-form-field class="host">
+            <mat-label>Host</mat-label>
+            <input matInput type="text" formControlName="host">
+        </mat-form-field>
+
+        <mat-form-field class="port">
+            <mat-label>Port</mat-label>
+            <input matInput inputmode="numeric" formControlName="port">
+        </mat-form-field>
+    </div>
+    
+    <mat-checkbox class="pad-bot-8" formControlName="secure">Secure Connection</mat-checkbox>
+</div>
+<mat-dialog-actions align="end">
+    <button mat-button type="submit" [disabled]="!formGroup.valid">Connect</button>
+</mat-dialog-actions>
+</form>
+</div>

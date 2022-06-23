@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.jumpmind.pos.devices.service.model.PersonalizationConfigResponse;
 import org.jumpmind.pos.service.Endpoint;
 
+import java.util.UUID;
+
 import static org.jumpmind.pos.util.RestApiSupport.REST_API_CONTEXT_PATH;
 
 
@@ -12,7 +14,8 @@ import static org.jumpmind.pos.util.RestApiSupport.REST_API_CONTEXT_PATH;
 public class GetVirtualDevicePersonalizationConfigEndpoint {
 
     public PersonalizationConfigResponse getPersonalizationConfig() {
-        // Not Used
-        return PersonalizationConfigResponse.builder().build();
+        return PersonalizationConfigResponse.builder()
+                .autoPersonalizationToken(UUID.randomUUID().toString())
+                .build();
     }
 }

@@ -41,13 +41,7 @@
     <app-icon [iconName]="screenData.locationIcon" [iconClass]="'material-icons mat-18'"></app-icon>
     <div class="inline-grid">
         <div *ngIf="showFieldHeaders" class="field-header">Address<span *ngIf="customer.address.type"> ({{customer.address.type}})</span></div>
-        <div *ngIf="customer.address.line1" class="line1">{{customer.address.line1}}</div>
-        <div *ngIf="customer.address.line2" class="line2">{{customer.address.line2}}</div>
-        <div class="line3">
-            <span *ngIf="customer.address.city" class="city">{{customer.address.city}}, </span>
-            <span *ngIf="customer.address.state" class="state">{{customer.address.state}} </span>
-            <span *ngIf="customer.address.postalCode" class="postal-code">{{customer.address.postalCode}}</span>
-        </div>
+        <div *ngFor="let line of screenData.addressLines">{{line}}</div>
     </div>
 </div>
 <div *ngIf="customer.birthDate" class="details-row birth-date {{isMobile ? 'extra-row-spacing': ''}}" responsive-class>

@@ -50,14 +50,9 @@ public class SessionDisconnectedListener implements ApplicationListener<SessionD
                     log.warn("Error publishing DeviceDisconnectedEvent", ex);
                 }
 
-                // todo: comparison of the app id is temporary while we evaluate other solutions
-                if (StringUtils.equals(deviceModel.getAppId(), "customerdisplay")) {
-                    stateManagerContainer.remove(deviceModel.getDeviceId());
-                } else {
-                    IStateManager stateManager = stateManagerContainer.retrieve(deviceModel.getDeviceId(), false);
-                    if (stateManager != null) {
-                        stateManager.setConnected(false);
-                    }
+                IStateManager stateManager = stateManagerContainer.retrieve(deviceModel.getDeviceId(), false);
+                if (stateManager != null) {
+                    stateManager.setConnected(false);
                 }
 
                 if (StringUtils.isNotBlank(deviceModel.getParentDeviceId())) {

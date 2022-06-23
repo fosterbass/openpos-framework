@@ -1,0 +1,27 @@
+
+.inputs-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.flex-inline {
+    display: inline-flex;
+    flex-wrap: nowrap;
+}
+
+.host {
+    width: 100%;
+    padding-right: 4px;
+}
+
+.port {
+    width: 5em;
+}
+
+.m4 {
+    margin: 8px;
+}
+
+.pad-bot-8 {
+    padding-bottom: 8px;
+}

@@ -1,0 +1,8 @@
+apply from: '../openpos-gradle/src/main/resources/java.gradle'
+apply from: '../openpos-gradle/src/main/resources/publish.gradle'
+apply from: '../openpos-gradle/src/main/resources/openpos.gradle'
+apply from: '../openpos-gradle/src/main/resources/spring.gradle'
+
+dependencies {
+    api project(':openpos-service')
+}

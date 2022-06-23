@@ -9,6 +9,7 @@ import { ConfigurationService } from '../../../services/configuration.service';
 import { Zeroconf, ZeroconfService } from '../../../zeroconf/zeroconf';
 import { AutoPersonalizationStartupTask } from '../auto-personalization.startup-task';
 import { ZeroConfPersonalizationDialogComponent } from './zero-conf-personalization-dialog.component';
+import { openServerConnectingDialog } from '../personalize-utils';
 
 class ZeroConfPersonalizationConfig extends ConfigChangedMessage {
     enabled?: boolean;
@@ -139,8 +140,21 @@ export class ZeroConfPersonalizationStartupTask extends AutoPersonalizationStart
 
         backOffTime = 1000;
 
+        // A shim for < 4.0 to >= 4.0 endpoints. A problem occurrs when the DNS has static entries
+        // with the old TXT record information and causes the application to fail to personalize
+        // with an (unexplained) CORS error when it tries to redirect to the new endpoint.
+        //
+        // Its not easy to just update the TXT record itself as it either requires a bunch of
+        // managment to ensure that only the correct stores have the record during the slow
+        // rollout. It is very easy to change it organization wide however. So once the
+        // appropraite version rolls out to every store, then this is no longer needed.
+        let txtPath: string = service.txtRecord.path;
+        if (!txtPath.startsWith('rest/')) {
+            txtPath = 'rest/' + txtPath;
+        }
+
         // generate the url where personalization parameters will be discovered.
-        const endpoint = `${service.ipv4Addresses[0]}:${service.port}/${service.txtRecord.path}`;
+        const endpoint = `${service.ipv4Addresses[0]}:${service.port}/${txtPath}`;
 
         function booleanParameter(value?: boolean | string): boolean {
             if (typeof value === 'string') {
@@ -154,6 +168,14 @@ export class ZeroConfPersonalizationStartupTask extends AutoPersonalizationStart
 
         // if the secured flag is on, then used https. Value is a string.
         const useHttps = booleanParameter(service.txtRecord.secured);
+
+        // wait for the server to be ready before trying to get personalization params.
+        await openServerConnectingDialog(this._dialog, {
+            host: service.ipv4Addresses[0],
+            port: service.port,
+            secure: useHttps,
+            canCancel: false
+        });
 
         let info: AutoPersonalizationParametersResponse;
 
@@ -172,6 +194,14 @@ export class ZeroConfPersonalizationStartupTask extends AutoPersonalizationStart
         backOffTime = 1000;
 
         currentStep.next(2);
+
+        // wait for the server to be ready before trying to personalize with it
+        await openServerConnectingDialog(this._dialog, {
+            host: info.serverAddress,
+            port: +info.serverPort,
+            secure: info.sslEnabled,
+            canCancel: false
+        });
 
         while (keepTrying) {
             try {

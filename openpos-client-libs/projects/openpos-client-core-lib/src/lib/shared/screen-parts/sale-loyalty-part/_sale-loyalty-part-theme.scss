@@ -1,6 +1,7 @@
 @import '../../../styles/mixins/typography';
 
 @mixin sale-loyalty-part-theme($theme) {
+    $app-warn: mat-color(map-get($theme, warn));
     $border: map-get($mat-grey, 800);
     $item-count-background: map-get($mat-grey, 200);
     $foreground: map-get($theme, foreground);
@@ -52,8 +53,12 @@
             }
         }
 
+        .alert-message {
+                color: $app-warn;
+         }
+
         .button-wrapper .grid-container .icon app-icon {
-            color: mat-color($theme, openpos-link-customer-color);
+            color: mat-color($theme, openpos-link-customer-icon);
         }
     }
 

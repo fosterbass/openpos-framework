@@ -81,6 +81,7 @@ openpos-translate/openpos-translate.iml
 openpos-util/openpos-util.iml
 openpos-wrapper/openpos-wrapper.iml
 openpos-peripheral/openpos-peripheral.iml
+openpos-server-status/openpos-server-status.iml
 
 **/coverage/
 openpos-client-libs/openpos-client-libs.iml

@@ -26,6 +26,7 @@ import { Scan } from '../../../core/oldplugins/scan';
 import { BarcodeScanner } from '../../../core/platform-plugins/barcode-scanners/barcode-scanner.service';
 import { ScanData } from '../../../core/platform-plugins/barcode-scanners/scanner';
 import { ActionService } from '../../../core/actions/action.service';
+import { DynamicFieldErrorStateMatcher } from './dynamic-form-field.error-state-matcher';
 
 @Component({
   selector: 'app-dynamic-form-field',
@@ -40,6 +41,8 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterCon
   @Input() formField: IFormElement;
 
   @Input() formGroup: FormGroup;
+
+  errorMatcher = new DynamicFieldErrorStateMatcher();
 
   public controlName: string;
   control: AbstractControl;
@@ -147,9 +150,8 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterCon
 
   ngOnInit() {
     this.control = this.formGroup.controls[this.formField.id];
-    if (!!this.formField.error) {
-      this.control.markAsTouched();
-      this.control.markAsDirty();
+    if (this.formField.error) {
+        this.errorMatcher.error = this.formField.error;
     }
   }
 
@@ -344,7 +346,7 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterCon
   resetError(): void {
       if (this.formField.error) {
           this.formField.error = null;
+          this.errorMatcher.error = null;
       }
   }
 }
-

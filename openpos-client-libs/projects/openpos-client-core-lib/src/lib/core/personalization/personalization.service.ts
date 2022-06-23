@@ -1,10 +1,8 @@
 import { Injectable, Inject, Optional } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { PersonalizationConfigResponse } from './personalization-config-response.interface';
 import { BehaviorSubject, Observable, throwError, zip, merge, concat, of } from 'rxjs';
 import { catchError, filter, map, retry, take, tap, timeout } from 'rxjs/operators';
-import { PersonalizationRequest } from './personalization-request';
-import { PersonalizationResponse } from './personalization-response.interface';
+import { PersonalizationRequest, PersonalizationResponse } from './personalization-request';
 import { AutoPersonalizationParametersResponse } from './device-personalization.interface';
 import { CONFIGURATION } from '../../configuration/configuration';
 
@@ -12,6 +10,7 @@ import { Storage } from '../storage/storage.service';
 import { Zeroconf, ZEROCONF_TOKEN } from '../zeroconf/zeroconf';
 import { ServerLocation } from './server-location';
 import { AutoPersonalizationRequest } from './auto-personalization-request.interface';
+import { PersonalizationConfig } from './personalization-config';
 
 @Injectable({
     providedIn: 'root'
@@ -158,7 +157,10 @@ export class PersonalizationService {
     }
 
     public personalizeFromSavedSession(): Observable<string> {
-        const request = new PersonalizationRequest(this.deviceToken$.getValue(), null, null, null);
+        const request: PersonalizationRequest = {
+            deviceToken: this.deviceToken$.getValue()
+        };
+
         return this.sendPersonalizationRequest(
             this.sslEnabled$.getValue(),
             this.serverName$.getValue(),
@@ -172,20 +174,6 @@ export class PersonalizationService {
         return !!this.deviceToken$.getValue() && !!this.serverPort$.getValue() && !!this.serverName$.getValue();
     }
 
-    public personalize(
-        serverName: string,
-        serverPort: string,
-        deviceId: string,
-        appId: string,
-        personalizationProperties?: Map<string, string>,
-        sslEnabled?: boolean,
-        pairedAppId?: string,
-        pairedDeviceId?: string
-    ): Observable<string> {
-        const request = new PersonalizationRequest(this.deviceToken$.getValue(), deviceId, appId, pairedAppId, pairedDeviceId);
-        return this.sendPersonalizationRequest(sslEnabled, serverName, serverPort, request, personalizationProperties);
-    }
-
     public personalizeWithToken(
         serverName: string,
         serverPort: string,
@@ -194,8 +182,45 @@ export class PersonalizationService {
         pairedAppId?: string,
         pairedDeviceId?: string
     ): Observable<string> {
-        const request = new PersonalizationRequest(deviceToken, null, null, null, pairedAppId, pairedDeviceId);
+        const request: PersonalizationRequest = {
+            deviceToken,
+            pairedAppId,
+            pairedDeviceId
+        };
+
         return this.sendPersonalizationRequest(sslEnabled, serverName, serverPort, request, null);
+    }
+
+    public personalize(request: {
+        serverConnection: { host: string, port: number, secured?: boolean },
+        businessUnitId?: string,
+        deviceId?: string,
+        authToken?: string,
+        appId?: string,
+        params?: Map<string, string>,
+        pairedDevice?: { deviceId: string, appId: string }
+    }): Observable<void> {
+        const p: PersonalizationRequest = {
+            deviceToken: request.authToken,
+            deviceId: request.deviceId,
+            appId: request.appId,
+            pairedAppId: request.pairedDevice?.appId,
+            pairedDeviceId: request.pairedDevice?.deviceId,
+            businessUnitId: request.businessUnitId
+        };
+
+        return this.sendPersonalizationRequest(
+            request.serverConnection.secured ?? false,
+            request.serverConnection.host,
+            request.serverConnection.port.toString(),
+            p,
+            request.params
+        ).pipe(
+
+            // basically wait for the complete or error and that's it; ignore the rest of the stream.
+            filter(() => false),
+            map(() => {})
+        );
     }
 
     private sendPersonalizationRequest(
@@ -210,6 +235,7 @@ export class PersonalizationService {
 
         if (personalizationParameters) {
             console.log('personalizationParams', personalizationParameters);
+            request.personalizationParameters = {};
             personalizationParameters.forEach((value, key) => request.personalizationParameters[key] = value);
         }
 
@@ -287,12 +313,12 @@ export class PersonalizationService {
         serverName: string,
         serverPort: string,
         sslEnabled: boolean
-    ): Observable<PersonalizationConfigResponse> {
+    ): Observable<PersonalizationConfig> {
         let url = sslEnabled ? 'https://' : 'http://';
         url += serverName + ':' + serverPort + '/rest/devices/personalizationConfig';
 
         console.log('Requesting Personalization config with url: ' + url);
-        return this.http.get<PersonalizationConfigResponse>(url).pipe(
+        return this.http.get<PersonalizationConfig>(url).pipe(
             tap(result => result ? console.log('Successful retrieval of Personalization Config with url: ' + url) : null)
         );
     }

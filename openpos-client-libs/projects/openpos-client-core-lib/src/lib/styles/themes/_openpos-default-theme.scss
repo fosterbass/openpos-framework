@@ -6,6 +6,7 @@
 
     $openpos-link-customer-color: #ffffff;
     $openpos-link-customer-background: #296db6;
+    $openpos-link-customer-icon: #ffffff;
 
     $openpos-linked-customer-color: #ffffff;
     $openpos-linked-customer-background: #296db6;
@@ -19,6 +20,7 @@
     $addons: (
             openpos-link-customer-color: $openpos-link-customer-color,
             openpos-link-customer-background: $openpos-link-customer-background,
+            openpos-link-customer-icon: $openpos-link-customer-icon,
             openpos-linked-customer-color: $openpos-linked-customer-color,
             openpos-linked-customer-background: $openpos-linked-customer-background,
             openpos-membership-in-color: $openpos-membership-in-color,

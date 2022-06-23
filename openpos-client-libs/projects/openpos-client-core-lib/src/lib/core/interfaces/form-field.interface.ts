@@ -10,6 +10,7 @@ export interface IFormElement {
     additionalStyle?: string;
     value?: string;
     values?: string[];
+    displayOrder?: string;
     placeholder?: string;
     action?: string;
     submitButton?: boolean;

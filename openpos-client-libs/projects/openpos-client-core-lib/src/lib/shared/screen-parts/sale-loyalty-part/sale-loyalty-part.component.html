@@ -126,22 +126,25 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div *ngIf="screenData.rewardsVisibleOnLinkButton" class="membership-rewards" responsive-class>
-                <ng-container *ngIf="screenData.loyaltyRewards?.length">
-                    <h4 class="membership-rewards-title" responsive-class>{{screenData.rewardsLabel}}</h4>
-                    <ul class="membership-rewards-list" responsive-class>
-                        <li *ngFor="let reward of screenData.loyaltyRewards"
-                            class="membership-rewards-list-item"
-                            responsive-class>
-                            <app-rewards-line-item [reward]="mapToSimpleReward(reward)"
-                                                   class="membership-rewards-item"
-                                                   responsive-class></app-rewards-line-item>
-                        </li>
-                    </ul>
-                </ng-container>
-                <div *ngIf="!screenData.loyaltyRewards?.length" class="membership-no-rewards">
-                    {{screenData.noPromotionsLabel}}
+                <div *ngIf="screenData.rewardsVisibleOnLinkButton" class="membership-rewards" responsive-class>
+                    <ng-container *ngIf="screenData.loyaltyRewards?.length">
+                        <h4 class="membership-rewards-title" responsive-class>{{screenData.rewardsLabel}}</h4>
+                        <ul class="membership-rewards-list" responsive-class>
+                            <li *ngFor="let reward of screenData.loyaltyRewards"
+                                class="membership-rewards-list-item"
+                                responsive-class>
+                                <app-rewards-line-item [reward]="mapToSimpleReward(reward)"
+                                                       class="membership-rewards-item"
+                                                       responsive-class></app-rewards-line-item>
+                            </li>
+                        </ul>
+                    </ng-container>
+                    <div *ngIf="!screenData.loyaltyRewards?.length" class="membership-no-rewards">
+                        {{screenData.noPromotionsLabel}}
+                    </div>
+                </div>
+                <div class="alert-message">
+                    {{screenData.alertMessage}}
                 </div>
             </div>
         </div>

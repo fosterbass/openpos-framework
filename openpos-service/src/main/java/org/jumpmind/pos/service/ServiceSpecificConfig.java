@@ -26,6 +26,7 @@ public class ServiceSpecificConfig implements Cloneable {
     private InvocationStrategy strategy = InvocationStrategy.LOCAL_ONLY;
     private List<EndpointSpecificConfig> endpoints = new ArrayList<>();
     private SamplingConfig samplingConfig;
+    private String implementation;
 
     public ServiceSpecificConfig copy() {
         ServiceSpecificConfig copy;

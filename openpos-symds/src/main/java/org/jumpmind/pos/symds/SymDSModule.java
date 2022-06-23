@@ -69,8 +69,6 @@ public class SymDSModule extends AbstractRDBMSModule {
     @Autowired
     CacheEvictionConfig cacheEvictionConfig;
 
-    SymClient symClient;
-
     @PostConstruct
     protected void setup() {
         SymmetricEngineHolder holder = new SymmetricEngineHolder();
@@ -262,29 +260,5 @@ public class SymDSModule extends AbstractRDBMSModule {
     @Bean
     ISymmetricEngine symmetricEngine() {
         return this.serverEngine;
-    }
-
-    @Bean
-    SymClient symClient() {
-        if (symClient == null) {
-            symClient = new SymClient();
-            symClient.symmetricEngine = serverEngine;
-            symClient.env = env;
-            return symClient;
-        }
-        return symClient;
-    }
-
-    @Bean
-    public FilterRegistrationBean<RejectUntilLoadIsCompleteFilter> rejectUntilLoadIsCompleteFilter() {
-        FilterRegistrationBean<RejectUntilLoadIsCompleteFilter> registrationBean
-                = new FilterRegistrationBean<>();
-        RejectUntilLoadIsCompleteFilter filter = new RejectUntilLoadIsCompleteFilter();
-        filter.symClient = symClient();
-        registrationBean.setFilter(filter);
-        registrationBean.addUrlPatterns("/admin/personalizeMe");
-        registrationBean.setOrder(2);
-
-        return registrationBean;
     }
 }

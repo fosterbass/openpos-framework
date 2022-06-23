@@ -27,7 +27,7 @@ import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@ActiveProfiles("test")
+@ActiveProfiles({"test", "test-business-unit-provider"})
 @ContextConfiguration(classes = {TestDevicesConfig.class})
 public class DevicesRepositoryTest {
 
