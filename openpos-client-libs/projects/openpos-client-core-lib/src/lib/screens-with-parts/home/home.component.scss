@@ -33,7 +33,7 @@
 
   &.tablet {
     min-width: 140px;
-    min-height: 110px;
+    min-height: 100px;
     line-height: 16px;
     font-size: .9rem;
   }
@@ -51,6 +51,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding-top: 35px;
+  padding-bottom: 35px;
 }
 
 .notification-badge {
