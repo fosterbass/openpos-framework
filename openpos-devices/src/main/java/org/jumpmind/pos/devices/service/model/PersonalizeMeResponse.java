@@ -17,6 +17,7 @@ public class PersonalizeMeResponse {
     private String deviceName;
     private String serverAddress;
     private String serverPort;
+    private String businessUnitId;
     private String deviceId;
     private String appId;
     private boolean sslEnabled = false;
@@ -29,6 +30,7 @@ public class PersonalizeMeResponse {
         this.deviceName = model.getDeviceName();
         this.serverAddress = model.getServerAddress();
         this.serverPort = model.getServerPort();
+        this.businessUnitId = model.getBusinessUnitId();
         this.deviceId = model.getDeviceId();
         this.appId = model.getAppId();
         this.sslEnabled = model.isSslEnabledFlag();

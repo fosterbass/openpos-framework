@@ -5,6 +5,7 @@ export interface AutoPersonalizationParametersResponse {
     deviceName: string;
     serverAddress: string;
     serverPort: string;
+    businessUnitId: string;
     deviceId: string;
     appId: string;
     pairedAppId?: string;
