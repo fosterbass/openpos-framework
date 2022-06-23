@@ -67,7 +67,7 @@ public class EscpCashDrawerService implements CashDrawerService19 {
             settings.put("connectionClass", "org.jumpmind.pos.print.SocketConnectionFactory");
             settings.put("printerCommandLocations", "esc_p.properties,epson.properties");
             settings.put("connectTimeout", SerialPort.TIMEOUT_NONBLOCKING);
-            this.printer.init(settings, null);
+            this.printer.init(settings);
         }
     }
 
