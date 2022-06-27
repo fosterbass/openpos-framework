@@ -242,6 +242,14 @@ public class DBSession {
         return params;
     }
 
+    public <T extends AbstractModel> T findFirstByFields(Class<T> entityClass, Map<String, Object> fieldValues) {
+        return findFirstByFields(entityClass, fieldValues, 1);
+    }
+
+    /**
+     * @deprecated `maxResults` argument isn't necessary; use overload without parameter.
+     */
+    @Deprecated
     public <T extends AbstractModel> T findFirstByFields(Class<T> entityClass, Map<String, Object> fieldValues, int maxResults) {
         List<T> list = findByFields(entityClass, fieldValues, maxResults);
         return list.size() > 0 ? list.get(0) : null;
