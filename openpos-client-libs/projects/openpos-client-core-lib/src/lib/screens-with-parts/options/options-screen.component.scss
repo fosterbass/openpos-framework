@@ -12,7 +12,7 @@
         display: grid;
         width: 75%;
         justify-self: center;
-        align-content: center;
+        align-content: space-between;
         @extend %page-spaced-content; 
     
         .options-image {
