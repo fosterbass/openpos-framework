@@ -355,7 +355,7 @@ public class ZebraPrinter extends AbstractPOSPrinter {
     @Override
     public void printBitmap(int station, String fileName, int width, int alignment) throws JposException {
     }
-    
+
     private boolean isSocketConnection() {
         return connectionFactory instanceof SocketConnectionFactory;
     }
