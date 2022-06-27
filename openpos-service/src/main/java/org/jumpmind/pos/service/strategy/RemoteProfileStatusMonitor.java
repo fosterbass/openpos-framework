@@ -36,7 +36,7 @@ public class RemoteProfileStatusMonitor extends AbstractStatusReporter {
 
     @Override
     protected String getIdForLastStatus() {
-        return clientContext.get(ClientContext.DEVICE_ID);
+        return clientContext != null ? clientContext.get(ClientContext.DEVICE_ID) : null;
     }
 
     @Override
