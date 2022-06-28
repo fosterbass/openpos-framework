@@ -44,6 +44,7 @@ public class ActionItem implements Serializable {
     protected String defaultPayload;
 
     protected String icon;
+    protected String imageUrl;
     @Builder.Default
     protected boolean enabled = true;
     protected ConfirmationDialog confirmationDialog;

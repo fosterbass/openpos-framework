@@ -1,0 +1,19 @@
+@import '../../../styles/variables/spacing';
+@import '../../../styles/mixins/typography';
+
+.label-mobile {
+    padding: $small-space;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    @extend %text-sm;
+
+    .double-arrow {
+        &.up {
+            transform: rotate(-90deg);
+        }
+        &.down {
+            transform: rotate(90deg);
+        }
+    }
+}

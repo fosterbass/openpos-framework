@@ -7,13 +7,13 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
     styleUrls: ['./expansion-panel.component.scss'],
     animations: [
         trigger('animationShowHide', [
-            state('close', style({height: '0px', overflow: 'hidden'})),
-            state('open', style({height: '*', overflow: 'hidden'})),
+            state('close', style({ height: '0px' })),
+            state('open', style({ height: '*' })),
             transition('open <=> close', animate('250ms ease-in-out')),
         ]),
         trigger('animationRotate', [
-            state('close', style({transform: 'rotate(0)'})),
-            state('open', style({transform: 'rotate(-180deg)'})),
+            state('close', style({ transform: 'rotate(0)' })),
+            state('open', style({ transform: 'rotate(-180deg)' })),
             transition('open <=> close', animate('250ms ease-in-out')),
         ]),
     ],

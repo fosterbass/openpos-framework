@@ -12,6 +12,8 @@ export interface IActionItem {
     defaultPayload?: string;
     // The icon to display on the UI element associated with the ActionItem
     icon?: string;
+    // The image to display on the UI element associated with the ActionItem
+    imageUrl?: string;
     // If set the user will be presented with a dialog to confirm this action befor performing it
     confirmationDialog?: IConfirmationDialog;
     // If supported this would be a keybinding to use for activating this action
