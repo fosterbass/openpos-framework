@@ -29,7 +29,7 @@
             app-basic-product-options-part,
             app-swatch-product-options-part  {
                 width: 100%;
-                border: solid $border 2px;
+                border: solid $border 1px;
                 padding: .25rem;
             }
 
@@ -38,8 +38,6 @@
                 app-basic-product-options-part,
                 app-swatch-product-options-part  {
                     width: unset;
-                    border: solid $border 1px;
-                    padding: .25rem;
                 }
             }
         }

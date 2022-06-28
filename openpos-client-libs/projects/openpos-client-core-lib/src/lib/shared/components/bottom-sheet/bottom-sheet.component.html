@@ -1,0 +1,15 @@
+<div class="dark-background" (swipeup)="openSheet()" (click)="openSheet()" responsive-class>
+    <div class="label-mobile contrast-color">
+        <app-icon iconName="double_arrow" iconClass="double-arrow up md"></app-icon>
+        {{label}}
+    </div>
+</div>
+<ng-template #content>
+    <div class="dark-background" (swipedown)="closeSheet()" (click)="closeSheet()" responsive-class>
+        <div class="label-mobile contrast-color">
+            <app-icon iconName="double_arrow" iconClass="double-arrow down md"></app-icon>
+            {{label}}
+        </div>
+    </div>
+    <ng-content></ng-content>
+</ng-template>

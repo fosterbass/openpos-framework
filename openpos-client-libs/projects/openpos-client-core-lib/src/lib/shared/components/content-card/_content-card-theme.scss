@@ -3,7 +3,7 @@
     $card: map-get(map-get($theme, background), card);
 
     app-content-card {
-        section{
+        section {
             background-color: $card;
             border-color: $border;
             border-style: solid;

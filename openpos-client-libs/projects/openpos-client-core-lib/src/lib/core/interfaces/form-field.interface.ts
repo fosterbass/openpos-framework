@@ -53,7 +53,7 @@ export interface IFormElement {
     overrideLabel?: string;
 }
 
-export interface IDynamicListField {
+export interface IDynamicListField extends IFormElement{
     dynamicListEnabled: boolean;
 }
 

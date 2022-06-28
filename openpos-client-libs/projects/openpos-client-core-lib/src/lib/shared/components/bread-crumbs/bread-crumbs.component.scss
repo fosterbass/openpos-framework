@@ -1,10 +1,15 @@
-$height: 24px;
+$height: 36px;
 $width: $height * 3;
-$border: 2px;
+$border: 1px;
 $arrow: $height / 2;
 $slashWidth: $height / 3;
 
+:host {
+    display: flex;
+}
 .bread-crumb-button {
+    display: inline-flex;
+    align-items: center;
     width: $width;
     height: $height;
     padding: 0;
@@ -12,6 +17,7 @@ $slashWidth: $height / 3;
     position: relative;
     cursor: pointer;
     border-width: $border 0;
+    margin-bottom: $height / 3;
 }
 .left-button {
     border-width: $border 0 $border $border;
