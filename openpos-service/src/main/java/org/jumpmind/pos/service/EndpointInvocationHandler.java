@@ -2,6 +2,7 @@ package org.jumpmind.pos.service;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jumpmind.pos.service.strategy.IInvocationStrategy;
+import org.jumpmind.pos.util.RestApiSupport;
 import org.jumpmind.pos.util.clientcontext.ClientContext;
 
 import lombok.extern.slf4j.Slf4j;
@@ -93,7 +94,11 @@ public class EndpointInvocationHandler implements InvocationHandler {
 
                 if (endpoint != null) {
                     for (EndpointSpecificConfig endpointSpecificConfig : serviceConfig.getEndpoints()) {
-                        if (endpoint.path().equals(endpointSpecificConfig.getPath())) {
+                        String endpointPath = endpoint.path();
+                        if (endpointPath.indexOf(RestApiSupport.REST_API_CONTEXT_PATH) >= 0) {
+                            endpointPath = endpointPath.substring(RestApiSupport.REST_API_CONTEXT_PATH.length());
+                        }
+                        if (endpointPath.equals(endpointSpecificConfig.getPath())) {
                             endpointImplementation = firstNonNull(endpointImplementation, endpoint.implementation());
                             endpointConfig = endpointSpecificConfig;
                         }
