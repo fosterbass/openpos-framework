@@ -23,6 +23,9 @@ public class ClientContext {
     public static final String APP_ID = "appId";
     public static final String DEVICE_MODE = "deviceMode";
 
+    public static final String DEVICE_MODE_DEFAULT  = "default";
+    public static final String DEVICE_MODE_TRAINING = "training";
+
     private ThreadLocal<Map<String, String>> propertiesMap = new ThreadLocal<>();
     final Logger log = LoggerFactory.getLogger(getClass());
 
