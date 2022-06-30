@@ -7,6 +7,7 @@ import org.jumpmind.pos.util.clientcontext.ClientContext;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -80,25 +81,31 @@ public class EndpointInvocationHandler implements InvocationHandler {
         }
 
         if (endpointObj != null) {
-            EndpointOverride override = endpointObj.getClass().getAnnotation(EndpointOverride.class);
+            EndpointOverride override = AnnotationUtils.findAnnotation(endpointObj.getClass(), EndpointOverride.class);
 
             if (override != null) {
+                String overridePath = override.path();
+                String overridePathNoContext = overridePath;
+                if (overridePath.indexOf(RestApiSupport.REST_API_CONTEXT_PATH) >= 0) {
+                    overridePathNoContext = overridePath.substring(RestApiSupport.REST_API_CONTEXT_PATH.length());
+                }
                 for (EndpointSpecificConfig endpointSpecificConfig : serviceConfig.getEndpoints()) {
-                    if (override.path().equals(endpointSpecificConfig.getPath())) {
+                    if (overridePath.equals(endpointSpecificConfig.getPath()) || overridePathNoContext.equals(endpointSpecificConfig.getPath())) {
                         endpointImplementation = firstNonNull(endpointImplementation, override.implementation());
                         endpointConfig = endpointSpecificConfig;
                     }
                 }
             } else {
-                Endpoint endpoint = endpointObj.getClass().getAnnotation(Endpoint.class);
+                Endpoint endpoint = AnnotationUtils.findAnnotation(endpointObj.getClass(), Endpoint.class);
 
                 if (endpoint != null) {
+                    String endpointPath = endpoint.path();
+                    String endpointPathNoContext = endpointPath;
+                    if (endpointPath.indexOf(RestApiSupport.REST_API_CONTEXT_PATH) >= 0) {
+                        endpointPathNoContext = endpointPath.substring(RestApiSupport.REST_API_CONTEXT_PATH.length());
+                    }
                     for (EndpointSpecificConfig endpointSpecificConfig : serviceConfig.getEndpoints()) {
-                        String endpointPath = endpoint.path();
-                        if (endpointPath.indexOf(RestApiSupport.REST_API_CONTEXT_PATH) >= 0) {
-                            endpointPath = endpointPath.substring(RestApiSupport.REST_API_CONTEXT_PATH.length());
-                        }
-                        if (endpointPath.equals(endpointSpecificConfig.getPath())) {
+                        if (endpointPath.equals(endpointSpecificConfig.getPath()) || endpointPathNoContext.equals(endpointSpecificConfig.getPath())) {
                             endpointImplementation = firstNonNull(endpointImplementation, endpoint.implementation());
                             endpointConfig = endpointSpecificConfig;
                         }
