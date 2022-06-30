@@ -62,16 +62,9 @@ public class DeviceModel extends AbstractModel implements ITaggedModel, IDeviceA
     @Builder.Default
     private Map<String, String> tags = new CaseInsensitiveMap<>();
 
-    @ToString.Include
-    @Builder.Default
-    private String deviceMode = DEVICE_MODE_DEFAULT;
-
     private List<DeviceParamModel> deviceParamModels;
 
-    public static final String DEVICE_MODE_DEFAULT  = "default";
     public static final String BRAND_DEFAULT = "default";
-    public static final String DEVICE_MODE_TRAINING = "training";
-
     @Override
     public String getTagValue(String tagName) {
         return tags.get(tagName.toUpperCase());
@@ -120,26 +113,6 @@ public class DeviceModel extends AbstractModel implements ITaggedModel, IDeviceA
             }
         }
         return withOutBusinessUnitId;
-    }
-
-    @JsonIgnore
-    public boolean isDefaultDeviceMode() {
-        return deviceMode == null || DEVICE_MODE_DEFAULT.equals(deviceMode);
-    }
-
-    @JsonIgnore
-    public void setDefaultDeviceMode() {
-        deviceMode = DEVICE_MODE_DEFAULT;
-    }
-
-    @JsonIgnore
-    public boolean isTrainingDeviceMode() {
-        return DEVICE_MODE_TRAINING.equals(deviceMode);
-    }
-
-    @JsonIgnore
-    public void setTrainingDeviceMode() {
-        deviceMode = DEVICE_MODE_TRAINING;
     }
 
     @JsonIgnore

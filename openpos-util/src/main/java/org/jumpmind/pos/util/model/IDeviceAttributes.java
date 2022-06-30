@@ -8,6 +8,5 @@ public interface IDeviceAttributes {
     String getTimezoneOffset();
     String getBusinessUnitId();
     String getDescription();
-    String getDeviceMode();
     Map<String,String> getDeviceParamsMap();
 }
