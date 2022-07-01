@@ -33,7 +33,6 @@ public abstract class AbstractModel implements IAuditableModel, Serializable {
     @JsonIgnore
     private Map<String, Object> systemData = new HashMap<>();
 
-    @JsonIgnore
     private Map<String, Object> additionalFields = new LinkedCaseInsensitiveMap<>();
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "__extensionClass")
