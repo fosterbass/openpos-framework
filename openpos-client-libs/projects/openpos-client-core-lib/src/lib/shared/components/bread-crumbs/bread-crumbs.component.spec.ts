@@ -33,11 +33,11 @@ describe('BreadCrumbsComponent', () => {
 
         const firstButton = fixture.nativeElement.querySelector('#breadCrumb_' + firstAction.action);
         expect(firstButton).not.toBeNull();
-        expect(firstButton.innerHTML.trim()).toBe(firstAction.title);
+        expect(firstButton.innerHTML.trim()).toContain(firstAction.title);
 
         const secondButton = fixture.nativeElement.querySelector('#breadCrumb_' + secondAction.action);
         expect(secondButton).not.toBeNull();
-        expect(secondButton.innerHTML.trim()).toBe(secondAction.title);
+        expect(secondButton.innerHTML.trim()).toContain(secondAction.title);
     });
     it('calls doAction when the button is clicked', () => {
         spyOn(actionService, 'doAction').and.callThrough();
