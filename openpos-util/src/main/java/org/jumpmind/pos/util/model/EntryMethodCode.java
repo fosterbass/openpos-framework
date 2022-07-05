@@ -4,6 +4,7 @@ public class EntryMethodCode extends AbstractTypeCode {
     private static final long serialVersionUID = 1L;
     private static final String[] DESERIALIZE_SEARCH_CLASSES = {
             "org.jumpmind.pos.item.model.EntryMethodCode",
+            "org.jumpmind.pos.sales.model.EntryMethodCode",
             EntryMethodCode.class.getName()
     };
 
@@ -19,7 +20,7 @@ public class EntryMethodCode extends AbstractTypeCode {
         return AbstractTypeCode.of(EntryMethodCode.class, value);
     }
     
-    private EntryMethodCode(String value) {
+    protected EntryMethodCode(String value) {
         super(value);
     }
 
