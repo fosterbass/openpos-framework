@@ -1,5 +1,5 @@
 $height: 36px;
-$width: $height * 3;
+$width: $height * 4;
 $border: 1px;
 $arrow: $height / 2;
 $slashWidth: $height / 3;
@@ -51,4 +51,7 @@ $slashWidth: $height / 3;
 .right-button::after {
     left: $width;
     border-width: $arrow 0 $arrow $arrow;
+}
+app-image {
+    margin-right: $slashWidth;
 }

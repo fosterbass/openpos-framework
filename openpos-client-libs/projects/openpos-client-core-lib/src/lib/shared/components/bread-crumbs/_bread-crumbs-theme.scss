@@ -27,7 +27,8 @@
     }
     .crumb-image {
         > img {
-            height: 24px;
+            max-height: 24px;
+            max-width: 24px;
         }
     }
 }

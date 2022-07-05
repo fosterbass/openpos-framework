@@ -202,6 +202,7 @@ export * from './lib/customer-display/customer-display-return/customer-display-r
 export * from './lib/shared/shared.module';
 export * from './lib/shared/trans-status.enum';
 export * from './lib/shared/trans-type.enum';
+export * from './lib/shared/components/bread-crumbs/bread-crumbs.component';
 export * from './lib/shared/components/catalog-browser-item/catalog-browser-item.component';
 export * from './lib/shared/components/counter/counter.component';
 export * from './lib/shared/components/currency-text/currency-text.component';
@@ -215,6 +216,7 @@ export * from './lib/shared/components/dynamic-date-form-field/dynamic-date-form
 export * from './lib/shared/components/dynamic-form-control/dynamic-form-control.component';
 export * from './lib/shared/components/dynamic-form-field/dynamic-form-field.component';
 export * from './lib/shared/components/dynamic-list-control/dynamic-list-control.component';
+export * from './lib/shared/components/expansion-panel/expansion-panel.component';
 export * from './lib/shared/components/fab-toggle-button/fab-toggle-button.component';
 export * from './lib/shared/components/fab-toggle-group/fab-toggle-group.component';
 export * from './lib/shared/components/file-viewer/file-viewer.component';
@@ -434,3 +436,5 @@ export * from './lib/shared/screen-parts/prompt-button-row/prompt-button-row.com
 
 export * from './lib/core/startup/startup-task';
 export { startupSequence } from './lib/core/startup/startup-sequence';
+export * from './lib/core/client-context/client-context-provider.interface';
+export * from './lib/core/client-context/time-zone-context';

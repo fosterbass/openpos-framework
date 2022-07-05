@@ -15,6 +15,7 @@ describe('SwatchProductOptionPartComponent', () => {
     let fixture: ComponentFixture<SwatchProductOptionPartComponent>;
 
     const screenData: SwatchProductOptionPartInterface = {
+        optionId: 'swatchOption',
         swatches: [
             {
                 name: 'Blue',
@@ -90,7 +91,7 @@ describe('SwatchProductOptionPartComponent', () => {
         spyOn(component.actionService, 'doAction').and.callThrough();
         const blueSwatch = fixture.nativeElement.querySelector('img');
         blueSwatch.click();
-        expect(component.actionService.doAction).toHaveBeenCalledWith(screenData.selectOptionAction, 'blueSwatch');
+        expect(component.actionService.doAction).toHaveBeenCalledWith(screenData.selectOptionAction, { optionId: 'swatchOption', value: 'blueSwatch' });
     });
     it('clears selectedOptionName when screenData is undefined', () => {
         component.screenData = undefined;
