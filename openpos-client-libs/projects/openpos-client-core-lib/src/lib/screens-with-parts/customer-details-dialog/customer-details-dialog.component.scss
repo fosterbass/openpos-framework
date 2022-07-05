@@ -29,6 +29,10 @@
   }
 }
 
+ .account-detail-buttons{
+    justify-content: end;
+    align-content: end;
+  }
 .buttons {
   display: flex;
   gap: 8px;
