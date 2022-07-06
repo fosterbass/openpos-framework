@@ -3,7 +3,6 @@ package org.jumpmind.pos.print;
 import jpos.JposException;
 import jpos.POSPrinterConst;
 
-import javax.xml.transform.sax.SAXSource;
 import java.io.File;
 import java.util.*;
 
@@ -34,7 +33,7 @@ public class PrinterTester {
         EscpPOSPrinter printer = null;
         try {
             printer = (EscpPOSPrinter) Class.forName(EscpPOSPrinter.class.getName()).newInstance();
-            printer.init(settings, null);
+            printer.init(settings);
             printer.open("printerName", null);
         } catch (Exception ex) {
             ex.printStackTrace();;

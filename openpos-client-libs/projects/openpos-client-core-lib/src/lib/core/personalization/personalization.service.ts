@@ -135,9 +135,7 @@ export class PersonalizationService {
     public getAutoPersonalizationParameters(request: AutoPersonalizationRequest, url: string):
         Observable<AutoPersonalizationParametersResponse> {
 
-        console.log('Attempting auto personalization with ' + url);
-        const protocol = this.sslEnabled$.getValue() ? 'https://' : 'http://';
-        url = protocol + url;
+        console.log('Attempting auto personalization with ' + url, request);
 
         const requestTimeout = 2000;
         const retryCount = CONFIGURATION.autoPersonalizationRequestTimeoutMillis / requestTimeout;
@@ -145,6 +143,9 @@ export class PersonalizationService {
         return this.http.put<AutoPersonalizationParametersResponse>(url, request)
             .pipe(
                 timeout(requestTimeout),
+                tap({
+                    error: (err) => console.log(`error occurred while getting personalization parameters`, JSON.stringify(err))
+                }),
                 retry(retryCount),
                 tap(response => {
                     if (response) {
@@ -152,7 +153,8 @@ export class PersonalizationService {
                         this.setFailovers(response.failoverAddresses);
                         this.setPrimaryServer(new ServerLocation(response.serverAddress, response.serverPort, null));
                     }
-                }));
+                })
+            );
     }
 
     public personalizeFromSavedSession(): Observable<string> {
@@ -211,7 +213,7 @@ export class PersonalizationService {
             personalizationParameters.forEach((value, key) => request.personalizationParameters[key] = value);
         }
 
-        console.info(`[PersonalizationService] sending personalizationRequest: ${JSON.stringify(request)}, to url: ${url}`);
+        console.info(`[PersonalizationService] sending personalization request: ${JSON.stringify(request)}, to url: ${url}`);
         return this.http.post<PersonalizationResponse>(url, request).pipe(
             map((response: PersonalizationResponse) => {
                 console.info(`personalizing with server: ${serverName}, port: ${serverPort}, deviceId: ${request.deviceId}`);

@@ -4,7 +4,7 @@
         [itemSize]="itemHeightPx"
         [maxBufferPx]="virtualScrollMaxBufferPx"
         [minBufferPx]="virtualScrollMinBufferPx">
-  <ul [ngClass]="listClass" [class.horizontal]="isHorizontalOrientation()">
+  <ul [ngClass]="listClass" [class.horizontal]="isHorizontalOrientation()" responsive-class>
     <li *cdkVirtualFor="let item of dataSource; template: itemTemplate"
         responsive-class
         [ngClass]="itemClass">

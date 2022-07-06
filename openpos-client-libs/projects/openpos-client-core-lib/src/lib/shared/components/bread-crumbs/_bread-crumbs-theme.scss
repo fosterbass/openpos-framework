@@ -1,0 +1,34 @@
+@mixin bread-crumbs-theme($theme) {
+    $app-primary: mat-color(map-get($theme, primary));
+    $border: map-get(map-get($theme, foreground), border);
+    $background: map-get(map-get($theme, background), card);
+    $icon: map-get(map-get($theme, foreground), icon);
+
+    .crumb-icon {
+        color: $icon;
+    }
+    .bread-crumb-button {
+        color: $app-primary;
+        background-color: $background;
+        border-color: $border;
+        border-style: solid;
+    }
+    .bread-crumb-button.right-button::after {
+        border-color: transparent $background;
+    }
+    .bread-crumb-button.right-button::before {
+        border-color: transparent $border;
+    }
+    .bread-crumb-button::after {
+        border-color: $background transparent;
+    }
+    .bread-crumb-button::before {
+        border-color: $border transparent;
+    }
+    .crumb-image {
+        > img {
+            max-height: 24px;
+            max-width: 24px;
+        }
+    }
+}

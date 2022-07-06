@@ -966,7 +966,6 @@ public class DBSession {
         if (model instanceof IAugmentedModel) {
             List<AugmenterConfig> configs = augmenterHelper.getAugmenterConfigs(model);
             if (CollectionUtils.isEmpty(configs)) {
-                log.info("No augmenter columns defined for the model: " + model.getClass().getSimpleName());
                 return;
             }
             Map<String, Object> augmentsValues = new HashMap<>();

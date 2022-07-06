@@ -241,11 +241,11 @@ public class RemoteOnlyStrategy implements IInvocationStrategy {
         ConfiguredRestTemplate template = new ConfiguredRestTemplate(httpTimeoutInSecond, connectTimeoutInSecond);
 
         final RequestMapping mapping = getMergedAnnotation(endpointInvocationContext.getMethod(), RequestMapping.class);
-        RequestMethod[] requestMethods = mapping.method();
+        RequestMethod[] requestMethods = mapping != null ? mapping.method(): null;
 
         HttpHeaders headers = getHeaders(profileConfig, profileId);
 
-        if (requestMethods.length > 0) {
+        if (requestMethods != null && requestMethods.length > 0) {
             try {
                 Method method = endpointInvocationContext.getMethod();
                 Object[] args = endpointInvocationContext.getArguments();

@@ -1,0 +1,99 @@
+<app-bacon-strip>
+    <div class="content-container" responsive-class>
+        <div class="content" responsive-class>
+            <app-image-carousel class="carousel" [imgUrls]="screen.imageUrls" [altImageUrl]="screen.alternateImageUrl"
+                [verticalThumbprints]="false" altImageText="Image Not Found" responsive-class>
+            </app-image-carousel>
+            <div class="product" responsive-class>
+                <app-title [title]="screen.productName"></app-title>
+                <div class="product-details" responsive-class>
+                    <section class="price-and-availability" 
+                        [ngClass]="{'align-center': screen.orderAvailabilityLabel, 'align-baseline': !screen.orderAvailabilityLabel}">
+                        <app-currency-text class="item-price" [amountText]="screen.price" responsive-class></app-currency-text>
+                        <div class="availability-section">
+                            <span class="availability" [ngClass]="getAvailabilityStyle()" responsive-class>{{screen.availabilityLabel}}</span>
+                            <span *ngIf="screen.orderAvailabilityLabel" class="not-available">{{screen.orderAvailabilityLabel}}</span>
+                        </div>
+                    </section>
+                    <section class="identifiers">
+                        <app-display-property *ngFor="let prop of screen.productIdentifiers" responsive-class 
+                            [property]="prop" alignmentType="jagged"></app-display-property>
+                    </section>
+                </div>
+                <section class="product-options" responsive-class>
+                    <ng-container *ngFor="let component of optionComponents | keyvalue">
+                        <ng-container *ngComponentOutlet="component.value; injector: component.key" responsive-class></ng-container>
+                    </ng-container>
+                </section>
+                <app-tabbed-content-card id="tabbedContent" *ngIf="!(isMobile | async) && tabs" [tabs]="tabs" 
+                    [selectedTabTemplate]="getSelectedTabTemplate()" 
+                    (tabChange)="updateSelectedTab($event)" responsive-class>
+                </app-tabbed-content-card>
+                <div *ngIf="(isMobile | async) && tabs" class="product-expansion-panels" responsive-class>
+                    <div *ngFor="let tab of tabs" class="product-expansion-panel">
+                        <app-expansion-panel>
+                            <ng-container header>
+                                <span class="product-expansion-panel-header" responsive-class>{{tab.label}}</span>
+                            </ng-container>
+                            <ng-container content>
+                                <ng-container *ngIf="tab.tabId === 'info'" [ngTemplateOutlet]="info"></ng-container>
+                                <div *ngIf="tab.tabId !== 'info'" class="product-expansion-panel-content" responsive-class>
+                                    <div *ngIf="getTabContentForTabId(tab.tabId)" [innerHtml]="getTabContentForTabId(tab.tabId).content | markdownFormatter"></div>
+                                </div>
+                            </ng-container>
+                        </app-expansion-panel>
+                    </div>
+                </div>
+                <div class="actions" responsive-class>
+                    <ng-container *ngFor="let button of screen.actions; let first = first;">
+                        <app-secondary-button *ngIf="!first" [ngClass]="button.additionalStyle" [disabled]="!button.enabled" (buttonClick)="doAction(button)">
+                            <app-icon *ngIf="button.icon" [iconName]="button.icon"></app-icon>
+                            <span>{{button.title}}</span>
+                        </app-secondary-button>
+                        <app-primary-button *ngIf="first" [ngClass]="button.additionalStyle" [disabled]="!button.enabled" (buttonClick)="doAction(button)">
+                            <app-icon *ngIf="button.icon" [iconName]="button.icon"></app-icon>
+                            <span>{{button.title}}</span>
+                        </app-primary-button>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+    </div>
+</app-bacon-strip>
+
+<ng-template #tabContent>
+    <div class="tab-content" responsive-class>
+        <div *ngIf="selectedTabContent" [innerHtml]="selectedTabContent.content | markdownFormatter"></div>
+    </div>
+</ng-template>
+
+<ng-template #info>
+    <div *ngIf="screen.productPromotions || screen.productInventory" class="info" responsive-class>
+        <div *ngIf="screen.productPromotions" class="product-promotions">
+            <h3 class="title">
+                <app-icon *ngIf="screen.productPromotions.icon" [iconName]="screen.productPromotions.icon"></app-icon>
+                {{screen.productPromotions.promotionsTitle}}
+            </h3>
+            <app-grid-table [rows]="screen.productPromotions.promotionDetails" [shadeAlternating]="true"></app-grid-table>
+        </div>
+        <div *ngIf="screen.productInventory" class="product-inventory">
+            <div class="title-and-inventory-counts">
+                <h3 class="title">
+                    <app-icon *ngIf="screen.productInventory.icon" [iconName]="screen.productInventory.icon"></app-icon>
+                    {{screen.productInventory.inventoryTitle}}
+                </h3>
+                <div *ngIf="screen.productInventory.businessUnitInventoryDetails" class="inventory-counts">
+                    <div *ngFor="let detail of screen.productInventory.businessUnitInventoryDetails" class="count">
+                        <span *ngIf="detail.count" class="count-value" responsive-class>{{detail.count}}</span>
+                        <span *ngIf="!detail.count" class="count-message" responsive-class>{{detail.message}}</span>
+                        <span class="count-label" responsive-class>{{detail.label}}</span>
+                    </div>
+                </div>
+            </div>
+            <app-grid-table *ngIf="buddyStoreInventory$ | async" [rows]="buddyStoreInventory$ | async" [shadeAlternating]="true"></app-grid-table>
+        </div>
+    </div>
+    <div *ngIf="!screen.productPromotions && !screen.productInventory" class="info-not-available" responsive-class>
+        {{screen.availabilityLabel}}
+    </div>
+</ng-template>

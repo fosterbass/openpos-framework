@@ -1,10 +1,6 @@
 package org.jumpmind.pos.core.screeninterceptor;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jumpmind.pos.core.flow.IStateManager;
-import org.jumpmind.pos.core.flow.In;
-import org.jumpmind.pos.core.flow.ScopeType;
-import org.jumpmind.pos.core.service.ClientLocaleService;
 import org.jumpmind.pos.core.service.IKeyMappingService;
 import org.jumpmind.pos.core.service.LocaleType;
 import org.jumpmind.pos.core.ui.ActionItem;

@@ -15,8 +15,6 @@ import java.util.List;
 @NoArgsConstructor
 public class UISubscriptionAccount implements Serializable {
     private String customerProgramId;
-    private String iconImageUrl;
-    private String iconText;
     private String copy;
     private String listTitle;
     private List<UISubscriptionPlan> plans;

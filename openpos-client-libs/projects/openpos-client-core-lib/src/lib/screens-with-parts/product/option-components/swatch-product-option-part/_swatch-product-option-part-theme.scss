@@ -1,0 +1,22 @@
+@mixin swatch-product-option-part-theme($theme) {
+
+  $foreground: map-get($theme, foreground);
+
+  $disabled: map-get(map-get($theme, foreground), disabled);
+
+  app-swatch-product-options-part{
+    caption{
+      color: map-get(map-get($theme, foreground), secondary-text);
+    }
+    
+    .swatch-wrapper{
+      &.selected{
+        border-color: mat-color(map-get($theme, selected));
+      }
+    }
+
+    .option-name {
+      color: $disabled;
+    }
+  }
+}

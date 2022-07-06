@@ -17,7 +17,7 @@ import { Subscription } from 'rxjs';
 import { ITextMask, TextMask } from '../../textmask';
 import { DynamicDateFormFieldComponent } from '../dynamic-date-form-field/dynamic-date-form-field.component';
 import { PopTartComponent } from '../pop-tart/pop-tart.component';
-import { IFormElement, IPopTartField } from '../../../core/interfaces/form-field.interface';
+import { IDynamicListField, IFormElement, IPopTartField } from '../../../core/interfaces/form-field.interface';
 import { SessionService } from '../../../core/services/session.service';
 import { ScreenService } from '../../../core/services/screen.service';
 import { OldPluginService } from '../../../core/services/old-plugin.service';
@@ -103,7 +103,7 @@ export class DynamicFormFieldComponent implements OnChanges, OnDestroy, AfterCon
       let getValuesFromServer = true;
       if ('dynamicListEnabled' in this.formField) {
         // if dynamicListEnabled property is provided, we will observe its value
-        const dynFormFld = this.formField as any;
+        const dynFormFld = this.formField as IDynamicListField;
         getValuesFromServer = dynFormFld.dynamicListEnabled;
       }
 

@@ -44,7 +44,7 @@ public abstract class WrapperService {
 
     private static final String APPLICATION_NAME = "application";
 
-    public synchronized static WrapperService getInstance() {
+    public static synchronized WrapperService getInstance() {
         if (instance == null) {
             if (SystemUtils.IS_OS_WINDOWS) {
                 instance = new WindowsService();

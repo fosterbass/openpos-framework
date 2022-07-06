@@ -1,32 +1,9 @@
 @import '../../styles/mixins/typography';
 @import '../../styles/variables/spacing';
 
-.details-wrapper, .tabs {
+.details-wrapper {
   overflow: auto;
   margin-bottom: 8px;
-}
-
-.tabs {
-  margin-top: 8px;
-  height: 40vmin;
-  mat-tab-group, mat-card {
-    height: 100%;
-  }
-  mat-card {
-    overflow: auto;
-    margin: 0;
-    .no-items {
-      @extend %text-lg;
-      text-align: center;
-      &.mobile {
-        @extend %text-md;
-        padding-top: 10px;
-      }
-    }
-  }
-  &.mobile {
-    height: 55vmin;
-  }
 }
 
 .buttons {
@@ -158,7 +135,10 @@ app-content-card {
   }
   .section-content {
     height: 50vh;
-    .overflow { overflow: auto; }
+
+    .content {
+      height: 100%;
+    }
   }
   .paged-nav-list-item {
     display: flex;
@@ -212,47 +192,98 @@ app-content-card {
   @extend %text-md;
 }
 
-.rewardsContentMobile, .rewardsHistoryContentMobile {
-  display:grid;
-  overflow-y: hidden;
-  overflow-x: hidden;
-  height: 100%;
-}
-
-.itemHistoryContentMobile {
-  display:grid;
-  grid-template-rows: auto 1fr;
-  overflow-y: hidden;
-  overflow-x: hidden;
-  height: 100%;
+.tab-content {
+  min-height: 15rem;
+  height:100%;
+  &.tablet-landscape,
+  &.desktop {
+    max-height: 20rem;
+  }
 }
 
 .rewardsContent.with-points, .rewardsHistoryContent.with-points {
   overflow-y: hidden;
   overflow-x: hidden;
   display: grid;
-  grid-template-columns: 3fr 1fr;
-  grid-template-rows: 1fr;
-  gap: 0px 0px;
-  grid-gap: 1em;
-  grid-template-areas:
-    "reward-list points";
-  .reward-list {
-    grid-area: reward-list;
+  &.tablet-landscape,
+  &.desktop {
+    grid-template-columns: 3fr 1fr;
+    grid-template-rows: 1fr;
+    gap: 0px 0px;
+    grid-gap: 1em;
+    grid-template-areas:
+      "reward-list points";
+    .reward-list {
+      grid-area: reward-list;
+    }
+    .no-items {
+      grid-area: reward-list;
+    }
+    .points {
+      grid-area: points;
+    }
   }
-  .no-items {
-    grid-area: reward-list;
-  }
-  .points {
-    grid-area: points;
-  }
+
 }
 
 .purchaseHistoryContent {
   display:grid;
   grid-template-rows: auto 1fr;
+  width:100%;
+  min-width:1rem;
   overflow-y: hidden;
   overflow-x: hidden;
+
+  .filter-bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    min-width: 1rem;
+  
+    &.tablet-landscape {
+      padding: 0px 8px;
+    }
+  
+    &.mobile,
+    &.tablet-portrait {
+      flex-direction: column;
+      padding: 0px 4px;
+    }
+  
+    > .date-range {
+      display: flex;
+      flex-direction: row;
+  
+      &.mobile {
+        flex-direction: column;
+      }
+  
+      .date-range-dash {
+        &.mobile {
+          display: none;
+        }
+      }
+      span {
+        margin: 20px 12px 0px 12px;
+      }
+    }
+  
+    .filter-button {
+      margin-left: 1rem;
+      border-width: 2px;
+      border-style: solid;
+      padding: .5rem 2rem;
+      line-height: normal;
+      &.mobile {
+        padding: .2rem 1rem;
+      }
+    }
+  }
+
+  .item-history {
+    padding: 0 1rem;
+  }
 }
 
 .item {
@@ -346,51 +377,7 @@ app-infinite-scroll {
   height: 100%;
 }
 
-.filter-bar {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  padding: 1rem;
 
-  &.tablet-landscape {
-    padding: 0px 8px;
-  }
-
-  &.mobile,
-  &.tablet-portrait {
-    flex-direction: column;
-    padding: 0px 4px;
-  }
-
-  > .date-range {
-    display: flex;
-    flex-direction: row;
-
-    &.mobile {
-      flex-direction: column;
-    }
-
-    .date-range-dash {
-      &.mobile {
-        display: none;
-      }
-    }
-    span {
-      margin: 20px 12px 0px 12px;
-    }
-  }
-
-  .filter-button {
-    margin-left: 1rem;
-    border-width: 2px;
-    border-style: solid;
-    padding: .5rem 2rem;
-    line-height: normal;
-    &.mobile {
-      padding: .2rem 1rem;
-    }
-  }
-}
 
 app-membership-points-display {
   display: inline-block;
@@ -406,6 +393,4 @@ app-membership-points-display {
   }
 }
 
-.item-history {
-  padding: 0 1rem;
-}
+

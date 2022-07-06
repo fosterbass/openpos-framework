@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 
 @Component({
@@ -7,25 +7,29 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
     styleUrls: ['./expansion-panel.component.scss'],
     animations: [
         trigger('animationShowHide', [
-            state('close', style({height: '0px', overflow: 'hidden'})),
-            state('open', style({height: '*', overflow: 'hidden'})),
+            state('close', style({ height: '0px' })),
+            state('open', style({ height: '*' })),
             transition('open <=> close', animate('250ms ease-in-out')),
         ]),
         trigger('animationRotate', [
-            state('close', style({transform: 'rotate(0)'})),
-            state('open', style({transform: 'rotate(-180deg)'})),
+            state('close', style({ transform: 'rotate(0)' })),
+            state('open', style({ transform: 'rotate(-180deg)' })),
             transition('open <=> close', animate('250ms ease-in-out')),
-        ]),
-    ],
+        ])
+    ]
 })
 export class ExpansionPanelComponent implements OnChanges {
 
     @Input()
     expanded = true;
 
+    @Output()
+    expansionToggled: EventEmitter<boolean>;
+
     state = 'open';
 
     constructor() {
+        this.expansionToggled = new EventEmitter(this.expanded);
     }
 
     ngOnChanges(): void {
@@ -36,6 +40,7 @@ export class ExpansionPanelComponent implements OnChanges {
 
     toggleExpanded() {
         this.state = this.state === 'close' ? 'open' : 'close';
+        this.expansionToggled.emit(this.state === 'open');
     }
 
     isExpanded() {

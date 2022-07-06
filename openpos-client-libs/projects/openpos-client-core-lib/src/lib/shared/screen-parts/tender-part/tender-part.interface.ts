@@ -13,6 +13,7 @@ export interface TenderPartInterface extends IAbstractScreen {
     amounts: ITender[];
     imageUrl: string;
     optionsList: OptionsListInterface;
+    totalOptionsShownBeforeOverflow: number;
     roundUpAvailable: boolean;
     roundUpButton: IActionItem;
 }

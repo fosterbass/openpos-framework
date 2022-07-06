@@ -1,5 +1,5 @@
-@import "../../../styles/variables/spacing";
-:host{
+@import '../../../styles/variables/spacing';
+:host {
     display: grid;
     min-height: 70px;
 }
@@ -8,10 +8,5 @@
     @extend %sub-element;
     display: block;
     overflow-y: auto;
-    border-width: 2px;
-
-    &.mobile,
-    &.tablet-portrait {
-        border-width: 1px;
-    }
+    border-width: 1px;
 }

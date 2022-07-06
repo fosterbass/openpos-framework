@@ -4,9 +4,10 @@
 @import './choose-options-dialog/choose-options-screen-dialog-theme';
 @import './return/return-theme';
 @import './tender/tender-theme';
-@import './item-detail/item-detail-theme';
-@import './item-detail/option-components/basic-product-option-part/basic-product-option-part-theme';
-@import './item-detail/option-components/swatch-product-option-part/swatch-product-option-part-theme';
+@import './product/item-detail/item-detail-theme';
+@import './product/product-detail/product-detail-theme';
+@import './product/option-components/basic-product-option-part/basic-product-option-part-theme';
+@import './product/option-components/swatch-product-option-part/swatch-product-option-part-theme';
 @import './return/return-theme';
 @import './transaction-search/transaction-search-theme';
 @import './simulated-peripheral-viewer/simulated-peripheral-theme';
@@ -22,6 +23,7 @@
     @include choose-options-screen-dialog-theme($theme);
     @include tender-theme($theme);
     @include item-detail-theme($theme);
+    @include product-detail-theme($theme);
     @include return-theme($theme);
     @include transaction-search-theme($theme);
     @include simulated-peripheral-theme($theme);

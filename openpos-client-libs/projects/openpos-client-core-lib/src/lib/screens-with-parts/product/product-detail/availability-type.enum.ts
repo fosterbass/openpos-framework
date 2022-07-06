@@ -1,0 +1,7 @@
+export enum AvailabilityType {
+    AVAILABLE = 'AVAILABLE',
+    UNAVAILABLE = 'UNAVAILABLE',
+    INELIGIBLE = 'INELIGIBLE',
+    OFFLINE = 'OFFLINE',
+    PENDING = 'PENDING'
+}

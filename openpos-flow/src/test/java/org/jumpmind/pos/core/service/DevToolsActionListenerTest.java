@@ -77,6 +77,7 @@ public class DevToolsActionListenerTest {
         return DeviceModel.builder()
                 .deviceId(deviceId)
                 .appId("pos")
+                .parentDeviceId("00000-001")
                 .deviceParamModels(new ArrayList<DeviceParamModel>() {{ add(deviceType); }})
                 .build();
     }

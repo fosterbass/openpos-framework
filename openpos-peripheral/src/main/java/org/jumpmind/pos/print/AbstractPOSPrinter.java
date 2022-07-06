@@ -1,21 +1,18 @@
 package org.jumpmind.pos.print;
 
 import jpos.POSPrinterConst;
-import org.jumpmind.pos.util.status.Status;
 
 import java.util.Map;
 
-abstract public class AbstractPOSPrinter implements IOpenposPrinter {
+public abstract class AbstractPOSPrinter implements IOpenposPrinter {
 
     public static final int STATUS_RECEIPT_PAPER_LOW = 0b00000001;
     public static final int STATUS_COVER_OPEN = 0b00000010;
     public static final int STATUS_RECEIPT_PAPER_OUT = 0b00000100;
-    public static final int STATUS_JAM = 0b00001000;
     public static final int SLIP_LEADING_EDGE_SENSOR_COVERED = 0b00100000;
-    public static final int SLIP_TRAILING_EDGE_SENSOR_COVERED = 0b01000000;
-    public static final int THERMAL_HEAD_OR_VOLTAGE_OUT_OF_RANGE = 0b10000000;
 
     IPrinterStatusReporter printerStatusReporter;
+
     Map<String, Object> settings;
     String printerName;
     PrinterCommands printerCommands = new PrinterCommandPlaceholders();
@@ -85,9 +82,6 @@ abstract public class AbstractPOSPrinter implements IOpenposPrinter {
     }
 
     void reportStatus(String message, Exception ex) {
-        if (printerStatusReporter != null) {
-            printerStatusReporter.reportStatus(Status.Error, message);
-        }
         throw new PrintException(message, ex);
     }
 

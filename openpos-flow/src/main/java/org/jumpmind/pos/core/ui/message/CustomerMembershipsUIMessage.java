@@ -4,6 +4,7 @@ import lombok.Data;
 import org.jumpmind.pos.core.ui.ActionItem;
 import org.jumpmind.pos.core.ui.AssignKeyBindings;
 import org.jumpmind.pos.core.ui.UIMessage;
+import org.jumpmind.pos.core.ui.data.Tab;
 
 import java.util.List;
 
@@ -12,6 +13,7 @@ import java.util.List;
 public class CustomerMembershipsUIMessage extends UIMessage {
     private static final long serialVersionUID = 1L;
 
+    private List<Tab> tabs;
     private List<UISubscriptionAccount> subscriptionAccounts;
     private ActionItem backButton;
 
