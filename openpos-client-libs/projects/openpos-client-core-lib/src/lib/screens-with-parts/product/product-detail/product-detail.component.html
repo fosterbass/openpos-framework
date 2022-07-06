@@ -5,7 +5,8 @@
                 [verticalThumbprints]="false" altImageText="Image Not Found" responsive-class>
             </app-image-carousel>
             <div class="product" responsive-class>
-                <app-title [title]="screen.productName"></app-title>
+                <div class="product-title">{{screen.productName}}</div>
+
                 <div class="product-details" responsive-class>
                     <section class="price-and-availability" 
                         [ngClass]="{'align-center': screen.orderAvailabilityLabel, 'align-baseline': !screen.orderAvailabilityLabel}">
@@ -25,7 +26,7 @@
                         <ng-container *ngComponentOutlet="component.value; injector: component.key" responsive-class></ng-container>
                     </ng-container>
                 </section>
-                <app-tabbed-content-card id="tabbedContent" *ngIf="!(isMobile | async) && tabs" [tabs]="tabs" 
+                <app-tabbed-content-card class="product-tabs" id="tabbedContent" *ngIf="!(isMobile | async) && tabs" [tabs]="tabs" 
                     [selectedTabTemplate]="getSelectedTabTemplate()" 
                     (tabChange)="updateSelectedTab($event)" responsive-class>
                 </app-tabbed-content-card>

@@ -5,6 +5,14 @@ app-bacon-strip{
     height: 100%;
 }
 
+.product-title {
+    font-size: 1.7em;
+    font-weight: 700;
+    line-height: 0.9em;
+    padding-bottom: 12px;
+
+}
+
 .content-container {
     @extend %page-spaced-content;
     height: 100%;
@@ -22,8 +30,8 @@ app-bacon-strip{
         }
 
         .carousel {
-            min-width: 350px;
-            width: 350px;
+            min-width: 250px;
+            width: 250px;
             @extend %sub-element;
 
             &.mobile,
@@ -35,7 +43,7 @@ app-bacon-strip{
         .product {
             display: flex;
             flex-direction: column;
-            row-gap: $x-large-space;
+            row-gap: 0px;
             width: 100%;
 
             .product-details {
@@ -80,7 +88,7 @@ app-bacon-strip{
         
                 .identifiers {
                     @extend %text-sm;
-                    display: flex;
+                    
                     column-gap: $med-space;
                     align-items: end;
                 }
@@ -209,4 +217,9 @@ app-bacon-strip{
             }
         }
     }
+}
+
+.product-tabs {
+    padding-top: 12px;
+    padding-bottom: 12px;
 }

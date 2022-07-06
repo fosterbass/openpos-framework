@@ -1,3 +1,4 @@
+<div class="option-container">
 <h3 class="option-name">{{screenData.optionName}}</h3>
 <mat-select (selectionChange)="optionSelected($event)" [style.font-weight]="'bold'" [placeholder]="screenData.optionPlaceholder" [value]="screenData.selectedOption" #select>
     <mat-option *ngFor="let option of screenData.options" 
@@ -13,3 +14,4 @@
         </ng-container>
     </mat-option>
 </mat-select>
+</div>
