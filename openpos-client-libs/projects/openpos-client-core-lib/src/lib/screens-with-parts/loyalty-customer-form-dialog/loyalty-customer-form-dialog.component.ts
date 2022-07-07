@@ -81,6 +81,10 @@ export class LoyaltyCustomerFormDialogComponent extends PosScreenDirective<Loyal
         return !!(this.line1Field || this.line2Field || this.cityField || this.stateField || this.postalCodeField || this.countryField);
     }
 
+    hasLoyaltyOrMembershipsFields(): boolean {
+        return !!this.loyaltyNumberField || !!this.extensionAttributeField || (this.screen.membershipEnabled && this.screen.isStructuredForm);
+    }
+
     getDisplayOrderSortedCityStateZipElements(): IFormElement[] {
         const fields: IFormElement[] = [];
         if (this.cityField) {
