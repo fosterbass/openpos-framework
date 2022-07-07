@@ -28,7 +28,7 @@
                 <span>{{additionalButton.title}}</span>
             </app-secondary-button>
             <app-primary-button cdkFocusInitial [disabled]="index<0"
-                [actionItem]="selectionButton" (actionClick)="doMenuItemAction(selectionButton)" (click)="doMenuItemAction(selectionButton)">
+                [actionItem]="selectionButton" [actionItemPayload] = "index" (actionClick)="doMenuItemAction(selectionButton)" (click)="doMenuItemAction(selectionButton)">
                 <span>{{selectionButton.title}}</span>&nbsp;
                 <span *ngIf="keybindsEnabled(selectionButton)" class="muted-color">{{selectionButton.keybindDisplayName}}</span>
             </app-primary-button>
