@@ -82,7 +82,8 @@ export class LoyaltyCustomerFormDialogComponent extends PosScreenDirective<Loyal
     }
 
     hasLoyaltyOrMembershipsFields(): boolean {
-        return !!this.loyaltyNumberField || !!this.extensionAttributeField || (this.screen.membershipEnabled && this.screen.isStructuredForm);
+        return !!this.loyaltyNumberField || !!this.extensionAttributeField ||
+                (this.screen.membershipEnabled && this.screen.isStructuredForm);
     }
 
     getDisplayOrderSortedCityStateZipElements(): IFormElement[] {
