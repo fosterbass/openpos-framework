@@ -35,6 +35,7 @@
 @import './dynamic-form-field/dynamic-form-field-theme';
 @import './tabbed-content-card/tabbed-content-card-theme';
 @import './bread-crumbs/bread-crumbs-theme';
+@import './radio-item-list/radio-item-list-theme';
 
 @mixin openpos-component-theme-mixins($theme) {
     @include pager-theme($theme);
@@ -74,4 +75,5 @@
     @include dynamic-form-field-theme($theme);
     @include tabbed-content-card-theme($theme);
     @include bread-crumbs-theme($theme);
+    @include radio-item-list-theme($theme);
 }

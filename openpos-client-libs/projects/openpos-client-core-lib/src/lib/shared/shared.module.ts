@@ -49,6 +49,7 @@ import { MarkdownFormatterPipe } from './pipes/markdown-formatter.pipe';
 import { ImageUrlPipe } from './pipes/image-url.pipe';
 import { BackgroundImageUrlPipe } from './pipes/background-image-url.pipe';
 import { PromptInputComponent } from './components/prompt-input/prompt-input.component';
+import { RadioItemListComponent } from './components/radio-item-list/radio-item-list.component';
 import { IconComponent } from './components/icon/icon.component';
 import { ShowErrorsComponent } from './components/show-errors/show-errors.component';
 import { DynamicDateFormFieldComponent } from './components/dynamic-date-form-field/dynamic-date-form-field.component';
@@ -255,6 +256,7 @@ const components = [
     DynamicListControlComponent,
     ProductListComponent,
     SelectableItemListComponent,
+    RadioItemListComponent,
     OverFlowListComponent,
     FabToggleButtonComponent,
     FabToggleGroupComponent,

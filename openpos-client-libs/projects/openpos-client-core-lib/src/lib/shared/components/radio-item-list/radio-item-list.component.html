@@ -1,0 +1,4 @@
+<div  class="radio-item" *ngFor="let item of items" (click)="onItemClick(item)">
+    <ng-template ngFor let-item  [ngForOf]="[item]" [ngForTemplate]="itemTemplate"></ng-template>
+</div>
+

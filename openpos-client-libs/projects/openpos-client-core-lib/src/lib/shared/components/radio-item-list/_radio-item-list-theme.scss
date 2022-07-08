@@ -1,0 +1,12 @@
+@mixin radio-item-list-theme($theme){
+    $background: map-get($theme, background);
+    $foreground: map-get($theme, foreground);
+
+    .radio-item {
+        background-color: map-get($background, card);
+        &:not(:last-child) {
+            border-bottom: solid 1px map_get($foreground, divider);
+        }
+    }
+
+}
