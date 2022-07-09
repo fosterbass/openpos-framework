@@ -243,9 +243,21 @@ public class EscpPOSPrinter extends AbstractPOSPrinter implements IOpenposPrinte
             if (peripheralConnection == null) {
                 throw new PrintException("printerConnection cannot be null here. This printer driver was not initialized properly.");
             }
-            BufferedImage bufferedImage = ImageIO.read(image);
-            imagePrinter.printImage(peripheralConnection.getOut(), bufferedImage);
-            printNormal(0, getCommand(PrinterCommands.LINE_SPACING_SINGLE));
+
+            if (name.contains("header-image") || name.contains("marketing-image")) {
+                byte[] printStoredLogo = {29, 40,  76, 6, 0, 48, 69, 48, 48, 1, 1};
+                if (name.contains("marketing-image")) {
+                    printStoredLogo = new byte[] {29, 40,  76, 6, 0, 48, 69, 48, 49, 1, 1};
+                }
+
+                printNormal(0, printerCommands.get(PrinterCommands.ALIGN_CENTER));
+                getPeripheralConnection().getOut().write(printStoredLogo);
+                printNormal(0, printerCommands.get(PrinterCommands.ALIGN_LEFT));
+            } else {
+                BufferedImage bufferedImage = ImageIO.read(image);
+                imagePrinter.printImage(peripheralConnection.getOut(), bufferedImage);
+                printNormal(0, getCommand(PrinterCommands.LINE_SPACING_SINGLE));
+            }
         } catch (Exception ex) {
             throw new PrintException("Failed to read and print buffered image", ex);
         }
