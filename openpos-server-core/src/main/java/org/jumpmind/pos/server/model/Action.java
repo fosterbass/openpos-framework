@@ -41,6 +41,8 @@ public class Action implements Serializable, Cloneable {
     private String name;
     private Object data;
     private String type;
+    @ToString.Include
+    private int lastKnownQueueSize;
     private String requiredPermissionId;
     @ToString.Include
     private boolean doNotBlockForResponse;

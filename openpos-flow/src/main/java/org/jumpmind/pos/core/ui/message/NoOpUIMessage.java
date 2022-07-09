@@ -10,4 +10,9 @@ public class NoOpUIMessage extends UIMessage {
         this.setScreenType(UIMessageType.NO_OP);
     }
 
+    public NoOpUIMessage(boolean willUnblock) {
+        this();
+        this.setWillUnblock(willUnblock);
+    }
+
 }

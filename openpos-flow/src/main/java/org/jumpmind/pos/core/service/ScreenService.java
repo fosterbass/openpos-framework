@@ -16,7 +16,6 @@ import org.jumpmind.pos.server.model.Action;
 import org.jumpmind.pos.server.service.IActionListener;
 import org.jumpmind.pos.server.service.IMessageService;
 import org.jumpmind.pos.util.DefaultObjectMapper;
-import org.jumpmind.pos.util.SuppressScreenLogging;
 import org.jumpmind.pos.util.web.MimeTypeUtil;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -215,7 +214,7 @@ public class ScreenService implements IScreenService, IActionListener {
                     action.setOriginatesFromDeviceFlag(true);
 
                     try {
-                        log.debug("Posting action {}", action);
+                        log.info("Posting action {}", action);
                         stateManager.doAction(action);
                     } catch (Throwable ex) {
                         if( errorHandler != null){

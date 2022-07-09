@@ -182,10 +182,10 @@ export class SessionService implements IMessageHandler<any> {
     public sendMessage<T extends OpenposMessage>(message: T): boolean {
         if (message.type === MessageTypes.ACTION && message instanceof ActionMessage) {
             const actionMessage = message as ActionMessage;
-            return this.publish(actionMessage.actionName, MessageTypes.SCREEN, actionMessage.payload, actionMessage.doNotBlockForResponse);
+            return this.publish(actionMessage.actionName, MessageTypes.SCREEN, actionMessage.payload, actionMessage.doNotBlockForResponse, actionMessage.lastKnownQueueSize);
         } else if (message.type === MessageTypes.PROXY && message instanceof ActionMessage) {
             const actionMessage = message as ActionMessage;
-            return this.publish(actionMessage.actionName, actionMessage.type, actionMessage.payload, actionMessage.doNotBlockForResponse);
+            return this.publish(actionMessage.actionName, actionMessage.type, actionMessage.payload, actionMessage.doNotBlockForResponse, actionMessage.lastKnownQueueSize);
         }
         this.sessionMessages$.next(message);
     }
@@ -528,7 +528,7 @@ export class SessionService implements IMessageHandler<any> {
         this.publish('Refresh', 'Screen');
     }
 
-    public publish(actionString: string, type: string, payload?: any, doNotBlockForResponse = false): boolean {
+    public publish(actionString: string, type: string, payload?: any, doNotBlockForResponse = false, lastKnownQueueSize = 0): boolean {
         // Block any actions if we are backgrounded and running in cordova
         // (unless we are coming back out of the background)
         if (this.inBackground && actionString !== 'Refresh') {
@@ -539,7 +539,7 @@ export class SessionService implements IMessageHandler<any> {
         if (deviceId) {
             console.info(`Publishing action '${actionString}' of type '${type}' to server...`);
             this.stompService.publish('/app/action/device/' + deviceId,
-                JSON.stringify({ name: actionString, type, data: payload, doNotBlockForResponse }));
+                JSON.stringify({ name: actionString, type, data: payload, doNotBlockForResponse, lastKnownQueueSize: lastKnownQueueSize }));
             return true;
         } else {
             console.info(`Can't publish action '${actionString}' of type '${type}' ` +

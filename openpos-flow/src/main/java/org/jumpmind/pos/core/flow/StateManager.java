@@ -298,6 +298,8 @@ public class StateManager implements IStateManager {
                         processEvent(actionContext.getAction().getData());
                         actionContext.getAction().markProcessed();
                     } else {
+                        log.info("###### last known queue size: " + actionContext.getAction().getLastKnownQueueSize());
+                        clientContext.put(ClientContext.CLIENT_QUEUE_SIZE, Integer.toString(actionContext.getAction().getLastKnownQueueSize()));
                         processAction(actionContext);
                         actionContext.getAction().markProcessed();
                     }

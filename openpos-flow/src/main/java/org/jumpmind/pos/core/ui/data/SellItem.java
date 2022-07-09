@@ -319,10 +319,10 @@ public class SellItem extends DefaultItem {
                 || (this.quantity == null && otherItem.getQuantity() != null)) {
             return false;
         }
-        if((discountAmount != null && (otherItem.getDiscountAmount() == null || !this.discountAmount.equals(otherItem.getDiscountAmount())))
-                || (this.discountAmount == null && otherItem.getDiscountAmount() != null)) {
-            return false;
-        }
+//        if((discountAmount != null && (otherItem.getDiscountAmount() == null || !this.discountAmount.equals(otherItem.getDiscountAmount())))
+//                || (this.discountAmount == null && otherItem.getDiscountAmount() != null)) {
+//            return false;
+//        }
         if((salesAssociate != null && (otherItem.getSalesAssociate() == null || !this.salesAssociate.equals(otherItem.getSalesAssociate())))
                 || (this.salesAssociate == null && otherItem.getSalesAssociate() != null)) {
             return false;
@@ -331,16 +331,16 @@ public class SellItem extends DefaultItem {
                 || (menuItems == null && otherItem.getMenuItems() != null)) {
             return false;
         }
-        if((isGiftReceipt && !otherItem.isGiftReceipt)||(!isGiftReceipt && !otherItem.isGiftReceipt)) {
+        if((isGiftReceipt && !otherItem.isGiftReceipt)||(!isGiftReceipt && otherItem.isGiftReceipt)) {
             return false;
         }
-        if((isQuantityChangeable && !otherItem.isQuantityChangeable)||(!isQuantityChangeable && !otherItem.isQuantityChangeable)) {
+        if((isQuantityChangeable && !otherItem.isQuantityChangeable)||(!isQuantityChangeable && otherItem.isQuantityChangeable)) {
             return false;
         }
-        if((isOrderItem && !otherItem.isOrderItem)||(!isOrderItem && !otherItem.isOrderItem)) {
+        if((isOrderItem && !otherItem.isOrderItem)||(!isOrderItem && otherItem.isOrderItem)) {
             return false;
         }
-        if((showSellingPrice && !otherItem.showSellingPrice)||(!showSellingPrice && !otherItem.showSellingPrice)) {
+        if((showSellingPrice && !otherItem.showSellingPrice)||(!showSellingPrice && otherItem.showSellingPrice)) {
             return false;
         }
         if((additionalLabels != null && (otherItem.getAdditionalLabels() == null || additionalLabels.size() != otherItem.getAdditionalLabels().size()))
@@ -359,10 +359,10 @@ public class SellItem extends DefaultItem {
                 || (this.imageUrl == null && otherItem.getImageUrl() != null)) {
             return false;
         }
-        if((optionsLabel != null && (otherItem.getOptionsLabel() == null || !this.optionsLabel.equals(otherItem.getOptionsLabel())))
-                || (this.optionsLabel == null && otherItem.getOptionsLabel() != null)) {
-            return false;
-        }
+//        if((optionsLabel != null && (otherItem.getOptionsLabel() == null || !this.optionsLabel.equals(otherItem.getOptionsLabel())))
+//                || (this.optionsLabel == null && otherItem.getOptionsLabel() != null)) {
+//            return false;
+//        }
         return true;
     }
 

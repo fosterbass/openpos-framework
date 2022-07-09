@@ -21,6 +21,7 @@ public class ClientContext {
     public static final String DISPLAY_LOCALE = "displayLocale";
     public static final String DEVICE_ID = "deviceId";
     public static final String APP_ID = "appId";
+    public static final String CLIENT_QUEUE_SIZE = "clientQueueSize";
     public static final String DEVICE_MODE = "deviceMode";
 
     private ThreadLocal<Map<String, String>> propertiesMap = new ThreadLocal<>();

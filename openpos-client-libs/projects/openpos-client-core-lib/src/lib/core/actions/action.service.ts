@@ -28,13 +28,15 @@ export class ActionService implements OnDestroy {
             if (message.willUnblock === false) {
                 console.log('creating a screen that is disabled');
                 this.blockActions = true;
-            } else if (message.willUnblock) {
-                console.log('unblocking actions because message:', message);
-                this.unblock();
             }
+            // else if (message.willUnblock) {
+            //     console.log('unblocking actions because message:', message);
+            //     this.unblock();
+            // }
         }));
         this.subscriptions.add(messageProvider.getAllMessages$<OpenposMessage>().subscribe(message => {
-            if (message.type === MessageTypes.TOAST && message.willUnblock) {
+            if ((message.type === MessageTypes.TOAST ||
+                    message.type === MessageTypes.SCREEN) && message.willUnblock) {
                 console.log('unblocking action because toast:', message);
                 this.unblock();
             }
@@ -71,7 +73,10 @@ export class ActionService implements OnDestroy {
                 }
             }
 
-            this.messageProvider.sendMessage(new ActionMessage(actionItem.action, actionItem.doNotBlockForResponse, payload));
+            let actionMessage = new ActionMessage(actionItem.action, actionItem.doNotBlockForResponse, payload);
+            console.log("action queue size is " + this.actionQueue.length);
+            actionMessage.lastKnownQueueSize = this.actionQueue.length;
+            this.messageProvider.sendMessage(actionMessage);
             if (!actionItem.doNotBlockForResponse) {
                 this.queueLoading();
             }
