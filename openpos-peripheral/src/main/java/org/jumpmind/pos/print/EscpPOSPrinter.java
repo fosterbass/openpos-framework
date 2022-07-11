@@ -137,8 +137,9 @@ public class EscpPOSPrinter extends AbstractPOSPrinter implements IOpenposPrinte
 
             int cashDrawerState = connection.getIn().read();
             log.info("Cash drawer state was: {}", cashDrawerState);
-
-            return cashDrawerState == DRAWER_OPEN;
+            
+            int DRAWER_OPEN_PATCH = 1;
+            return cashDrawerState == DRAWER_OPEN_PATCH;
         } catch (Exception e) {
             String msg = String.format("Failure to read the status of the drawer: %s", cashDrawerId);
             throw new PrintException(msg, e);
